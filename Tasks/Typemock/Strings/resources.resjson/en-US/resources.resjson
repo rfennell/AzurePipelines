@@ -1,0 +1,21 @@
+// *******************************************************
+// GENERATED FILE - DO NOT EDIT DIRECTLY
+// *******************************************************
+{
+  "loc.friendlyName": "Typemock TMockRunner",
+  "loc.description": "Run tests with Visual Studio test runner wrappered by TMockRunner",
+  "loc.group.displayName.advanced": "Advanced",
+  "loc.input.label.testAssembly": "Test Assembly",
+  "loc.input.label.testFiltercriteria": "Test Filter criteria",
+  "loc.input.label.platform": "Platform",
+  "loc.input.label.configuration": "Configuration",
+  "loc.input.label.runSettingsFile": "Run Settings File",
+  "loc.input.label.overrideTestrunParameters": "Override TestRun Parameters",
+  "loc.input.label.company": "Typemock Licensed To",
+  "loc.input.label.license": "Typemock License Key",
+  "loc.input.label.autodeploypath": "Typemock Autodeploy folder",
+  "loc.input.label.codeCoverageEnabled": "Code Coverage Enabled",
+  "loc.input.label.vsTestVersion": "VSTest version",
+  "loc.input.label.pathtoCustomTestAdapters": "Path to Custom Test Adapters",
+  "loc.input.label.otherConsoleOptions": "Other console options"
+}
