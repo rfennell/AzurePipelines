@@ -14,6 +14,8 @@ This task takes all the same argument as the standard VSTest build task (as it w
 
 A discussion of the development and usage of this Typemock task can be found in [this blog post](http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/09/08/Running-Typemock-Isolator-based-tests-in-TFS-vNext-build.aspx).
 
+Typemock provide documentation on the general use Isolator in build systems in their [online documentation](http://www.typemock.com/docs?book=Isolator&page=Documentation%2FHtmlDocs%2Fintegratingwiththeserver.htm) 
+
 ----------
 
 For details of how to build and deploy these tasks see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki)
