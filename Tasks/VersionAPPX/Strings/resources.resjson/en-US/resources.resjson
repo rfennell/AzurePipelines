@@ -1,0 +1,8 @@
+// *******************************************************
+// GENERATED FILE - DO NOT EDIT DIRECTLY
+// *******************************************************
+{
+  "loc.friendlyName": "Version .NET Assemblies",
+  "loc.description": "Applies a version to a .NET assembly via the assemblyinfo.cs or .vb files based on the build number. Baased on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
+  "loc.group.displayName.advanced": "Advanced"
+}

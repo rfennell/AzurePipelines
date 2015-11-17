@@ -1,0 +1,36 @@
+{
+  "id": "EA3A1166-3AEE-434F-B34D-0BF5F763E1F2",
+  "name": "VersionAPPX",
+  "friendlyName": "Version APPX manifest",
+  "description": "Applies a version to a APPX manifest based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
+  "category": "Build",
+  "visibility": [
+                "Build",
+                "Release"
+                ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "demands": [
+    "vstest"
+  ],
+  "minimumAgentVersion": "1.82.0",
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  "instanceNameFormat": "Version Assemblies",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\ApplyBuildVersionToAppx.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
