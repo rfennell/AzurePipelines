@@ -1,8 +1,8 @@
 {
-  "id": "E47012ED-074C-4F77-AC9F-A6812F900AB0",
-  "name": "VersionAssemblies",
-  "friendlyName": "Version .NET Assemblies",
-  "description": "Applies a version to a .NET assembly via the assemblyinfo.cs or .vb files based on the build number. Baased on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
+  "id": "76D2151F-27C2-430C-8116-73693D3AB13E",
+  "name": "VersionVSIX",
+  "friendlyName": "Version VSIX package",
+  "description": "Applies a version to a VSIX manifest based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
   "category": "Build",
   "visibility": [
                 "Build",
@@ -28,7 +28,7 @@
   "instanceNameFormat": "Version Assemblies",
   "execution": {
     "PowerShell": {
-      "target": "$(currentDirectory)\\ApplyVersionToAssemblies.ps1",
+      "target": "$(currentDirectory)\\ApplyVersionToVSIX.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
     }
