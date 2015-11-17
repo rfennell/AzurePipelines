@@ -1,9 +1,9 @@
-![Build Status](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/12/badge)
 # vNextBuild Tasks and Resources
 
 This repo contains TFS vNext tasks and useful PowerShell scripts
 
 ## Build Tasks ##
+![Build Status](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/12/badge)
 
 **For details of how to build and deploy these tasks see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki)**
 
