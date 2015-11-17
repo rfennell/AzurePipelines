@@ -3,6 +3,9 @@
 This repo contains TFS vNext tasks and useful PowerShell scripts
 
 ## Build Tasks ##
+
+**For details of how to build and deploy these tasks see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki)**
+
 ### Typemock ###
 A task that uses TMockRunner to wrapper the running of the standard VSTest console enabling Typemock Isolator based tests within TFS vNext build.
  
@@ -23,8 +26,6 @@ A task that wrappers the sample script to version assemblies show in the [VSO do
 A discussion of the development and usage of this task can be found in [this blog post](http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/11/17/Why-you-need-to-use-vNext-build-tasks-to-share-scripts-between-builds.aspx).
 
 ----------
-
-For details of how to build and deploy these tasks see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki)
 
 ## Powershell Scripts ##
 The following PowerScripts can be called from the standard TFS vNext build Powershell task to wrapper other tools without the need to create a custom task
