@@ -2,7 +2,7 @@
   "id": "E47012ED-074C-4F77-AC9F-A6812F900AB0",
   "name": "VersionAssemblies",
   "friendlyName": "Version .NET Assemblies",
-  "description": "Applies a version to a .NET assembly via the assemblyinfo.cs or .vb files based on the build number. Baased on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
+  "description": "Applies a version to a .NET assembly via the assemblyinfo.cs or .vb files based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
   "category": "Build",
   "visibility": [
                 "Build",
