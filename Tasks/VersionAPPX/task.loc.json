@@ -15,20 +15,10 @@
   "version": {
     "Major": 1,
     "Minor": 0,
-    "Patch": 0
+    "Patch": 2
   },
-  "demands": [
-    "vstest"
-  ],
   "minimumAgentVersion": "1.82.0",
-  "groups": [
-    {
-      "name": "advanced",
-      "displayName": "ms-resource:loc.group.displayName.advanced",
-      "isExpanded": false
-    }
-  ],
-  "instanceNameFormat": "Version Assemblies",
+  "instanceNameFormat": "Version APPX",
   "execution": {
     "PowerShell": {
       "target": "$(currentDirectory)\\ApplyBuildVersionToAppx.ps1",

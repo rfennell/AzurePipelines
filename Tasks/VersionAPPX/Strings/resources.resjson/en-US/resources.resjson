@@ -3,6 +3,5 @@
 // *******************************************************
 {
   "loc.friendlyName": "Version APPX manifest",
-  "loc.description": "Applies a version to a APPX manifest based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
-  "loc.group.displayName.advanced": "Advanced"
+  "loc.description": "Applies a version to a APPX manifest based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview"
 }

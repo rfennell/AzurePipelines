@@ -12,19 +12,9 @@
   "version": {
     "Major": 1,
     "Minor": 0,
-    "Patch": 1
+    "Patch": 2
   },
-  "demands": [
-    "vstest"
-  ],
   "minimumAgentVersion": "1.82.0",
-  "groups": [
-    {
-      "name": "advanced",
-      "displayName": "Advanced",
-      "isExpanded": false
-    }
-  ],
   "instanceNameFormat": "Version APPX",
   "execution": {
     "PowerShell": {
