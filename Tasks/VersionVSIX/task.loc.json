@@ -2,8 +2,8 @@
 // GENERATED FILE - DO NOT EDIT DIRECTLY
 // *******************************************************
 {
-  "id": "E47012ED-074C-4F77-AC9F-A6812F900AB0",
-  "name": "VersionAssemblies",
+  "id": "76D2151F-27C2-430C-8116-73693D3AB13E",
+  "name": "VersionVSIX",
   "friendlyName": "ms-resource:loc.friendlyName",
   "description": "ms-resource:loc.description",
   "category": "Build",
@@ -31,7 +31,7 @@
   "instanceNameFormat": "Version Assemblies",
   "execution": {
     "PowerShell": {
-      "target": "$(currentDirectory)\\ApplyVersionToAssemblies.ps1",
+      "target": "$(currentDirectory)\\ApplyVersionToVSIX.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
     }

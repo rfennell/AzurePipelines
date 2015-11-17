@@ -2,8 +2,8 @@
 // GENERATED FILE - DO NOT EDIT DIRECTLY
 // *******************************************************
 {
-  "id": "E47012ED-074C-4F77-AC9F-A6812F900AB0",
-  "name": "VersionAssemblies",
+  "id": "EA3A1166-3AEE-434F-B34D-0BF5F763E1F2",
+  "name": "VersionAPPX",
   "friendlyName": "ms-resource:loc.friendlyName",
   "description": "ms-resource:loc.description",
   "category": "Build",
@@ -31,7 +31,7 @@
   "instanceNameFormat": "Version Assemblies",
   "execution": {
     "PowerShell": {
-      "target": "$(currentDirectory)\\ApplyVersionToAssemblies.ps1",
+      "target": "$(currentDirectory)\\ApplyBuildVersionToAppx.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
     }
