@@ -12,20 +12,10 @@
   "version": {
     "Major": 1,
     "Minor": 0,
-    "Patch": 0
+    "Patch": 1
   },
-  "demands": [
-    "vstest"
-  ],
   "minimumAgentVersion": "1.82.0",
-  "groups": [
-    {
-      "name": "advanced",
-      "displayName": "Advanced",
-      "isExpanded": false
-    }
-  ],
-  "instanceNameFormat": "Version Assemblies",
+   "instanceNameFormat": "Version Assemblies",
   "execution": {
     "PowerShell": {
       "target": "$(currentDirectory)\\ApplyVersionToAssemblies.ps1",
