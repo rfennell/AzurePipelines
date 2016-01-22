@@ -26,9 +26,15 @@ A set of tasks that wrapper versions of the sample script to version assemblies 
 
 - VersionAssemblies - sets the version in the assemblyinfocs or .vb
 - VersionVSIX - sets the version in the source.extension.vsixmanifest
-- VersionAPPX - setes the version in the Package.appxmanifest
+- VersionAPPX - sets the version in the Package.appxmanifest
+- VersionDacpac - sets the version in a SQL DACPAC (submitted by [Chris Gardner] (https://github.com/ChrisLGardner))
 
 A discussion of the development and usage of this task can be found in [this blog post](http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/11/17/Why-you-need-to-use-vNext-build-tasks-to-share-scripts-between-builds.aspx).
+
+### MS Web Deploy Management ###
+A set of tasks used to manage parts of the MS WebDeploy process
+
+- UpdateWebDeployParameters - Update the contents of a singleSetParameters.XML file using tokenised environment variables
 
 ----------
 
