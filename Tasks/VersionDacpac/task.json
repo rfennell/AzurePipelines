@@ -1,0 +1,40 @@
+{
+   "id": "fd593137-89b4-4d81-82f1-c098c1343e0a",
+   "name": "VersionDacpac",
+   "friendlyName": "Version DacPacs",
+   "description": "Applies specified version number to all dacpac files in target folder",
+   "category": "Build",
+   "author": "Black Marble",
+   "version": {
+      "Major": 1,
+      "Minor": 0,
+      "Patch": 0
+   },
+   "minimumAgentVersion": "1.83.0",
+   "inputs": [
+      {
+         "name": "Path",
+         "type": "string",
+         "label": "Source folder",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "Source folder for dacpac files, can be root as it will find all dacpacs recursively"
+      },
+      {
+         "name": "VersionNumber",
+         "type": "string",
+         "label": "Version Number",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "Version number to apply to files, should be in '1.2.3.4' format"
+      }
+   ],
+   "instanceNameFormat": "Version Dacpac files",
+   "execution": {
+      "PowerShell": {
+         "target": "$(currentDirectory)\\Update-DacPacVersionNumber.ps1",
+         "argumentFormat": "",
+         "workingDirectory": "$(currentDirectory)"
+      }
+   }
+}
