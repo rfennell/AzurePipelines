@@ -1,0 +1,41 @@
+// *******************************************************
+// GENERATED FILE - DO NOT EDIT DIRECTLY
+// *******************************************************
+{
+  "id": "AFA9B703-33DF-4F9F-B840-B657A9C728AE",
+  "name": "StyleCop",
+  "friendlyName": "ms-resource:loc.friendlyName",
+  "description": "ms-resource:loc.description",
+  "category": "Build",
+  "visibility": [
+    "Build"
+  ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 7
+  },
+  "demands": [
+    "vstest"
+  ],
+  "minimumAgentVersion": "1.82.0",
+  "inputs": [
+    {
+      "name": "TreatStyleCopViolationsErrorsAsWarnings",
+      "type": "boolean",
+      "label": "ms-resource:loc.input.label.TreatStyleCopViolationsErrorsAsWarnings",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "Treat StyleCop violations errors as warnings."
+    }
+  ],
+  "instanceNameFormat": "StyleCop Runner ",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\StyleCop.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}

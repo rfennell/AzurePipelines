@@ -1,0 +1,8 @@
+// *******************************************************
+// GENERATED FILE - DO NOT EDIT DIRECTLY
+// *******************************************************
+{
+  "loc.friendlyName": "StyleCop Runner",
+  "loc.description": "Run tests StyleCop using settings files in the project folders",
+  "loc.input.label.TreatStyleCopViolationsErrorsAsWarnings": "Test Errors as Warnings"
+}
