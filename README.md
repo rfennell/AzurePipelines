@@ -36,6 +36,11 @@ A set of tasks used to manage parts of the MS WebDeploy process
 
 - UpdateWebDeployParameters - Update the contents of a singleSetParameters.XML file using tokenised environment variables. As discussed in this [post on Microsoft UK Developers blog](https://www.microsoft.com/en-gb/developers/articles/week01feb16/how-to-extend-a-VSTS-release-process-to-on-premises/)
 
+### StyleCop Runner ###
+A tasks to run StyleCop,
+
+This is a VNext Build task wrapper for the PowerShell script discussed [the  blog post](http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/04/03/Running-StyleCop-from-the-command-line-and-in-a-TFS-2015-vNext-build.aspx) using the wrapper assemblies in [this repo](https://github.com/rfennell/StyleCopCmdLine)
+
 ----------
 
 ## Powershell Scripts ##
