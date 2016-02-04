@@ -34,7 +34,7 @@ A discussion of the development and usage of this task can be found in [this blo
 ### MS Web Deploy Management ###
 A set of tasks used to manage parts of the MS WebDeploy process
 
-- UpdateWebDeployParameters - Update the contents of a singleSetParameters.XML file using tokenised environment variables
+- UpdateWebDeployParameters - Update the contents of a singleSetParameters.XML file using tokenised environment variables. As discussed in this [post on Microsoft UK Developers blog](https://www.microsoft.com/en-gb/developers/articles/week01feb16/how-to-extend-a-VSTS-release-process-to-on-premises/)
 
 ----------
 
