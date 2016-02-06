@@ -9,6 +9,7 @@ This repo contains TFS vNext tasks and useful PowerShell scripts
 For details of how to build and deploy these tasks see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki/Build-Tasks)
 
 ## Included Tasks in the Repo##
+For more details of how to use these tasks see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki)
 
 - Typemock - A task that uses TMockRunner to wrapper the running of the standard VSTest console enabling Typemock Isolator based tests within TFS vNext build.
 - UpdateWebDeployParameters - Update the contents of a singleSetParameters.XML file using tokenised environment variables
@@ -27,9 +28,8 @@ A set of tasks that wrapper versions of the sample script to version assemblies 
 ## Powershell Scripts ##
 The following PowerScripts can be called from the standard TFS vNext build Powershell task to wrapper other tools without the need to create a custom task
  
-- WebDeploy.ps1 - a script to wrapper WebDeploy replacing the contents of the setparameters.xml file. 
-- DbDeploy.ps1 - a scrript to wrapper SQLPackage to deploy a .DACPAC. 
-- TCMExecWrapper.ps1 - A wrapper to use TCM.EXE to trigger Microsoft Test Manager based tests, then setting a build tag based on the results of the test run. 
+- WebDeploy.ps1 - a script to wrapper WebDeploy replacing the contents of the setparameters.xml file. A discussion of this script can be found in [this blog post](http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/08/21/Using-Release-Management-vNext-templates-when-you-dont-want-to-use-DSC-scripts-A-better-script.aspx)
+- DbDeploy.ps1 - a scrript to wrapper SQLPackage to deploy a .DACPAC. A discussion of this script can be found in [this blog post](http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/06/18/Using-Release-Management-vNext-templates-when-you-dont-want-to-use-DSC-scripts.aspx)
+- TCMExecWrapper.ps1 - A wrapper to use TCM.EXE to trigger Microsoft Test Manager based tests, then setting a build tag based on the results of the test run. A discussion of this script can be found in [this blog post](http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/08/28/An-alternative-to-setting-a-build-quality-on-a-TFS-vNext-build.aspx)
 - ApplyVersionToAssemblies.ps1 - Just a copy of the script from [MSDN post](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index) so that I have scripts I commonly use in one place
-- ApplyVersionToVSIX.ps1 - Using the same environment variable based system as ApplyVersionToAssemblies.ps1, this script sets the of a VSIX package in the for 1.2 (3rd and 4th parts of the version are discarded). 
-- Update-DacpacVersionNumber.ps1 - A script to apply a specified version number to all dacpac files under the target folder. 
+- ApplyVersionToVSIX.ps1 - Using the same environment variable based system as ApplyVersionToAssemblies.ps1, this script sets the of a VSIX package in the for 1.2 (3rd and 4th parts of the version are discarded). See [this blog post](http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/11/10/Versioning-a-VSIX-package-as-part-of-the-TFS-vNext-build-(when-the-source-is-on-GitHub).aspx) for more details
