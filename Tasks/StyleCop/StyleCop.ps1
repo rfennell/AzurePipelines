@@ -1,24 +1,46 @@
 param
 (
-    [string]$TreatStyleCopViolationsErrorsAsWarnings 
-
+    [string]$treatStyleCopViolationsErrorsAsWarnings,
+    [string]$maximumViolationCount,
+    [string]$showOutput,
+    [string]$cacheResults,
+    [string]$forceFullAnalysis,
+    [string]$additionalAddInPath,
+    [string]$settingsFile
 )
 
 
 $VerbosePreference ='Continue' # equiv to -verbose
 Write-Verbose "Entering script StyleCop.ps1"
 
-# pickup the build locations from the environment
-$stagingfolder = $Env:BUILD_STAGINGDIRECTORY
-$sourcefolder = $Env:BUILD_SOURCESDIRECTORY
+import-module "Microsoft.TeamFoundation.DistributedTask.Task.Common" # to get the upload summary methods
 
-# have to convert the string flag to a boolean
-$treatViolationsErrorsAsWarnings = [System.Convert]::ToBoolean($TreatStyleCopViolationsErrorsAsWarnings)
+# pickup the build locations from the environment
+$loggingingfolder = $Env:BUILD_SOURCESDIRECTORY # we rely on a publish to drops task to do the publication
+$sourcefolder = $Env:BUILD_SOURCESDIRECTORY
+$stagingfolder = $Env:BUILD_STAGINGDIRECTORY
+
+# it seems that for file paths if they are set and then unset the base folder is passed so we check for this 
+if ($additionalAddInPath -eq $sourcefolder )
+{
+    $additionalAddInPath = ""
+}
+if ($settingsFile -eq $sourcefolder )
+{
+    $settingsFile = ""
+}
 
 
 Write-Verbose ("Source folder (`$Env)  [{0}]" -f $sourcefolder) 
+Write-Verbose ("Logging folder (`$Env) [{0}]" -f $loggingingfolder) 
 Write-Verbose ("Staging folder (`$Env) [{0}]" -f $stagingfolder) 
-Write-Verbose ("Treat violations as warnings (Param) [{0}]" -f $treatViolationsErrorsAsWarnings) 
+Write-Verbose ("Treat violations as warnings (Param) [{0}]" -f $treatStyleCopViolationsErrorsAsWarnings) 
+Write-Verbose ("Max violations count (Param) [{0}]" -f $maximumViolationCount) 
+Write-Verbose ("Show Output (Param) [{0}]" -f $showOutput) 
+Write-Verbose ("Cache Results (Param) [{0}]" -f $cacheResults) 
+Write-Verbose ("Force Full Analysis (Param) [{0}]" -f $forceFullAnalysis) 
+Write-Verbose ("Addition Add-In path (Param) [{0}]" -f $additionalAddInPath) 
+Write-Verbose ("SettingsFile (Param) [{0}]" -f $settingsFile) 
  
 # the overall results across all sub scans
 $overallSuccess = $true
@@ -35,44 +57,61 @@ Add-Type -Path $dllPath
 $scanner = new-object StyleCopWrapper.Wrapper
 
 # Set the common scan options, 
-$scanner.MaximumViolationCount = 1000
-$scanner.ShowOutput = $true
-$scanner.CacheResults = $false
-$scanner.ForceFullAnalysis = $true
-$scanner.AdditionalAddInPaths = @($pwd) # in in local path as we place stylecop.csharp.rules.dll here
-$scanner.TreatViolationsErrorsAsWarnings = $treatViolationsErrorsAsWarnings
+$scanner.MaximumViolationCount = [System.Convert]::ToInt32($maximumViolationCount)
+$scanner.ShowOutput = [System.Convert]::ToBoolean($showOutput)
+$scanner.CacheResults = [System.Convert]::ToBoolean($cacheResults)
+$scanner.ForceFullAnalysis = [System.Convert]::ToBoolean($forceFullAnalysis)
 
+Write-Verbose "Rules being loaded from"
+Write-Verbose $pwd
+Write-Verbose $additionalAddInPath
+
+$scanner.AdditionalAddInPaths = @($pwd, $additionalAddInPath) #  in local path as we place stylecop.csharp.rules.dll here
+$scanner.TreatViolationsErrorsAsWarnings = [System.Convert]::ToBoolean($treatStyleCopViolationsErrorsAsWarnings)
+
+
+# the output summary
+$summaryMdPath = (join-path $stagingfolder  "summary.md")
+Write-Verbose ("Placing summary of test run in [{0}]" -f $summaryMdPath)
+Add-Content $summaryMdPath "StyleCop"
 
 # look for .csproj files
 foreach ($projfile in Get-ChildItem $sourcefolder -Filter *.csproj -Recurse)
 {
    Write-Verbose ("Processing the folder [{0}]" -f $projfile.Directory)
 
-
-   # find a set of rules closest to the .csproj file
-   $settings = Join-Path -path $projfile.Directory -childpath "settings.stylecop"
-   if (Test-Path $settings)
+   if (![string]::IsNullOrEmpty($settingsFile) -and (Test-Path $settingsFile))
    {
-        Write-Verbose "Using found settings.stylecop file same folder as .csproj file"
-        $scanner.SettingsFile = $settings
-   }  else
+        Write-Verbose "Using settings.stylecop passed as parameter [$settingsFile]"
+        $scanner.SettingsFile = $settingsFile
+   } else
    {
-       $settings = Join-Path -path $sourcefolder -childpath "settings.stylecop"
-       if (Test-Path $settings)
-       {
-            Write-Verbose "Using settings.stylecop file in solution folder"
-            $scanner.SettingsFile = $settings
-       } else 
-       {
-            Write-Verbose "Cannot find a local settings.stylecop file, using default rules"
-            $scanner.SettingsFile = "." # we have to pass something as this is a required param
-       }
+ 
+        # find a set of rules closest to the .csproj file
+        $settings = Join-Path -path $projfile.Directory -childpath "settings.stylecop"
+        if (Test-Path $settings)
+        {
+                Write-Verbose "Using found settings.stylecop file same folder as .csproj file"
+                $scanner.SettingsFile = $settings
+        }  else
+        {
+            $settings = Join-Path -path $sourcefolder -childpath "settings.stylecop"
+            if (Test-Path $settings)
+            {
+                    Write-Verbose "Using settings.stylecop file in solution folder"
+                    $scanner.SettingsFile = $settings
+            } else 
+            {
+                    Write-Verbose "Cannot find a local settings.stylecop file, using default rules"
+                    $scanner.SettingsFile = "." # we have to pass something as this is a required param
+            }
+        }
    }
 
 
    $scanner.SourceFiles =  @($projfile.Directory)
-   $scanner.XmlOutputFile = (join-path $stagingfolder $projfile.BaseName) +".stylecop.xml"
-   $scanner.LogFile =  (join-path $stagingfolder $projfile.BaseName) +".stylecop.log"
+   $scanner.XmlOutputFile = (join-path $loggingingfolder $projfile.BaseName) +".stylecop.xml"
+   $scanner.LogFile =  (join-path $loggingingfolder $projfile.BaseName) +".stylecop.log"
     
    # Do the scan
    $scanner.Scan()
@@ -87,6 +126,8 @@ foreach ($projfile in Get-ChildItem $sourcefolder -Filter *.csproj -Recurse)
     Write-Verbose ("Log file `t[{0}]" -f $scanner.LogFile) 
     Write-Verbose ("XML results`t[{0}]" -f $scanner.XmlOutputFile) 
 
+    # add to the summary file
+    Add-Content $summaryMdPath ("* Project [{0}] - [{1}] Violations" -f $projfile.BaseName, $scanner.ViolationCount)
 
     $totalViolations += $scanner.ViolationCount
     $projectsScanned ++
@@ -102,7 +143,11 @@ foreach ($projfile in Get-ChildItem $sourcefolder -Filter *.csproj -Recurse)
 
 
 # the output summary
-Write-Verbose ("`n")
+Add-Content $summaryMdPath ("`nStyleCop found [{0}] violations across [{1}] projects" -f $totalViolations, $projectsScanned)
+Write-verbose "Uploading summary results file"
+Write-Host "##vso[build.uploadsummary]$summaryMdPath"
+
+# Set if the build should eb failed or not
 if ($overallSuccess -eq $false)
 {
    Write-Error ("StyleCop found [{0}] violations across [{1}] projects" -f $totalViolations, $projectsScanned)

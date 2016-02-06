@@ -13,21 +13,82 @@
   "author": "Black Marble",
   "version": {
     "Major": 1,
-    "Minor": 0,
-    "Patch": 7
+    "Minor": 1,
+    "Patch": 0
   },
   "demands": [
     "vstest"
   ],
   "minimumAgentVersion": "1.82.0",
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "ms-resource:loc.group.displayName.advanced",
+      "isExpanded": false
+    }
+  ],
   "inputs": [
     {
-      "name": "TreatStyleCopViolationsErrorsAsWarnings",
+      "name": "treatStyleCopViolationsErrorsAsWarnings",
       "type": "boolean",
-      "label": "ms-resource:loc.input.label.TreatStyleCopViolationsErrorsAsWarnings",
+      "label": "ms-resource:loc.input.label.treatStyleCopViolationsErrorsAsWarnings",
       "defaultValue": "False",
       "required": true,
       "helpMarkDown": "Treat StyleCop violations errors as warnings."
+    },
+    {
+      "name": "maximumViolationCount",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.maximumViolationCount",
+      "defaultValue": "1000",
+      "required": true,
+      "helpMarkDown": "Maximum violations before analysis stops",
+      "groupName": "advanced"
+    },
+    {
+      "name": "showOutput",
+      "type": "boolean",
+      "label": "ms-resource:loc.input.label.showOutput",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "Show analysis output in log",
+      "groupName": "advanced"
+    },
+    {
+      "name": "cacheResults",
+      "type": "boolean",
+      "label": "ms-resource:loc.input.label.cacheResults",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "Cache analysis results for reuse",
+      "groupName": "advanced"
+    },
+    {
+      "name": "forceFullAnalysis",
+      "type": "boolean",
+      "label": "ms-resource:loc.input.label.forceFullAnalysis",
+      "defaultValue": "True",
+      "required": true,
+      "helpMarkDown": "Force complete re-analysis",
+      "groupName": "advanced"
+    },
+    {
+      "name": "additionalAddInPath",
+      "type": "filePath",
+      "label": "ms-resource:loc.input.label.additionalAddInPath",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Path to any custom rule sets, the directory cannot be a sub directory of current directory at runtime as this is automatically scanned",
+      "groupName": "advanced"
+    },
+    {
+      "name": "settingsFile",
+      "type": "filePath",
+      "label": "ms-resource:loc.input.label.settingsFile",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Path to single settings files to use (as opposed to files in project folders)",
+      "groupName": "advanced"
     }
   ],
   "instanceNameFormat": "StyleCop Runner ",
