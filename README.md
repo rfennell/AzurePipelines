@@ -6,7 +6,7 @@ This repo contains TFS vNext tasks and useful PowerShell scripts
 
 ## Building Tasks ##
 
-**For details of how to build and deploy these tasks see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki/Build-Tasks)**
+For details of how to build and deploy these tasks see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki/Build-Tasks)
 
 ## Included Tasks in the Repo##
 
