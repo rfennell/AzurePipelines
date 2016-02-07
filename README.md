@@ -1,45 +1,27 @@
+![Build Status](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/12/badge)
+
 # vNextBuild Tasks and Resources
 
 This repo contains TFS vNext tasks and useful PowerShell scripts
 
-## Build Tasks ##
-![Build Status](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/12/badge)
+## Building Tasks ##
 
-**For details of how to build and deploy these tasks see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki)**
+For details of how to build and deploy these tasks see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki/Build-Tasks)
 
-### Typemock ###
-A task that uses TMockRunner to wrapper the running of the standard VSTest console enabling Typemock Isolator based tests within TFS vNext build.
- 
-This task takes all the same argument as the standard VSTest build task (as it will normally be used as direct replacement for the VSTest task), with the addition of
+## Included Tasks in the Repo##
+For more details of how to use these tasks see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki)
 
-- The company the instance of Typemock is licensed to
-- The licensed key
-- The path to the Typemock autodeployment folder in source control
+- Typemock - A task that uses TMockRunner to wrapper the running of the standard VSTest console enabling Typemock Isolator based tests within TFS vNext build.
+- UpdateWebDeployParameters - Update the contents of a singleSetParameters.XML file using tokenised environment variables
+- StyleCop - A tasks to run StyleCop code analysis
 
-A discussion of the development and usage of this Typemock task can be found in [this blog post](http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/09/08/Running-Typemock-Isolator-based-tests-in-TFS-vNext-build.aspx).
-
-Typemock provide documentation on the general use Isolator in build systems in their [online documentation](http://www.typemock.com/docs?book=Isolator&page=Documentation%2FHtmlDocs%2Fintegratingwiththeserver.htm) 
-
-### Version Assemblies and Packages ###
-A set of tasks that wrapper versions of the sample script to version assemblies show in the [VSO documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
+A set of tasks that wrapper versions of the sample script to version assemblies show in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow 
 
-- VersionAssemblies - sets the version in the assemblyinfocs or .vb
-- VersionVSIX - sets the version in the source.extension.vsixmanifest
-- VersionAPPX - sets the version in the Package.appxmanifest
-- VersionDacpac - sets the version in a SQL DACPAC (submitted by [Chris Gardner] (https://github.com/ChrisLGardner))
-
-A discussion of the development and usage of this task can be found in [this blog post](http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/11/17/Why-you-need-to-use-vNext-build-tasks-to-share-scripts-between-builds.aspx).
-
-### MS Web Deploy Management ###
-A set of tasks used to manage parts of the MS WebDeploy process
-
-- UpdateWebDeployParameters - Update the contents of a singleSetParameters.XML file using tokenised environment variables. As discussed in this [post on Microsoft UK Developers blog](https://www.microsoft.com/en-gb/developers/articles/week01feb16/how-to-extend-a-VSTS-release-process-to-on-premises/)
-
-### StyleCop Runner ###
-A tasks to run StyleCop,
-
-This is a VNext Build task wrapper for the PowerShell script discussed [the  blog post](http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/04/03/Running-StyleCop-from-the-command-line-and-in-a-TFS-2015-vNext-build.aspx) using the wrapper assemblies in [this repo](https://github.com/rfennell/StyleCopCmdLine)
+- VersionAssemblies - Sets the version in the assemblyinfo.cs or .vb
+- VersionVSIX - Sets the version in the source.extension.vsixmanifest
+- VersionAPPX - Sets the version in the Package.appxmanifest
+- VersionDacpac - Sets the version in a SQL DACPAC (submitted by [Chris Gardner] 
 
 ----------
 
@@ -51,5 +33,3 @@ The following PowerScripts can be called from the standard TFS vNext build Power
 - TCMExecWrapper.ps1 - A wrapper to use TCM.EXE to trigger Microsoft Test Manager based tests, then setting a build tag based on the results of the test run. A discussion of this script can be found in [this blog post](http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/08/28/An-alternative-to-setting-a-build-quality-on-a-TFS-vNext-build.aspx)
 - ApplyVersionToAssemblies.ps1 - Just a copy of the script from [MSDN post](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index) so that I have scripts I commonly use in one place
 - ApplyVersionToVSIX.ps1 - Using the same environment variable based system as ApplyVersionToAssemblies.ps1, this script sets the of a VSIX package in the for 1.2 (3rd and 4th parts of the version are discarded). See [this blog post](http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/11/10/Versioning-a-VSIX-package-as-part-of-the-TFS-vNext-build-(when-the-source-is-on-GitHub).aspx) for more details
-
-- Update-DacpacVersionNumber.ps1 - A script to apply a specified version number to all dacpac files under the target folder. It requires the SSDT tools to be installed in the Visual studio folder, either 2013 or 2015.
