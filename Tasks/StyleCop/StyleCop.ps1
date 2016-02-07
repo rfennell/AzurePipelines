@@ -61,11 +61,6 @@ $scanner.MaximumViolationCount = [System.Convert]::ToInt32($maximumViolationCoun
 $scanner.ShowOutput = [System.Convert]::ToBoolean($showOutput)
 $scanner.CacheResults = [System.Convert]::ToBoolean($cacheResults)
 $scanner.ForceFullAnalysis = [System.Convert]::ToBoolean($forceFullAnalysis)
-
-Write-Verbose "Rules being loaded from"
-Write-Verbose $pwd
-Write-Verbose $additionalAddInPath
-
 $scanner.AdditionalAddInPaths = @($pwd, $additionalAddInPath) #  in local path as we place stylecop.csharp.rules.dll here
 $scanner.TreatViolationsErrorsAsWarnings = [System.Convert]::ToBoolean($treatStyleCopViolationsErrorsAsWarnings)
 
