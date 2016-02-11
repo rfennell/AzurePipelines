@@ -1,21 +1,30 @@
 param(
     [string]$protocol = "http" ,
     [string]$rmserver ,
-    [string]$port ,  
+    [string]$port = "1000",  
     [string]$teamProject ,   
     [string]$targetStageName ,
     [string]$waitForCompletion ,
-	
+	[string]$buildtype = "VNEXT" ,
 	[string]$username , # optional if not used default creds assumed
 	[string]$password ,
-	[string]$domain ,
+	[string]$domain 
 	
 )
 $VerbosePreference ='Continue' # equiv to -verbose
 
-$teamFoundationServerUrl = $env:TF_BUILD_COLLECTIONURI
-$buildDefinition = $env:TF_BUILD_BUILDDEFINITIONNAME
-$buildNumber = $env:TF_BUILD_BUILDNUMBER
+if ($buildtype -ne "VNEXT")
+{
+	# must be xaml
+	$teamFoundationServerUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
+	$buildDefinition = $env:BUILD_DEFINITIONNAME
+	$buildNumber = $env:BUILD_BUILDNUMBER
+} else {
+	# must be vnext
+	$teamFoundationServerUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
+	$buildDefinition = $env:BUILD_DEFINITIONNAME
+	$buildNumber = $env:BUILD_BUILDNUMBER
+}
 
 write-verbose "Executing with the following parameters:`n"
 write-verbose "  Protocol: $protocol"
@@ -51,7 +60,7 @@ $definition = [System.Uri]::EscapeDataString($buildDefinition)
 $build = [System.Uri]::EscapeDataString($buildNumber)
 $targetStage = [System.Uri]::EscapeDataString($targetStageName)
 
-$orchestratorService = "$protocol://$rmserver:$port/account/releaseManagementService/_apis/releaseManagement/OrchestratorService"
+$orchestratorService = "$($protocol)://$($rmserver):$port/account/releaseManagementService/_apis/releaseManagement/OrchestratorService"
 
 $status = @{
     "2" = "InProgress";
@@ -66,7 +75,8 @@ write-verbose "Executing the following API call:`n`n$uri"
 
 $wc = New-Object System.Net.WebClient
 # rmuser should be part rm users list and he should have permission to trigger the release.
-  if ($username -eq $null)
+
+  if ([string]::IsNullOrEmpty($username))
     {
 		write-verbose "Using default credentials`n"
         $wc.UseDefaultCredentials = $true
@@ -84,17 +94,17 @@ try
 
     if ($wait -eq $true)
     {
-        Write-verbose -NoNewline "`nReleasing ..."
+        Write-verbose "`nReleasing ..."
 
         while($status[$releaseStatus] -eq "InProgress")
         {
             Start-Sleep -s 5
             $releaseStatus = $wc.DownloadString($url)
-            Write-verbose -NoNewline "."
+            Write-verbose  "."
         }
         Write-verbose (" done.`n`nRelease completed with {0} status." -f $status[$releaseStatus])
     } else {
-        Write-verbose -NoNewline "`nTriggering Release and exiting"
+        Write-verbose "`nTriggering Release and exiting"
     }
 }
 catch [System.Exception]
@@ -121,7 +131,7 @@ if ($exitCode -eq 0)
 else
 {
   $err = "Exiting with error: " + $exitCode + "`n"
-  Write-error $err -ForegroundColor Red
+  Write-error $err
 }
 
 Pop-Location
