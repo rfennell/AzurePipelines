@@ -1,0 +1,13 @@
+// *******************************************************
+// GENERATED FILE - DO NOT EDIT DIRECTLY
+// *******************************************************
+{
+  "loc.friendlyName": "Get Artifact From UNC Share",
+  "loc.description": "Gets the contents of a remote TFS server build's drop location",
+  "loc.group.displayName.advanced": "Advanced",
+  "loc.input.label.tfsUri": "TFS Uri",
+  "loc.input.label.teamproject": "Team Project",
+  "loc.input.label.defname": "Build definition name",
+  "loc.input.label.username": "Username",
+  "loc.input.label.password": "Password"
+}

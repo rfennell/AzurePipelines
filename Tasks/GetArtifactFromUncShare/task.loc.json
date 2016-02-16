@@ -1,0 +1,80 @@
+// *******************************************************
+// GENERATED FILE - DO NOT EDIT DIRECTLY
+// *******************************************************
+{
+  "id": "B4705222-BFA5-4DCD-8811-A7A086A72DAD",
+  "name": "GetArtifactFromUncShare",
+  "friendlyName": "ms-resource:loc.friendlyName",
+  "description": "ms-resource:loc.description",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "minimumAgentVersion": "1.82.0",
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "ms-resource:loc.group.displayName.advanced",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "tfsUri",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.tfsUri",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The URI of the TFS server  e.g. http://myserver:8080/tfs/defaultcollection"
+    },
+    {
+      "name": "teamproject",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.teamproject",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The name of the source team project"
+    },
+    {
+      "name": "defname",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.defname",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The name of the build definition."
+    },
+    {
+      "name": "username",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.username",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "User name to access remote server (if blank default creds. used)",
+      "groupName": "advanced"
+    },
+    {
+      "name": "password",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.password",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Password to access remote server (if blank default creds. used)",
+      "groupName": "advanced"
+    }
+  ],
+  "instanceNameFormat": "Get Artifact From UNC Share",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\GetArtifactFromUncShare.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
