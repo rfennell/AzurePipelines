@@ -14,6 +14,7 @@ param (
     $tfsUri,
     $teamproject ,
     $defname ,
+    $artifactname,
     $username  ,
     $password 
     
@@ -94,6 +95,7 @@ function Get-BuildArtifactPath
     $tfsUri,
     $teamproject,
     $buildid,
+    $artifactname,
     $username,
     $password
     )
@@ -101,31 +103,32 @@ function Get-BuildArtifactPath
     $wc = Get-WebClient -username $username -password $password
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/artifacts?api-version=2.0"
     $jsondata = $wc.DownloadString($uri) | ConvertFrom-Json 
-    $jsondata.value.resource
+    $jsondata.value | Where-Object {$_.name -eq $artifactname} | Select-Object -property @{Name="Path"; Expression = {$_.resource.data}}
 }
 
 
 
 $localdir = $env:SYSTEM_ARTIFACTSDIRECTORY
-
+# for local testing override this environment variable 
+#$localdir = "c:\tmp"
 
 Write-Verbose "Getting details of build [$defname] from server [$tfsUri/$teamproject]"
 $defId = Get-BuildDefinitionId -tfsUri $tfsUri -teamproject $teamproject -defname $defname -username $username -password $password
 $buildId = Get-LastSuccessfulBuildId -tfsUri $tfsUri -teamproject $teamproject -defid $defid -userrname $username -password $password
-$artifact = Get-BuildArtifactPath -tfsUri $tfsUri -teamproject $teamproject -buildid $buildId -userrname $username -password $password
+$artifact = Get-BuildArtifactPath -tfsUri $tfsUri -teamproject $teamproject -buildid $buildId -artifactname $artifactname -userrname $username -password $password
 
-if (($artifact -ne $null) -and ([System.String]::IsNullOrEmpty($artifact.data)))
+if (($artifact -ne $null) -and ([System.String]::IsNullOrEmpty($artifact.path)))
 {
     Write-Error "Build has no UNC drop"
 
 } else 
 {
-    if (Test-Path $artifact.data)
+    if (Test-Path $artifact.path)
     {
-        Write-verbose "Copying [$($artifact.data)] to [$localdir\$defname]"
-        Copy-Item $artifact.data $localdir\$defname -recurse
+        Write-verbose "Copying [$($artifact.path)] to [$localdir\$defname]"
+        Copy-Item $artifact.path $localdir\$defname -recurse -Force
     } else
     {
-        Write-Error "Cannot access path [$($artifact.data)]"
+        Write-Error "Cannot access path [$($artifact.path)]"
     }
 }

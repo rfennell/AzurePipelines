@@ -51,6 +51,15 @@
       }
       ,
       {
+         "name": "artifactname",
+         "type": "string",
+         "label": "Artifact name",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The name of the build artifact."
+      }
+      ,
+      {
       "name": "username",
       "type": "string",
       "label": "Username",

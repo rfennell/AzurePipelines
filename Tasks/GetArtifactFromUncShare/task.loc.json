@@ -51,6 +51,14 @@
       "helpMarkDown": "The name of the build definition."
     },
     {
+      "name": "artifactname",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.artifactname",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The name of the build artifact."
+    },
+    {
       "name": "username",
       "type": "string",
       "label": "ms-resource:loc.input.label.username",
