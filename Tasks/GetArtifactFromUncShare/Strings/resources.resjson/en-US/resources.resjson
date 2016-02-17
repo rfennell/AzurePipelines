@@ -8,6 +8,8 @@
   "loc.input.label.tfsUri": "TFS Uri",
   "loc.input.label.teamproject": "Team Project",
   "loc.input.label.defname": "Build definition name",
+  "loc.input.label.artifactname": "Artifact name",
+  "loc.input.label.buildnumber": "Specific build number",
   "loc.input.label.username": "Username",
   "loc.input.label.password": "Password"
 }

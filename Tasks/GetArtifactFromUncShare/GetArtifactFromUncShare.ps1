@@ -15,6 +15,7 @@ param (
     $teamproject ,
     $defname ,
     $artifactname,
+    $buildnumber,
     $username  ,
     $password 
     
@@ -40,6 +41,7 @@ function Get-WebClient
         $wc.UseDefaultCredentials = $true
     } else 
     {
+       # This is the form for basic creds so either basic cred (in TFS/IIS) or alternate creds (in VSTS) are required"
        $pair = "${username}:${password}"
        $bytes = [System.Text.Encoding]::ASCII.GetBytes($pair)
        $base64 = [System.Convert]::ToBase64String($bytes)
@@ -87,6 +89,26 @@ function Get-LastSuccessfulBuildId
     $jsondata.value.id
 }
 
+function Get-BuildId
+{
+
+    param
+    (
+    $tfsUri,
+    $teamproject,
+    $defid,
+    $buildnumber,
+    $username,
+    $password
+    )
+
+    $wc = Get-WebClient -username $username -password $password
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?api-version=2.0&definitions=$($defid)&buildnumber=$($buildnumber)"
+    $jsondata = $wc.DownloadString($uri) | ConvertFrom-Json 
+    $jsondata.value.id
+}
+
+
 function Get-BuildArtifactPath
 {
 
@@ -110,25 +132,38 @@ function Get-BuildArtifactPath
 
 $localdir = $env:SYSTEM_ARTIFACTSDIRECTORY
 # for local testing override this environment variable 
-#$localdir = "c:\tmp"
+# $localdir = "c:\tmp"
 
 Write-Verbose "Getting details of build [$defname] from server [$tfsUri/$teamproject]"
 $defId = Get-BuildDefinitionId -tfsUri $tfsUri -teamproject $teamproject -defname $defname -username $username -password $password
-$buildId = Get-LastSuccessfulBuildId -tfsUri $tfsUri -teamproject $teamproject -defid $defid -userrname $username -password $password
-$artifact = Get-BuildArtifactPath -tfsUri $tfsUri -teamproject $teamproject -buildid $buildId -artifactname $artifactname -userrname $username -password $password
+if (([System.String]::IsNullOrEmpty($buildnumber)) -or ($buildnumber -eq "<Lastest Build>"))
+{
+    write-verbose "Getting lastest completed build"    
+    $buildId = Get-LastSuccessfulBuildId -tfsUri $tfsUri -teamproject $teamproject -defid $defid -username $username -password $password
+} else 
+{
+    write-verbose "Getting build number [$buildnumber]"    
+    $buildId = Get-BuildId -tfsUri $tfsUri -teamproject $teamproject -defid $defid -buildnumber $buildnumber -username $username -password $password
+}
+$artifact = Get-BuildArtifactPath -tfsUri $tfsUri -teamproject $teamproject -buildid $buildId -artifactname $artifactname -username $username -password $password
 
 if (($artifact -ne $null) -and ([System.String]::IsNullOrEmpty($artifact.path)))
 {
     Write-Error "Build has no UNC drop"
-
 } else 
 {
     if (Test-Path $artifact.path)
     {
-        Write-verbose "Copying [$($artifact.path)] to [$localdir\$defname]"
-        Copy-Item $artifact.path $localdir\$defname -recurse -Force
+        if (Test-Path $localdir)
+        {
+            Write-verbose "Copying [$($artifact.path)] to [$localdir\$defname]"
+            Copy-Item $artifact.path $localdir\$defname -recurse -Force
+        } else
+        {
+            Write-Error "Cannot access target path [$localdir]"
+         }
     } else
     {
-        Write-Error "Cannot access path [$($artifact.path)]"
+        Write-Error "Cannot access source path [$($artifact.path)]"
     }
 }
