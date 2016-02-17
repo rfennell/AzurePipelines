@@ -29,7 +29,7 @@ param (
 
 
     [Parameter(Mandatory)]
-    [System.Version]$VersionNumber
+    [string]$VersionNumber
 )
 
 function Update-DacpacVerion
@@ -51,11 +51,13 @@ function Update-DacpacVerion
     {
         if (Test-Path 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll') 
         {
+            Write-Verbose 'Found SQLServer DLLs for VS2015, attempting to import using Add-Type' -verbose
             Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll'
             Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.dll'
         }
         elseif (Test-Path 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll' )
         {
+            Write-Verbose 'Found SQLServer DLLs for VS2013, attempting to import using Add-Type' -verbose
             Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll'
             Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.dll'
         }
@@ -98,7 +100,11 @@ function Update-DacpacVerion
 
 }
 
+$VersionNumber = ($VersionNumber -split '_' )[-1]
+
 $DacPacFiles = Get-ChildItem -Path $Path -Filter *.dacpac -Recurse
+
+Write-Verbose "Found $($DacPacFiles.Count) dacpacs. Beginning to apply updated version number." -Verbose
 
 Foreach ($DacPac in $DacPacFiles)
 {
