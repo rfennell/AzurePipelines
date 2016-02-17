@@ -1,0 +1,54 @@
+{
+  "id": "05271A89-7EAA-44B1-BD54-EF67B3FC2F5A",
+  "name": "FileCopy",
+  "friendlyName": "File Copy",
+  "description": "Copies files between locations",
+  "category": "Utility",
+  "visibility": [
+                "Build",
+                "Release"
+                ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  
+   "inputs": [
+      {
+         "name": "source",
+         "type": "string",
+         "label": "Source Folder",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The source folder"
+      },
+      {
+         "name": "target",
+         "type": "string",
+         "label": "Target folder",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The target folder"
+      }
+      ,
+      {
+         "name": "match",
+         "type": "string",
+         "label": "Match criteria",
+         "defaultValue": "*",
+         "required": true,
+         "helpMarkDown": "The file pattern to match"
+      }
+   ],
+  "minimumAgentVersion": "1.82.0",
+  "instanceNameFormat": "FileCopy",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\FileCopy.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}

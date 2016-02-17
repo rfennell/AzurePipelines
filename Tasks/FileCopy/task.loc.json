@@ -1,0 +1,55 @@
+// *******************************************************
+// GENERATED FILE - DO NOT EDIT DIRECTLY
+// *******************************************************
+{
+  "id": "05271A89-7EAA-44B1-BD54-EF67B3FC2F5A",
+  "name": "FileCopy",
+  "friendlyName": "ms-resource:loc.friendlyName",
+  "description": "ms-resource:loc.description",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "inputs": [
+    {
+      "name": "source",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.source",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The source folder"
+    },
+    {
+      "name": "target",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.target",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The target folder"
+    },
+    {
+      "name": "match",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.match",
+      "defaultValue": "*",
+      "required": true,
+      "helpMarkDown": "The file pattern to match"
+    }
+  ],
+  "minimumAgentVersion": "1.82.0",
+  "instanceNameFormat": "FileCopy",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\FileCopy.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
