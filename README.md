@@ -14,6 +14,8 @@ For more details of how to use these tasks see [this repo's wiki](https://github
 - Typemock - A task that uses TMockRunner to wrapper the running of the standard VSTest console enabling Typemock Isolator based tests within TFS vNext build.
 - UpdateWebDeployParameters - Update the contents of a singleSetParameters.XML file using tokenised environment variables
 - StyleCop - A tasks to run StyleCop code analysis
+- FileCop - PowerShell based file copier (submitted by Riccardo Riccardo Viglianisi)
+- GetArtifactFromUncShare - Gets files from UNC drop, avoiding use of standard artifact links
 
 A set of tasks that wrapper versions of the sample script to version assemblies show in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow 
@@ -21,7 +23,8 @@ A set of tasks that wrapper versions of the sample script to version assemblies 
 - VersionAssemblies - Sets the version in the assemblyinfo.cs or .vb
 - VersionVSIX - Sets the version in the source.extension.vsixmanifest
 - VersionAPPX - Sets the version in the Package.appxmanifest
-- VersionDacpac - Sets the version in a SQL DACPAC (submitted by [Chris Gardner] 
+- VersionDacpac - Sets the version in a SQL DACPAC (submitted by Chris Gardner) 
+
 
 ----------
 
