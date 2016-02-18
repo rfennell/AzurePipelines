@@ -7,21 +7,31 @@
 [CmdletBinding()]
 param
 (
-    $source,
-    $target,
-    $match
-
+    #where to look
+    $sourceFolder,
+    #where to copy to
+    $targetFolder,
+    #file name fragements only one pattern can be supplied
+    $filter,
+    #file types to include, can include an array
+    $includeInput
 )
+
+$include = $includeInput -split ","
+$paths = $sourceFolder -split ","
 
 # Set a flag to force verbose as a default
 $VerbosePreference ='Continue' # equiv to -verbose
-Write-Verbose "Source [$source]"
-Write-Verbose "Target [$target]"
-Write-Verbose "Match [$match]"
+Write-Verbose "Source [$sourceFolder]"
+Write-Verbose "Target [$targetFolder]"
+Write-Verbose "FileTypes [$include]"
+Write-Verbose "Filtering on [$filter]"
 
-if((test-path($target)) -ne $true)
+if((test-path($targetFolder)) -ne $true)
 {
-    write-verbose "Creating the folder [$target]"
-    New-Item $target -Force -ItemType directory
+    write-verbose "Creating the folder [$targetFolder]"
+    New-Item $targetFolder -Force -ItemType directory
 }
-Get-ChildItem -Filter $match -Path $source -Recurse | Copy-Item  -Destination $target -Force -Verbose
+
+
+Get-ChildItem -Path $paths -Recurse -Include $include -Filter $filter| Copy-Item  -Destination $targetFolder -Force -Verbose
