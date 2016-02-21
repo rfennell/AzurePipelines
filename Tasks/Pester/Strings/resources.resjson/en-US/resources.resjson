@@ -1,0 +1,9 @@
+// *******************************************************
+// GENERATED FILE - DO NOT EDIT DIRECTLY
+// *******************************************************
+{
+  "loc.friendlyName": "Pester Test Runner",
+  "loc.description": "Run Pester tests without the need to install Pester in with the PMModule folder or in the source repo",
+  "loc.input.label.scriptFolder": "Scripts Folder",
+  "loc.input.label.resultsFile": "Results File"
+}
