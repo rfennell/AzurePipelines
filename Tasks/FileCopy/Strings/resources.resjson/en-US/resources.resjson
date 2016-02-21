@@ -1,0 +1,11 @@
+// *******************************************************
+// GENERATED FILE - DO NOT EDIT DIRECTLY
+// *******************************************************
+{
+  "loc.friendlyName": "File Copy",
+  "loc.description": "Copies files between locations",
+  "loc.input.label.sourceFolder": "Source Folder",
+  "loc.input.label.targetFolder": "Target folder",
+  "loc.input.label.include": "File types",
+  "loc.input.label.filter": "Filter On"
+}
