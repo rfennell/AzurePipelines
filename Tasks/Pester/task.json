@@ -23,7 +23,7 @@
       "name": "scriptFolder",
       "type": "string",
       "label": "Scripts Folder",
-      "defaultValue": "",
+      "defaultValue": "$(Build.SourcesDirectory)\\*",
       "required": true,
       "helpMarkDown": "Folder to run scripts from"
     },
@@ -31,7 +31,7 @@
       "name": "resultsFile",
       "type": "string",
       "label": "Results File",
-      "defaultValue": "Test-Pester.XML",
+      "defaultValue": "$(Build.SourcesDirectory)\\Test-Pester.XML",
       "required": true,
       "helpMarkDown": "Results File (nUnit format)"
     }
