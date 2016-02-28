@@ -1,0 +1,52 @@
+{
+  "id": "661BC005-61BE-430F-B994-065BF08C0F39",
+  "name": "GenerateReleaseNotes",
+  "friendlyName": "Generate Release Notes",
+  "description": "Generates a Markdown Release notes file",
+  "category": "Utility",
+  "visibility": [
+                "Build"
+                ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "minimumAgentVersion": "1.82.0",
+   "inputs": [
+      {
+         "name": "outputfile",
+         "type": "string",
+         "label": "Output file",
+         "defaultValue": "$(Build.ArtifactStagingDirectory)\\releasenotes.md",
+         "required": true,
+         "helpMarkDown": "The name of the Mardown file to export"
+      },
+      {
+         "name": "templatefile",
+         "type": "filePath",
+         "label": "Template file",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The name of the Marjdown template."
+      }
+      ,
+      {
+         "name": "token",
+         "type": "string",
+         "label": "Personal Access Token",
+         "defaultValue": "",
+         "required": false,
+         "helpMarkDown": "The VSTS personal access token."
+      }
+   ],
+  "instanceNameFormat": "Generate release notes",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\GenerateReleaseNotes.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}

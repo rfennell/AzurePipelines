@@ -1,0 +1,54 @@
+// *******************************************************
+// GENERATED FILE - DO NOT EDIT DIRECTLY
+// *******************************************************
+{
+  "id": "661BC005-61BE-430F-B994-065BF08C0F39",
+  "name": "GenerateReleaseNotes",
+  "friendlyName": "ms-resource:loc.friendlyName",
+  "description": "ms-resource:loc.description",
+  "category": "Utility",
+  "visibility": [
+    "Build"
+  ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "minimumAgentVersion": "1.82.0",
+  "inputs": [
+    {
+      "name": "outputfile",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.outputfile",
+      "defaultValue": "$(Build.ArtifactStagingDirectory)\\releasenotes.md",
+      "required": true,
+      "helpMarkDown": "The name of the Mardown file to export"
+    },
+    {
+      "name": "templatefile",
+      "type": "filePath",
+      "label": "ms-resource:loc.input.label.templatefile",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The name of the Marjdown template."
+    },
+    {
+      "name": "token",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.token",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The VSTS personal access token."
+    }
+  ],
+  "instanceNameFormat": "Generate release notes",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\GenerateReleaseNotes.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
