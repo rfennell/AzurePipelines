@@ -11,7 +11,7 @@
     "Build",
     "Release"
   ],
-  "author": "Black Marble",
+  "author": "Richard Fennell",
   "version": {
     "Major": 3,
     "Minor": 3,
@@ -26,7 +26,7 @@
       "name": "scriptFolder",
       "type": "string",
       "label": "ms-resource:loc.input.label.scriptFolder",
-      "defaultValue": "",
+      "defaultValue": "$(Build.SourcesDirectory)\\*",
       "required": true,
       "helpMarkDown": "Folder to run scripts from"
     },
@@ -34,7 +34,7 @@
       "name": "resultsFile",
       "type": "string",
       "label": "ms-resource:loc.input.label.resultsFile",
-      "defaultValue": "Test-Pester.XML",
+      "defaultValue": "$(Build.SourcesDirectory)\\Test-Pester.XML",
       "required": true,
       "helpMarkDown": "Results File (nUnit format)"
     }

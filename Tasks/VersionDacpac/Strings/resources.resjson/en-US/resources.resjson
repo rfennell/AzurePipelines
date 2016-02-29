@@ -1,0 +1,9 @@
+// *******************************************************
+// GENERATED FILE - DO NOT EDIT DIRECTLY
+// *******************************************************
+{
+  "loc.friendlyName": "Version DacPacs",
+  "loc.description": "Applies specified version number to all dacpac files in target folder",
+  "loc.input.label.Path": "Source folder",
+  "loc.input.label.VersionNumber": "Version Number"
+}

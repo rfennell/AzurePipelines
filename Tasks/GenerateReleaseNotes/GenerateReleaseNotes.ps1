@@ -147,7 +147,7 @@ $build = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -defid $defI
 Write-Verbose "Getting associated work items"
 $workitems = Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
 Write-Verbose "Getting associated changesets/commits"
-$changsets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
+$changesets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
 
 $template = Get-Content $templatefile
 Add-Type -TypeDefinition @"
@@ -187,7 +187,7 @@ ForEach ($line in $template)
         continue
         }
       "CS" {
-        foreach ($csdetail in $changsets)
+        foreach ($csdetail in $changesets)
         {
            # we can get enough detail from the list of changes
            Write-Verbose "   Get details of changeset/commit $($csdetail.id)"

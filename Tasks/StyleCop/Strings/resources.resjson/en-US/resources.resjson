@@ -10,6 +10,6 @@
   "loc.input.label.showOutput": "Show Output",
   "loc.input.label.cacheResults": "Cache Results",
   "loc.input.label.forceFullAnalysis": "Force analysis",
-  "loc.input.label.additionalAddInPath": "Addition add-in",
+  "loc.input.label.additionalAddInPath": "Additional add-in path",
   "loc.input.label.settingsFile": "Settings File"
 }

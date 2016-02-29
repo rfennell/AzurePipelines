@@ -69,7 +69,7 @@
       "label": "ms-resource:loc.input.label.forceFullAnalysis",
       "defaultValue": "True",
       "required": true,
-      "helpMarkDown": "Force complete re-analysis",
+      "helpMarkDown": "Force complete re-analysis (ignores any cached results)",
       "groupName": "advanced"
     },
     {
@@ -78,7 +78,7 @@
       "label": "ms-resource:loc.input.label.additionalAddInPath",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "Path to any custom rule sets, the directory cannot be a sub directory of current directory at runtime as this is automatically scanned",
+      "helpMarkDown": "Path to any custom rulesets, the directory should not be a sub directory of the current directory at runtime as this is automatically scanned",
       "groupName": "advanced"
     },
     {
