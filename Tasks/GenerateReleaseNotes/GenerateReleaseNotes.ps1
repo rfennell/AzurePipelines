@@ -27,48 +27,16 @@
 #Enable -Verbose option
 [CmdletBinding()]
 param (
-
-  
+ 
     [parameter(Mandatory=$false,HelpMessage="The markdown output file")]
     $outputfile ,
 
     [parameter(Mandatory=$false,HelpMessage="The markdown template file")]
-    $templatefile,
-    
-    $token
-  
+    $templatefile  
 )
 
 # Set a flag to force verbose as a default
 $VerbosePreference ='Continue' # equiv to -verbose
-
-function Get-WebClient
-{
- param
-    (
-        [string]$username, 
-        [string]$password,
-        [string]$ContentType = "application/json"
-    )
-
-    $wc = New-Object System.Net.WebClient
-    $wc.Headers["Content-Type"] = $ContentType
-    
-    if ([System.String]::IsNullOrEmpty($password))
-    {
-        $wc.UseDefaultCredentials = $true
-    } else 
-    {
-       # This is the form for basic creds so either basic cred (in TFS/IIS) or alternate creds (in VSTS) are required"
-       # or just pass a personal access token in place of a password
-       $pair = "${username}:${password}"
-       $bytes = [System.Text.Encoding]::ASCII.GetBytes($pair)
-       $base64 = [System.Convert]::ToBase64String($bytes)
-       $wc.Headers.Add("Authorization","Basic $base64");
-    }
-    $wc
-}
-
 
 function Get-BuildWorkItems
 {
@@ -76,16 +44,12 @@ function Get-BuildWorkItems
     (
     $tfsUri,
     $teamproject,
-    $buildid,
-    $username,
-    $password
+    $buildid
     )
 
-    $wc = Get-WebClient -username $username -password $password
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/workitems?api-version=2.0"
-    
-    $jsondata = $wc.DownloadString($uri) | ConvertFrom-Json 
-    $jsondata.value
+  	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
+  	$jsondata.value 
 }
 
 function Get-BuildChangeSets
@@ -94,15 +58,13 @@ function Get-BuildChangeSets
     (
     $tfsUri,
     $teamproject,
-    $buildid,
-    $username,
-    $password
+    $buildid
     )
 
-    $wc = Get-WebClient -username $username -password $password
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/changes?api-version=2.0"
-    $jsondata = $wc.DownloadString($uri) | ConvertFrom-Json 
-    $jsondata.value 
+  	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
+  	$jsondata.value 
+
 }
 
 
@@ -110,14 +72,12 @@ function Get-WorkItemDetail
 {
     param
     (
-    $url,
-    $username,
-    $password
+    $uri
     )
 
-    $wc = Get-WebClient -username $username -password $password
-    $jsondata = $wc.DownloadString($url) | ConvertFrom-Json 
-    $jsondata 
+  	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
+  	$jsondata
+   
 }
 
 function Get-Build
@@ -128,34 +88,39 @@ function Get-Build
     $tfsUri,
     $teamproject,
     $defid,
-    $buildnumber,
-    $username,
-    $password
+    $buildnumber
     )
 
-    $wc = Get-WebClient -username $username -password $password
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?api-version=2.0&definitions=$($defid)&buildnumber=$($buildnumber)"
-    $jsondata = $wc.DownloadString($uri) | ConvertFrom-Json 
-    $jsondata.value
+  	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
+  	$jsondata.value 
 }
 
 function Get-BuildDefinitionId
 {
-
     param
     (
     $tfsUri,
     $teamproject,
-    $defname,
-    $username,
-    $password
+    $defname
     )
 
-    $wc = Get-WebClient -username $username -password $password
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions?api-version=2.0&name=$($defname)"
-    $jsondata = $wc.DownloadString($uri) | ConvertFrom-Json 
-    $jsondata.value.id 
+  	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
+  	$jsondata.value.id 
 
+}
+
+function Invoke-GetCommand
+{
+    param
+    (
+     $uri
+    )
+    $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
+    $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
+	$headers = @{Authorization = "Bearer $personalAccessToken"}
+    Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing
 }
 
 function render() {
@@ -175,14 +140,14 @@ $defname = $env:BUILD_DEFINITIONNAME
 $buildnumber = $env:BUILD_BUILDNUMBER
 
 Write-Verbose "Getting details of build [$defname] from server [$collectionUrl/$teamproject]"
-$defId = Get-BuildDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -defname $defname  -password $token
+$defId = Get-BuildDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -defname $defname 
 write-verbose "Getting build number [$buildnumber] using definition ID [$defId]"    
-$build = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -defid $defId -buildnumber $buildnumber -password $token
+$build = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -defid $defId -buildnumber $buildnumber
 
 Write-Verbose "Getting associated work items"
-$workitems = Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid  -password $token
+$workitems = Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
 Write-Verbose "Getting associated changesets/commits"
-$changsets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -password $token
+$changsets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
 
 $template = Get-Content $templatefile
 Add-Type -TypeDefinition @"
@@ -212,9 +177,9 @@ ForEach ($line in $template)
       "WI" {
         foreach ($wi in $workItems)
         {
-           # Get the work item details
+           # Get the work item details so we can render the line
            Write-Verbose "   Get details of workitem $($wi.id)"
-           $widetail = Get-WorkItemDetail -url $wi.url -password $token 
+           $widetail = Get-WorkItemDetail -uri $wi.url  
            $out += $line | render
         }
         continue

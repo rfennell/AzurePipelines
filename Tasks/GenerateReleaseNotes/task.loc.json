@@ -24,7 +24,7 @@
       "label": "ms-resource:loc.input.label.outputfile",
       "defaultValue": "$(Build.ArtifactStagingDirectory)\\releasenotes.md",
       "required": true,
-      "helpMarkDown": "The name of the Mardown file to export"
+      "helpMarkDown": "The name of the Markdown file to export"
     },
     {
       "name": "templatefile",
@@ -32,15 +32,7 @@
       "label": "ms-resource:loc.input.label.templatefile",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The name of the Marjdown template."
-    },
-    {
-      "name": "token",
-      "type": "string",
-      "label": "ms-resource:loc.input.label.token",
-      "defaultValue": "",
-      "required": false,
-      "helpMarkDown": "The VSTS personal access token."
+      "helpMarkDown": "The name of the Markdown template."
     }
   ],
   "instanceNameFormat": "Generate release notes",

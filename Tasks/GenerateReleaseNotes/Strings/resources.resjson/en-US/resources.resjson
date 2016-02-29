@@ -5,6 +5,5 @@
   "loc.friendlyName": "Generate Release Notes",
   "loc.description": "Generates a Markdown Release notes file",
   "loc.input.label.outputfile": "Output file",
-  "loc.input.label.templatefile": "Template file",
-  "loc.input.label.token": "Personal Access Token"
+  "loc.input.label.templatefile": "Template file"
 }
