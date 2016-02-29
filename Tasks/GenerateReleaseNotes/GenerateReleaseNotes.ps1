@@ -163,13 +163,14 @@ $mode = [Mode]::BODY
 ForEach ($line in $template)
 {
     # work out if we need to loop on a blog
+    #Write-Verbose "Processing line [$line]"
     if ($mode -eq [Mode]::BODY)
     {
-        if ($line -eq "@@WILOOP@@") {$mode = [Mode]::WI; continue}
-        if ($line -eq "@@CSLOOP@@") {$mode = [Mode]::CS; continue}
+        if ($line.Trim() -eq "@@WILOOP@@") {$mode = [Mode]::WI; continue}
+        if ($line.Trim() -eq "@@CSLOOP@@") {$mode = [Mode]::CS; continue}
     } else {
-        if ($line -eq "@@WILOOP@@") {$mode = [Mode]::BODY; continue}
-        if ($line -eq "@@CSLOOP@@") {$mode = [Mode]::BODY; continue}
+        if ($line.Trim() -eq "@@WILOOP@@") {$mode = [Mode]::BODY; continue}
+        if ($line.Trim() -eq "@@CSLOOP@@") {$mode = [Mode]::BODY; continue}
     }
 
     switch ($mode)
@@ -181,6 +182,7 @@ ForEach ($line in $template)
            Write-Verbose "   Get details of workitem $($wi.id)"
            $widetail = Get-WorkItemDetail -uri $wi.url  
            $out += $line | render
+           $out += "`n"
         }
         continue
         }
@@ -190,12 +192,14 @@ ForEach ($line in $template)
            # we can get enough detail from the list of changes
            Write-Verbose "   Get details of changeset/commit $($csdetail.id)"
            $out += $line | render
+           $out += "`n"
         }
         continue
         }
      "BODY" {
-        # nothing to expand just process the line
-        $out += $line | render
+            # nothing to expand just process the line
+            $out += $line | render
+            $out += "`n"
         }
     }
 }
