@@ -67,8 +67,7 @@ function Get-BuildChangeSets
 
 }
 
-
-function Get-WorkItemDetail
+function Get-Detail
 {
     param
     (
@@ -77,7 +76,6 @@ function Get-WorkItemDetail
 
   	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
   	$jsondata
-   
 }
 
 function Get-Build
@@ -180,17 +178,18 @@ ForEach ($line in $template)
         {
            # Get the work item details so we can render the line
            Write-Verbose "   Get details of workitem $($wi.id)"
-           $widetail = Get-WorkItemDetail -uri $wi.url  
+           $widetail = Get-Detail -uri $wi.url  
            $out += $line | render
            $out += "`n"
         }
         continue
         }
       "CS" {
-        foreach ($csdetail in $changesets)
+        foreach ($cs in $changesets)
         {
            # we can get enough detail from the list of changes
-           Write-Verbose "   Get details of changeset/commit $($csdetail.id)"
+           Write-Verbose "   Get details of changeset/commit $($cs.id)"
+           $csdetail = Get-Detail -uri $cs.location 
            $out += $line | render
            $out += "`n"
         }
