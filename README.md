@@ -16,6 +16,7 @@ For more details of how to use these tasks see [this repo's wiki](https://github
 - StyleCop - A tasks to run StyleCop code analysis
 - FileCop - PowerShell based file copier (submitted by Riccardo Riccardo Viglianisi)
 - GetArtifactFromUncShare - Gets files from UNC drop, avoiding use of standard artifact links
+- GenerateReleaseNotes - Creates releases notes for a build based upon a template
 
 A set of tasks that wrapper versions of the sample script to version assemblies show in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow 
