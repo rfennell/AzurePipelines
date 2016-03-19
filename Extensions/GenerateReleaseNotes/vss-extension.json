@@ -53,7 +53,7 @@
   ],
   "contributions": [
     {
-      "id": "publish-github-release",
+      "id": "Generate-Release-Notes",
       "type": "ms.vss-distributed-task.task",
       "targets": [
         "ms.vss-distributed-task.tasks"
