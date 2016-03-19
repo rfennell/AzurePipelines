@@ -1,7 +1,0 @@
-// *******************************************************
-// GENERATED FILE - DO NOT EDIT DIRECTLY
-// *******************************************************
-{
-  "loc.friendlyName": "Version APPX manifest",
-  "loc.description": "Applies a version to a APPX manifest based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview"
-}

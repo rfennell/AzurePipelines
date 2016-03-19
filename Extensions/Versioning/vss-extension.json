@@ -1,0 +1,114 @@
+{
+ "manifestVersion": 1,
+ "id": "BM-VSTS-Versioning-Task",
+ "version": "1.0.0",
+ "name": "Manifest versioning build tasks",
+ "publisher": "richardfennellBM",
+  "description": "Applies a version to various formats of manifest files based on the build number.",
+ "categories": [
+    "Build and release"
+  ],
+ "targets": [
+         {
+             "id": "Microsoft.VisualStudio.Services"
+         }
+     ],
+  "tags": [
+    "Version",
+    "Package",
+    "Build"
+  ],   
+  "branding": {
+        "color": "#f97923",
+        "theme": "dark"
+  },
+  "icons": {
+      "default": "images/logo.png"
+  },
+   "links": {
+    "getstarted": {
+      "uri": "https://github.com/rfennell/vNextBuild/wiki/Version-Assemblies-and-Packages-Tasks"
+    },
+    "support": {
+      "uri": "https://github.com/rfennell/vNextBuild/issues"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot1.png"
+    },
+    {
+      "path": "images/screenshot2.png"
+    },
+    {
+      "path": "images/screenshot3.png"
+    },
+    {
+      "path": "images/screenshot4.png"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "files": [
+    {
+      "path": "VersionAPPXTask"
+    },
+    {
+      "path": "VersionDacpacTask"
+    },
+    {
+      "path": "VersionVSIXTask"
+    },
+    {
+      "path": "VersionAssembliesTask"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "Version-APPX-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionAPPXTask"
+      }
+    },
+     {
+      "id": "Version-Dacpac-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionDacpacTask"
+      }
+    },
+     {
+      "id": "Version-VSIX-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionVSIXTask"
+      }
+    },
+     {
+      "id": "Version-Assemblies-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionAssembliesTask"
+      }
+    }
+  ]
+}

@@ -11,9 +11,27 @@
   "author": "Black Marble",
   "version": {
     "Major": 1,
-    "Minor": 0,
-    "Patch": 1
+    "Minor": 1,
+    "Patch": 0
   },
+   "inputs": [
+      {
+         "name": "Path",
+         "type": "string",
+         "label": "Source folder",
+         "defaultValue": "$(Build.SourcesDirectory)",
+         "required": true,
+         "helpMarkDown": "Source folder for assemblies files, can be root as it will find all files recursively"
+      },
+      {
+         "name": "VersionNumber",
+         "type": "string",
+         "label": "Version Number",
+         "defaultValue": "$(Build.BuildNumber)",
+         "required": true,
+         "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000.0' format"
+      }
+   ],
   "minimumAgentVersion": "1.82.0",
    "instanceNameFormat": "Version Assemblies",
   "execution": {

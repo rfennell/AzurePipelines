@@ -12,6 +12,14 @@
 
 # Enable -Verbose option
 [CmdletBinding()]
+param (
+
+    [Parameter(Mandatory)]
+    [String]$Path,
+
+    [Parameter(Mandatory)]
+    [string]$VersionNumber
+)
 
 # Set a flag to force verbose as a default
 $VerbosePreference ='Continue' # equiv to -verbose
@@ -20,53 +28,28 @@ $VerbosePreference ='Continue' # equiv to -verbose
 # and then apply it to the assemblies
 $VersionRegex = "\d+\.\d+\.\d+\.\d+"
 
-# If this script is not running on a build server, remind user to 
-# set environment variables so that this script can be debugged
-if(-not ($Env:BUILD_SOURCESDIRECTORY -and $Env:BUILD_BUILDNUMBER))
-{
-    Write-Error "You must set the following environment variables"
-    Write-Error "to test this script interactively."
-    Write-Host '$Env:BUILD_SOURCESDIRECTORY - For example, enter something like:'
-    Write-Host '$Env:BUILD_SOURCESDIRECTORY = "C:\code\FabrikamTFVC\HelloWorld"'
-    Write-Host '$Env:BUILD_BUILDNUMBER - For example, enter something like:'
-    Write-Host '$Env:BUILD_BUILDNUMBER = "Build HelloWorld_0000.00.00.0"'
-    exit 1
-}
-
 # Make sure path to source code directory is available
-if (-not $Env:BUILD_SOURCESDIRECTORY)
+if (-not (Test-Path $Path))
 {
-    Write-Error ("BUILD_SOURCESDIRECTORY environment variable is missing.")
+    Write-Error "Source directory does not exist: $Path"
     exit 1
 }
-elseif (-not (Test-Path $Env:BUILD_SOURCESDIRECTORY))
-{
-    Write-Error "BUILD_SOURCESDIRECTORY does not exist: $Env:BUILD_SOURCESDIRECTORY"
-    exit 1
-}
-Write-Verbose "BUILD_SOURCESDIRECTORY: $Env:BUILD_SOURCESDIRECTORY"
-
-# Make sure there is a build number
-if (-not $Env:BUILD_BUILDNUMBER)
-{
-    Write-Error ("BUILD_BUILDNUMBER environment variable is missing.")
-    exit 1
-}
-Write-Verbose "BUILD_BUILDNUMBER: $Env:BUILD_BUILDNUMBER"
+Write-Verbose "Source Directory: $Path"
+Write-Verbose "Version Number: $VersionNumber"
 
 # Get and validate the version data
-$VersionData = [regex]::matches($Env:BUILD_BUILDNUMBER,$VersionRegex)
+$VersionData = [regex]::matches($VersionNumber,$VersionRegex)
 switch($VersionData.Count)
 {
    0        
       { 
-         Write-Error "Could not find version number data in BUILD_BUILDNUMBER."
+         Write-Error "Could not find version number data in $VersionNumber."
          exit 1
       }
    1 {}
    default 
       { 
-         Write-Warning "Found more than instance of version data in BUILD_BUILDNUMBER." 
+         Write-Warning "Found more than instance of version data in $VersionNumber." 
          Write-Warning "Will assume first instance is version."
       }
 }
@@ -74,7 +57,7 @@ $NewVersion = $VersionData[0]
 Write-Verbose "Version: $NewVersion"
 
 # Apply the version to the assembly property files
-$files = gci $Env:BUILD_SOURCESDIRECTORY -recurse -include "*Properties*","My Project" | 
+$files = gci $Path -recurse -include "*Properties*","My Project" | 
     ?{ $_.PSIsContainer } | 
     foreach { gci -Path $_.FullName -Recurse -include AssemblyInfo.* }
 if($files)

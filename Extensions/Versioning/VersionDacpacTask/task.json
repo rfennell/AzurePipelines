@@ -16,7 +16,7 @@
          "name": "Path",
          "type": "string",
          "label": "Source folder",
-         "defaultValue": "",
+         "defaultValue": "$(Build.SourcesDirectory)",
          "required": true,
          "helpMarkDown": "Source folder for dacpac files, can be root as it will find all dacpacs recursively"
       },
@@ -24,7 +24,7 @@
          "name": "VersionNumber",
          "type": "string",
          "label": "Version Number",
-         "defaultValue": "",
+         "defaultValue": "$(Build.BuildNumber)",
          "required": true,
          "helpMarkDown": "Version number to apply to files, should be in '1.2.3.4' format"
       }
