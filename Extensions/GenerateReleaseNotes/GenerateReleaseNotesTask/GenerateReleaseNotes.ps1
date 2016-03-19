@@ -202,7 +202,7 @@ ForEach ($line in $template)
         }
     }
 }
-write-Verbose "Writing output file $reportname for build [$defname] [$($build.buildNumber)]."
+write-Verbose "Writing output file [$outputfile] for build [$defname] [$($build.buildNumber)]."
 Set-Content $outputfile $out
 
 

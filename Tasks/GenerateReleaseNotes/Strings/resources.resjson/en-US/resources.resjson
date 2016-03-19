@@ -1,9 +1,0 @@
-// *******************************************************
-// GENERATED FILE - DO NOT EDIT DIRECTLY
-// *******************************************************
-{
-  "loc.friendlyName": "Generate Release Notes",
-  "loc.description": "Generates a Markdown Release notes file",
-  "loc.input.label.outputfile": "Output file",
-  "loc.input.label.templatefile": "Template file"
-}

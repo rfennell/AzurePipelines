@@ -1,0 +1,66 @@
+{
+ "manifestVersion": 1,
+ "id": "BM-VSTS-GenerateReleaseNotes-Task",
+ "version": "1.0.0",
+ "name": "Generate Release Notes Build Task",
+ "publisher": "richardfennellBM",
+  "description": "Generates a Markdown Release notes file.",
+ "categories": [
+    "Build and release"
+  ],
+ "targets": [
+         {
+             "id": "Microsoft.VisualStudio.Services"
+         }
+     ],
+  "tags": [
+    "Release",
+    "Package",
+    "Publish"
+  ],   
+  "branding": {
+        "color": "#f97923",
+        "theme": "dark"
+  },
+  "icons": {
+      "default": "images/logo.png"
+  },
+   "links": {
+    "getstarted": {
+      "uri": "https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes%20-Tasks"
+    },
+    "support": {
+      "uri": "https://github.com/rfennell/vNextBuild/issues"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot.png"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "files": [
+    {
+      "path": "GenerateReleaseNotesTask"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "publish-github-release",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "GenerateReleaseNotesTask"
+      }
+    }
+  ]
+}
