@@ -7,12 +7,8 @@ var pkgm = require('./package');
 var ts = require('gulp-typescript');
 
 var _buildRoot = path.join(__dirname, '_build', 'Tasks');
-//var _pkgRoot = path.join(__dirname, '_package');
-//var _oldPkg = path.join(__dirname, 'Package');
-//var _wkRoot = path.join(__dirname, '_working');
 
 gulp.task('clean', function (cb) {
-//	del([_buildRoot, _pkgRoot, _wkRoot, _oldPkg],cb);
 	del([_buildRoot],cb);
 });
 
