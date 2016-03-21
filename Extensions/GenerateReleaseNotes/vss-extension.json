@@ -8,7 +8,10 @@
  "categories": [
     "Build and release"
   ],
- "targets": [
+  "galleryFlags": [
+        "Public"
+    ],
+  "targets": [
          {
              "id": "Microsoft.VisualStudio.Services"
          }
