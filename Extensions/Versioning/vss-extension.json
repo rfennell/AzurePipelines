@@ -2,7 +2,7 @@
  "manifestVersion": 1,
  "id": "BM-VSTS-Versioning-Task",
  "version": "1.0.0",
- "name": "Manifest versioning build tasks",
+ "name": "Manifest Versioning Build Tasks",
  "publisher": "richardfennellBM",
   "description": "Applies a version to various formats of manifest files based on the build number.",
  "categories": [
