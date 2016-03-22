@@ -1,0 +1,69 @@
+{
+ "manifestVersion": 1,
+ "id": "BM-VSTS-TypeMockRunner-Task",
+ "version": "1.0.0",
+ "name": "Typemock TMockRunner Build Task",
+ "publisher": "richardfennellBM",
+  "description": "Run tests with Visual Studio test runner wrappered by TMockRunner (Required Typmock Isolator is installed on Build Agent, does not work with hosted agent).",
+ "categories": [
+    "Build and release"
+  ],
+ "targets": [
+         {
+             "id": "Microsoft.VisualStudio.Services"
+         }
+     ],
+  "tags": [
+    "Release",
+    "Package",
+    "Publish"
+  ],   
+    "galleryFlags": [
+        "Public"
+    ],
+  "branding": {
+        "color": "#f97923",
+        "theme": "dark"
+  },
+  "icons": {
+      "default": "images/logo.png"
+  },
+   "links": {
+    "getstarted": {
+      "uri": "https://github.com/rfennell/vNextBuild/wiki/Typemock-Task"
+    },
+    "support": {
+      "uri": "https://github.com/rfennell/vNextBuild/issues"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot1.png"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "files": [
+    {
+      "path": "TypemockTask"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "Typemock-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "TypemockTask"
+      }
+    }
+  ]
+}
