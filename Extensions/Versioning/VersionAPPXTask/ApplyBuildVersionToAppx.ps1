@@ -54,11 +54,15 @@ switch($VersionData.Count)
          Write-Warning "Will assume first instance is version."
       }
 }
-$NewVersion = $VersionData[0]
+# AppX will not allow leading zeros, so we strip them out
+$extracted = [string]$VersionData[0]
+$parts = $extracted.Split(".")
+$NewVersion =  [string]::Format("{0}.{1}.{2}.{3}" ,[int]$parts[0],[int]$parts[1],[int]$parts[2],[int]$parts[3])
+
 Write-Verbose "Version: $NewVersion"
 
 # Apply the version to the assembly property files
-$files = gci $$path -recurse -include "Package.appxmanifest" 
+$files = gci $path -recurse -include "Package.appxmanifest" 
 if($files)
 {
     Write-Verbose "Will apply $NewVersion to $($files.count) files."
