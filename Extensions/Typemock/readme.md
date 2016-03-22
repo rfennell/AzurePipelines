@@ -13,7 +13,7 @@ This task takes all the same argument as the standard VSTest build task (as it w
 
 - The company the instance of Typemock is licensed to
 - The licensed key
-- The path to the Typemock autodeployment folder in source control (not really needed as Isolator is already installed on the VM)
+- The path to the Typemock autodeployment folder in source control (usually 'C:\Program Files (x86)\Typemock\Isolator\<version>\AutoDeploy')
 
 Once this configured this task should be able to enable and disable Typemock Isolator before and after any tests are run
 

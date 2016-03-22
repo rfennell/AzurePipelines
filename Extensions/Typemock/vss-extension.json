@@ -18,11 +18,8 @@
     "Package",
     "Publish"
   ],   
-    "galleryFlags": [
-        "Public"
-    ],
-  "branding": {
-        "color": "#f97923",
+ "branding": {
+        "color": "#767676",
         "theme": "dark"
   },
   "icons": {
