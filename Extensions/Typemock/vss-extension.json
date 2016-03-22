@@ -1,7 +1,7 @@
 {
  "manifestVersion": 1,
  "id": "BM-VSTS-TypeMockRunner-Task",
- "version": "1.0.0",
+ "version": "1.0.1",
  "name": "Typemock TMockRunner Build Task",
  "publisher": "richardfennellBM",
   "description": "Run tests with Visual Studio test runner wrappered by TMockRunner (Required Typmock Isolator is installed on Build Agent, does not work with hosted agent).",
@@ -17,9 +17,8 @@
         "Public"
     ],
   "tags": [
-    "Release",
-    "Package",
-    "Publish"
+    "Test",
+    "Typemock"
   ],   
  "branding": {
         "color": "#767676",
