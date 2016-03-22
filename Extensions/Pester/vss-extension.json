@@ -1,0 +1,78 @@
+{
+ "manifestVersion": 1,
+ "id": "BM-VSTS-PesterRunner-Task",
+ "version": "1.0.0",
+ "name": "Pester Test Runner Build Task",
+ "publisher": "richardfennellBM",
+  "description": "Run Pester tests without the need to install Pester in with the PMModule folder or in the source repo (Using Pester 3.3.5).",
+ "categories": [
+    "Build and release"
+  ],
+ "targets": [
+         {
+             "id": "Microsoft.VisualStudio.Services"
+         }
+     ],
+  "tags": [
+    "Release",
+    "Package",
+    "Publish"
+  ],   
+    "galleryFlags": [
+        "Public"
+    ],
+  "branding": {
+        "color": "#f97923",
+        "theme": "dark"
+  },
+  "icons": {
+      "default": "images/logo.png"
+  },
+   "links": {
+    "getstarted": {
+      "uri": "https://github.com/rfennell/vNextBuild/wiki/Pester-Task"
+    },
+    "support": {
+      "uri": "https://github.com/rfennell/vNextBuild/issues"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot1.png"
+    },
+    {
+      "path": "images/screenshot2.png"
+    },
+    {
+      "path": "images/screenshot3.png"
+    },
+    {
+      "path": "images/screenshot4.png"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "files": [
+    {
+      "path": "PesterTask"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "Pester-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "PesterTask"
+      }
+    }
+  ]
+}

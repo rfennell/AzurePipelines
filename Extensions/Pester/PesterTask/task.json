@@ -1,21 +1,18 @@
-// *******************************************************
-// GENERATED FILE - DO NOT EDIT DIRECTLY
-// *******************************************************
 {
   "id": "31EF0033-64E3-4C55-B888-F446541474A6",
   "name": "Pester",
-  "friendlyName": "ms-resource:loc.friendlyName",
-  "description": "ms-resource:loc.description",
+  "friendlyName": "Pester Test Runner from Black Marble",
+  "description": "Run Pester tests without the need to install Pester in with the PMModule folder or in the source repo (Using Pester 3.3.5)",
   "category": "Test",
   "visibility": [
-    "Build",
-    "Release"
-  ],
+                "Build",
+                "Release"
+                ],
   "author": "Richard Fennell",
   "version": {
-    "Major": 3,
+    "Major": 1,
     "Minor": 3,
-    "Patch": 5
+    "Patch": 0
   },
   "demands": [
     "vstest"
@@ -25,7 +22,7 @@
     {
       "name": "scriptFolder",
       "type": "string",
-      "label": "ms-resource:loc.input.label.scriptFolder",
+      "label": "Scripts Folder",
       "defaultValue": "$(Build.SourcesDirectory)\\*",
       "required": true,
       "helpMarkDown": "Folder to run scripts from"
@@ -33,7 +30,7 @@
     {
       "name": "resultsFile",
       "type": "string",
-      "label": "ms-resource:loc.input.label.resultsFile",
+      "label": "Results File",
       "defaultValue": "$(Build.SourcesDirectory)\\Test-Pester.XML",
       "required": true,
       "helpMarkDown": "Results File (nUnit format)"
