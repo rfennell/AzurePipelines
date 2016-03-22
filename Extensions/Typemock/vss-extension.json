@@ -13,6 +13,9 @@
              "id": "Microsoft.VisualStudio.Services"
          }
      ],
+  "galleryFlags": [
+        "Public"
+    ],
   "tags": [
     "Release",
     "Package",
