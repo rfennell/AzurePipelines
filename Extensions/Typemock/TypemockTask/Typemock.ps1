@@ -65,7 +65,7 @@ else
 	$testAssemblyFiles = ,$testAssembly
 }
 
-$codeCoverage = Convert-String $codeCoverageEnabled Boolean
+$codeCoverage = [System.Convert]::ToBoolean($codeCoverageEnabled)
 
 if($testAssemblyFiles)
 {
@@ -153,12 +153,13 @@ if($testAssemblyFiles)
 	# get the version of VS
 	$mstest = GetVSTest -requiredVersion $vsTestVersion
 
-		Write-Verbose "Using EXE '$mstest'"
-	Write-Verbose "Using parameters '$commandLineParams'"
-
+    Write-Verbose "TMockRunner will wrapper"
+	Write-Verbose "The EXE '$mstest'"
+	Write-Verbose "The Parameters '$commandLineParams'"
 	
-	# Invoke-VSTest -TestAssemblies $testAssemblyFiles -VSTestVersion $vsTestVersion -TestFiltercriteria $testFiltercriteria -RunSettingsFile $runSettingsFile -PathtoCustomTestAdapters $pathtoCustomTestAdapters -CodeCoverageEnabled $codeCoverage -OverrideTestrunParameters $overrideTestrunParameters -OtherConsoleOptions $otherConsoleOptions -WorkingFolder $workingDirectory -TestResultsFolder $testResultsDirectory
-	& "$autodeploypath\tmockrunner.exe" -register "$company" "$license" $mstest $commandLineParams
+	# pull all the parameters to a single string and run the command
+    $tmockrunnerParams = " -register ""$company"" ""$license"" ""$mstest"" $commandLineParams"
+	start-process -FilePath "$autodeploypath\tmockrunner.exe" -ArgumentList $tmockrunnerParams -wait -NoNewWindow
 
 	$resultFiles = Find-Files -SearchPattern "*.trx" -RootFolder $testResultsDirectory 
 

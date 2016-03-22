@@ -1,21 +1,18 @@
-// *******************************************************
-// GENERATED FILE - DO NOT EDIT DIRECTLY
-// *******************************************************
 {
   "id": "54F90CF5-9DCC-42A4-99D1-A21F1318E3E6",
   "name": "Typemock",
-  "friendlyName": "ms-resource:loc.friendlyName",
-  "description": "ms-resource:loc.description",
+  "friendlyName": "Typemock TMockRunner",
+  "description": "Run tests with Visual Studio test runner wrappered by TMockRunner",
   "category": "Test",
   "visibility": [
-    "Build",
-    "Release"
-  ],
+                "Build",
+                "Release"
+                ],
   "author": "Black Marble",
   "version": {
     "Major": 1,
     "Minor": 0,
-    "Patch": 20
+    "Patch": 21
   },
   "demands": [
     "vstest"
@@ -24,7 +21,7 @@
   "groups": [
     {
       "name": "advanced",
-      "displayName": "ms-resource:loc.group.displayName.advanced",
+      "displayName": "Advanced",
       "isExpanded": false
     }
   ],
@@ -32,7 +29,7 @@
     {
       "name": "testAssembly",
       "type": "filePath",
-      "label": "ms-resource:loc.input.label.testAssembly",
+      "label": "Test Assembly",
       "defaultValue": "**\\*test*.dll;-:**\\obj\\**",
       "required": true,
       "helpMarkDown": "Test binaries to run tests on.  Wildcards can be used.  For example, `**\\*test*.dll;-:**\\obj\\**` for all dlls with test in name while excluding files in any sub-directory named obj."
@@ -40,29 +37,29 @@
     {
       "name": "testFiltercriteria",
       "type": "string",
-      "label": "ms-resource:loc.input.label.testFiltercriteria",
+      "label": "Test Filter criteria",
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "Filter criteria for the tests."
     },
     {
-      "name": "platform",
-      "type": "string",
-      "label": "ms-resource:loc.input.label.platform",
-      "defaultValue": "",
-      "required": false
+      "name": "platform", 
+      "type": "string", 
+      "label": "Platform", 
+      "defaultValue":"", 
+      "required":false
     },
     {
-      "name": "configuration",
-      "type": "string",
-      "label": "ms-resource:loc.input.label.configuration",
-      "defaultValue": "",
-      "required": false
+      "name": "configuration", 
+      "type": "string", 
+      "label": "Configuration", 
+      "defaultValue":"", 
+      "required":false 
     },
     {
       "name": "runSettingsFile",
       "type": "filePath",
-      "label": "ms-resource:loc.input.label.runSettingsFile",
+      "label": "Run Settings File",
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "Path to runsettings file on disk or choose file from the repository."
@@ -70,15 +67,15 @@
     {
       "name": "overrideTestrunParameters",
       "type": "string",
-      "label": "ms-resource:loc.input.label.overrideTestrunParameters",
+      "label": "Override TestRun Parameters",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "Override parameters defined in the TestRunParameters section of runsettings file. For example: Platform=$(platform);Port=8080"
+      "helpMarkDown": "Override parameters defined in the TestRunParameters section of runsettings file. For example: Platform=$(platform);Port=8080"      
     },
     {
       "name": "company",
       "type": "string",
-      "label": "ms-resource:loc.input.label.company",
+      "label": "Typemock Licensed To",
       "defaultValue": "",
       "required": true,
       "helpMarkDown": "The company name for the license key to enable Typemock Isolator"
@@ -86,54 +83,54 @@
     {
       "name": "license",
       "type": "string",
-      "label": "ms-resource:loc.input.label.license",
+      "label": "Typemock License Key",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The license key to enable Typemock Isolator"
+      "helpMarkDown": "The license key to enable Typemock Isolator"      
     },
-    {
+   {
       "name": "autodeploypath",
       "type": "filePath",
-      "label": "ms-resource:loc.input.label.autodeploypath",
+      "label": "Typemock Autodeploy folder",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The path to autodeploy path for Typemock Isolator"
+      "helpMarkDown": "The path to autodeploy path for Typemock Isolator"      
     },
     {
       "name": "codeCoverageEnabled",
       "type": "boolean",
-      "label": "ms-resource:loc.input.label.codeCoverageEnabled",
+      "label": "Code Coverage Enabled",
       "defaultValue": "False",
       "required": false,
       "helpMarkDown": "Whether code coverage needs to be enabled.",
-      "groupName": "advanced"
-    },
+      "groupName":"advanced"
+    },    
     {
       "name": "vsTestVersion",
       "type": "pickList",
-      "label": "ms-resource:loc.input.label.vsTestVersion",
+      "label": "VSTest version",
       "defaultValue": "14.0",
       "required": false,
       "helpMarkDown": "The version of VSTest to use.",
-      "groupName": "advanced",
+      "groupName":"advanced",
       "options": {
-        "14.0": "Visual Studio 2015",
-        "12.0": "Visual Studio 2013"
-      }
+                "14.0": "Visual Studio 2015",
+                "12.0": "Visual Studio 2013"
+            }
     },
     {
       "name": "pathtoCustomTestAdapters",
       "type": "string",
-      "label": "ms-resource:loc.input.label.pathtoCustomTestAdapters",
+      "label": "Path to Custom Test Adapters",
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "Path to custom adapters.",
-      "groupName": "advanced"
+      "groupName":"advanced"
     },
     {
       "name": "otherConsoleOptions",
       "type": "string",
-      "label": "ms-resource:loc.input.label.otherConsoleOptions",
+      "label": "Other console options",
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "Other console options.",
