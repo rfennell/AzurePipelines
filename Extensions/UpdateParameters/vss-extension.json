@@ -1,0 +1,65 @@
+{
+ "manifestVersion": 1,
+ "id": "BM-VSTS-UpdateParameters-Task",
+ "version": "1.0.0",
+ "name": "Deploy Parameters Build Task",
+ "publisher": "richardfennellBM",
+  "description": "A set of build tasks that perform setting transfomations",
+ "categories": [
+    "Build and release"
+  ],
+ "targets": [
+         {
+             "id": "Microsoft.VisualStudio.Services"
+         }
+     ],
+  "tags": [
+    "Test",
+    "Typemock"
+  ],   
+ "branding": {
+        "color": "#767676",
+        "theme": "dark"
+  },
+  "icons": {
+      "default": "images/logo.png"
+  },
+   "links": {
+    "getstarted": {
+      "uri": "https://github.com/rfennell/vNextBuild/wiki/Settings-transformation-Tasks"
+    },
+    "support": {
+      "uri": "https://github.com/rfennell/vNextBuild/issues"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot1.png"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "files": [
+    {
+      "path": "UpdateWebDeployParametersTask"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "UpdateWebDeployParametersTask",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "UpdateWebDeployParametersTask"
+      }
+    }
+  ]
+}
