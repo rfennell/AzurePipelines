@@ -1,7 +1,7 @@
 {
   "id": "05271A89-7EAA-44B1-BD54-EF67B3FC2F5A",
   "name": "FileCopy",
-  "friendlyName": "File Copy",
+  "friendlyName": "File Copy with filters",
   "description": "Copies files between locations",
   "category": "Utility",
   "visibility": [

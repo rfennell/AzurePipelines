@@ -1,0 +1,83 @@
+{
+ "manifestVersion": 1,
+ "id": "BM-VSTS-FileCopier-Tasks",
+ "version": "1.0.1",
+ "name": "File Copier Build Tasks",
+ "publisher": "richardfennellBM",
+  "description": "Set of tasks perform file copy actions.",
+ "categories": [
+    "Build and release"
+  ],
+  "targets": [
+         {
+             "id": "Microsoft.VisualStudio.Services"
+         }
+     ],
+  "tags": [
+    "File",
+    "Copy",
+    "Artifact"
+  ],   
+  "branding": {
+        "color": "#f97923",
+        "theme": "dark"
+  },
+  "icons": {
+      "default": "images/logo.png"
+  },
+   "links": {
+    "getstarted": {
+      "uri": "https://github.com/rfennell/vNextBuild/wiki/File-Copier-Tasks"
+    },
+    "support": {
+      "uri": "https://github.com/rfennell/vNextBuild/issues"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot1.png"
+    },
+    {
+      "path": "images/screenshot2.png"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "files": [
+    {
+      "path": "FileCopyTask"
+    },
+    {
+      "path": "GetArtifactFromUncShareTask"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "GetArtifactFromUncShare",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "GetArtifactFromUncShareTask"
+      }
+    },
+        {
+      "id": "FileCopyTask",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "FileCopyTask"
+      }
+    }
+
+  ]
+}
