@@ -131,6 +131,15 @@ function render() {
     "@`"`n$str`n`"@" | iex
 }
 
+Add-Type -TypeDefinition @"
+   public enum Mode
+   {
+      BODY,
+      WI,
+      CS
+   }
+"@
+
 $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
 $teamproject = $env:SYSTEM_TEAMPROJECT
 $buildid = $env:BUILD_BUILDID
@@ -148,60 +157,75 @@ Write-Verbose "Getting associated changesets/commits"
 $changesets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
 
 $template = Get-Content $templatefile
-Add-Type -TypeDefinition @"
-   public enum Mode
-   {
-      BODY,
-      WI,
-      CS
-   }
-"@
-$mode = [Mode]::BODY
-#process each line
-ForEach ($line in $template)
-{
-    # work out if we need to loop on a blog
-    #Write-Verbose "Processing line [$line]"
-    if ($mode -eq [Mode]::BODY)
-    {
-        if ($line.Trim() -eq "@@WILOOP@@") {$mode = [Mode]::WI; continue}
-        if ($line.Trim() -eq "@@CSLOOP@@") {$mode = [Mode]::CS; continue}
-    } else {
-        if ($line.Trim() -eq "@@WILOOP@@") {$mode = [Mode]::BODY; continue}
-        if ($line.Trim() -eq "@@CSLOOP@@") {$mode = [Mode]::BODY; continue}
-    }
 
-    switch ($mode)
-    {
-      "WI" {
-        foreach ($wi in $workItems)
-        {
-           # Get the work item details so we can render the line
-           Write-Verbose "   Get details of workitem $($wi.id)"
-           $widetail = Get-Detail -uri $wi.url  
-           $out += $line | render
-           $out += "`n"
-        }
-        continue
-        }
-      "CS" {
-        foreach ($cs in $changesets)
-        {
-           # we can get enough detail from the list of changes
-           Write-Verbose "   Get details of changeset/commit $($cs.id)"
-           $csdetail = Get-Detail -uri $cs.location 
-           $out += $line | render
-           $out += "`n"
-        }
-        continue
-        }
-     "BODY" {
-            # nothing to expand just process the line
-            $out += $line | render
-            $out += "`n"
-        }
-    }
-}
+if ($template.count -gt 0)
+{
+    write-Verbose "Processing template file [$templatefile]"
+	$mode = [Mode]::BODY
+	#process each line
+	ForEach ($line in $template)
+	{
+		# work out if we need to loop on a blog
+		#Write-Verbose "Processing line [$line]"
+		if ($mode -eq [Mode]::BODY)
+		{
+			if ($line.Trim() -eq "@@WILOOP@@") {$mode = [Mode]::WI; continue}
+			if ($line.Trim() -eq "@@CSLOOP@@") {$mode = [Mode]::CS; continue}
+		} else {
+			if ($line.Trim() -eq "@@WILOOP@@") {$mode = [Mode]::BODY; continue}
+			if ($line.Trim() -eq "@@CSLOOP@@") {$mode = [Mode]::BODY; continue}
+		}
+
+		switch ($mode)
+		{
+		  "WI" {
+		  if (@($workItems).count -gt 0) 
+			{
+				foreach ($wi in $workItems)
+				{
+				   # Get the work item details so we can render the line
+				   Write-Verbose "   Get details of workitem $($wi.id)"
+				   $widetail = Get-Detail -uri $wi.url  
+				   $out += $line | render
+				   $out += "`n"
+				}
+			} else 
+			{
+				Write-Verbose "No associated work items found"
+				$out += "None`n"
+			}
+			continue
+			}
+		  "CS" {
+			if (@($changesets).count -gt 0) 
+			{
+				foreach ($cs in $changesets)
+				{
+				   # we can get enough detail from the list of changes
+				   Write-Verbose "   Get details of changeset/commit $($cs.id)"
+				   $csdetail = Get-Detail -uri $cs.location 
+				   $out += $line | render
+				   $out += "`n"
+				}
+			} else 
+			{
+				Write-Verbose "No associated changesets/commits found"
+				$out += "None`n"
+			}	
+			continue
+			}
+		 "BODY" {
+				# nothing to expand just process the line
+				$out += $line | render
+				$out += "`n"
+			}
+		}
+	}
+} else
+{
+	write-error "Cannot load template file [$templatefile] or it is empty"
+} 
+
 write-Verbose "Writing output file [$outputfile] for build [$defname] [$($build.buildNumber)]."
 Set-Content $outputfile $out
 
