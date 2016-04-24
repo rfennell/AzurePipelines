@@ -1,5 +1,5 @@
 ### StyleCop Runner Task ###
-A task to run [StyleCop 4.7.49.0](https://stylecop.codeplex.com/),
+A task to run [StyleCop 4.7.52.0](https://stylecop.codeplex.com/),
 
 The task takes the following arguments
 - TreatStyleCopViolationsErrorsAsWarnings - Treat StyleCop violations errors as warnings (default false).
