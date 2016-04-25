@@ -2,7 +2,7 @@
   "id": "AFA9B703-33DF-4F9F-B840-B657A9C728AE",
   "name": "StyleCop",
   "friendlyName": "StyleCop Runner by Black Marble",
-  "description": "Black Marble's StyleCop test runner that use settings files in the project folders. (Using StyleCop 4.7.52.0)",
+  "description": "Black Marble's StyleCop test runner that use settings files in the project folders. (Using StyleCop 4.7.59.0)",
   "category": "Build",
   "visibility": [
                 "Build"
@@ -10,7 +10,7 @@
   "author": "Black Marble",
   "version": {
     "Major": 1,
-    "Minor": 4,
+    "Minor": 5,
     "Patch": 0
   },
   "demands": [
