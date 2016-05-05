@@ -85,11 +85,10 @@ function Get-Build
     (
     $tfsUri,
     $teamproject,
-    $defid,
     $buildnumber
     )
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?api-version=2.0&definitions=$($defid)&buildnumber=$($buildnumber)"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?api-version=2.0&buildnumber=$($buildnumber)"
   	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
   	$jsondata.value 
 }
@@ -149,7 +148,7 @@ $buildnumber = $env:BUILD_BUILDNUMBER
 Write-Verbose "Getting details of build [$defname] from server [$collectionUrl/$teamproject]"
 $defId = Get-BuildDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -defname $defname 
 write-verbose "Getting build number [$buildnumber] using definition ID [$defId]"    
-$build = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -defid $defId -buildnumber $buildnumber
+$build = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -buildnumber $buildnumber
 
 Write-Verbose "Getting associated work items"
 $workitems = Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
