@@ -1,11 +1,9 @@
-Build All - ![Build Status - All](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/12/badge)
+![Build Status - All](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/12/badge) - Build All
 
-FileCopiers Extension -
-![Build Status - FileCopiers Extension](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/21/badge)
+![Build Status - FileCopiers Extension](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/21/badge) - FileCopier Extensions
 
-GenerateReleaseNotes Extension -
 ![Build Status - GenerateReleaseNotes Extension](
-https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/23/badge)
+https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/23/badge) - GenerateReleaseNotes Extension 
 
 # vNextBuild Tasks and Resources
 
