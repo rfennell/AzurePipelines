@@ -10,9 +10,9 @@
                 ],
   "author": "Black Marble",
   "version": {
-    "Major": 9,
-    "Minor": 9,
-    "Patch": 9
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
   },
   "minimumAgentVersion": "1.82.0",
    "groups": [

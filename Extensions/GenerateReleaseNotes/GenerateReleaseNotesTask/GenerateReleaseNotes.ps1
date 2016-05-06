@@ -141,19 +141,29 @@ Add-Type -TypeDefinition @"
 
 $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
 $teamproject = $env:SYSTEM_TEAMPROJECT
+$releaseid = $env:RELEASE_RELEASEID
 $buildid = $env:BUILD_BUILDID
 $defname = $env:BUILD_DEFINITIONNAME
 $buildnumber = $env:BUILD_BUILDNUMBER
 
-Write-Verbose "Getting details of build [$defname] from server [$collectionUrl/$teamproject]"
-$defId = Get-BuildDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -defname $defname 
-write-verbose "Getting build number [$buildnumber] using definition ID [$defId]"    
-$build = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -buildnumber $buildnumber
+if ($releaseid -eq $null)
 
-Write-Verbose "Getting associated work items"
-$workitems = Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
-Write-Verbose "Getting associated changesets/commits"
-$changesets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
+{
+
+	Write-Verbose "Getting details of build [$defname] from server [$collectionUrl/$teamproject]"
+	$defId = Get-BuildDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -defname $defname 
+	write-verbose "Getting build number [$buildnumber] using definition ID [$defId]"    
+	$build = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -buildnumber $buildnumber
+
+	Write-Verbose "Getting associated work items"
+	$workitems = Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
+	Write-Verbose "Getting associated changesets/commits"
+	$changesets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
+
+} else 
+{
+	
+}
 
 $template = Get-Content $templatefile
 

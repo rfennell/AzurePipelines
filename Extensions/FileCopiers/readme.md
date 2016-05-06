@@ -1,10 +1,12 @@
-This set of tasks perform file copy actions
+This set of tasks perform file copy related actions
 
 ## File Copy with Filters 
 
 This task finds all the files that match a given pattern via a recursive search of the source folder. The selected files are the copied to the single target folder e.g. find all the DACPAC file and place them in the **.\drops\db folder**
 
-This task was developed as a short term fix around the time of TFS 2015.1. In this and earlier versions of vNext build the 'Publish Build Artifacts' searched for files, copied them to the staging folder and then onto the drops location. In later versions these are split into two task, one to build the folder structure, the other to move the content. This split functionality is what this task was designed to assist with. The reason to use still use this task over the built in one is that it flattens folder structures by default. Useful to get all the files of a single type into a single folder. 
+This task was developed as a short term fix around the time of TFS 2015.1. In this and earlier versions of vNext build the 'Publish Build Artifacts' searched for files, copied them to the staging folder and then onto the drops location. In later versions these steps are split into two task, one to build the folder structure, the other to move the content. This split functionality is what this task was designed to assist with. 
+
+The reason to use still use this task over the built in one is that it flattens folder structures by default. Useful to get all the files of a single type into a single folder. 
 
 ###Usage
 
@@ -15,7 +17,7 @@ This task was developed as a short term fix around the time of TFS 2015.1. In th
 
 In effect this task wrappers [Get-ChildItem](https://technet.microsoft.com/en-us/library/hh849800.aspx), see this commands online documentation for the filtering options
 
-This tasks would usually be followed by a 'Publish Build Artifacts' task. 
+This tasks would usually be followed by a 'Publish Build Artifacts' task to move the contents to the build drop. 
 
 ## GetArtifactFromUncShareTask 
 
@@ -23,15 +25,16 @@ With TFS 2015.2 (and the associated VSTS version) Release Management cannot pick
 
 To get around this hopefully short term blocker this task does the getting of a build artifact from the UNC drop. It supports both XAML and vNext builds. Thus replacing the built in artifact linking feature if Release Management.
 
+It is hoped that at some point in the future there will be a build in way to achieve the linking to remote TFS servers build into VSTS/TFS, thus removing the need for the task.
+
 ###Usage
 
 To use the new task
 
-- Install the task in your VSTS or TFS 2015.2 instance (also use the notes on the repo’s wiki).
-- In your build, disable the auto getting of the artifacts for the environment  this is on the environments general tab. 
+- Install the task in your VSTS or TFS 2015.2 instance.
+- In your release definition, disable the auto getting of the artifacts for the environment this is on the environments general tab. 
 
-**Note**: In some scenarios you might choose to use both the built in linking and this custom task
-
+**Note**: In some scenarios you might choose to use both the built in linking to artifacts and this custom task
 
 - Add the new task to your environment’s release process, the parameters are
 	- TFS Uri – the Uri of the TFS server inc. The TPC name
