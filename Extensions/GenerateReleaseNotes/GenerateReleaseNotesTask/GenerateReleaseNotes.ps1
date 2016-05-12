@@ -138,6 +138,30 @@ function render() {
     "@`"`n$str`n`"@" | iex
 }
 
+function Get-Template 
+{
+	param (
+		$templateLocation,
+		$templatefile,
+		$inlinetemplate
+	)
+	
+	Write-Verbose "Using template mode [$templateLocation]"
+
+	if ($templateLocation -eq 'File')
+	{
+    	write-Verbose "Loading template file [$templatefile]"
+		$template = Get-Content $templatefile
+	} else 
+	{
+    	write-Verbose "Using in-line template"
+		# it appears as single line we need to split it out
+		$template = $inlinetemplate $addresses -split "`n"
+	}
+	
+	$template
+}
+
 Add-Type -TypeDefinition @"
    public enum Mode
    {
@@ -156,10 +180,8 @@ $buildid = $env:BUILD_BUILDID
 $defname = $env:BUILD_DEFINITIONNAME
 $buildnumber = $env:BUILD_BUILDNUMBER
 
-Write-Verbose "BUild [$buildid]"
-Write-Verbose "Release [$releaseid]"
-
-
+if ($releaseid -eq $null)
+{
 	Write-Verbose "Getting details of build [$defname] from server [$collectionUrl/$teamproject]"
 	$defId = Get-BuildDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -defname $defname 
 	write-verbose "Getting build number [$buildnumber] using definition ID [$defId]"    
@@ -169,19 +191,13 @@ Write-Verbose "Release [$releaseid]"
 	$workitems = Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
 	Write-Verbose "Getting associated changesets/commits"
 	$changesets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
-
-Write-Verbose "Using template mode [$templateLocation]"
-
-if ($templateLocation -eq 'File')
+} else
 {
-    write-Verbose "Loading template file [$templatefile]"
-	$template = Get-Content $templatefile
-} else 
-{
-    write-Verbose "Using in-line template"
-	$template = $inlinetemplate
+	Write-Verbose "Getting details of release [$releaseid] from server [$collectionUrl/$teamproject]"
 }
 
+
+$template = Get-Template -templateLocation $templateLocation -templatefile $templatefile -inlinetemplate $inlinetemplate
 
 if ($template.count -gt 0)
 {
@@ -191,7 +207,7 @@ if ($template.count -gt 0)
 	ForEach ($line in $template)
 	{
 		# work out if we need to loop on a blog
-		Write-Verbose "Processing line [$line]"
+		#Write-Verbose "Processing line [$line]"
 		if ($mode -eq [Mode]::BODY)
 		{
 			if ($line.Trim() -eq "@@WILOOP@@") {$mode = [Mode]::WI; continue}

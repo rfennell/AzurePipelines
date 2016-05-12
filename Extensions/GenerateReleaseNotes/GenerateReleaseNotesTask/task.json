@@ -19,9 +19,9 @@
          "name": "outputfile",
          "type": "string",
          "label": "Output file",
-         "defaultValue": "$(Build.ArtifactStagingDirectory)\\releasenotes.md",
+         "defaultValue": "",
          "required": true,
-         "helpMarkDown": "The name of the Markdown file to export"
+         "helpMarkDown": "The name of the Markdown file to export e.g. $(Build.ArtifactStagingDirectory)\\releasenotes.md if within a build workflow "
       },
       {
       "name": "templateLocation",
