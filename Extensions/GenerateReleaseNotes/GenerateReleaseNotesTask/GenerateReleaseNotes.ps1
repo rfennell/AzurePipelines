@@ -113,7 +113,7 @@ function Get-BuildsInRelease
 	# bit of a hack whilst the RM API is in preview
 	$tfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
 	
-    $uri = "$($tfsUri)/$($teamproject)/_apis/release/releases$($releaseid)"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/release/releases/$($releaseid)"
   	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
   	# get the build IDs
     $buildIds = $jsondata.artifacts.definitionReference.version.id
