@@ -170,9 +170,9 @@ Write-Verbose "Release [$releaseid]"
 	Write-Verbose "Getting associated changesets/commits"
 	$changesets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
 
-Write-Verbose $inlinetemplate
+Write-Verbose "Using template mode [$templateLocation]"
 
-if ($inlinetemplate -eq 'File')
+if ($templateLocation -eq 'File')
 {
     write-Verbose "Loading template file [$templatefile]"
 	$template = Get-Content $templatefile
@@ -191,7 +191,7 @@ if ($template.count -gt 0)
 	ForEach ($line in $template)
 	{
 		# work out if we need to loop on a blog
-		#Write-Verbose "Processing line [$line]"
+		Write-Verbose "Processing line [$line]"
 		if ($mode -eq [Mode]::BODY)
 		{
 			if ($line.Trim() -eq "@@WILOOP@@") {$mode = [Mode]::WI; continue}

@@ -27,7 +27,7 @@
       "name": "templateLocation",
       "type": "pickList",
       "label": "Template Location",
-      "defaultValue": "",
+      "defaultValue": "File",
       "required": true,
       "options": {
         "File": "File",
