@@ -1,3 +1,10 @@
+## Changes
+1.0 - Initial release
+1.1 - Bug fix, issue with REST call made to return build details
+1.2 - Bug fix, UTF8 encoding issue
+1.3 - Added support for Release Management
+      Added support for inline definition of template 
+
 This task generates a markdown release notes file based on a template passed into the tool. The output report being something like the following:
 
 > Release notes for build SampleSolution.Master
@@ -47,10 +54,12 @@ There is a [templatedump.md file in my in the PowerShell Scripts repo](https://g
 ## Usage
 Once the extension is added to your TFS or VSTS server, the task should be available in the utilities section of 'add tasks'
 
-The task takes two parameters
+The task takes three parameters
 
-* The output file name which defaults to $(Build.ArtifactStagingDirectory)\releasenotes.md
-* The template file name, which should point to a file in source control.
+* The output file name, for builds this will normally be set to $(Build.ArtifactStagingDirectory)\releasenotes.md as the release notes will usually be part of your build artifacts. For release management usage the parameter should be set to something like $(System.DefaultWorkingDirectory)\releasenotes.md. Where you choose to send the created files is down to your deployment needs. 
+* A picker allows you to set if the template is provided as a file in source control (usually used for builds) or an inline file (usually used for release management). The setting of this picker effects which third parameter is shown
+* Either - The template file name, which should point to a file in source control.
+* Or - The template text.
 There is no need to pass credentials, this is done automatically
 
-Using the settings for the output file shown above, the release notes will be created in the staging folder, and will hence be copied by the 'Publish Artifacts' task
+Using the settings for the output file shown above, the release notes will be created in the specified folder, and will probably need be copied by a task such as 'Publish Artifacts' to your final required location.

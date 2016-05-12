@@ -96,7 +96,7 @@ function Get-Build
 
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=2.0"
   	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
-  	$jsondata.value 
+  	$jsondata 
 }
 
 function Get-BuildsInRelease
@@ -138,7 +138,7 @@ function Invoke-GetCommand
     $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
     $webclient.Encoding = [System.Text.Encoding]::UTF8
 	
-	write-verbose "REST Call [$uri]"
+	##write-verbose "REST Call [$uri]"
     $webclient.DownloadString($uri)
 }
 
