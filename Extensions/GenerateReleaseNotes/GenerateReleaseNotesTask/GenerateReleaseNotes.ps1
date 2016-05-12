@@ -91,10 +91,10 @@ function Get-Build
     (
     $tfsUri,
     $teamproject,
-    $buildnumber
+    $buildid
     )
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?api-version=2.0&buildnumber=$($buildnumber)"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=2.0"
   	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
   	$jsondata.value 
 }
@@ -116,22 +116,14 @@ function Get-BuildsInRelease
     $uri = "$($tfsUri)/$($teamproject)/_apis/release/releases$($releaseid)"
   	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
   	# get the build IDs
-    $jsondata.artifacts.definitionReference.version.id
-}
-
-function Get-BuildDefinitionId
-{
-    param
-    (
-    $tfsUri,
-    $teamproject,
-    $defname
-    )
-
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions?api-version=2.0&name=$($defname)"
-  	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
-  	$jsondata.value.id 
-
+    $buildIds = $jsondata.artifacts.definitionReference.version.id
+	$builds = @()
+	foreach ($id in $buildIds)
+	{
+	  	write-verbose "Getting build details for BuildID [$id]"    
+	    $builds += Get-Build -tfsUri $tfsUri -teamproject $teamproject -buildid $id
+	}
+	$builds
 }
 
 function Invoke-GetCommand
@@ -288,16 +280,9 @@ Write-Verbose "buildnumber = [$env:BUILD_BUILDNUMBER]"
 
 if ($releaseid -eq $null)
 {
-	Write-Verbose "Getting details of build [$defname] from server [$collectionUrl/$teamproject]"
-	$defId = Get-BuildDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -defname $defname 
-	
-	Write-Verbose "Should be the same  [$buildnumber] and [$buildid]"
-	
-	write-verbose "Getting build number [$buildnumber] using definition ID [$defId]"    
-	$builds = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -buildnumber $buildnumber
-		Write-Verbose "Should be the same  [$buildnumber] and [$buildid] and [$builds]"
-	
-	$builds = @($buildid)
+	write-verbose "Getting build details for BuildID [$buildid]"    
+	$build = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid
+	$builds = @($build)
 } else
 {
 	Write-Verbose "Getting details of release [$releaseid] from server [$collectionUrl/$teamproject]"
