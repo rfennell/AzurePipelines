@@ -138,7 +138,7 @@ function Invoke-GetCommand
     $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
     $webclient.Encoding = [System.Text.Encoding]::UTF8
 	
-	##write-verbose "REST Call [$uri]"
+	write-verbose "REST Call [$uri]"
     $webclient.DownloadString($uri)
 }
 
