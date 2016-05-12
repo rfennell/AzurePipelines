@@ -99,6 +99,23 @@ function Get-Build
   	$jsondata.value 
 }
 
+function Get-BuildsInRelease
+{
+
+    param
+    (
+    $tfsUri,
+    $teamproject,
+    $releaseid
+    )
+
+	$tfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com"
+	
+    $uri = "$($tfsUri)/$($teamproject)/_apis/release/releases$($releaseid)"
+  	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
+  	$jsondata.value 
+}
+
 function Get-BuildDefinitionId
 {
     param
@@ -180,20 +197,38 @@ $buildid = $env:BUILD_BUILDID
 $defname = $env:BUILD_DEFINITIONNAME
 $buildnumber = $env:BUILD_BUILDNUMBER
 
+Write-Verbose "collectionUrl = [$env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI]"
+Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
+Write-Verbose "releaseid = [$env:RELEASE_RELEASEID]"
+Write-Verbose "buildid = [$env:BUILD_BUILDID]"
+Write-Verbose "defname = [$env:BUILD_DEFINITIONNAME]"
+Write-Verbose "buildnumber = [$env:BUILD_BUILDNUMBER]"
+
+
 if ($releaseid -eq $null)
 {
 	Write-Verbose "Getting details of build [$defname] from server [$collectionUrl/$teamproject]"
 	$defId = Get-BuildDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -defname $defname 
+	
+	Write-Verbose "Should be the same  [$buildnumber] and [$buildid]
+	
 	write-verbose "Getting build number [$buildnumber] using definition ID [$defId]"    
-	$build = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -buildnumber $buildnumber
-
-	Write-Verbose "Getting associated work items"
-	$workitems = Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
-	Write-Verbose "Getting associated changesets/commits"
-	$changesets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
+	$builds = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -buildnumber $buildnumber
 } else
 {
 	Write-Verbose "Getting details of release [$releaseid] from server [$collectionUrl/$teamproject]"
+	$builds = Get-BuildsInRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid
+}
+
+foreach ($id in $builds)
+{
+	
+	Write-Verbose "Getting associated work items"
+	$workitems = Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $id 
+	Write-Verbose "Getting associated changesets/commits"
+	$changesets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $id 
+
+	
 }
 
 
