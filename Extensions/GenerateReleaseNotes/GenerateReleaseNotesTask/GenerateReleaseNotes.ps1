@@ -137,6 +137,8 @@ function Invoke-GetCommand
     $webclient = new-object System.Net.WebClient
     $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
     $webclient.Encoding = [System.Text.Encoding]::UTF8
+	
+	write-verbose "REST Call [$uri]"
     $webclient.DownloadString($uri)
 }
 
@@ -289,14 +291,13 @@ if ($releaseid -eq $null)
 	$builds = Get-BuildsInRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid
 }
 
-foreach ($id in $builds)
+foreach ($build in $builds)
 {
-	Write-Verbose "Getting associated work items for build [$id]"
-	$workitems = Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $id 
-	Write-Verbose "Getting associated changesets/commits for build [$id]"
-	$changesets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $id 
+	Write-Verbose "Getting associated work items for build [$($build.id)]"
+	$workitems = Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $($build.id) 
+	Write-Verbose "Getting associated changesets/commits for build [$($build.id)]"
+	$changesets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $($build.id) 
 }
-
 
 $template = Get-Template -templateLocation $templateLocation -templatefile $templatefile -inlinetemplate $inlinetemplate
 $data = Process-Template -template $template -workItems $workItems -changesets $changesets
