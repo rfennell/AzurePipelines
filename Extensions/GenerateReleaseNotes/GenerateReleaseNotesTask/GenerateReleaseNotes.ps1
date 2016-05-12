@@ -210,7 +210,7 @@ if ($releaseid -eq $null)
 	Write-Verbose "Getting details of build [$defname] from server [$collectionUrl/$teamproject]"
 	$defId = Get-BuildDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -defname $defname 
 	
-	Write-Verbose "Should be the same  [$buildnumber] and [$buildid]
+	Write-Verbose "Should be the same  [$buildnumber] and [$buildid]"
 	
 	write-verbose "Getting build number [$buildnumber] using definition ID [$defId]"    
 	$builds = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -buildnumber $buildnumber
@@ -227,8 +227,6 @@ foreach ($id in $builds)
 	$workitems = Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $id 
 	Write-Verbose "Getting associated changesets/commits"
 	$changesets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $id 
-
-	
 }
 
 
