@@ -156,7 +156,7 @@ function Get-Template
 	{
     	write-Verbose "Using in-line template"
 		# it appears as single line we need to split it out
-		$template = $inlinetemplate $addresses -split "`n"
+		$template = $inlinetemplate -split "`n"
 	}
 	
 	$template
