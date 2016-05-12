@@ -122,8 +122,10 @@ function Invoke-GetCommand
     )
     $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
     $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
-	$headers = @{Authorization = "Bearer $personalAccessToken"}
-    Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing
+    $webclient = new-object System.Net.WebClient
+    $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
+    $webclient.Encoding = [System.Text.Encoding]::UTF8
+    $webclient.DownloadString($uri)
 }
 
 function render() {
