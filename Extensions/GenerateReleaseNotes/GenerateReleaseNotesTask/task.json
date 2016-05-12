@@ -24,12 +24,47 @@
          "helpMarkDown": "The name of the Markdown file to export"
       },
       {
+      "name": "templateLocation",
+      "type": "pickList",
+      "label": "Template Location",
+      "defaultValue": "",
+      "required": true,
+      "options": {
+        "File": "File",
+        "InLine": "InLine"
+      },
+      "helpMarkDown": "Select the template file source, file in source control or in line."
+      },
+      {
          "name": "templatefile",
          "type": "filePath",
          "label": "Template file",
          "defaultValue": "",
          "required": true,
-         "helpMarkDown": "The name of the Markdown template."
+         "helpMarkDown": "The name of the Markdown template.",
+         "visibleRule": "templateLocation = File"
+      }
+      ,
+      {
+         "name": "inlinetemplate",
+         "type": "multiLine",
+         "label": "Template",
+         "defaultValue": "#Release notes for build $defname  
+**Build Number**  : $($build.buildnumber)    
+**Build started** : $("{0:dd/MM/yy HH:mm:ss}" -f [datetime]$build.startTime)     
+**Source Branch** : $($build.sourceBranch)  
+###Associated work items  
+@@WILOOP@@  
+* **$($widetail.fields.'System.WorkItemType') $($widetail.id)** [Assigned by: $($widetail.fields.'System.AssignedTo')]     $($widetail.fields.'System.Title') 
+@@WILOOP@@  
+###Associated change sets/commits  
+@@CSLOOP@@  
+* **ID $($csdetail.changesetid)$($csdetail.commitid)** $($csdetail.comment)    
+@@CSLOOP@@ ",
+         "required": true,
+         "helpMarkDown": "The Markdown template."
+         ,
+         "visibleRule": "templateLocation = InLine"
       }
    ],
   "instanceNameFormat": "Generate release notes",

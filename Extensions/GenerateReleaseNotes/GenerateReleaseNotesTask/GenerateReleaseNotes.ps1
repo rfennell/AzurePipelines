@@ -32,7 +32,13 @@ param (
     $outputfile ,
 
     [parameter(Mandatory=$false,HelpMessage="The markdown template file")]
-    $templatefile  
+    $templatefile ,
+	
+    [parameter(Mandatory=$false,HelpMessage="The inline markdown template")]
+    $inlinetemplate, 
+	
+	[parameter(Mandatory=$false,HelpMessage="Location of markdown template")]
+    $templateLocation 
 )
 
 # Set a flag to force verbose as a default
@@ -139,6 +145,8 @@ Add-Type -TypeDefinition @"
    }
 "@
 
+
+# Get the build and release details
 $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
 $teamproject = $env:SYSTEM_TEAMPROJECT
 $releaseid = $env:RELEASE_RELEASEID
@@ -146,9 +154,9 @@ $buildid = $env:BUILD_BUILDID
 $defname = $env:BUILD_DEFINITIONNAME
 $buildnumber = $env:BUILD_BUILDNUMBER
 
-if ($releaseid -eq $null)
+Write-Verbose "BUild [$buildid]"
+Write-Verbose "Release [$releaseid]"
 
-{
 
 	Write-Verbose "Getting details of build [$defname] from server [$collectionUrl/$teamproject]"
 	$defId = Get-BuildDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -defname $defname 
@@ -160,16 +168,22 @@ if ($releaseid -eq $null)
 	Write-Verbose "Getting associated changesets/commits"
 	$changesets = Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid 
 
+Write-Verbose $inlinetemplate
+
+if ($inlinetemplate -eq 'File')
+{
+    write-Verbose "Loading template file [$templatefile]"
+	$template = Get-Content $templatefile
 } else 
 {
-	
+    write-Verbose "Using in-line template"
+	$template = $inlinetemplate
 }
 
-$template = Get-Content $templatefile
 
 if ($template.count -gt 0)
 {
-    write-Verbose "Processing template file [$templatefile]"
+    write-Verbose "Processing template file"
 	$mode = [Mode]::BODY
 	#process each line
 	ForEach ($line in $template)
