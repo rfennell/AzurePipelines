@@ -99,7 +99,7 @@ function Get-Build
   	$jsondata 
 }
 
-function Get-BuildsInRelease
+function Get-Release
 {
 
     param
@@ -111,12 +111,25 @@ function Get-BuildsInRelease
 
 	# fixup the URL
 	# bit of a hack whilst the RM API is in preview
-	$tfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
+	$rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
 	
-    $uri = "$($tfsUri)/$($teamproject)/_apis/release/releases/$($releaseid)"
+    $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseid)"
   	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
-  	# get the build IDs
-    $buildIds = $jsondata.artifacts.definitionReference.version.id
+  	$jsondata
+}
+
+function Get-BuildsInRelease
+{
+
+    param
+    (
+    $tfsUri,
+    $teamproject,
+    $release
+    )
+
+	# get the build IDs
+    $buildIds = $release.artifacts.definitionReference.version.id
 	$builds = @()
 	foreach ($id in $buildIds)
 	{
@@ -138,7 +151,7 @@ function Invoke-GetCommand
     $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
     $webclient.Encoding = [System.Text.Encoding]::UTF8
 	
-	write-verbose "REST Call [$uri]"
+	#write-verbose "REST Call [$uri]"
     $webclient.DownloadString($uri)
 }
 
@@ -288,7 +301,8 @@ if ($releaseid -eq $null)
 } else
 {
 	Write-Verbose "Getting details of release [$releaseid] from server [$collectionUrl/$teamproject]"
-	$builds = Get-BuildsInRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid
+	$release = Get-Release -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid
+	$builds = Get-BuildsInRelease -tfsUri $collectionUrl -teamproject $teamproject -release $release
 }
 
 foreach ($build in $builds)
@@ -300,9 +314,9 @@ foreach ($build in $builds)
 }
 
 $template = Get-Template -templateLocation $templateLocation -templatefile $templatefile -inlinetemplate $inlinetemplate
-$data = Process-Template -template $template -workItems $workItems -changesets $changesets
+$outputmarkdown = Process-Template -template $template -workItems $workItems -changesets $changesets
 write-Verbose "Writing output file [$outputfile]."
-Set-Content $outputfile $data
+Set-Content $outputfile $outputmarkdown
 
 
 
