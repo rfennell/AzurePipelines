@@ -275,6 +275,7 @@ function Process-Template
         # this line is to provide support the the legacy build only template
         # if using a release template it will be reset when processing tags
         $builditem = $builds
+		$build = $builditem.build # using two variables for legacy support
         
 		#process each line
 		For ($index =0; $index -lt $template.Count; $index++)
