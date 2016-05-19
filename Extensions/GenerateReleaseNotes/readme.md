@@ -44,13 +44,13 @@ The only real change from standard markdown is the use of the @@TAG@@ blocks to 
 
 What is done behind the scenes is that each line of the template is evaluated as a line of PowerShell in turn, the in memory versions of the objects are used to provide the runtime values. The available objects to get data from at runtime are
 
-* $build – the build details returned by the REST call Get Build Details
-* $workItems – the list of work items associated with the build returned by the REST call Build Work Items
-* $widetail – the details of a given work item inside the loop returned by the REST call Get Work Item
-* $changesets – the list of changeset/commit associated with the build build returned by the REST call Build Changes
-* $csdetail – the details of a given changeset/commit inside the loop by the REST call to Changes or Commit depending on whether it is a GIT or TFVC based build
+* $release – the release details returned by the REST call Get Release Details (only available for release based usage of the task)
+* $build – the build details returned by the REST call Get Build Details. If used within a release, as opposed to a build, this is set to each build within the @@BUILDLOOP@@ block. For build based release notes it is set once.
+* $widetail – the details of a given work item inside the loop returned by the REST call Get Work Item (within the @@WILOOP@@@ block)
+* $csdetail – the details of a given changeset/commit inside the loop by the REST call to Changes or Commit depending on whether it is a GIT or TFVC based build (within the @@CSLOOP@@@ block)
 
-There is a [templatedump.md file in my in the PowerShell Scripts repo](https://github.com/rfennell/VSTSPowershell/blob/master/REST/templatedump.md) that just dumps out all the available fields  to help you find all the available options
+There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes and dumps out all the available fields (to help you find all the available options) for both builds and releases  
+
 ## Usage
 Once the extension is added to your TFS or VSTS server, the task should be available in the utilities section of 'add tasks'
 
