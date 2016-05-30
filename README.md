@@ -6,8 +6,7 @@
 https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/23/badge) - GenerateReleaseNotes Extension (triggers release to VSTS Marketplace)
 
 ![Build Status - Tyepmock Runner Extension](
-https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/24/badg
-) - Typemock Runner Extension (triggers release to VSTS Marketplace)
+https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/24/badge) - Typemock Runner Extension (triggers release to VSTS Marketplace)
 
 
 # vNextBuild Tasks and Resources
