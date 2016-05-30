@@ -11,12 +11,6 @@
   "galleryFlags": [
         "Public"
     ],
-  "scopes": [
-        "vso.build",
-        "vso.code",
-        "vso.release",
-        "vso.work"
-    ],
   "targets": [
          {
              "id": "Microsoft.VisualStudio.Services"
