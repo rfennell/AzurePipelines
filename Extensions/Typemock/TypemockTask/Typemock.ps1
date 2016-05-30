@@ -94,7 +94,7 @@ if($testAssemblyFiles)
 	
 	if (![string]::IsNullOrEmpty($runSettingsFile) -and  [System.IO.Path]::HasExtension($runSettingsFile))
 	{
-		if (!Test-Path($runSettingsFile))
+		if (!(Test-Path($runSettingsFile)))
 		{
 			Write-Warning ("Run settings file does not exist on: $runSettingsFile");
 		}
@@ -104,7 +104,7 @@ if($testAssemblyFiles)
 		}
 		else
 		{
-			if (!Test-Path($testResultsDirectory))
+			if (!(Test-Path($testResultsDirectory)))
 			{
 				[System.IO.Directory]::CreateDirectory($testResultsDirectory);
 			}
