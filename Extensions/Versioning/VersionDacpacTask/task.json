@@ -19,15 +19,19 @@
          "defaultValue": "$(Build.SourcesDirectory)",
          "required": true,
          "helpMarkDown": "Source folder for dacpac files, can be root as it will find all dacpacs recursively"
-      },
-      {
-         "name": "VersionNumber",
-         "type": "string",
-         "label": "Version Number",
-         "defaultValue": "$(Build.BuildNumber)",
-         "required": true,
-         "helpMarkDown": "Version number to apply to files, should be in '1.2.3.4' format"
       }
+      ,
+      {
+         "name": "ToolPath",
+         "type": "string",
+         "label": "ToolPath",
+         "defaultValue": "",
+         "required": false,
+         "groupName":"advanced",
+         "helpMarkDown": "The path to the folder containing the files Microsoft.SqlServer.Dac.dll and Microsoft.SqlServer.Dac.Extensions.dll if not in default location"
+      }
+
+
    ],
    "instanceNameFormat": "Version Dacpac files",
    "execution": {

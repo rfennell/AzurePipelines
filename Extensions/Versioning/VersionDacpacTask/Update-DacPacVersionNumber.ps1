@@ -29,7 +29,11 @@ param (
 
 
     [Parameter(Mandatory)]
-    [string]$VersionNumber
+    [string]$VersionNumber,
+
+
+    [string]$ToolPath
+
 )
 
 function Update-DacpacVerion
@@ -39,7 +43,9 @@ function Update-DacpacVerion
         [String]$Path,
 
         [Parameter(Mandatory)]
-        [System.Version]$VersionNumber
+        [System.Version]$VersionNumber,
+
+        [string]$ToolPath
     )
     
     #Specifying the Error Preference within the function scope to help catch errors
@@ -49,17 +55,36 @@ function Update-DacpacVerion
     # Add SQL methods from Dlls, using Test-Path to determine which version to import based on VS version
     try
     {
-        if (Test-Path 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll') 
+        if (![string]::IsNullOrEmpty($ToolPath))
         {
-            Write-Verbose 'Found SQLServer DLLs for VS2015, attempting to import using Add-Type' -verbose
-            Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll'
-            Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.dll'
-        }
-        elseif (Test-Path 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll' )
+            Write-Verbose 'No user provided ToolPath, so searching default locatons' -verbose
+
+            if (Test-Path 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll') 
+            {
+                Write-Verbose 'Found SQLServer DLLs for VS2015, attempting to import using Add-Type' -verbose
+                Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll'
+                Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.dll'
+            }
+            elseif (Test-Path 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll' )
+            {
+                Write-Verbose 'Found SQLServer DLLs for VS2013, attempting to import using Add-Type' -verbose
+                Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll'
+                Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.dll'
+            } else 
+            {
+                Write-error "Cannot find DLLs in expected default locations"
+            }
+        } else 
         {
-            Write-Verbose 'Found SQLServer DLLs for VS2013, attempting to import using Add-Type' -verbose
-            Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll'
-            Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.dll'
+            Write-Verbose "Looking for tools in user provided [$ToolPath]" -verbose
+            if (Test-Path "$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll") 
+            {
+                Add-Type -Path "$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"
+                Add-Type -Path "$ToolPath\Microsoft.SqlServer.Dac.dll"
+            } else 
+            {
+                Write-error "Invalid tool path provided cannot load DLLs"
+            }
         }
     }
     catch
@@ -108,5 +133,5 @@ Write-Verbose "Found $($DacPacFiles.Count) dacpacs. Beginning to apply updated v
 
 Foreach ($DacPac in $DacPacFiles)
 {
-    Update-DacpacVerion -Path $DacPac.FullName -VersionNumber $VersionNumber
+    Update-DacpacVerion -Path $DacPac.FullName -VersionNumber $VersionNumber -ToolPath $ToolPath
 }
