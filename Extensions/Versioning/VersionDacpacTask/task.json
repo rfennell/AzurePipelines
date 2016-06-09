@@ -11,6 +11,13 @@
       "Patch": 0
    },
    "minimumAgentVersion": "1.83.0",
+     "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
    "inputs": [
       {
          "name": "Path",
@@ -19,6 +26,14 @@
          "defaultValue": "$(Build.SourcesDirectory)",
          "required": true,
          "helpMarkDown": "Source folder for dacpac files, can be root as it will find all dacpacs recursively"
+      },
+      {
+         "name": "VersionNumber",
+         "type": "string",
+         "label": "Version Number",
+         "defaultValue": "$(Build.BuildNumber)",
+         "required": true,
+         "helpMarkDown": "Version number to apply to files, should be in '1.2.3.4' format"
       }
       ,
       {
