@@ -1,6 +1,6 @@
 #Release notes for build $defname  
 **Build Number**  : $($build.buildnumber)    
-**Build completed** $("{0:dd/MM/yy HH:mm:ss}" -f [datetime]$build.finishTime)     
+**Build started** : $("{0:dd/MM/yy HH:mm:ss}" -f [datetime]$build.startTime)  
 **Source Branch** $($build.sourceBranch)  
   
 ###Associated work items  
