@@ -1,3 +1,7 @@
+V1.0.0 - Original Release
+V1.2.x - Skipped
+V1.3.x - Added tool path choice for DACPACs
+
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of 
 

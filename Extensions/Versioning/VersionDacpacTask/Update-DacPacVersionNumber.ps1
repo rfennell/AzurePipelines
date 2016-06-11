@@ -55,7 +55,7 @@ function Update-DacpacVerion
     # Add SQL methods from Dlls, using Test-Path to determine which version to import based on VS version
     try
     {
-        if (![string]::IsNullOrEmpty($ToolPath))
+        if ([string]::IsNullOrEmpty($ToolPath))
         {
             Write-Verbose 'No user provided ToolPath, so searching default locatons' -verbose
 
