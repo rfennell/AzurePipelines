@@ -36,6 +36,50 @@ param (
 
 )
 
+
+function Get-Toolpath
+{
+    param(
+        $ToolPath
+    )
+
+    if ([string]::IsNullOrEmpty($ToolPath.Trim()))
+    {
+        Write-Verbose 'No user provided ToolPath, so searching default locatons' -verbose
+        $ToolPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
+        if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+        {
+           Write-Verbose 'Found SQL2014 assemblies' -verbose
+        } else
+        {
+            Write-Verbose 'Cound not find SQL2014 assemblies' -verbose
+            $ToolPath = 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
+            if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+            {
+                 Write-Verbose 'Found SQL2012 assemblies' -verbose 
+            }
+            else
+            {
+                 Write-error "Cannot find DLLs in expected SQL 2012 or 2014 default locations"
+            }
+        }  
+    } else
+    {
+        Write-Verbose "Looking for tools in user provided [$ToolPath]" -verbose
+        if (Test-Path "$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll") 
+        {
+             Write-Verbose 'Found assemblies in user provide location' -verbose 
+        }
+        else
+        {
+             Write-error 'Cannont find assemblies in user provide location' -verbose 
+        }
+    }
+
+    $ToolPath
+
+}
+
 function Update-DacpacVerion
 {
     param(
@@ -51,41 +95,13 @@ function Update-DacpacVerion
     #Specifying the Error Preference within the function scope to help catch errors
     $ErrorActionPreference = 'Stop'
 
+    $ToolPath = Get-Toolpath -ToolPath $ToolPath
 
     # Add SQL methods from Dlls, using Test-Path to determine which version to import based on VS version
     try
     {
-        if ([string]::IsNullOrEmpty($ToolPath))
-        {
-            Write-Verbose 'No user provided ToolPath, so searching default locatons' -verbose
-
-            if (Test-Path 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll') 
-            {
-                Write-Verbose 'Found SQLServer DLLs for VS2015, attempting to import using Add-Type' -verbose
-                Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll'
-                Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.dll'
-            }
-            elseif (Test-Path 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll' )
-            {
-                Write-Verbose 'Found SQLServer DLLs for VS2013, attempting to import using Add-Type' -verbose
-                Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll'
-                Add-Type -Path 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.dll'
-            } else 
-            {
-                Write-error "Cannot find DLLs in expected default locations"
-            }
-        } else 
-        {
-            Write-Verbose "Looking for tools in user provided [$ToolPath]" -verbose
-            if (Test-Path "$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll") 
-            {
-                Add-Type -Path "$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"
-                Add-Type -Path "$ToolPath\Microsoft.SqlServer.Dac.dll"
-            } else 
-            {
-                Write-error "Invalid tool path provided cannot load DLLs"
-            }
-        }
+        Add-Type -Path "$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"
+        Add-Type -Path "$ToolPath\Microsoft.SqlServer.Dac.dll"
     }
     catch
     {
