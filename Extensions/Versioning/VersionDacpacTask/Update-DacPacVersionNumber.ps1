@@ -24,13 +24,8 @@
 [cmdletbinding()]
 param (
 
-    [Parameter(Mandatory)]
     [String]$Path,
-
-
-    [Parameter(Mandatory)]
     [string]$VersionNumber,
-
 
     [string]$ToolPath
 
@@ -60,7 +55,7 @@ function Get-Toolpath
             }
             else
             {
-                 Write-error "Cannot find DLLs in expected SQL 2012 or 2014 default locations"
+                 Write-error "Cannot find DLLs in expected SQL 2012 or 2014 default locations" 
             }
         }  
     } else
@@ -140,6 +135,9 @@ function Update-DacpacVerion
     }
 
 }
+
+# check if we are in test mode i.e. 
+If ($VersionNumber -eq "" -and $path -eq "") {Exit}
 
 $VersionNumber = ($VersionNumber -split '_' )[-1]
 
