@@ -14,7 +14,7 @@ param
 
 $VerbosePreference ='Continue' # equiv to -verbose
 
-import-module "stylecop.psm1" 
+import-module "$PSScriptRoot\stylecop.psm1" 
 import-module "Microsoft.TeamFoundation.DistributedTask.Task.Common" # to get the upload summary methods
 
 
