@@ -34,6 +34,14 @@
       "helpMarkDown": "Treat StyleCop violations errors as warnings."
     },
     {
+      "name": "sourcefolder",
+      "type": "string",
+      "label": "Source File Folder",
+      "defaultValue": "$(build.SourcesDirectory)",
+      "required": true,
+      "helpMarkDown": "The root folder to scan for project files."
+    },
+    {
       "name": "maximumViolationCount",
       "type": "string",
       "label": "Max. Violation Count",

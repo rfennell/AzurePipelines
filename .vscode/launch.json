@@ -6,7 +6,7 @@
             "name": "PowerShell",
             "type": "PowerShell",
             "request": "launch",
-            "program": "${workspaceRoot}/Extensions/Tests/Run-Tests.ps1"
+            "program": "${workspaceRoot}/Extensions/Tests/Invoke-Tests.ps1"
             // Or to run the current file
             // "program": "${file}"
         }
