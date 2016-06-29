@@ -156,7 +156,8 @@ AppPackages/
 sql/
 *.Cache
 ClientBin/
-[Ss]tyle[Cc]op.*
+# not needed in this case as this is a stylecop task project
+#[Ss]tyle[Cc]op.*
 ~$*
 *~
 *.dbmdl
@@ -193,3 +194,6 @@ GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
 /Package
+
+# Powershell for this project
+Extensions/Tests/Extensions/StyleCopTask/logs
