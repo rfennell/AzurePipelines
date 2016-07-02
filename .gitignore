@@ -196,4 +196,4 @@ ModelManifest.xml
 /Package
 
 # Powershell for this project
-Extensions/Tests/Extensions/StyleCopTask/logs
+Tests/Extensions/StyleCopTask/logs

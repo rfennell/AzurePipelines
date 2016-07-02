@@ -1,5 +1,5 @@
 # Load the script under test
-. "$PSScriptRoot\..\..\..\versioning\versiondacpactask\Update-DacPacVersionNumber.ps1" 
+. "$PSScriptRoot\..\..\..\extensions\versioning\versiondacpactask\Update-DacPacVersionNumber.ps1" 
 
 Describe "Use SQL2012 ToolPath settings" {
     Mock Test-Path  {return $false} -ParameterFilter { 
