@@ -33,7 +33,7 @@ import-module "Microsoft.TeamFoundation.DistributedTask.Task.Common" # to get th
             -sourcefolder $sourcefolder `
             -verbose
 
-# Set if the build should be failed or not getting the results from the file to avoid 32/64 issues
+# Set if the build should be failed or not getting the results from the file to avoid 32/64 bit issues
 $result = Import-Clixml $sourcefolder\results.xml
 			
 # the output summary to the artifact folder and the VSTS summary

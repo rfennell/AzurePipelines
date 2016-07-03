@@ -1,6 +1,11 @@
 ### StyleCop Runner Task ###
 A task to run [StyleCop 4.7.59.0](https://github.com/Visual-Stylecop/Visual-StyleCop), not the older series of versions [on codeplex](https://stylecop.codeplex.com/)
 
+Releases
+- 1.1 First public release
+- 1.2 Updated with StyleCOp 4.7.59.0
+- 1.6 (Skipped previous point releases whilst migrating to release pipeline) fixes dictionary loading issues due to 64/32bit handling
+
 The task takes the following arguments
 - TreatStyleCopViolationsErrorsAsWarnings - Treat StyleCop violations errors as warnings (default false).
 

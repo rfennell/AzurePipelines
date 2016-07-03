@@ -44,6 +44,6 @@ $result = Invoke-StyleCopForFolderStructure `
             -verbose
 
 # Need to get the results back to the calling script
-# As we have have changed 64 to 32 using a file as it is trusted
+# As we have have changed 64 to 32 bit using a file as it is trusted
 $result | Export-Clixml $sourcefolder\results.xml
 
