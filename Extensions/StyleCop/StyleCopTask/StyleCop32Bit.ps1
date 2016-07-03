@@ -21,7 +21,7 @@ $VerbosePreference ='Continue' # equiv to -verbose
 if ($env:Processor_Architecture -ne "x86")   
 { 
     # Get the command parameters
-    $args = $myinvocation.BoundParameters.GetEnumerator() | ForEach-Object {" -$($_.Key) $($_.Value)"}
+    $args = $myinvocation.BoundParameters.GetEnumerator() | ForEach-Object {$($_.Value)}
     write-warning 'Launching x86 PowerShell'
     &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
     exit
@@ -42,4 +42,8 @@ $result = Invoke-StyleCopForFolderStructure `
             -summaryFileName $summaryFileName `
             -sourcefolder $sourcefolder `
             -verbose
+
+# Need to get the results back to the calling script
+# As we have have changed 64 to 32 using a file as it is trusted
+$result | Export-Clixml $sourcefolder\results.xml
 

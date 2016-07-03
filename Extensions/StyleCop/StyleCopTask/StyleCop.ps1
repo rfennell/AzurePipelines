@@ -33,26 +33,24 @@ import-module "Microsoft.TeamFoundation.DistributedTask.Task.Common" # to get th
             -sourcefolder $sourcefolder `
             -verbose
 
+# Set if the build should be failed or not getting the results from the file to avoid 32/64 issues
+$result = Import-Clixml $sourcefolder\results.xml
+			
 # the output summary to the artifact folder and the VSTS summary
 $summaryMdPath = (join-path $loggingfolder  $summaryFileName)
 Write-Verbose ("Placing summary of test run in [{0}]" -f $summaryMdPath)
-Add-Content $summaryMdPath "StyleCop"
+Add-Content $summaryMdPath "###StyleCop"
 Add-Content $summaryMdPath ($result.Summary)
 Add-Content $summaryMdPath ("`nStyleCop found [{0}] violations across [{1}] projects" -f $result.TotalViolations, $result.ProjectsScanned)
+
 Write-verbose "Uploading summary results file"
 Write-Host "##vso[build.uploadsummary]$summaryMdPath"
 
-# Set if the build should eb failed or not
 if ($result.OverallSuccess -eq $false)
 {
    Write-Error ("StyleCop found [{0}] violations across [{1}] projects" -f $result.TotalViolations, $result.ProjectsScanned)
 } 
-elseif ($result.TotalViolations -gt 0 -and $treatViolationsErrorsAsWarnings -eq $true)
-{
-    Write-Warning ("StyleCop found [{0}] violations warnings across [{1}] projects" -f $result.TotalViolations, $result.ProjectsScanned)
-} 
 else
 {
-   Write-Verbose ("StyleCop found [{0}] violations warnings across [{1}] projects" -f $result.TotalViolations, $result.ProjectsScanned) 
+   Write-warning ("StyleCop found [{0}] violations warnings across [{1}] projects" -f $result.TotalViolations, $result.ProjectsScanned)
 }
-
