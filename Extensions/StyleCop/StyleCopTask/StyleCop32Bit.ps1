@@ -14,21 +14,22 @@ param
 
 $VerbosePreference ='Continue' # equiv to -verbose
 
+# Using this extra script so I can just reload in 32bit the bits I need
+# This way of doing it seems the least complex, means the module and 
+# VSTS task script don't have to worry over 32/64bit issues
+
 if ($env:Processor_Architecture -ne "x86")   
 { 
-    
+    # Get the command parameters
+    $args = $myinvocation.BoundParameters.GetEnumerator() | ForEach-Object {" -$($_.Key) $($_.Value)"}
     write-warning 'Launching x86 PowerShell'
-    # Build the command line
-    $file = "$($myinvocation.Mycommand.path) -treatStyleCopViolationsErrorsAsWarnings $treatStyleCopViolationsErrorsAsWarnings -maximumViolationCount $maximumViolationCount  -showOutput $showOutput  -cacheResults $cacheResults -forceFullAnalysis $forceFullAnalysis -additionalAddInPath -additionalAddInPath -settingsFile $settingsFile -loggingfolder $loggingfolder -summaryFileName $summaryFileName -sourcefolder $sourcefolder "
-
-    &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noninteractive -noprofile -file $file -executionpolicy bypass 
+    &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
     exit
 }
 write-verbose "Running in 32bit PowerShell at this point as dictionaries loaded by StyleCop are 32bit only."
 
 import-module "$PSScriptRoot\stylecop.psm1" 
 
-# pickup the build locations from the environment
 $result = Invoke-StyleCopForFolderStructure `
             -treatStyleCopViolationsErrorsAsWarnings $treatStyleCopViolationsErrorsAsWarnings `
             -maximumViolationCount $maximumViolationCount `
