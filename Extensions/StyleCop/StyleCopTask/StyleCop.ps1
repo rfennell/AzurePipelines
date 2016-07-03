@@ -14,20 +14,13 @@ param
 
 $VerbosePreference ='Continue' # equiv to -verbose
 
-if ($env:Processor_Architecture -ne "x86")   
-{ write-warning 'Launching x86 PowerShell'
-&"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noninteractive -noprofile -file $myinvocation.Mycommand.path -executionpolicy bypass
-exit
-}
-write-verbose "Running in 32bit PowerShell at this point as dictionaries loaded by StyleCop are 32bit only."
 
-
-import-module "$PSScriptRoot\stylecop.psm1" 
 import-module "Microsoft.TeamFoundation.DistributedTask.Task.Common" # to get the upload summary methods
 
-
-# pickup the build locations from the environment
-$result = Invoke-StyleCopForFolderStructure `
+# Run the script that does the work in a separate script
+# so we can force it to be loaded in 32bit PowerShell as this is required for disctionary loading
+# We need to leave the non-Stylecop bit still function
+& "$PSScriptRoot\stylecop32bit.ps1" `
             -treatStyleCopViolationsErrorsAsWarnings $treatStyleCopViolationsErrorsAsWarnings `
             -maximumViolationCount $maximumViolationCount `
     	    -showOutput $showOutput `
