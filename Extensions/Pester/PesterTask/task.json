@@ -44,9 +44,9 @@
     },
     {
       "name": "run32Bit",
-      "type": "bool",
+      "type": "boolean",
       "label": "Run in 32bit",
-      "defaultValue": "$false",
+      "defaultValue": "False",
       "required": true,
       "helpMarkDown": "Run in 32bit",
       "groupName":"advanced"

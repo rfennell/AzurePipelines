@@ -1,5 +1,5 @@
 Releases
-- 3.3.5 - initial public release (targets Pester 3.3.5)
+- 1.0.x - initial public release (targets Pester 3.3.5)
 - 4.0.x - changed versioning to fit with new release pipeline (still targets Pester 3.3.5)
 
 A task to install and run PowerShell Pester based tests (Based on Pester 3.3.5)
