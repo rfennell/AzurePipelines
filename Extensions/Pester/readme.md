@@ -1,8 +1,13 @@
+Releases
+- 3.3.5 - initial public release (targets Pester 3.3.5)
+- 4.0.x - changed versioning to fit with new release pipeline (still targets Pester 3.3.5)
+
 A task to install and run PowerShell Pester based tests (Based on Pester 3.3.5)
-The task takes two parameters 
+The task takes three parameters 
 
 - The root folder to look for test scripts with the naming convention  *.tests.ps1. Defaults to $(Build.SourcesDirectory)\*
-- The results file name, defaults to $(Build.SourcesDirectory)\Test-Pester.XML
+- The results file name, defaults to $(Build.SourcesDirectory)\Test-Pester.XML. 
+- Should the instance of PowerShell used to run the test be forced to run in 32bit, defaults to false
 
 The Pester task does not in itself upload the test results, it just throws an error if tests fails. It relies on the standard test results upload task. 
 

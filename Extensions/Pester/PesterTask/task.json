@@ -11,13 +11,20 @@
   "author": "Richard Fennell",
   "version": {
     "Major": 1,
-    "Minor": 3,
+    "Minor": 0,
     "Patch": 0
   },
   "demands": [
     "vstest"
   ],
   "minimumAgentVersion": "1.82.0",
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
   "inputs": [
     {
       "name": "scriptFolder",
@@ -34,7 +41,19 @@
       "defaultValue": "$(Build.SourcesDirectory)\\Test-Pester.XML",
       "required": true,
       "helpMarkDown": "Results File (nUnit format)"
+    },
+    {
+      "name": "run32Bit",
+      "type": "bool",
+      "label": "Run in 32bit",
+      "defaultValue": "$false",
+      "required": true,
+      "helpMarkDown": "Run in 32bit",
+      "groupName":"advanced"
     }
+
+
+    
   ],
   "instanceNameFormat": "Pester Test Runner",
   "execution": {
