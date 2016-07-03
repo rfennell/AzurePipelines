@@ -19,7 +19,7 @@ if ($env:Processor_Architecture -ne "x86")
     
     write-warning 'Launching x86 PowerShell'
     # Build the command line
-    $file = "$myinvocation.Mycommand.path -treatStyleCopViolationsErrorsAsWarnings $treatStyleCopViolationsErrorsAsWarnings -maximumViolationCount $maximumViolationCount  -showOutput $showOutput  -cacheResults $cacheResults -forceFullAnalysis $forceFullAnalysis -additionalAddInPath -additionalAddInPath -settingsFile $settingsFile -loggingfolder $loggingfolder -summaryFileName $summaryFileName -sourcefolder $sourcefolder "
+    $file = "$($myinvocation.Mycommand.path) -treatStyleCopViolationsErrorsAsWarnings $treatStyleCopViolationsErrorsAsWarnings -maximumViolationCount $maximumViolationCount  -showOutput $showOutput  -cacheResults $cacheResults -forceFullAnalysis $forceFullAnalysis -additionalAddInPath -additionalAddInPath -settingsFile $settingsFile -loggingfolder $loggingfolder -summaryFileName $summaryFileName -sourcefolder $sourcefolder "
 
     &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noninteractive -noprofile -file $file -executionpolicy bypass 
     exit
