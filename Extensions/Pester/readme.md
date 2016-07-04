@@ -1,8 +1,8 @@
 Releases
 - 1.0.x - initial public release (targets Pester 3.3.5)
-- 4.0.x - changed versioning to fit with new release pipeline (still targets Pester 3.3.5)
+- 4.0.x - changed versioning to fit with new release pipeline (still targets Pester 3.4.0)
 
-A task to install and run PowerShell Pester based tests (Based on Pester 3.3.5)
+A task to install and run PowerShell Pester based tests 
 The task takes three parameters 
 
 - The root folder to look for test scripts with the naming convention  *.tests.ps1. Defaults to $(Build.SourcesDirectory)\*
