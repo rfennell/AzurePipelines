@@ -2,7 +2,7 @@ param
 (
     [string]$scriptFolder,
     [string]$resultsFile,
-    [bool]$run32Bit = $false
+    [boolean]$run32Bit 
 )
 
 $VerbosePreference ='Continue' # equiv to -verbose
@@ -15,7 +15,7 @@ if ($run32Bit -eq $false -and $env:Processor_Architecture -ne "x86")
     &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
     exit
 }
-write-verbose "Running in 32bit PowerShell"
+write-verbose "Running in $($env:Processor_Architecture) PowerShell"
 
 
 Import-Module $pwd\Pester.psd1
