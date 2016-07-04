@@ -4,7 +4,7 @@
  "version": "1.0.0",
  "name": "Pester Test Runner Build Task",
  "publisher": "richardfennellBM",
-  "description": "Run Pester tests without the need to install Pester in with the PMModule folder or in the source repo (Using Pester 3.3.5).",
+  "description": "Run Pester tests without the need to install Pester in with the PMModule folder or in the source repo (Using Pester 3.4.0).",
  "categories": [
     "Build and release"
   ],
