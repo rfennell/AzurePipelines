@@ -30,11 +30,10 @@ function Set-BuildDefinationVariable
 function Get-WebClient
 {
 
-    #$vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
-    #$personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
+    $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
+    $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
     $webclient = new-object System.Net.WebClient
-    #$webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
-    $webclient.UseDefaultCredentials = $true
+    $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
     $webclient.Encoding = [System.Text.Encoding]::UTF8
     $webclient.Headers["Content-Type"] = "application/json"
 
