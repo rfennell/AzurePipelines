@@ -1,0 +1,58 @@
+{
+  "id": "115030de-9ced-4d2f-ad01-8c42d20d0327",
+  "name": "BuildVariableTask",
+  "friendlyName": "Set variable on a build defintion",
+  "description": "Set variable on a build defintion",
+  "category": "Utility",
+  "visibility": [
+                "Build",
+                "Release"
+                ],
+  "author": "Richard Fennell",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "minimumAgentVersion": "1.82.0",
+    "inputs": [
+      {
+         "name": "variable",
+         "type": "string",
+         "label": "Variable to update",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The name of the build variable to update "
+      },
+      {
+      "name": "autoincrement",
+      "type": "pickList",
+      "label": "Autoincrement variable",
+      "defaultValue": "No",
+      "required": true,
+      "options": {
+        "Yes": "True",
+        "No": "False"
+      },
+      "helpMarkDown": "Select the template file source, file in source control or in line."
+      },
+       {
+         "name": "value",
+         "type": "string",
+         "label": "Value to set",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The value of the build variable to update ",
+          "visibleRule": "autoincrement = No"
+      }
+     
+   ],
+  "instanceNameFormat": "Update Build Variable",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\BuildVariableTask.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
