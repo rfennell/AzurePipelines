@@ -35,11 +35,6 @@
       "uri": "https://github.com/rfennell/vNextBuild/issues"
     }
   },
-  "screenshots": [
-    {
-      "path": "images/screenshot1.png"
-    }
-  ],
   "content": {
     "details": {
       "path": "readme.md"
