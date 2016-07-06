@@ -1,7 +1,7 @@
 param
 (
     $variable,
-    $autoincrement,
+    $mode,
     $value 
  )
 
@@ -80,16 +80,18 @@ Write-Verbose "builddefid = [$env:BUILD_DEFINITIONID]"
 # get the old definition
 $def = Get-BuildDefination -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid
 
+Write-Verbose "Current value of variable [$variable] is [$($def.variables.$variable.value)]"
 # make the change
-if ($autoincrement -eq $true)
+if ($mode -eq "Manual")
 {
-    $def.variables.$variable.value = "$([convert]::ToInt32($def.variables.$variable.value) +1)"
-    Write-Verbose "Auto-incrementing variable [$variable] to value [$($def.variables.$variable.value)]"
+    Write-Verbose "Manually updating variable"
+    $def.variables.$variable.value = "$value"
 } else 
 {
-    $def.variables.$variable.value = "$value"
-    Write-Verbose "Setting variable [$variable] to value [$($def.variables.$variable.value)]"
+    Write-Verbose "Autoincrementing variable"
+    $def.variables.$variable.value = "$([convert]::ToInt32($def.variables.$variable.value) +1)"
 }
+Write-Verbose "Setting variable [$variable] to value [$($def.variables.$variable.value)]"
 
 
 # write it back

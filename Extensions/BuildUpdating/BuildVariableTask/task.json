@@ -25,14 +25,14 @@
          "helpMarkDown": "The name of the build variable to update "
       },
       {
-      "name": "autoincrement",
+      "name": "mode",
       "type": "pickList",
-      "label": "Autoincrement variable",
-      "defaultValue": "No",
+      "label": "Update mode",
+      "defaultValue": "Manual",
       "required": true,
       "options": {
-        "Yes": "True",
-        "No": "False"
+        "Manual": "Manual",
+        "Autoincrement": "Autoincrement"
       },
       "helpMarkDown": "Select the template file source, file in source control or in line."
       },
@@ -43,7 +43,7 @@
          "defaultValue": "",
          "required": true,
          "helpMarkDown": "The value of the build variable to update ",
-          "visibleRule": "autoincrement = No"
+          "visibleRule": "mode = Manual"
       }
      
    ],
