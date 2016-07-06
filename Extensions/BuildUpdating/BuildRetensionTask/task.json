@@ -15,6 +15,20 @@
     "Patch": 0
   },
   "minimumAgentVersion": "1.82.0",
+     "inputs": [
+      {
+      "name": "mode",
+      "type": "pickList",
+      "label": "Build selection mode",
+      "defaultValue": "AllArtifacts",
+      "required": true,
+      "options": {
+        "AllArtifacts": "All build artifacts",
+        "Prime": "Only primary build artifact"
+      },
+      "helpMarkDown": "Select the builds to update."
+      }
+   ],
   "instanceNameFormat": "Update Build Retension",
   "execution": {
     "PowerShell": {

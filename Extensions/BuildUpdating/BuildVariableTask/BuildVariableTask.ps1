@@ -2,6 +2,7 @@ param
 (
     $variable,
     $mode,
+    $buildmode,
     $value 
  )
 
@@ -62,6 +63,63 @@ function Get-BuildDefination
     
 }
 
+function Update-Build
+{
+    Param(
+        $tfsuri,
+        $teamproject,
+        $builddefid,
+        $mode,
+        $variable,
+        $value
+      )
+    # get the old definition
+    $def = Get-BuildDefination -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid
+    Write-Verbose "Current value of variable [$variable] is [$($def.variables.$variable.value)]"
+    # make the change
+    if ($mode -eq "Manual")
+    {
+        Write-Verbose "Manually updating variable"
+        $def.variables.$variable.value = "$value"
+    } else 
+    {
+        Write-Verbose "Autoincrementing variable"
+        $def.variables.$variable.value = "$([convert]::ToInt32($def.variables.$variable.value) +1)"
+    }
+    Write-Verbose "Setting variable [$variable] to value [$($def.variables.$variable.value)]"
+    # write it back
+    $response = Set-BuildDefinationVariable -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -data $def
+
+}
+
+function Get-BuildsDefsForRelease
+{
+    param
+    (
+        $tfsuri,
+        $teamproject,
+        $releaseID
+    )
+
+    $webclient = Get-WebClient
+    
+    write-verbose "Getting Builds for Release releaseID"
+
+    $uri = "$($tfsUri)/$($teamproject)/_apis/release/releases/$($releaseId)?api-version=3.0-preview"
+    $response = $webclient.DownloadString($uri)
+
+    $data = $response | ConvertFrom-Json
+
+Write-Verbose $data
+
+    $return = @{}
+    $data.artifacts.Where({$_.type -eq "Build"}).ForEach( {
+        $return += $_.definitionReference.id
+    })
+
+    $return
+
+}
 
 # Output execution parameters.
 $VerbosePreference ='Continue' # equiv to -verbose
@@ -77,23 +135,17 @@ Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
 Write-Verbose "releaseid = [$env:RELEASE_RELEASEID]"
 Write-Verbose "builddefid = [$env:BUILD_DEFINITIONID]"
 
-# get the old definition
-$def = Get-BuildDefination -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid
-
-Write-Verbose "Current value of variable [$variable] is [$($def.variables.$variable.value)]"
-# make the change
-if ($mode -eq "Manual")
+Write-Verbose "Mode is $buildmode"
+if ($buildmode -eq "AllArtifacts")
 {
-    Write-Verbose "Manually updating variable"
-    $def.variables.$variable.value = "$value"
+    $builds = Get-Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid
+    foreach($id in $builds)
+    {
+        Update-Build -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable
+    }
 } else 
 {
-    Write-Verbose "Autoincrementing variable"
-    $def.variables.$variable.value = "$([convert]::ToInt32($def.variables.$variable.value) +1)"
+    Update-Build -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable
 }
-Write-Verbose "Setting variable [$variable] to value [$($def.variables.$variable.value)]"
 
-
-# write it back
-$response = Set-BuildDefinationVariable -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -data $def
 
