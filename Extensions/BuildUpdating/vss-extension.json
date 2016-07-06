@@ -1,0 +1,68 @@
+{
+ "manifestVersion": 1,
+ "id": "BM-VSTS-BuildUpdating-Tasks",
+ "version": "1.0.0",
+ "name": "Build Updating Tasks",
+ "publisher": "richardfennellBM",
+ "description": "A set of tasks that update VSTS Builds and Releases.",
+ "categories": [
+    "Build and release"
+  ],
+ "targets": [
+         {
+             "id": "Microsoft.VisualStudio.Services"
+         }
+     ],
+  "tags": [
+    "Release",
+    "Build"
+  ],   
+    "galleryFlags": [
+        "Public"
+    ],
+  "branding": {
+        "color": "#f97923",
+        "theme": "dark"
+  },
+  "icons": {
+      "default": "images/logo.png"
+  },
+   "links": {
+    "getstarted": {
+      "uri": "https://github.com/rfennell/vNextBuild/wiki/BuildRetension-Task"
+    },
+    "support": {
+      "uri": "https://github.com/rfennell/vNextBuild/issues"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot1.png"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "files": [
+    {
+      "path": "BuildRetensionTask"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "BuildRetension-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "BuildRetensionTask"
+      }
+    }
+  ]
+}

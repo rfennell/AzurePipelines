@@ -1,0 +1,26 @@
+{
+  "id": "6b42ca94-dc11-43dd-8b25-fcbf378b6b89",
+  "name": "BuildRetensionTask",
+  "friendlyName": "Set Retension on a Build",
+  "description": "Set Retension on a Build",
+  "category": "Utility",
+  "visibility": [
+                "Build",
+                "Release"
+                ],
+  "author": "Richard Fennell",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "minimumAgentVersion": "1.82.0",
+  "instanceNameFormat": "Update Build Retension",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\BuildRetensionTask.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
