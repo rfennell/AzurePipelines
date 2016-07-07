@@ -129,11 +129,7 @@ function Get-Release
 
     Write-Verbose "Getting details of release [$releaseid] from server [$tfsUri/$teamproject]"
 	
-	# fixup the URL
-	# bit of a hack whilst the RM API is in preview
-	$rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
-	
-    $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseid)"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/release/releases/$($releaseid)?api-version=3.0-preview"
   	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
   	$jsondata
 }
