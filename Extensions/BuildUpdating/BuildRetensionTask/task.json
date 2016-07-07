@@ -20,7 +20,7 @@
       "name": "mode",
       "type": "pickList",
       "label": "Build selection mode",
-      "defaultValue": "AllArtifacts",
+      "defaultValue": "Prime",
       "required": true,
       "options": {
         "AllArtifacts": "All build artifacts",

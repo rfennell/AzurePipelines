@@ -1,5 +1,5 @@
 Param(
-    mode
+    $mode
     )
 
 function Set-BuildRetension
@@ -40,7 +40,7 @@ function Get-BuildsForRelease
 
     $data = $response | ConvertFrom-Json
 
-    $return = @{}
+    $return = @()
     $data.artifacts.Where({$_.type -eq "Build"}).ForEach( {
         $return += $_.definitionReference.version.id
     })

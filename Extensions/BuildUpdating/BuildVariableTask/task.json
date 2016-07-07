@@ -16,6 +16,18 @@
   },
   "minimumAgentVersion": "1.82.0",
     "inputs": [
+        {
+      "name": "buildmode",
+      "type": "pickList",
+      "label": "Build selection mode",
+      "defaultValue": "Prime",
+      "required": true,
+      "options": {
+        "AllArtifacts": "All build artifacts",
+        "Prime": "Only primary build artifact"
+      },
+      "helpMarkDown": "Select the builds to update."
+      },
       {
          "name": "variable",
          "type": "string",
@@ -36,19 +48,7 @@
       },
       "helpMarkDown": "Select the mode to operate in."
       },
-       {
-      "name": "buildmode",
-      "type": "pickList",
-      "label": "Build selection mode",
-      "defaultValue": "AllArtifacts",
-      "required": true,
-      "options": {
-        "AllArtifacts": "All build artifacts",
-        "Prime": "Only primary build artifact"
-      },
-      "helpMarkDown": "Select the builds to update."
-      },
-       {
+      {
          "name": "value",
          "type": "string",
          "label": "Value to set",

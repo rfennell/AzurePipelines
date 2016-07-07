@@ -1,10 +1,11 @@
 param
 (
+    $buildmode,
     $variable,
     $mode,
-    $buildmode,
     $value 
  )
+
 
 function Set-BuildDefinationVariable
 {
@@ -20,8 +21,12 @@ function Set-BuildDefinationVariable
     
     write-verbose "Updating Build Definition $builddefID "
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=2.0&revision=$revision"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=2.0"
     $jsondata = $data | ConvertTo-Json -Depth 10 #else we don't get lower level items
+
+    Write-Verbose $uri
+    Write-Verbose $jsondata
+
 
     $response = $webclient.UploadString($uri,"PUT", $jsondata) 
     $response
@@ -34,9 +39,18 @@ function Get-WebClient
     $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
     $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
     $webclient = new-object System.Net.WebClient
-    $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
+
+    # usually I would expect to use this, but it fails with a 403 access error
+    # I am investigating
+#    $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
+    # this work on prem
+    $webclient.UseDefaultCredentials = $true
+
+
     $webclient.Encoding = [System.Text.Encoding]::UTF8
     $webclient.Headers["Content-Type"] = "application/json"
+
+    Write-Verbose $vssEndpoint.Authorization
 
     $webclient
 
@@ -62,6 +76,7 @@ function Get-BuildDefination
     $response
     
 }
+
 
 function Update-Build
 {
@@ -141,11 +156,11 @@ if ($buildmode -eq "AllArtifacts")
     $builds = Get-Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid
     foreach($id in $builds)
     {
-        Update-Build -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable
+        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable
     }
 } else 
 {
-    Update-Build -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable
+    Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable
 }
 
 
