@@ -1,4 +1,4 @@
-Set-StrictMode -Version Latest
+﻿Set-StrictMode -Version Latest
 
 function FunctionUnderTest
 {
@@ -37,6 +37,42 @@ function CommonParamFunction (
     [System.Int32]
     ${OutBuffer} ){
     return "Please strip me of my common parameters. They are far too common."
+}
+
+function PipelineInputFunction {
+    param(
+        [Parameter(ValueFromPipeline=$True)]
+        [int]$PipeInt1,
+        [Parameter(ValueFromPipeline=$True)]
+        [int[]]$PipeInt2,
+        [Parameter(ValueFromPipeline=$True)]
+        [string]$PipeStr,
+        [Parameter(ValueFromPipelineByPropertyName=$True)]
+        [int]$PipeIntProp,
+        [Parameter(ValueFromPipelineByPropertyName=$True)]
+        [int[]]$PipeArrayProp,
+        [Parameter(ValueFromPipelineByPropertyName=$True)]
+        [string]$PipeStringProp
+    )
+    begin{
+        $p = 0
+    }
+    process {
+        foreach($i in $input)
+        {
+            $p += 1
+            write-output @{
+                index=$p;
+                val=$i;
+                PipeInt1=$PipeInt1;
+                PipeInt2=$PipeInt2;
+                PipeStr=$PipeStr;
+                PipeIntProp=$PipeIntProp;
+                PipeArrayProp=$PipeArrayProp;
+                PipeStringProp=$PipeStringProp;
+            }
+        }
+    }
 }
 
 Describe "When calling Mock on existing function" {
@@ -405,7 +441,14 @@ Describe 'When calling Mock on a module-internal function.' {
         function InternalFunction { 'I am the internal function' }
         function PublicFunction   { InternalFunction }
         function PublicFunctionThatCallsExternalCommand { Start-Sleep 0 }
-        Export-ModuleMember -Function PublicFunction, PublicFunctionThatCallsExternalCommand
+
+        function FuncThatOverwritesExecutionContext {
+            param ($ExecutionContext)
+
+            InternalFunction
+        }
+
+        Export-ModuleMember -Function PublicFunction, PublicFunctionThatCallsExternalCommand, FuncThatOverwritesExecutionContext
     } | Import-Module -Force
 
     New-Module -Name TestModule2 {
@@ -413,11 +456,29 @@ Describe 'When calling Mock on a module-internal function.' {
         function InternalFunction2 { 'I am the second module, second function' }
         function PublicFunction   { InternalFunction }
         function PublicFunction2 { InternalFunction2 }
-        Export-ModuleMember -Function PublicFunction, PublicFunction2
+
+        function FuncThatOverwritesExecutionContext {
+            param ($ExecutionContext)
+
+            InternalFunction
+        }
+
+        function ScopeTest {
+            return Get-CallerModuleName
+        }
+
+        function Get-CallerModuleName {
+            [CmdletBinding()]
+            param ( )
+
+            return $PSCmdlet.SessionState.Module.Name
+        }
+
+        Export-ModuleMember -Function PublicFunction, PublicFunction2, FuncThatOverwritesExecutionContext, ScopeTest
     } | Import-Module -Force
 
     It 'Should fail to call the internal module function' {
-        { TestModule\InternalFuncTion } | Should Throw
+        { TestModule\InternalFunction } | Should Throw
     }
 
     It 'Should call the actual internal module function from the public function' {
@@ -454,10 +515,30 @@ Describe 'When calling Mock on a module-internal function.' {
         It 'Should call mocks from inside another mock' {
             TestModule2\PublicFunction2 | Should Be "I'm the mock who's been passed parameter Test"
         }
+
+        It 'Should work even if the function is weird and steps on the automatic $ExecutionContext variable.' {
+            TestModule2\FuncThatOverwritesExecutionContext | Should Be 'I am the second module internal function'
+            TestModule\FuncThatOverwritesExecutionContext | Should Be 'I am the mock test'
+        }
+
+        Mock -ModuleName TestModule2 Get-CallerModuleName -ParameterFilter { $false }
+
+        It 'Should call the original command from the proper scope if no parameter filters match' {
+            TestModule2\ScopeTest | Should Be 'TestModule2'
+        }
+
+        Mock -ModuleName TestModule2 Get-Content { }
+
+        It 'Does not trigger the mocked Get-Content from Pester internals' {
+            Mock -ModuleName TestModule2 Get-CallerModuleName -ParameterFilter { $false }
+            Assert-MockCalled -ModuleName TestModule2 Get-Content -Times 0 -Scope It
+        }
     }
 
-    Remove-Module TestModule -Force
-    Remove-Module TestModule2 -Force
+    AfterAll {
+        Remove-Module TestModule -Force
+        Remove-Module TestModule2 -Force
+    }
 }
 
 Describe "When Applying multiple Mocks on a single command" {
@@ -537,7 +618,9 @@ Describe "When Creating a Verifiable Mock that is not called" {
             $result.Exception.Message | Should Be "`r`n Expected ModuleFunctionUnderTest in module TestModule to be called with `$param1 -eq `"one`""
         }
 
-        Remove-Module TestModule -Force
+        AfterAll {
+            Remove-Module TestModule -Force
+        }
     }
 }
 
@@ -592,15 +675,11 @@ Describe "When Calling Assert-MockCalled without exactly" {
     Mock FunctionUnderTest {}
     FunctionUnderTest "one"
     FunctionUnderTest "one"
-
-    try {
-        Assert-MockCalled FunctionUnderTest 3
-    } Catch {
-        $result=$_
-    }
+    FunctionUnderTest "two"
 
     It "Should throw if mock was not called atleast the number of times specified" {
-        $result.Exception.Message | Should Be "Expected FunctionUnderTest to be called at least 3 times but was called 2 times"
+        $scriptBlock = { Assert-MockCalled FunctionUnderTest 4 }
+        $scriptBlock | Should Throw "Expected FunctionUnderTest to be called at least 4 times but was called 3 times"
     }
 
     It "Should not throw if mock was called at least the number of times specified" {
@@ -609,6 +688,11 @@ Describe "When Calling Assert-MockCalled without exactly" {
 
     It "Should not throw if mock was called at exactly the number of times specified" {
         Assert-MockCalled FunctionUnderTest 2 { $param1 -eq "one" }
+    }
+
+    It "Should throw an error if any non-matching calls to the mock are made, and the -ExclusiveFilter parameter is used" {
+        $scriptBlock = { Assert-MockCalled FunctionUnderTest -ExclusiveFilter { $param1 -eq 'one' } }
+        $scriptBlock | Should Throw '1 non-matching calls were made'
     }
 }
 
@@ -775,6 +859,9 @@ Describe 'Dot Source Test' {
     }
 
     It "Doesn't call the mock with any other parameters" {
+        InModuleScope Pester {
+            $global:calls = $mockTable['||Test-Path'].CallHistory
+        }
         Assert-MockCalled Test-Path -Exactly 0 -ParameterFilter { $Path -ne 'Test' }
     }
 }
@@ -790,101 +877,17 @@ Describe 'Mocking Cmdlets with dynamic parameters' {
 }
 
 Describe 'Mocking functions with dynamic parameters' {
-
-    # Get-Greeting sample function borrowed and modified from Bartek Bielawski's
-    # blog at http://becomelotr.wordpress.com/2012/05/10/using-and-abusing-dynamic-parameters/
-
-    function Get-Greeting {
-        [CmdletBinding()]
-        param (
-            $Name
-        )
-
-        DynamicParam {
-            if ($Name -cmatch '\b[a-z]') {
-                $Attributes = New-Object Management.Automation.ParameterAttribute
-                $Attributes.ParameterSetName = "__AllParameterSets"
-                $Attributes.Mandatory = $false
-
-                $AttributeCollection = New-Object Collections.ObjectModel.Collection[Attribute]
-                $AttributeCollection.Add($Attributes)
-
-                $Dynamic = New-Object System.Management.Automation.RuntimeDefinedParameter('Capitalize', [switch], $AttributeCollection)
-
-                $ParamDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
-                $ParamDictionary.Add("Capitalize", $Dynamic)
-                $ParamDictionary
-            }
-        }
-
-        end
-        {
-            if($PSBoundParameters.Capitalize) {
-                $Name = [regex]::Replace(
-                    $Name,
-                    '\b\w',
-                    { $args[0].Value.ToUpper() }
-                )
-            }
-
-            "Welcome $Name!"
-        }
-    }
-
-    $mockWith = { if (-not $Capitalize) { throw 'Capitalize variable not found, or set to false!' } }
-    Mock Get-Greeting -MockWith $mockWith -ParameterFilter { [bool]$Capitalize }
-
-    It 'Allows calls to be made with dynamic parameters (including parameter filters)' {
-        { Get-Greeting -Name lowercase -Capitalize } | Should Not Throw
-        Assert-MockCalled Get-Greeting
-    }
-
-    Context 'When a variable with the same name as a dynamic parameter exists in a parent scope' {
-        $Capitalize = $false
-
-        It 'Still sets the parameter variable properly in the parameter filter and mock body' {
-            { Get-Greeting -Name lowercase -Capitalize } | Should Not Throw
-            Assert-MockCalled Get-Greeting -Scope It
-        }
-    }
-}
-
-Describe 'Mocking Cmdlets with dynamic parameters in a module' {
-    New-Module -Name TestModule {
-        function PublicFunction   { Get-ChildItem -Path Cert:\ -CodeSigningCert }
-    } | Import-Module -Force
-
-    $mockWith = { if (-not $CodeSigningCert) { throw 'CodeSigningCert variable not found, or set to false!' } }
-    Mock Get-ChildItem -MockWith $mockWith -ModuleName TestModule -ParameterFilter { [bool]$CodeSigningCert }
-
-    It 'Allows calls to be made with dynamic parameters (including parameter filters)' {
-        { TestModule\PublicFunction } | Should Not Throw
-        Assert-MockCalled Get-ChildItem -ModuleName TestModule
-    }
-
-    Remove-Module TestModule -Force
-}
-
-Describe 'Mocking functions with dynamic parameters in a module' {
-    New-Module -Name TestModule {
-        function PublicFunction { Get-Greeting -Name lowercase -Capitalize }
-
-        $script:DoDynamicParam = $true
-
+    Context 'Dynamicparam block that uses the variables of static parameters in its logic' {
         # Get-Greeting sample function borrowed and modified from Bartek Bielawski's
         # blog at http://becomelotr.wordpress.com/2012/05/10/using-and-abusing-dynamic-parameters/
 
         function Get-Greeting {
             [CmdletBinding()]
             param (
-                $Name
+                [string] $Name
             )
 
             DynamicParam {
-                # This check is here to make sure the mocked version can still work if the
-                # original function's dynamicparam block relied on script-scope variables.
-                if (-not $script:DoDynamicParam) { return }
-
                 if ($Name -cmatch '\b[a-z]') {
                     $Attributes = New-Object Management.Automation.ParameterAttribute
                     $Attributes.ParameterSetName = "__AllParameterSets"
@@ -914,17 +917,320 @@ Describe 'Mocking functions with dynamic parameters in a module' {
                 "Welcome $Name!"
             }
         }
+
+        $mockWith = { if (-not $Capitalize) { throw 'Capitalize variable not found, or set to false!' } }
+        Mock Get-Greeting -MockWith $mockWith -ParameterFilter { [bool]$Capitalize }
+
+        It 'Allows calls to be made with dynamic parameters (including parameter filters)' {
+            { Get-Greeting -Name lowercase -Capitalize } | Should Not Throw
+            Assert-MockCalled Get-Greeting
+        }
+
+        $Capitalize = $false
+
+        It 'Sets the dynamic parameter variable properly' {
+            { Get-Greeting -Name lowercase -Capitalize } | Should Not Throw
+            Assert-MockCalled Get-Greeting -Scope It
+        }
+    }
+
+    Context 'When the mocked command is in a module' {
+        New-Module -Name TestModule {
+            function PublicFunction { Get-Greeting -Name lowercase -Capitalize }
+
+            $script:DoDynamicParam = $true
+
+            # Get-Greeting sample function borrowed and modified from Bartek Bielawski's
+            # blog at http://becomelotr.wordpress.com/2012/05/10/using-and-abusing-dynamic-parameters/
+
+            function script:Get-Greeting {
+                [CmdletBinding()]
+                param (
+                    [string] $Name
+                )
+
+                DynamicParam {
+                    # This check is here to make sure the mocked version can still work if the
+                    # original function's dynamicparam block relied on script-scope variables.
+                    if (-not $script:DoDynamicParam) { return }
+
+                    if ($Name -cmatch '\b[a-z]') {
+                        $Attributes = New-Object Management.Automation.ParameterAttribute
+                        $Attributes.ParameterSetName = "__AllParameterSets"
+                        $Attributes.Mandatory = $false
+
+                        $AttributeCollection = New-Object Collections.ObjectModel.Collection[Attribute]
+                        $AttributeCollection.Add($Attributes)
+
+                        $Dynamic = New-Object System.Management.Automation.RuntimeDefinedParameter('Capitalize', [switch], $AttributeCollection)
+
+                        $ParamDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
+                        $ParamDictionary.Add("Capitalize", $Dynamic)
+                        $ParamDictionary
+                    }
+                }
+
+                end
+                {
+                    if($PSBoundParameters.Capitalize) {
+                        $Name = [regex]::Replace(
+                            $Name,
+                            '\b\w',
+                            { $args[0].Value.ToUpper() }
+                        )
+                    }
+
+                    "Welcome $Name!"
+                }
+            }
+        } | Import-Module -Force
+
+        $mockWith = { if (-not $Capitalize) { throw 'Capitalize variable not found, or set to false!' } }
+        Mock Get-Greeting -MockWith $mockWith -ModuleName TestModule -ParameterFilter { [bool]$Capitalize }
+
+        It 'Allows calls to be made with dynamic parameters (including parameter filters)' {
+            { TestModule\PublicFunction } | Should Not Throw
+            Assert-MockCalled Get-Greeting -ModuleName TestModule
+        }
+
+        AfterAll {
+            Remove-Module TestModule -Force
+        }
+    }
+
+    Context 'When the mocked command has mandatory parameters that are passed in via the pipeline' {
+        # Get-Greeting sample function borrowed and modified from Bartek Bielawski's
+        # blog at http://becomelotr.wordpress.com/2012/05/10/using-and-abusing-dynamic-parameters/
+
+        function Get-Greeting2 {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+                [string] $MandatoryParam,
+
+                [string] $Name
+            )
+
+            DynamicParam {
+                if ($Name -cmatch '\b[a-z]') {
+                    $Attributes = New-Object Management.Automation.ParameterAttribute
+                    $Attributes.ParameterSetName = "__AllParameterSets"
+                    $Attributes.Mandatory = $false
+
+                    $AttributeCollection = New-Object Collections.ObjectModel.Collection[Attribute]
+                    $AttributeCollection.Add($Attributes)
+
+                    $Dynamic = New-Object System.Management.Automation.RuntimeDefinedParameter('Capitalize', [switch], $AttributeCollection)
+
+                    $ParamDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
+                    $ParamDictionary.Add("Capitalize", $Dynamic)
+                    $ParamDictionary
+                }
+            }
+
+            end
+            {
+                if($PSBoundParameters.Capitalize) {
+                    $Name = [regex]::Replace(
+                        $Name,
+                        '\b\w',
+                        { $args[0].Value.ToUpper() }
+                    )
+                }
+
+                "Welcome $Name!"
+            }
+        }
+
+        Mock Get-Greeting2 { 'Mocked' } -ParameterFilter { [bool]$Capitalize }
+        $hash = @{ Result = $null }
+        $scriptBlock = { $hash.Result = 'Mandatory' | Get-Greeting2 -Name test -Capitalize }
+
+        It 'Should successfully call the mock and generate the dynamic parameters' {
+            $scriptBlock | Should Not Throw
+            $hash.Result | Should Be 'Mocked'
+        }
+    }
+
+    Context 'When the mocked command has parameter sets that are ambiguous at the time the dynamic param block is executed' {
+        # Get-Greeting sample function borrowed and modified from Bartek Bielawski's
+        # blog at http://becomelotr.wordpress.com/2012/05/10/using-and-abusing-dynamic-parameters/
+
+        function Get-Greeting3 {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'One')]
+                [string] $One,
+
+                [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Two')]
+                [string] $Two,
+
+                [string] $Name
+            )
+
+            DynamicParam {
+                if ($Name -cmatch '\b[a-z]') {
+                    $Attributes = New-Object Management.Automation.ParameterAttribute
+                    $Attributes.ParameterSetName = "__AllParameterSets"
+                    $Attributes.Mandatory = $false
+
+                    $AttributeCollection = New-Object Collections.ObjectModel.Collection[Attribute]
+                    $AttributeCollection.Add($Attributes)
+
+                    $Dynamic = New-Object System.Management.Automation.RuntimeDefinedParameter('Capitalize', [switch], $AttributeCollection)
+
+                    $ParamDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
+                    $ParamDictionary.Add("Capitalize", $Dynamic)
+                    $ParamDictionary
+                }
+            }
+
+            end
+            {
+                if($PSBoundParameters.Capitalize) {
+                    $Name = [regex]::Replace(
+                        $Name,
+                        '\b\w',
+                        { $args[0].Value.ToUpper() }
+                    )
+                }
+
+                "Welcome $Name!"
+            }
+        }
+
+        Mock Get-Greeting3 { 'Mocked' } -ParameterFilter { [bool]$Capitalize }
+        $hash = @{ Result = $null }
+        $scriptBlock = { $hash.Result = New-Object psobject -Property @{ One = 'One' } | Get-Greeting3 -Name test -Capitalize }
+
+        It 'Should successfully call the mock and generate the dynamic parameters' {
+            $scriptBlock | Should Not Throw
+            $hash.Result | Should Be 'Mocked'
+        }
+    }
+
+    Context 'When the mocked command''s dynamicparam block depends on the contents of $PSBoundParameters' {
+        # Get-Greeting sample function borrowed and modified from Bartek Bielawski's
+        # blog at http://becomelotr.wordpress.com/2012/05/10/using-and-abusing-dynamic-parameters/
+
+        function Get-Greeting4 {
+            [CmdletBinding()]
+            param (
+                [string] $Name
+            )
+
+            DynamicParam {
+                if ($PSBoundParameters['Name'] -cmatch '\b[a-z]') {
+                    $Attributes = New-Object Management.Automation.ParameterAttribute
+                    $Attributes.ParameterSetName = "__AllParameterSets"
+                    $Attributes.Mandatory = $false
+
+                    $AttributeCollection = New-Object Collections.ObjectModel.Collection[Attribute]
+                    $AttributeCollection.Add($Attributes)
+
+                    $Dynamic = New-Object System.Management.Automation.RuntimeDefinedParameter('Capitalize', [switch], $AttributeCollection)
+
+                    $ParamDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
+                    $ParamDictionary.Add("Capitalize", $Dynamic)
+                    $ParamDictionary
+                }
+            }
+
+            end
+            {
+                if($PSBoundParameters.Capitalize) {
+                    $Name = [regex]::Replace(
+                        $Name,
+                        '\b\w',
+                        { $args[0].Value.ToUpper() }
+                    )
+                }
+
+                "Welcome $Name!"
+            }
+        }
+
+        Mock Get-Greeting4 { 'Mocked' } -ParameterFilter { [bool]$Capitalize }
+        $hash = @{ Result = $null }
+        $scriptBlock = { $hash.Result = Get-Greeting4 -Name test -Capitalize }
+
+        It 'Should successfully call the mock and generate the dynamic parameters' {
+            $scriptBlock | Should Not Throw
+            $hash.Result | Should Be 'Mocked'
+        }
+    }
+
+    Context 'When the mocked command''s dynamicparam block depends on the contents of $PSCmdlet.ParameterSetName' {
+        # Get-Greeting sample function borrowed and modified from Bartek Bielawski's
+        # blog at http://becomelotr.wordpress.com/2012/05/10/using-and-abusing-dynamic-parameters/
+
+        function Get-Greeting5 {
+            [CmdletBinding(DefaultParameterSetName = 'One')]
+            param (
+                [string] $Name,
+
+                [Parameter(ParameterSetName = 'Two')]
+                [string] $Two
+            )
+
+            DynamicParam {
+                if ($PSCmdlet.ParameterSetName -eq 'Two' -and $Name -cmatch '\b[a-z]') {
+                    $Attributes = New-Object Management.Automation.ParameterAttribute
+                    $Attributes.ParameterSetName = "__AllParameterSets"
+                    $Attributes.Mandatory = $false
+
+                    $AttributeCollection = New-Object Collections.ObjectModel.Collection[Attribute]
+                    $AttributeCollection.Add($Attributes)
+
+                    $Dynamic = New-Object System.Management.Automation.RuntimeDefinedParameter('Capitalize', [switch], $AttributeCollection)
+
+                    $ParamDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
+                    $ParamDictionary.Add("Capitalize", $Dynamic)
+                    $ParamDictionary
+                }
+            }
+
+            end
+            {
+                if($PSBoundParameters.Capitalize) {
+                    $Name = [regex]::Replace(
+                        $Name,
+                        '\b\w',
+                        { $args[0].Value.ToUpper() }
+                    )
+                }
+
+                "Welcome $Name!"
+            }
+        }
+
+        Mock Get-Greeting5 { 'Mocked' } -ParameterFilter { [bool]$Capitalize }
+        $hash = @{ Result = $null }
+        $scriptBlock = { $hash.Result = Get-Greeting5 -Two 'Two' -Name test -Capitalize }
+
+        It 'Should successfully call the mock and generate the dynamic parameters' {
+            $scriptBlock | Should Not Throw
+            $hash.Result | Should Be 'Mocked'
+        }
+    }
+}
+
+Describe 'Mocking Cmdlets with dynamic parameters in a module' {
+    New-Module -Name TestModule {
+        function PublicFunction   { Get-ChildItem -Path Cert:\ -CodeSigningCert }
     } | Import-Module -Force
 
-    $mockWith = { if (-not $Capitalize) { throw 'Capitalize variable not found, or set to false!' } }
-    Mock Get-Greeting -MockWith $mockWith -ModuleName TestModule -ParameterFilter { [bool]$Capitalize }
+    $mockWith = { if (-not $CodeSigningCert) { throw 'CodeSigningCert variable not found, or set to false!' } }
+    Mock Get-ChildItem -MockWith $mockWith -ModuleName TestModule -ParameterFilter { [bool]$CodeSigningCert }
 
     It 'Allows calls to be made with dynamic parameters (including parameter filters)' {
         { TestModule\PublicFunction } | Should Not Throw
-        Assert-MockCalled Get-Greeting -ModuleName TestModule
+        Assert-MockCalled Get-ChildItem -ModuleName TestModule
     }
 
-    Remove-Module TestModule -Force
+    AfterAll {
+        Remove-Module TestModule -Force
+    }
 }
 
 Describe 'DynamicParam blocks in other scopes' {
@@ -975,8 +1281,10 @@ Describe 'DynamicParam blocks in other scopes' {
         CallingFunction2 -Whatever 'Whatever'
     }
 
-    Remove-Module TestModule1 -Force
-    Remove-Module TestModule2 -Force
+    AfterAll {
+        Remove-Module TestModule1 -Force
+        Remove-Module TestModule2 -Force
+    }
 }
 
 Describe 'Parameter Filters and Common Parameters' {
@@ -1017,148 +1325,349 @@ Describe 'When mocking a command with parameters that match internal variable na
     }
 }
 
-# SIG # Begin signature block
-# MIIatwYJKoZIhvcNAQcCoIIaqDCCGqQCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
-# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUxWlAsFnFWsyNdP9Wv24u+y/E
-# wGOgghV6MIIEuzCCA6OgAwIBAgITMwAAAF3JyvZpIzdoUAAAAAAAXTANBgkqhkiG
-# 9w0BAQUFADB3MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4G
-# A1UEBxMHUmVkbW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSEw
-# HwYDVQQDExhNaWNyb3NvZnQgVGltZS1TdGFtcCBQQ0EwHhcNMTQwNTIzMTcxMzE3
-# WhcNMTUwODIzMTcxMzE3WjCBqzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAldBMRAw
-# DgYDVQQHEwdSZWRtb25kMR4wHAYDVQQKExVNaWNyb3NvZnQgQ29ycG9yYXRpb24x
-# DTALBgNVBAsTBE1PUFIxJzAlBgNVBAsTHm5DaXBoZXIgRFNFIEVTTjo3RDJFLTM3
-# ODItQjBGNzElMCMGA1UEAxMcTWljcm9zb2Z0IFRpbWUtU3RhbXAgU2VydmljZTCC
-# ASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKu6ei+vVB909A1zsuALhVjs
-# q6u/RwD+jTcx8hyTPqa6zhvmUUBo1IAY11hjXQM3NvuDWHDexDM2sF8Hf33991ir
-# WpduRc648Rs9Us+lPQVDm6CxNHLT7/MxvC5ojio1Cy50sO/kK1VyZZWPZ/SjyO8D
-# EafcCzyhbA7/YYxCkuRWw5Gxj/au18Hj6KgZAaIXYL9DmHoqWmo0yJINP+BcHbd/
-# sFodvcxsahFDHgINW0LpbUtjCzn7UqPseibSojBHY9L46hXYaS6eJulOTxyz0uJg
-# Jj9uXZIUkF40bXgEfFJRmwsBdutBAFlTztuN1kmFbII7fsTph0ayOTzxXthvcv8C
-# AwEAAaOCAQkwggEFMB0GA1UdDgQWBBTXVOYV2dNdyiTVARjweGSZe2hMMzAfBgNV
-# HSMEGDAWgBQjNPjZUkZwCu1A+3b7syuwwzWzDzBUBgNVHR8ETTBLMEmgR6BFhkNo
-# dHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpL2NybC9wcm9kdWN0cy9NaWNyb3Nv
-# ZnRUaW1lU3RhbXBQQ0EuY3JsMFgGCCsGAQUFBwEBBEwwSjBIBggrBgEFBQcwAoY8
-# aHR0cDovL3d3dy5taWNyb3NvZnQuY29tL3BraS9jZXJ0cy9NaWNyb3NvZnRUaW1l
-# U3RhbXBQQ0EuY3J0MBMGA1UdJQQMMAoGCCsGAQUFBwMIMA0GCSqGSIb3DQEBBQUA
-# A4IBAQCJMKxtI1M8/5xen1dwDBzeF903pNyVsaYkzAfuqYXRHNXZm0k3IZ8xPmmu
-# v7UwG+ekLFDrwVCISqq17KiyCUCwau9zVEKtnimFVG2zD/GYfuP4wDAbTNKGKfCi
-# 5V6bN41mnei8W2+6lcb20i5BNfnHvgyK5iZEdmgcnKQW7iJVpNZXK/gNgSAsoQ+a
-# jvzHlcVeh4RB4tJvnM/QZSMW29B9hNAGFhKlZy17hYk+RZPYzSaZ+7Yq4VJCmhCX
-# HzTakcGshvOSRG1Qu4mykew1qEj2weHE/sZlfUHv7W3KkeTmsNnlWFy0u5romkYc
-# Zt0eS0SYyfRKWBF/kMshN4hDyN71MIIE7DCCA9SgAwIBAgITMwAAAMps1TISNcTh
-# VQABAAAAyjANBgkqhkiG9w0BAQUFADB5MQswCQYDVQQGEwJVUzETMBEGA1UECBMK
-# V2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0
-# IENvcnBvcmF0aW9uMSMwIQYDVQQDExpNaWNyb3NvZnQgQ29kZSBTaWduaW5nIFBD
-# QTAeFw0xNDA0MjIxNzM5MDBaFw0xNTA3MjIxNzM5MDBaMIGDMQswCQYDVQQGEwJV
-# UzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UE
-# ChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMQ0wCwYDVQQLEwRNT1BSMR4wHAYDVQQD
-# ExVNaWNyb3NvZnQgQ29ycG9yYXRpb24wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
-# ggEKAoIBAQCWcV3tBkb6hMudW7dGx7DhtBE5A62xFXNgnOuntm4aPD//ZeM08aal
-# IV5WmWxY5JKhClzC09xSLwxlmiBhQFMxnGyPIX26+f4TUFJglTpbuVildGFBqZTg
-# rSZOTKGXcEknXnxnyk8ecYRGvB1LtuIPxcYnyQfmegqlFwAZTHBFOC2BtFCqxWfR
-# +nm8xcyhcpv0JTSY+FTfEjk4Ei+ka6Wafsdi0dzP7T00+LnfNTC67HkyqeGprFVN
-# TH9MVsMTC3bxB/nMR6z7iNVSpR4o+j0tz8+EmIZxZRHPhckJRIbhb+ex/KxARKWp
-# iyM/gkmd1ZZZUBNZGHP/QwytK9R/MEBnAgMBAAGjggFgMIIBXDATBgNVHSUEDDAK
-# BggrBgEFBQcDAzAdBgNVHQ4EFgQUH17iXVCNVoa+SjzPBOinh7XLv4MwUQYDVR0R
-# BEowSKRGMEQxDTALBgNVBAsTBE1PUFIxMzAxBgNVBAUTKjMxNTk1K2I0MjE4ZjEz
-# LTZmY2EtNDkwZi05YzQ3LTNmYzU1N2RmYzQ0MDAfBgNVHSMEGDAWgBTLEejK0rQW
-# WAHJNy4zFha5TJoKHzBWBgNVHR8ETzBNMEugSaBHhkVodHRwOi8vY3JsLm1pY3Jv
-# c29mdC5jb20vcGtpL2NybC9wcm9kdWN0cy9NaWNDb2RTaWdQQ0FfMDgtMzEtMjAx
-# MC5jcmwwWgYIKwYBBQUHAQEETjBMMEoGCCsGAQUFBzAChj5odHRwOi8vd3d3Lm1p
-# Y3Jvc29mdC5jb20vcGtpL2NlcnRzL01pY0NvZFNpZ1BDQV8wOC0zMS0yMDEwLmNy
-# dDANBgkqhkiG9w0BAQUFAAOCAQEAd1zr15E9zb17g9mFqbBDnXN8F8kP7Tbbx7Us
-# G177VAU6g3FAgQmit3EmXtZ9tmw7yapfXQMYKh0nfgfpxWUftc8Nt1THKDhaiOd7
-# wRm2VjK64szLk9uvbg9dRPXUsO8b1U7Brw7vIJvy4f4nXejF/2H2GdIoCiKd381w
-# gp4YctgjzHosQ+7/6sDg5h2qnpczAFJvB7jTiGzepAY1p8JThmURdwmPNVm52Iao
-# AP74MX0s9IwFncDB1XdybOlNWSaD8cKyiFeTNQB8UCu8Wfz+HCk4gtPeUpdFKRhO
-# lludul8bo/EnUOoHlehtNA04V9w3KDWVOjic1O1qhV0OIhFeezCCBbwwggOkoAMC
-# AQICCmEzJhoAAAAAADEwDQYJKoZIhvcNAQEFBQAwXzETMBEGCgmSJomT8ixkARkW
-# A2NvbTEZMBcGCgmSJomT8ixkARkWCW1pY3Jvc29mdDEtMCsGA1UEAxMkTWljcm9z
-# b2Z0IFJvb3QgQ2VydGlmaWNhdGUgQXV0aG9yaXR5MB4XDTEwMDgzMTIyMTkzMloX
-# DTIwMDgzMTIyMjkzMloweTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCldhc2hpbmd0
-# b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoTFU1pY3Jvc29mdCBDb3Jwb3Jh
-# dGlvbjEjMCEGA1UEAxMaTWljcm9zb2Z0IENvZGUgU2lnbmluZyBQQ0EwggEiMA0G
-# CSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCycllcGTBkvx2aYCAgQpl2U2w+G9Zv
-# zMvx6mv+lxYQ4N86dIMaty+gMuz/3sJCTiPVcgDbNVcKicquIEn08GisTUuNpb15
-# S3GbRwfa/SXfnXWIz6pzRH/XgdvzvfI2pMlcRdyvrT3gKGiXGqelcnNW8ReU5P01
-# lHKg1nZfHndFg4U4FtBzWwW6Z1KNpbJpL9oZC/6SdCnidi9U3RQwWfjSjWL9y8lf
-# RjFQuScT5EAwz3IpECgixzdOPaAyPZDNoTgGhVxOVoIoKgUyt0vXT2Pn0i1i8UU9
-# 56wIAPZGoZ7RW4wmU+h6qkryRs83PDietHdcpReejcsRj1Y8wawJXwPTAgMBAAGj
-# ggFeMIIBWjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBTLEejK0rQWWAHJNy4z
-# Fha5TJoKHzALBgNVHQ8EBAMCAYYwEgYJKwYBBAGCNxUBBAUCAwEAATAjBgkrBgEE
-# AYI3FQIEFgQU/dExTtMmipXhmGA7qDFvpjy82C0wGQYJKwYBBAGCNxQCBAweCgBT
-# AHUAYgBDAEEwHwYDVR0jBBgwFoAUDqyCYEBWJ5flJRP8KuEKU5VZ5KQwUAYDVR0f
-# BEkwRzBFoEOgQYY/aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraS9jcmwvcHJv
-# ZHVjdHMvbWljcm9zb2Z0cm9vdGNlcnQuY3JsMFQGCCsGAQUFBwEBBEgwRjBEBggr
-# BgEFBQcwAoY4aHR0cDovL3d3dy5taWNyb3NvZnQuY29tL3BraS9jZXJ0cy9NaWNy
-# b3NvZnRSb290Q2VydC5jcnQwDQYJKoZIhvcNAQEFBQADggIBAFk5Pn8mRq/rb0Cx
-# MrVq6w4vbqhJ9+tfde1MOy3XQ60L/svpLTGjI8x8UJiAIV2sPS9MuqKoVpzjcLu4
-# tPh5tUly9z7qQX/K4QwXaculnCAt+gtQxFbNLeNK0rxw56gNogOlVuC4iktX8pVC
-# nPHz7+7jhh80PLhWmvBTI4UqpIIck+KUBx3y4k74jKHK6BOlkU7IG9KPcpUqcW2b
-# Gvgc8FPWZ8wi/1wdzaKMvSeyeWNWRKJRzfnpo1hW3ZsCRUQvX/TartSCMm78pJUT
-# 5Otp56miLL7IKxAOZY6Z2/Wi+hImCWU4lPF6H0q70eFW6NB4lhhcyTUWX92THUmO
-# Lb6tNEQc7hAVGgBd3TVbIc6YxwnuhQ6MT20OE049fClInHLR82zKwexwo1eSV32U
-# jaAbSANa98+jZwp0pTbtLS8XyOZyNxL0b7E8Z4L5UrKNMxZlHg6K3RDeZPRvzkbU
-# 0xfpecQEtNP7LN8fip6sCvsTJ0Ct5PnhqX9GuwdgR2VgQE6wQuxO7bN2edgKNAlt
-# HIAxH+IOVN3lofvlRxCtZJj/UBYufL8FIXrilUEnacOTj5XJjdibIa4NXJzwoq6G
-# aIMMai27dmsAHZat8hZ79haDJLmIz2qoRzEvmtzjcT3XAH5iR9HOiMm4GPoOco3B
-# oz2vAkBq/2mbluIQqBC0N1AI1sM9MIIGBzCCA++gAwIBAgIKYRZoNAAAAAAAHDAN
-# BgkqhkiG9w0BAQUFADBfMRMwEQYKCZImiZPyLGQBGRYDY29tMRkwFwYKCZImiZPy
-# LGQBGRYJbWljcm9zb2Z0MS0wKwYDVQQDEyRNaWNyb3NvZnQgUm9vdCBDZXJ0aWZp
-# Y2F0ZSBBdXRob3JpdHkwHhcNMDcwNDAzMTI1MzA5WhcNMjEwNDAzMTMwMzA5WjB3
-# MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVk
-# bW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSEwHwYDVQQDExhN
-# aWNyb3NvZnQgVGltZS1TdGFtcCBQQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
-# ggEKAoIBAQCfoWyx39tIkip8ay4Z4b3i48WZUSNQrc7dGE4kD+7Rp9FMrXQwIBHr
-# B9VUlRVJlBtCkq6YXDAm2gBr6Hu97IkHD/cOBJjwicwfyzMkh53y9GccLPx754gd
-# 6udOo6HBI1PKjfpFzwnQXq/QsEIEovmmbJNn1yjcRlOwhtDlKEYuJ6yGT1VSDOQD
-# LPtqkJAwbofzWTCd+n7Wl7PoIZd++NIT8wi3U21StEWQn0gASkdmEScpZqiX5NMG
-# gUqi+YSnEUcUCYKfhO1VeP4Bmh1QCIUAEDBG7bfeI0a7xC1Un68eeEExd8yb3zuD
-# k6FhArUdDbH895uyAc4iS1T/+QXDwiALAgMBAAGjggGrMIIBpzAPBgNVHRMBAf8E
-# BTADAQH/MB0GA1UdDgQWBBQjNPjZUkZwCu1A+3b7syuwwzWzDzALBgNVHQ8EBAMC
-# AYYwEAYJKwYBBAGCNxUBBAMCAQAwgZgGA1UdIwSBkDCBjYAUDqyCYEBWJ5flJRP8
-# KuEKU5VZ5KShY6RhMF8xEzARBgoJkiaJk/IsZAEZFgNjb20xGTAXBgoJkiaJk/Is
-# ZAEZFgltaWNyb3NvZnQxLTArBgNVBAMTJE1pY3Jvc29mdCBSb290IENlcnRpZmlj
-# YXRlIEF1dGhvcml0eYIQea0WoUqgpa1Mc1j0BxMuZTBQBgNVHR8ESTBHMEWgQ6BB
-# hj9odHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpL2NybC9wcm9kdWN0cy9taWNy
-# b3NvZnRyb290Y2VydC5jcmwwVAYIKwYBBQUHAQEESDBGMEQGCCsGAQUFBzAChjho
-# dHRwOi8vd3d3Lm1pY3Jvc29mdC5jb20vcGtpL2NlcnRzL01pY3Jvc29mdFJvb3RD
-# ZXJ0LmNydDATBgNVHSUEDDAKBggrBgEFBQcDCDANBgkqhkiG9w0BAQUFAAOCAgEA
-# EJeKw1wDRDbd6bStd9vOeVFNAbEudHFbbQwTq86+e4+4LtQSooxtYrhXAstOIBNQ
-# md16QOJXu69YmhzhHQGGrLt48ovQ7DsB7uK+jwoFyI1I4vBTFd1Pq5Lk541q1YDB
-# 5pTyBi+FA+mRKiQicPv2/OR4mS4N9wficLwYTp2OawpylbihOZxnLcVRDupiXD8W
-# mIsgP+IHGjL5zDFKdjE9K3ILyOpwPf+FChPfwgphjvDXuBfrTot/xTUrXqO/67x9
-# C0J71FNyIe4wyrt4ZVxbARcKFA7S2hSY9Ty5ZlizLS/n+YWGzFFW6J1wlGysOUzU
-# 9nm/qhh6YinvopspNAZ3GmLJPR5tH4LwC8csu89Ds+X57H2146SodDW4TsVxIxIm
-# dgs8UoxxWkZDFLyzs7BNZ8ifQv+AeSGAnhUwZuhCEl4ayJ4iIdBD6Svpu/RIzCzU
-# 2DKATCYqSCRfWupW76bemZ3KOm+9gSd0BhHudiG/m4LBJ1S2sWo9iaF2YbRuoROm
-# v6pH8BJv/YoybLL+31HIjCPJZr2dHYcSZAI9La9Zj7jkIeW1sMpjtHhUBdRBLlCs
-# lLCleKuzoJZ1GtmShxN1Ii8yqAhuoFuMJb+g74TKIdbrHk/Jmu5J4PcBZW+JC33I
-# acjmbuqnl84xKf8OxVtc2E0bodj6L54/LlUWa8kTo/0xggSnMIIEowIBATCBkDB5
-# MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVk
-# bW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSMwIQYDVQQDExpN
-# aWNyb3NvZnQgQ29kZSBTaWduaW5nIFBDQQITMwAAAMps1TISNcThVQABAAAAyjAJ
-# BgUrDgMCGgUAoIHAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQB
-# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSGYCsRTu7XKWlD
-# NaRrTGK/6bXRHzBgBgorBgEEAYI3AgEMMVIwUKAmgCQAVwBpAG4AZABvAHcAcwAg
-# AFAAbwB3AGUAcgBTAGgAZQBsAGyhJoAkaHR0cDovL3d3dy5taWNyb3NvZnQuY29t
-# L3Bvd2Vyc2hlbGwgMA0GCSqGSIb3DQEBAQUABIIBADjJbnFYNx/qJO4s9mRn0V4f
-# ybEnZbp4E0FTyDGTVKJmSCRWeXvqyzEdHMw9Gg0PQQUzRuAC5IPHJtP49e0k/BxL
-# 6m6myNKfP2iPeq16D69aWGNbVpK7ZdbeDcBJWCjwYKjcTvUjTeAdyjQ5o8iwD6Ag
-# NQQsS1kWx3yL9dFI3KCVeTfZS3DqRqaetKnthBqpL2FUwEmd/NpW3wgeI6jmjIx1
-# LrUXoodd9oophcexzNzRYJuEfrzVmzvw/K3kQtW8DLQb1f1o8e0/47EZ0crTomC0
-# eRAEJNCW4oxJ8tq68CzeLipxHspgBC9CB3ytg65tcngXx2dS78rBLGeobyvh12Wh
-# ggIoMIICJAYJKoZIhvcNAQkGMYICFTCCAhECAQEwgY4wdzELMAkGA1UEBhMCVVMx
-# EzARBgNVBAgTCldhc2hpbmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoT
-# FU1pY3Jvc29mdCBDb3Jwb3JhdGlvbjEhMB8GA1UEAxMYTWljcm9zb2Z0IFRpbWUt
-# U3RhbXAgUENBAhMzAAAAXcnK9mkjN2hQAAAAAABdMAkGBSsOAwIaBQCgXTAYBgkq
-# hkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0xNTAzMDUyMzU5
-# MDhaMCMGCSqGSIb3DQEJBDEWBBSRg1L2UsVFqsifJi861RUZZdZivDANBgkqhkiG
-# 9w0BAQUFAASCAQBA3Yqq7SGE0dStc2MO1NjPxEy4SaCYVD5Lt7xmUDhhIVlTfZlS
-# jPbkvn5JvphE5wIle3Abl215yX9ed/ccWsQobvlDB3bq0I5N1CbclcWkBuFUKkdP
-# juTGl/l/5obpHwVtx/NgVcgXHLgv6mPacKtVKoSoTlj3TVrOZBHcFP+O74DGO6s0
-# Ekaeksh9GRejcRFLK9jJqbD9kIEG2S/JxjZXrE8o4pMhqajn8EptMWA0Zn8G6Dkc
-# 9njf2uOthUyYRu1CoLZjY72pcksqKoS9NvMd7iU9pInnlNP608cKIUn21GaB8IDv
-# x/GEegplXstWlxRNAGr/gMHJjxcxkhiSLdTc
-# SIG # End signature block
+Describe 'Mocking commands with potentially ambigious parameter sets' {
+    function SomeFunction
+    {
+        [CmdletBinding()]
+        param
+        (
+            [parameter(ParameterSetName                = 'ps1',
+                       ValueFromPipelineByPropertyName = $true)]
+            [string]
+            $p1,
+
+            [parameter(ParameterSetName                = 'ps2',
+                       ValueFromPipelineByPropertyName = $true)]
+            [string]
+            $p2
+        )
+        process
+        {
+            return $true
+        }
+    }
+
+    Mock SomeFunction { }
+
+    It 'Should call the function successfully, even with delayed parameter binding' {
+        $object = New-Object psobject -Property @{ p1 = 'Whatever' }
+        { $object | SomeFunction } | Should Not Throw
+        Assert-MockCalled SomeFunction -ParameterFilter { $p1 -eq 'Whatever' }
+    }
+}
+
+Describe 'When mocking a command that has an ArgumentList parameter with validation' {
+    Mock Start-Process { return 'mocked' }
+
+    It 'Calls the mock properly' {
+        $hash = @{ Result = $null }
+        $scriptBlock = { $hash.Result = Start-Process -FilePath cmd.exe -ArgumentList '/c dir c:\' }
+
+        $scriptBlock | Should Not Throw
+        $hash.Result | Should Be 'mocked'
+    }
+}
+
+# These assertions won't actually "fail"; we had an infinite recursion bug in Get-DynamicParametersForCmdlet
+# if the caller mocked New-Object.  It should be fixed by making that call to New-Object module-qualified,
+# and this test will make sure it's working properly.  If this test fails, it'll take a really long time
+# to execute, and then will throw a stack overflow error.
+
+Describe 'Mocking New-Object' {
+    It 'Works properly' {
+        Mock New-Object
+
+        $result = New-Object -TypeName Object
+        $result | Should Be $null
+        Assert-MockCalled New-Object
+    }
+}
+
+Describe 'Mocking a function taking input from pipeline' {
+    $psobj = New-Object -TypeName psobject -Property @{'PipeIntProp'='1';'PipeArrayProp'=1;'PipeStringProp'=1}
+    $psArrayobj = New-Object -TypeName psobject -Property @{'PipeArrayProp'=@(1)}
+    $noMockArrayResult = @(1,2) | PipelineInputFunction
+    $noMockIntResult = 1 | PipelineInputFunction
+    $noMockStringResult = '1' | PipelineInputFunction
+    $noMockResultByProperty = $psobj | PipelineInputFunction -PipeStr 'val'
+    $noMockArrayResultByProperty = $psArrayobj | PipelineInputFunction -PipeStr 'val'
+
+    Mock PipelineInputFunction { write-output 'mocked' } -ParameterFilter { $PipeStr -eq 'blah' }
+
+    context 'when calling original function with an array' {
+        $result = @(1,2) | PipelineInputFunction
+        it 'Returns actual implementation' {
+            $result[0].keys | % {
+                $result[0][$_] | Should Be $noMockArrayResult[0][$_]
+                $result[1][$_] | Should Be $noMockArrayResult[1][$_]
+            }
+        }
+    }
+
+    context 'when calling original function with an int' {
+        $result = 1 | PipelineInputFunction
+        it 'Returns actual implementation' {
+            $result.keys | % {
+                $result[$_] | Should Be $noMockIntResult[$_]
+            }
+        }
+    }
+
+    context 'when calling original function with a string' {
+        $result = '1' | PipelineInputFunction
+        it 'Returns actual implementation' {
+            $result.keys | % {
+                $result[$_] | Should Be $noMockStringResult[$_]
+            }
+        }
+    }
+
+    context 'when calling original function and pipeline is bound by property name' {
+        $result = $psobj | PipelineInputFunction -PipeStr 'val'
+        it 'Returns actual implementation' {
+            $result.keys | % {
+                $result[$_] | Should Be $noMockResultByProperty[$_]
+            }
+        }
+    }
+
+    context 'when calling original function and forcing a parameter binding exception' {
+        Mock PipelineInputFunction {
+            if($MyInvocation.ExpectingInput) {
+                throw New-Object -TypeName System.Management.Automation.ParameterBindingException
+            }
+            write-output $MyInvocation.ExpectingInput
+        }
+        $result = $psobj | PipelineInputFunction
+
+        it 'falls back to no pipeline input' {
+            $result | Should Be $false
+        }
+    }
+
+    context 'when calling original function and pipeline is bound by property name with array values' {
+        $result = $psArrayobj | PipelineInputFunction -PipeStr 'val'
+        it 'Returns actual implementation' {
+            $result.keys | % {
+                $result[$_] | Should Be $noMockArrayResultByProperty[$_]
+            }
+        }
+    }
+
+    context 'when calling the mocked function' {
+        $result = 'blah' | PipelineInputFunction
+        it 'Returns mocked implementation' {
+            $result | Should Be 'mocked'
+        }
+    }
+}
+
+Describe 'Mocking module-qualified calls' {
+    It 'Mock alias should not exist before the mock is defined' {
+        $alias = Get-Alias -Name 'Microsoft.PowerShell.Management\Get-Content' -ErrorAction SilentlyContinue
+        $alias | Should Be $null
+    }
+
+    $mockFile = 'TestDrive:\TestFile'
+    $mockResult = 'Mocked'
+
+    Mock Get-Content { return $mockResult } -ParameterFilter { $Path -eq $mockFile }
+    Setup -File TestFile -Content 'The actual file'
+
+    It 'Creates the alias while the mock is in effect' {
+        $alias = Get-Alias -Name 'Microsoft.PowerShell.Management\Get-Content' -ErrorAction SilentlyContinue
+        $alias | Should Not Be $null
+    }
+
+    It 'Calls the mock properly even if the call is module-qualified' {
+        $result = Microsoft.PowerShell.Management\Get-Content -Path $mockFile
+        $result | Should Be $mockResult
+    }
+}
+
+Describe 'After a mock goes out of scope' {
+    It 'Removes the alias after the mock goes out of scope' {
+        $alias = Get-Alias -Name 'Microsoft.PowerShell.Management\Get-Content' -ErrorAction SilentlyContinue
+        $alias | Should Be $null
+    }
+}
+
+Describe 'Assert-MockCalled with Aliases' {
+    AfterEach {
+        if (Test-Path alias:PesterTF) { Remove-Item Alias:PesterTF }
+    }
+
+    It 'Allows calls to Assert-MockCalled to use both aliases and the original command name' {
+        function TestFunction { }
+        Set-Alias -Name PesterTF -Value TestFunction
+        Mock PesterTF
+        $null = PesterTF
+
+        { Assert-MockCalled PesterTF } | Should Not Throw
+        { Assert-MockCalled TestFunction } | Should Not Throw
+    }
+}
+
+Describe 'Mocking Get-Command' {
+    # This was reported as a bug in 3.3.12; we were relying on Get-Command to safely invoke other commands.
+    # Mocking Get-Command, though, would result in infinite recursion.
+
+    It 'Does not break when Get-Command is mocked' {
+        { Mock Get-Command } | Should Not Throw
+    }
+}
+
+Describe 'Mocks with closures' {
+    $closureVariable = 'from closure'
+    $scriptBlock = { "Variable resolved $closureVariable" }
+    $closure = $scriptBlock.GetNewClosure()
+    $closureVariable = 'from script'
+
+    function TestClosure([switch] $Closure) { 'Not mocked' }
+
+    Mock TestClosure $closure -ParameterFilter { $Closure }
+    Mock TestClosure $scriptBlock
+
+    It 'Resolves variables in the closure rather than Pester''s current scope' {
+        TestClosure | Should Be 'Variable resolved from script'
+        TestClosure -Closure | Should Be 'Variable resolved from closure'
+    }
+}
+
+Describe '$args handling' {
+
+    function AdvancedFunction {
+        [CmdletBinding()]
+        param()
+        'orig'
+    }
+    function SimpleFunction {
+        . AdvancedFunction
+    }
+    function AdvancedFunctionWithArgs {
+        [CmdletBinding()]
+        param($Args)
+        'orig'
+    }
+    Add-Type -TypeDefinition '
+        using System.Management.Automation;
+        [Cmdlet(VerbsLifecycle.Invoke, "CmdletWithArgs")]
+        public class InvokeCmdletWithArgs : Cmdlet {
+            public InvokeCmdletWithArgs() { }
+            [Parameter]
+            public object Args {
+                set { }
+            }
+            protected override void EndProcessing() {
+                WriteObject("orig");
+            }
+        }
+    ' -PassThru | Select-Object -ExpandProperty Assembly | Import-Module
+
+    Mock AdvancedFunction { 'mock' }
+    Mock AdvancedFunctionWithArgs { 'mock' }
+    Mock Invoke-CmdletWithArgs { 'mock' }
+
+    It 'Advanced function mock should be callable with dot operator' {
+        SimpleFunction garbage | Should Be mock
+    }
+    It 'Advanced function with Args parameter should be mockable' {
+        AdvancedFunctionWithArgs -Args garbage | Should Be mock
+    }
+    It 'Cmdlet with Args parameter should be mockable' {
+        Invoke-CmdletWithArgs -Args garbage | Should Be mock
+    }
+
+}
+
+Describe 'Single quote in command/module name' {
+    BeforeAll {
+        $module = New-Module "Module '‘’‚‛" {
+            Function NormalCommandName { 'orig' }
+            New-Item "Function::Command '‘’‚‛" -Value { 'orig' }
+        } | Import-Module -PassThru
+    }
+
+    AfterAll {
+        if ($module) { Remove-Module $module; $module = $null }
+    }
+
+    It 'Command with single quote in module name should be mockable' {
+        Mock NormalCommandName { 'mock' }
+        NormalCommandName | Should Be mock
+    }
+    It 'Command with single quote in name should be mockable' {
+        Mock "Command '‘’‚‛" { 'mock' }
+        & "Command '‘’‚‛" | Should Be mock
+    }
+
+}
+
+if ($global:PSVersionTable.PSVersion.Major -ge 3) {
+    Describe 'Mocking cmdlet without positional parameters' {
+
+        Add-Type -TypeDefinition '
+            using System.Management.Automation;
+            [Cmdlet(VerbsLifecycle.Invoke, "CmdletWithoutPositionalParameters")]
+            public class InvokeCmdletWithoutPositionalParameters : Cmdlet {
+                public InvokeCmdletWithoutPositionalParameters() { }
+                [Parameter]
+                public object Parameter {
+                    set { }
+                }
+            }
+            [Cmdlet(VerbsLifecycle.Invoke, "CmdletWithValueFromRemainingArguments")]
+            public class InvokeCmdletWithValueFromRemainingArguments : Cmdlet {
+                private string parameter;
+                private string[] remainings;
+                public InvokeCmdletWithValueFromRemainingArguments() { }
+                [Parameter]
+                public string Parameter {
+                    set {
+                        parameter=value;
+                    }
+                }
+                [Parameter(ValueFromRemainingArguments=true)]
+                public string[] Remainings {
+                    set {
+                        remainings=value;
+                    }
+                }
+                protected override void EndProcessing() {
+                    WriteObject(string.Concat(parameter, "; ", string.Join(", ", remainings)));
+                }
+            }
+        ' -PassThru | Select-Object -First 1 -ExpandProperty Assembly | Import-Module
+
+        It 'Original cmdlet does not have positional parameters' {
+            { Invoke-CmdletWithoutPositionalParameters garbage } | Should Throw
+        }
+        Mock Invoke-CmdletWithoutPositionalParameters
+        It 'Mock of cmdlet should not make parameters to be positional' {
+            { Invoke-CmdletWithoutPositionalParameters garbage } | Should Throw
+        }
+
+        It 'Original cmdlet bind all to Remainings' {
+            Invoke-CmdletWithValueFromRemainingArguments asd fgh jkl | Should Be '; asd, fgh, jkl'
+        }
+        Mock Invoke-CmdletWithValueFromRemainingArguments { -join ($Parameter, '; ', ($Remainings -join ', ')) }
+        It 'Mock of cmdlet should bind all to Remainings' {
+            Invoke-CmdletWithValueFromRemainingArguments asd fgh jkl | Should Be '; asd, fgh, jkl'
+        }
+
+    }
+}
+
+Describe 'Nested Mock calls' {
+    $testDate = New-Object DateTime(2012,6,13)
+
+    Mock Get-Date -ParameterFilter { $null -eq $Date } {
+        Get-Date -Date $testDate -Format o
+    }
+
+    It 'Properly handles nested mocks' {
+        $result = @(Get-Date)
+        $result.Count | Should Be 1
+        $result[0] | Should Be '2012-06-13T00:00:00.0000000'
+    }
+}
