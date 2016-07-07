@@ -24,10 +24,6 @@ function Set-BuildDefinationVariable
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=2.0"
     $jsondata = $data | ConvertTo-Json -Depth 10 #else we don't get lower level items
 
-    Write-Verbose $uri
-    Write-Verbose $jsondata
-
-
     $response = $webclient.UploadString($uri,"PUT", $jsondata) 
     $response
     
@@ -125,9 +121,7 @@ function Get-BuildsDefsForRelease
 
     $data = $response | ConvertFrom-Json
 
-Write-Verbose $data
-
-    $return = @{}
+    $return = @()
     $data.artifacts.Where({$_.type -eq "Build"}).ForEach( {
         $return += $_.definitionReference.id
     })
@@ -153,7 +147,7 @@ Write-Verbose "builddefid = [$env:BUILD_DEFINITIONID]"
 Write-Verbose "Mode is $buildmode"
 if ($buildmode -eq "AllArtifacts")
 {
-    $builds = Get-Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid
+    $builds = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid
     foreach($id in $builds)
     {
         Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable
