@@ -128,8 +128,11 @@ function Get-Release
     )
 
     Write-Verbose "Getting details of release [$releaseid] from server [$tfsUri/$teamproject]"
-	
-    $uri = "$($tfsUri)/$($teamproject)/_apis/release/releases/$($releaseid)?api-version=3.0-preview"
+
+    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up   
+	$rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
+    $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseid)?api-version=3.0-preview"
+
   	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
   	$jsondata
 }
