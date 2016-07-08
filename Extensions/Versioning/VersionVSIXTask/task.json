@@ -24,12 +24,20 @@
          "helpMarkDown": "Source folder for VSIX files, can be root as it will find all files recursively"
       },
       {
+         "name": "VersionNumberOnly",
+         "type": "string",
+         "label": "Version number",
+         "defaultValue": "",
+         "required": false,
+         "helpMarkDown": "Version number to apply to files. You need either to set the version number or build name."
+      },      
+      {
          "name": "VersionNumber",
          "type": "string",
-         "label": "Version Number",
+         "label": "Build name",
          "defaultValue": "$(Build.BuildNumber)",
-         "required": true,
-         "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000.0' format"
+         "required": false,
+         "helpMarkDown": "Build name (in 'Build HelloWorld_00.00.00000.0' format) from which the version should be extracted. You need either to set the version number or build name."
       }
    ],
   "minimumAgentVersion": "1.82.0",
