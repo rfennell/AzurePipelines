@@ -38,9 +38,9 @@ function Get-WebClient
 
     # usually I would expect to use this, but it fails with a 403 access error
     # I am investigating
-#    $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
+    $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
     # this work on prem
-    $webclient.UseDefaultCredentials = $true
+#    $webclient.UseDefaultCredentials = $true
 
 
     $webclient.Encoding = [System.Text.Encoding]::UTF8
