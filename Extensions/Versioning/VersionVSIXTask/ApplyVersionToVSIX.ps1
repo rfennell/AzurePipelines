@@ -19,6 +19,9 @@ param (
     [String]$Path,
 
     [Parameter(Mandatory)]
+    [string]$VersionNumberOnly,
+
+    [Parameter(Mandatory)]
     [string]$VersionNumber
 )
 
@@ -37,25 +40,32 @@ if (-not (Test-Path $Path))
     exit 1
 }
 Write-Verbose "Source Directory: $Path"
-Write-Verbose "Version Number: $VersionNumber"
+Write-Verbose "Version number: $VersionNumberOnly"
+Write-Verbose "Build name: $VersionNumber"
 
-# Get and validate the version data
-$VersionData = [regex]::matches($VersionNumber,$VersionRegex)
-switch($VersionData.Count)
+if ($VersionNumberOnly) 
 {
-   0        
-      { 
-         Write-Error "Could not find version number data in $VersionNumber."
-         exit 1
-      }
-   1 {}
-   default 
-      { 
-         Write-Warning "Found more than instance of version data in $VersionNumber." 
-         Write-Warning "Will assume first instance is version."
-      }
+    $NewVersion = $VersionNumberOnly
 }
-$NewVersion = $VersionData[0]
+else 
+{
+    # Get and validate the version data
+    $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
+    switch($VersionData.Count)
+    {
+        0 { 
+            Write-Error "Could not find version number data in $VersionNumber."
+            exit 1
+        }
+        1 {}
+        default 
+        {
+            Write-Warning "Found more than instance of version data in $VersionNumber." 
+            Write-Warning "Will assume first instance is version."
+        }
+    }
+    $NewVersion = $VersionData[0]
+}
 Write-Verbose "Version: $NewVersion"
 
 # Apply the version to the assembly property files
