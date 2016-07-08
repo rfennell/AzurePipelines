@@ -55,7 +55,9 @@ switch($VersionData.Count)
          Write-Warning "Will assume first instance is version."
       }
 }
-$NewVersion = $VersionData[0]
+
+# we only want the first two blocks
+$NewVersion = [String]::Format("{0}.{1}", $VersionData[0].Value.Split(".")[0], $VersionData[0].Value.Split(".")[1])
 Write-Verbose "Version: $NewVersion"
 
 # Apply the version to the assembly property files
