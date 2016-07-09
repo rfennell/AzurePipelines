@@ -29,8 +29,30 @@
          "label": "Version Number",
          "defaultValue": "$(Build.BuildNumber)",
          "required": true,
-         "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000.0' format"
-      }
+         "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000.0' or provided as a complete version number e.g. 1.1.1.1"
+      },
+      {
+      "name": "UseRegex",
+      "type": "boolean",
+      "label": "Process VersionNumber with Regex",
+      "defaultValue": "True",
+      "required": true,
+      "helpMarkDown": "If set a regex expression is used to extra the version number, in the form 1.1.1.1 from a build number."
+      },
+      {
+      "name": "DigitMode",
+      "type": "pickList",
+      "label": "Number of digit to use",
+      "defaultValue": "All",
+      "required": true,
+      "options": {
+        "Two": "Two",
+        "All": "All"
+      },
+      "helpMarkDown": "Select how many digits of the discovered version number to use.",
+      "visibleRule": "UseRegex = True"
+      },
+      
    ],
   "minimumAgentVersion": "1.82.0",
   "instanceNameFormat": "Version VSIX",
