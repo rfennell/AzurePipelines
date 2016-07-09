@@ -35,7 +35,7 @@
       "name": "UseRegex",
       "type": "boolean",
       "label": "Process VersionNumber with Regex",
-      "defaultValue": "True",
+      "defaultValue": "true",
       "required": true,
       "helpMarkDown": "If set a regex expression is used to extra the version number, in the form 1.1.1.1 from a build number."
       },
@@ -50,7 +50,7 @@
         "All": "All"
       },
       "helpMarkDown": "Select how many digits of the discovered version number to use.",
-      "visibleRule": "UseRegex = True"
+      "visibleRule": "UseRegex = true"
       }
       
    ],
