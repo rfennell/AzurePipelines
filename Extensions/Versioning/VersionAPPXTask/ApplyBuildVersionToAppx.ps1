@@ -2,13 +2,14 @@
 ## <copyright file="ApplyVersionToVSIX.ps1">(c) Richard Fennell. </copyright>
 ##-----------------------------------------------------------------------
 # Look for a 0.0.0.0 pattern in the build number. 
+# If found use the first two fields to version the VSIX.
 # This is based on the same versioning model to the assemblies https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 #
 # For example, if the 'Build number format' build process parameter 
 # $(Build.DefinitionName)_$(Major).$(Minor).$(Year:yy)$(DayOfYear).$(rev:r)
 # then your build numbers come out like this:
 # "Build HelloWorld_1.2.15019.1"
-# This script would then apply version 1.2.15019.1 to your VSIX.
+# This script would then apply version 1.2 to your VSIX.
 
 # Enable -Verbose option
 [CmdletBinding()]
