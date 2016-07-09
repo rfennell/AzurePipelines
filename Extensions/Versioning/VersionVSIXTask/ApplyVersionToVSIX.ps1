@@ -69,7 +69,7 @@ if($files)
         attrib $file -r
 
         $node = $xml.PackageManifest.Metadata.Identity
-        $node.Version = $NewVersion
+        $node.Version = [string]$NewVersion
 
         $xml.Save($file)
         Write-Verbose "$file - version applied"
