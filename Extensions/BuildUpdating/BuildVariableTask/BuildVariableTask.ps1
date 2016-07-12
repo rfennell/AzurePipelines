@@ -19,7 +19,7 @@ function Set-BuildDefinationVariable
 
     $webclient = Get-WebClient
     
-    write-verbose "Updating Build Definition $builddefID "
+    write-verbose "Updating Build Definition $builddefID for $($tfsUri)/$($teamproject)"
 
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=2.0"
     $jsondata = $data | ConvertTo-Json -Depth 10 #else we don't get lower level items
@@ -35,18 +35,10 @@ function Get-WebClient
     $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
     $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
     $webclient = new-object System.Net.WebClient
-
-    # usually I would expect to use this, but it fails with a 403 access error
-    # I am investigating
     $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
-    # this work on prem
-#    $webclient.UseDefaultCredentials = $true
-
 
     $webclient.Encoding = [System.Text.Encoding]::UTF8
     $webclient.Headers["Content-Type"] = "application/json"
-
-    Write-Verbose $vssEndpoint.Authorization
 
     $webclient
 
@@ -116,7 +108,9 @@ function Get-BuildsDefsForRelease
     
     write-verbose "Getting Builds for Release releaseID"
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/release/releases/$($releaseId)?api-version=3.0-preview"
+    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up   
+	$rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
+    $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseId)?api-version=3.0-preview"
     $response = $webclient.DownloadString($uri)
 
     $data = $response | ConvertFrom-Json

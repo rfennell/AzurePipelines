@@ -35,7 +35,9 @@ function Get-BuildsForRelease
     
     write-verbose "Getting Builds for Release releaseID"
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/release/releases/$($releaseId)?api-version=3.0-preview"
+    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up   
+	$rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
+    $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseId)?api-version=3.0-preview"
     $response = $webclient.DownloadString($uri)
 
     $data = $response | ConvertFrom-Json
