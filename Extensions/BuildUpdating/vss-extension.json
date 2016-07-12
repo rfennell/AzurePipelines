@@ -43,6 +43,11 @@
       "path": "license.md"
     }
   },
+  "screenshots": [
+    {
+      "path": "images/screenshot.png"
+    }
+  ],
   "files": [
     {
       "path": "BuildRetensionTask"
