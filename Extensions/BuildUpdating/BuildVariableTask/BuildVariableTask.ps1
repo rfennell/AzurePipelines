@@ -117,7 +117,8 @@ function Get-BuildsDefsForRelease
 
     $return = @()
     $data.artifacts.Where({$_.type -eq "Build"}).ForEach( {
-        $return += $_.definitionReference.id
+        Write-Verbose "Getting DefintionID for build instance $($_.definitionReference.version.id)"
+        $return += $_.definitionReference.definition.id
     })
 
     $return
@@ -141,10 +142,10 @@ Write-Verbose "builddefid = [$env:BUILD_DEFINITIONID]"
 Write-Verbose "Mode is $buildmode"
 if ($buildmode -eq "AllArtifacts")
 {
-    $builds = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid
-    foreach($id in $builds)
+    $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid
+    foreach($id in $builddefs)
     {
-        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable
+        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $id -mode $mode -value $value -variable $variable
     }
 } else 
 {
