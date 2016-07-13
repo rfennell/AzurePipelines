@@ -3,6 +3,8 @@
   "name": "FileCopy",
   "friendlyName": "File Copy with filters",
   "description": "Copies files between locations",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/File-Copier-Tasks/)",
+
   "category": "Utility",
   "visibility": [
                 "Build",

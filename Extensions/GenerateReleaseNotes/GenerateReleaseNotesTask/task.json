@@ -3,6 +3,8 @@
   "name": "GenerateReleaseNotes",
   "friendlyName": "Generate Release Notes",
   "description": "Generates a Markdown Release notes file",
+    "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes%20-Tasks/)",
+
   "category": "Utility",
   "visibility": [
                 "Build"

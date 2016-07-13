@@ -3,6 +3,8 @@
    "name": "VersionDacpac",
    "friendlyName": "Version DacPacs",
    "description": "Applies specified version number to all dacpac files in target folder",
+       "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Version-Assemblies-and-Packages-Tasks/)",
+
    "category": "Build",
    "author": "Black Marble",
    "version": {

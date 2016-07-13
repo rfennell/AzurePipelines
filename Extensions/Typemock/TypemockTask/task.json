@@ -3,6 +3,8 @@
   "name": "Typemock",
   "friendlyName": "Typemock TMockRunner",
   "description": "Run tests with Visual Studio test runner wrappered by TMockRunner",
+   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Typemock-Task/)",
+
   "category": "Test",
   "visibility": [
                 "Build",

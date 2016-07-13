@@ -3,6 +3,8 @@
   "name": "GetArtifactFromUncShare",
   "friendlyName": "Get Artifact From UNC Share",
   "description": "Gets the contents of a remote TFS server build's drop location",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/File-Copier-Tasks/)",
+
   "category": "Utility",
   "visibility": [
                 "Build",

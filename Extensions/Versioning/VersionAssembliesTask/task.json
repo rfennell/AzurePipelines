@@ -3,7 +3,8 @@
   "name": "VersionAssemblies",
   "friendlyName": "Version .NET Assemblies",
   "description": "Applies a version to a .NET assembly via the assemblyinfo.cs or .vb files based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
-  "category": "Build",
+     "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Version-Assemblies-and-Packages-Tasks/)",
+ "category": "Build",
   "visibility": [
                 "Build",
                 "Release"

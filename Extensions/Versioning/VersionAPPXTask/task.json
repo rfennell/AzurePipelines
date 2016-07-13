@@ -3,7 +3,8 @@
   "name": "VersionAPPX",
   "friendlyName": "Version APPX manifest",
   "description": "Applies a version to a APPX manifest based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
-  "category": "Build",
+    "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Version-Assemblies-and-Packages-Tasks/)",
+ "category": "Build",
   "visibility": [
                 "Build",
                 "Release"

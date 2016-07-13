@@ -3,6 +3,8 @@
   "name": "Pester",
   "friendlyName": "Pester Test Runner from Black Marble",
   "description": "Run Pester tests without the need to install Pester in with the PMModule folder or in the source repo (Using Pester 3.3.5)",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Pester-Task/)",
+
   "category": "Test",
   "visibility": [
                 "Build",
