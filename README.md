@@ -1,13 +1,21 @@
-![Build Status - FileCopiers Extension](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/21/badge) - FileCopier Extensions (triggers release to VSTS Marketplace)
+![Build Status - Build Utils Extension](https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/28/badge) - Build Utils Extension (triggers release to VSTS Marketplace)
+
+![Build Status - FileCopiers Extension](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/21/badge) - FileCopier Extension (triggers release to VSTS Marketplace)
 
 ![Build Status - GenerateReleaseNotes Extension](
 https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/23/badge) - GenerateReleaseNotes Extension (triggers release to VSTS Marketplace)
 
+![Build Status - Manifest Versioning Extension](
+https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/25/badge) - Manifest Versioning Extension (triggers release to VSTS Marketplace) - Shows partial as a passing test involves a call to write-error
+
+![Build Status - Pester Extension](
+https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/27/badge) - Pester Extension (triggers release to VSTS Marketplace)
+
+![Build Status - StyleCop Extension](
+https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/26/badge) - StyleCop Extension (triggers release to VSTS Marketplace)
+
 ![Build Status - Typemock Runner Extension](
 https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/24/badge) - Typemock Runner Extension (triggers release to VSTS Marketplace)
-
-![Build Status - Manifest Versioning Extension](
-https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/25/badge) - Manifest Versioning Extension (triggers release to VSTS Marketplace)
 
 
 
