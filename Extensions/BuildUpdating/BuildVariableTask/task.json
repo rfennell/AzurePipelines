@@ -3,6 +3,7 @@
   "name": "BuildVariableTask",
   "friendlyName": "Set variable on a build defintion",
   "description": "Set variable on a build defintion",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BuildTasks-Task/)",
   "category": "Utility",
   "visibility": [
                 "Build",

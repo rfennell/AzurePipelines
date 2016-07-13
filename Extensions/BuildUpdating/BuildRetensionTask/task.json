@@ -3,6 +3,7 @@
   "name": "BuildRetensionTask",
   "friendlyName": "Set Retension on a Build",
   "description": "Set Retension on a Build",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BuildTasks-Task/)",
   "category": "Utility",
   "visibility": [
                 "Build",
