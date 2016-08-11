@@ -4,6 +4,7 @@
 1.2 - Bug fix, UTF8 encoding issue
 1.3 - Added support for Release Management
       Added support for inline definition of template 
+1.4 - Add advanced option to choose if PAT or defaultcreds are used
 
 This task generates a markdown release notes file based on a template passed into the tool. The output report being something like the following:
 
@@ -60,6 +61,7 @@ The task takes three parameters
 * A picker allows you to set if the template is provided as a file in source control (usually used for builds) or an inline file (usually used for release management). The setting of this picker effects which third parameter is shown
 * Either - The template file name, which should point to a file in source control.
 * Or - The template text.
-There is no need to pass credentials, this is done automatically
+* (Advanced) Use default credentials - default is false so the build services personal access token is automatically used. If true the credentials of local account the agent is running as are used (only usually used on-prem)
+
 
 Using the settings for the output file shown above, the release notes will be created in the specified folder, and will probably need be copied by a task such as 'Publish Artifacts' to your final required location.
