@@ -26,7 +26,7 @@ $VerbosePreference ='Continue' # equiv to -verbose
 
 # Regular expression pattern to find the version in the build number 
 # and then apply it to the assemblies
-$VersionRegex = "\d+\.\d+\.\d+\.\d+"
+$VersionRegex = "(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])(\.(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])){3}"
 
 # Make sure path to source code directory is available
 if (-not (Test-Path $Path))
