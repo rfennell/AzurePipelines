@@ -6,7 +6,6 @@
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BuildTasks-Task/)",
   "category": "Utility",
   "visibility": [
-                "Build",
                 "Release"
                 ],
   "author": "Richard Fennell",
