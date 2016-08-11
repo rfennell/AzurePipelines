@@ -182,13 +182,13 @@ function Invoke-GetCommand
     param
     (
      $uri,
-     [bool]$usedefaultcreds
+     $usedefaultcreds
     )
 
     $webclient = new-object System.Net.WebClient
     $webclient.Encoding = [System.Text.Encoding]::UTF8
 	
-    if ($usedefaultcreds -eq $true)
+    if ([System.Convert]::ToBoolean($usedefaultcreds) -eq $true)
     {
         Write-Verbose "Using default credentials"
         $webclient.UseDefaultCredentials = $true
