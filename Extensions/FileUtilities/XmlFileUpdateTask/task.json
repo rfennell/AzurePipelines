@@ -1,0 +1,65 @@
+{
+  "id": "dc3a86bb-803b-4851-afa5-ee708a61cd6f",
+  "name": "XmlFileUpdateTask",
+  "friendlyName": "Update XML file attribute",
+  "description": "Update an attribute in an Xml file based on XPath filter",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/File-Copier-Tasks/)",
+
+  "category": "Utility",
+  "visibility": [
+                "Build",
+                "Release"
+                ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  
+   "inputs": [
+      {
+         "name": "filename",
+         "type": "string",
+         "label": "Filename",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The file to update"
+      },
+      {
+         "name": "xpath",
+         "type": "string",
+         "label": "Xpath query",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The Xpath query to select a node"
+      }
+      ,
+      {
+         "name": "attribute",
+         "type": "string",
+         "label": "Attribute",
+         "defaultValue": "*",
+         "required": true,
+         "helpMarkDown": "The attribute name to update"
+      }
+      ,
+      {
+         "name": "value",
+         "type": "string",
+         "label": "Value",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The new value to set"
+      }
+   ],
+  "minimumAgentVersion": "1.82.0",
+  "instanceNameFormat": "FileCopy",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\FileUpdate.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
