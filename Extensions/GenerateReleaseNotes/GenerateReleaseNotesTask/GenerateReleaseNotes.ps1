@@ -38,7 +38,11 @@ param (
     $inlinetemplate, 
 	
 	[parameter(Mandatory=$false,HelpMessage="Location of markdown template")]
-    $templateLocation 
+    $templateLocation,
+
+	[parameter(Mandatory=$false,HelpMessage="If true use default credentials, else get them from VSTS")]
+    $usedefaultcreds 
+
 )
 
 # Set a flag to force verbose as a default
@@ -50,11 +54,12 @@ function Get-BuildWorkItems
     (
     $tfsUri,
     $teamproject,
-    $buildid
+    $buildid,
+    $usedefaultcreds
     )
 
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/workitems?api-version=2.0"
-  	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
+  	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| ConvertFrom-Json
     $wiList = @();
   	foreach ($wi in $jsondata.value)
     {
@@ -69,11 +74,12 @@ function Get-BuildChangeSets
     (
     $tfsUri,
     $teamproject,
-    $buildid
+    $buildid,
+    $usedefaultcreds
     )
 
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/changes?api-version=2.0"
-  	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
+  	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
   	$csList = @();
   	foreach ($cs in $jsondata.value)
     {
@@ -95,10 +101,11 @@ function Get-Detail
 {
     param
     (
-    $uri
+    $uri,
+    $usedefaultcreds
     )
 
-  	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
+  	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
   	$jsondata
 }
 
@@ -109,11 +116,12 @@ function Get-Build
     (
     $tfsUri,
     $teamproject,
-    $buildid
+    $buildid,
+    $usedefaultcreds
     )
 
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=2.0"
-  	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
+  	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
   	$jsondata 
 }
 
@@ -124,7 +132,8 @@ function Get-Release
     (
     $tfsUri,
     $teamproject,
-    $releaseid
+    $releaseid,
+    $usedefaultcreds
     )
 
     Write-Verbose "Getting details of release [$releaseid] from server [$tfsUri/$teamproject]"
@@ -133,7 +142,7 @@ function Get-Release
 	$rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseid)?api-version=3.0-preview"
 
-  	$jsondata = Invoke-GetCommand -uri $uri | ConvertFrom-Json
+  	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
   	$jsondata
 }
 
@@ -144,7 +153,8 @@ function Get-BuildIDsRelease
     (
     $tfsUri,
     $teamproject,
-    $release
+    $release,
+    $usedefaultcreds
     )
 
 	# get the build IDs
@@ -171,14 +181,24 @@ function Invoke-GetCommand
 {
     param
     (
-     $uri
+     $uri,
+     [bool]$usedefaultcreds
     )
-    $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
-    $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
+
     $webclient = new-object System.Net.WebClient
-    $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
     $webclient.Encoding = [System.Text.Encoding]::UTF8
 	
+    if ($usedefaultcreds -eq $true)
+    {
+        Write-Verbose "Using default credentials"
+        $webclient.UseDefaultCredentials = $true
+    } else {
+        Write-Verbose "Using SystemVssConnection personal access token"
+        $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
+        $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
+        $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
+    }
+    
 	#write-verbose "REST Call [$uri]"
     $webclient.DownloadString($uri)
 }
@@ -400,18 +420,19 @@ param
 (
     $tfsUri,
     $teamproject,
-    $buildid
+    $buildid,
+    $usedefaultcreds
   )
 
  	write-verbose "Getting build details for BuildID [$buildid]"    
- 	$build = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid
+ 	$build = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
 
     Write-Verbose "Getting associated work items for build [$($buildid)]"
 	Write-Verbose "Getting associated changesets/commits for build [$($buildid)]"
 
     $build = @{'build'=$build;
-                'workitems'=(Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid);
-                'changesets'=(Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid )}
+                'workitems'=(Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds);
+                'changesets'=(Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds )}
     $build
  }
 
@@ -449,17 +470,17 @@ if ( [string]::IsNullOrEmpty($releaseid))
 {
     
    Write-Verbose "In Build mode"
-   $builds = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid
+   $builds = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
     
 } else
 {
 	Write-Verbose "In Release mode"
-    $release = Get-Release -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid
+    $release = Get-Release -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
 	# we put all the work items and changesets into an array associated with their build
     $builds = @()
-  	foreach ($buildId in (Get-BuildIDsRelease -tfsUri $collectionUrl -teamproject $teamproject -release $release))
+  	foreach ($buildId in (Get-BuildIDsRelease -tfsUri $collectionUrl -teamproject $teamproject -release $release -usedefaultcreds $usedefaultcreds))
 	{
-		$builds += Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid
+		$builds += Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
 	}
 }
 
