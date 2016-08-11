@@ -24,7 +24,7 @@
          "label": "Filename",
          "defaultValue": "",
          "required": true,
-         "helpMarkDown": "The file to update"
+         "helpMarkDown": "The file to update e.g: $(SYSTEM.ARTIFACTSDIRECTORY)\\myfile.dll.config"
       },
       {
          "name": "xpath",
@@ -32,7 +32,7 @@
          "label": "Xpath query",
          "defaultValue": "",
          "required": true,
-         "helpMarkDown": "The Xpath query to select a node"
+         "helpMarkDown": "The Xpath query to select a node e.g: /configuration/appSettings/add[@key='A variable']"
       }
       ,
       {
@@ -41,7 +41,7 @@
          "label": "Attribute",
          "defaultValue": "*",
          "required": true,
-         "helpMarkDown": "The attribute name to update"
+         "helpMarkDown": "The attribute name to update e.g. value"
       }
       ,
       {
@@ -50,7 +50,7 @@
          "label": "Value",
          "defaultValue": "",
          "required": true,
-         "helpMarkDown": "The new value to set"
+         "helpMarkDown": "The new value to set e.g. 'new value'"
       }
    ],
   "minimumAgentVersion": "1.82.0",

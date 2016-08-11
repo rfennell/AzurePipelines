@@ -52,3 +52,16 @@ When the task runs it should drop artifacts in the same location as the standard
 - The task in its current form does not provide any linking of artifacts to the build reports, or allow the selection of build versions when the release is created. Thus removing audit trail features of TFS vNext Release Management.
 
 Even given these limitations, it does provide a means to get a pair of TFS servers working together, so can certainly enable some more edge case scenarios 
+
+## Update XML file 
+
+This task edits the value if an attribute in a XML file based on a XPath filter
+
+The prime use for this is to set environment specific value in web.config or app.config files
+
+###Usage
+
+- Filename e.g. $(SYSTEM.ARTIFACTSDIRECTORY)\myfile.dll.config
+- XPath e.g. /configuration/appSettings/add[@key='A variable']
+- Attribute e.g. value
+- Value e.g. 'the new value'

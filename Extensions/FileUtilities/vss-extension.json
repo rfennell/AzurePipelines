@@ -2,7 +2,7 @@
  "manifestVersion": 1,
  "id": "BM-VSTS-FileCopier-Tasks",
  "version": "1.0.0",
- "name": "File Copier Build Tasks",
+ "name": "File Utilities Build Tasks",
  "publisher": "richardfennellBM",
   "description": "Set of tasks perform file copy actions.",
  "categories": [
