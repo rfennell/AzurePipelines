@@ -39,7 +39,7 @@
          "name": "attribute",
          "type": "string",
          "label": "Attribute",
-         "defaultValue": "*",
+         "defaultValue": "",
          "required": true,
          "helpMarkDown": "The attribute name to update e.g. value"
       }
