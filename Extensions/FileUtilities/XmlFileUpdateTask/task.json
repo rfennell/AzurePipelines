@@ -54,7 +54,7 @@
       }
    ],
   "minimumAgentVersion": "1.82.0",
-  "instanceNameFormat": "FileCopy",
+  "instanceNameFormat": "XmlFileUpdateTask",
   "execution": {
     "PowerShell": {
       "target": "$(currentDirectory)\\FileUpdate.ps1",
