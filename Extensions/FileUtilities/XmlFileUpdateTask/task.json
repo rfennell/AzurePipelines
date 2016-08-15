@@ -51,7 +51,15 @@
          "defaultValue": "",
          "required": true,
          "helpMarkDown": "The new value to set e.g. 'new value'"
-      }
+      } ,
+    {
+      "name": "recurse",
+      "type": "boolean",
+      "label": "Recure",
+      "defaultValue": "True",
+      "required": false,
+      "helpMarkDown": "If true will search for files recursivally, default is true."
+    }
    ],
   "minimumAgentVersion": "1.82.0",
   "instanceNameFormat": "XmlFileUpdateTask",

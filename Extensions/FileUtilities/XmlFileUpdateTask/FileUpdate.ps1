@@ -15,14 +15,17 @@ param
 
 # Set a flag to force verbose as a default
 $VerbosePreference ='Continue' # equiv to -verbose
+# Set a flag to force verbose as a default
+$VerbosePreference ='Continue' # equiv to -verbose
 Write-Verbose "Param: filename - $filename"
+Write-Verbose "Param: recurse - $recurse"
 Write-Verbose "Param: xpath - $xpath"
 Write-Verbose "Param: attribute - $attribute"
 Write-Verbose "Param: value - $value"
 
+$convertedFlag = [System.Convert]::ToBoolean($recurse)
 
-
-$files = Get-ChildItem -Path $filename
+$files = Get-ChildItem -Path $filename -Recurse:$convertedFlag
 
 foreach ($file in $files)
 {
