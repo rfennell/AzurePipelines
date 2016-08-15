@@ -55,7 +55,7 @@
     {
       "name": "recurse",
       "type": "boolean",
-      "label": "Recure",
+      "label": "Recurse",
       "defaultValue": "True",
       "required": false,
       "helpMarkDown": "If true will search for files recursivally, default is true."
