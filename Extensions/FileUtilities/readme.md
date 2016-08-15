@@ -73,3 +73,4 @@ The prime use for this is to set environment specific value in web.config or app
 - XPath e.g. /configuration/appSettings/add[@key='A variable']
 - Attribute e.g. value [optional: if left blank the InnerText on the selected node will be updated]
 - Value e.g. 'the new value'
+- Recurse e.g. True (whether any wildcards in the filename should be searched for recursivally)
