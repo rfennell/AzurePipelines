@@ -10,7 +10,8 @@ param
     $filename,
     $xpath,
     $attribute,
-    $value 
+    $value,
+    $recurse
 )
 
 # Set a flag to force verbose as a default
