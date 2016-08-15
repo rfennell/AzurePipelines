@@ -15,22 +15,34 @@ param
 
 # Set a flag to force verbose as a default
 $VerbosePreference ='Continue' # equiv to -verbose
+Write-Verbose "Param: filename - $filename"
+Write-Verbose "Param: xpath - $xpath"
+Write-Verbose "Param: attribute - $attribute"
+Write-Verbose "Param: value - $value"
 
-if (test-path -Path $filename)
+
+
+$files = Get-ChildItem -Path $filename
+
+foreach ($file in $files)
 {
-    $xml = [xml](get-content -Path $filename)
-    if ([String]::IsNullOrEmpty($attribute))
+    if (test-path -Path $file)
     {
-        $xml.SelectSingleNode($xpath).InnerText = $value
-        write-verbose -Verbose "Updated the file $filename with the new value $xpath.InnerText=$value"
+        $xml = [xml](get-content -Path $file)
+        if ([String]::IsNullOrEmpty($attribute))
+        {
+            $xml.SelectSingleNode($xpath).InnerText = $value
+            write-verbose -Verbose "Updated the file $file with the new value $xpath.InnerText=$value"
+        } else
+        {
+            $xml.SelectSingleNode($xpath).$attribute = $value
+            write-verbose -Verbose "Updated the file $file with the new value $xpath.$attribute=$value"
+        }
+        $xml.Save($file)
+    
     } else
     {
-        $xml.SelectSingleNode($xpath).$attribute = $value
-        write-verbose -Verbose "Updated the file $filename with the new value $xpath.$attribute=$value"
-    }
-    $xml.Save($filename)
-    
-} else
-{
-    write-error "Cannot find file $filename"
-} 
+        write-error "Cannot find file $file"
+    } 
+}
+

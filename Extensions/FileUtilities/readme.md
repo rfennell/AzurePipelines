@@ -3,6 +3,7 @@ Releases
 1.0 Initial interna release
 2.0 Public release
 2.1 Added replacing InnerText of XML nodes as well as attributes in XML task
+    Added support for multi-files on XML tasl
 
 
 This set of tasks perform file copy related actions
@@ -68,7 +69,7 @@ The prime use for this is to set environment specific value in web.config or app
 
 ###Usage
 
-- Filename e.g. $(SYSTEM.ARTIFACTSDIRECTORY)\myfile.dll.config
+- Filename e.g. $(SYSTEM.ARTIFACTSDIRECTORY)\myfile.dll.config [can include wildcards $(SYSTEM.ARTIFACTSDIRECTORY)\*.config]
 - XPath e.g. /configuration/appSettings/add[@key='A variable']
 - Attribute e.g. value [optional: if left blank the InnerText on the selected node will be updated]
 - Value e.g. 'the new value'
