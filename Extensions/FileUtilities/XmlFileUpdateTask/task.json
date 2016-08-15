@@ -40,8 +40,8 @@
          "type": "string",
          "label": "Attribute",
          "defaultValue": "",
-         "required": true,
-         "helpMarkDown": "The attribute name to update e.g. value"
+         "required": false,
+         "helpMarkDown": "The attribute name to update e.g. value (if not set InnerText of node will be updated"
       }
       ,
       {

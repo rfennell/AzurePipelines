@@ -1,3 +1,10 @@
+Releases
+
+1.0 Initial interna release
+2.0 Public release
+2.1 Added replacing InnerText of XML nodes as well as attributes in XML task
+
+
 This set of tasks perform file copy related actions
 
 ## File Copy with Filters 
@@ -63,5 +70,5 @@ The prime use for this is to set environment specific value in web.config or app
 
 - Filename e.g. $(SYSTEM.ARTIFACTSDIRECTORY)\myfile.dll.config
 - XPath e.g. /configuration/appSettings/add[@key='A variable']
-- Attribute e.g. value
+- Attribute e.g. value [optional: if left blank the InnerText on the selected node will be updated]
 - Value e.g. 'the new value'

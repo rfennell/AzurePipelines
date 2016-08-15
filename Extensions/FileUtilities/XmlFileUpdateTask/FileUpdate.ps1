@@ -19,9 +19,17 @@ $VerbosePreference ='Continue' # equiv to -verbose
 if (test-path -Path $filename)
 {
     $xml = [xml](get-content -Path $filename)
-    $xml.SelectSingleNode($xpath).$attribute = $value
+    if ([String]::IsNullOrEmpty($attribute))
+    {
+        $xml.SelectSingleNode($xpath).InnerText = $value
+        write-verbose -Verbose "Updated the file $filename with the new value $xpath.InnerText=$value"
+    } else
+    {
+        $xml.SelectSingleNode($xpath).$attribute = $value
+        write-verbose -Verbose "Updated the file $filename with the new value $xpath.$attribute=$value"
+    }
     $xml.Save($filename)
-    write-verbose -Verbose "Updated the file $filename with the new value $xpath/$attribute=$value"
+    
 } else
 {
     write-error "Cannot find file $filename"
