@@ -25,16 +25,14 @@ param (
     [string]$UseRegex,
 
     [Parameter(Mandatory)]
-    [string]$DigitMode
+    [string]$DigitMode,
+
+    $VersionRegex 
 )
 
 
 # Set a flag to force verbose as a default
 $VerbosePreference ='Continue' # equiv to -verbose
-
-# Regular expression pattern to find the version in the build number 
-# and then apply it to the assemblies
-$VersionRegex = "\d+\.\d+\.\d+\.\d+"
 
 # Make sure path to source code directory is available
 if (-not (Test-Path $Path))

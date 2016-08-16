@@ -15,6 +15,7 @@
     "Minor": 2,
     "Patch": 0
   },
+  
      "inputs": [
       {
          "name": "Path",
@@ -52,8 +53,16 @@
       },
       "helpMarkDown": "Select how many digits of the discovered version number to use.",
       "visibleRule": "UseRegex = true"
-      }
-      
+      },
+      {
+      "name": "VersionRegex",
+      "type": "string",
+      "label": "Regex Filter",
+      "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
+      "required": true,
+      "helpMarkDown": "Regular expression filter build number from name.",
+      "visibleRule": "UseRegex = true"
+    }
    ],
   "minimumAgentVersion": "1.82.0",
   "instanceNameFormat": "Version VSIX",
