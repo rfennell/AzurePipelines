@@ -35,7 +35,7 @@
          "label": "Version Number",
          "defaultValue": "$(Build.BuildNumber)",
          "required": true,
-         "helpMarkDown": "Version number to apply to files, should be in '1.2.3.4' format"
+         "helpMarkDown": "Version number to apply to files, should be in format that matches Regex expression (in advanced settings)"
       }
       ,
       {
@@ -46,7 +46,16 @@
          "required": false,
          "groupName":"advanced",
          "helpMarkDown": "The path to the folder containing the files Microsoft.SqlServer.Dac.dll and Microsoft.SqlServer.Dac.Extensions.dll if not in default location"
-      }
+      },
+      {
+      "name": "VersionRegex",
+      "type": "string",
+      "label": "Regex Filter",
+      "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
+      "required": true,
+      "helpMarkDown": "Regular expression filter build number from name.",
+      "groupName":"advanced"
+    }
 
 
    ],

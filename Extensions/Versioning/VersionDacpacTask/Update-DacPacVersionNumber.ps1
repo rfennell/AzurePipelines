@@ -84,11 +84,33 @@ function Update-DacpacVerion
         [Parameter(Mandatory)]
         [System.Version]$VersionNumber,
 
-        [string]$ToolPath
+        [string]$ToolPath,
+
+        $VersionRegex
     )
     
     #Specifying the Error Preference within the function scope to help catch errors
     $ErrorActionPreference = 'Stop'
+
+    # Get and validate the version data
+    $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
+    switch($VersionData.Count)
+    {
+    0        
+        { 
+            Write-Error "Could not find version number data in $VersionNumber."
+            exit 1
+        }
+    1 {}
+    default 
+        { 
+            Write-Warning "Found more than instance of version data in $VersionNumber." 
+            Write-Warning "Will assume first instance is version."
+        }
+    }
+    $NewVersion = $VersionData[0]
+    Write-Verbose "Version: $NewVersion"
+
 
     $ToolPath = Get-Toolpath -ToolPath $ToolPath
 
