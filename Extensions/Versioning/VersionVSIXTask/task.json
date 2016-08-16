@@ -3,6 +3,7 @@
   "name": "VersionVSIX",
   "friendlyName": "Version VSIX package",
   "description": "Applies a version to a VSIX manifest based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Version-Assemblies-and-Packages-Tasks/)",
   "category": "Build",
   "visibility": [
                 "Build",
