@@ -66,7 +66,7 @@ if($files)
     foreach ($file in $files) {
 
         $xml = [xml](get-content -Path $file)
-        $xml.SelectSingleNode($xpath).InnerText = $NewVersion
+        $xml.SelectSingleNode("/package/metadata/version").InnerText = $NewVersion
         write-verbose -Verbose "Updated the file $file with the version $NewVersion"
         $xml.Save($file)
 
