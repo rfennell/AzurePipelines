@@ -1,0 +1,62 @@
+{
+  "id": "dd570fa4-abc8-4845-87b3-04be7f189ad8",
+  "name": "VersionNuspec",
+  "friendlyName": "Version Nuspec package",
+  "description": "Applies a version to a Nuspec manifest based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Version-Assemblies-and-Packages-Tasks/)",
+  "category": "Build",
+  "visibility": [
+                "Build",
+                "Release"
+                ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 2,
+    "Patch": 0
+  },
+   "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  
+     "inputs": [
+      {
+         "name": "Path",
+         "type": "string",
+         "label": "Source folder",
+         "defaultValue": "$(Build.SourcesDirectory)",
+         "required": true,
+         "helpMarkDown": "Source folder for VSIX files, can be root as it will find all files recursively"
+      },
+      {
+         "name": "VersionNumber",
+         "type": "string",
+         "label": "Version Number",
+         "defaultValue": "$(Build.BuildNumber)",
+         "required": true,
+         "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000.0' or provided as a complete version number e.g. 1.1.1.1"
+      },
+      {
+      "name": "VersionRegex",
+      "type": "string",
+      "label": "Regex Filter",
+      "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
+      "required": true,
+      "helpMarkDown": "Regular expression filter build number from name.",
+      "groupName":"advanced"
+    }
+   ],
+  "minimumAgentVersion": "1.82.0",
+  "instanceNameFormat": "Version Nuspec",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\ApplyVersionToNuspec.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}

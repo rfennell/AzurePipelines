@@ -2,6 +2,9 @@ V1.0.0 - Original Release
 V1.2.x - Skipped
 V1.3.x - Added tool path choice for DACPACs
 V1.4.x - Added options for VSIX
+V1.5.x - Changed APPX regex filter
+V1.6.x - Make the regex filter a property for all tasks
+         Added a Nuspec tasks
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of 
@@ -10,11 +13,13 @@ A set of tasks based on the versioning sample script to version tamping assembli
 * VersionAPPX - sets the version in the Package.appxmanifest (used pre build)
 * VersionVSIX - sets the version in the source.extension.vsixmanifest (used pre build)
 * VersionDacpac - sets the version in a SQL DACPAC (used post build)
+* VersionNuspec - sets the version in a Nuget Nuspec file (used pre packing)
 
 All these tasks take at least two parameters, which are both defaulted
 
 * Path to files to version: Defaults to $(Build.SourcesDirectory)
 * Version number: Defaults to $(Build.BuildNumber)
+* [Advanced] Version Regex: The filter used to extract the version number from the build. 
 
 The DACPAC versioner also takes the following Advanced option
 

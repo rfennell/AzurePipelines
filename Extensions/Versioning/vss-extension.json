@@ -70,7 +70,11 @@
     },
     {
       "path": "VersionAssembliesTask"
+    },
+    {
+      "path": "VersionNuspecTask"
     }
+    
   ],
   "contributions": [
     {
@@ -112,6 +116,17 @@
       "properties": {
         "name": "VersionAssembliesTask"
       }
+    },
+     {
+      "id": "Version-Nuspec-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionNuspecTask"
+      }
     }
+
   ]
 }
