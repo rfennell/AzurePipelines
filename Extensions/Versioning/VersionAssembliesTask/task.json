@@ -15,6 +15,13 @@
     "Minor": 1,
     "Patch": 0
   },
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
    "inputs": [
       {
          "name": "Path",
@@ -31,7 +38,17 @@
          "defaultValue": "$(Build.BuildNumber)",
          "required": true,
          "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000.0' format"
-      }
+      },
+      {
+      "name": "VersionRegex",
+      "type": "string",
+      "label": "Regex Filter",
+      "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
+      "required": true,
+      "helpMarkDown": "Regular expression filter build number from name.",
+      "groupName":"advanced"
+    }
+      
    ],
   "minimumAgentVersion": "1.82.0",
    "instanceNameFormat": "Version Assemblies",

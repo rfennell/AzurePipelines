@@ -18,15 +18,13 @@ param (
     [String]$Path,
 
     [Parameter(Mandatory)]
-    [string]$VersionNumber
+    [string]$VersionNumber,
+
+    $VersionRegex
 )
 
 # Set a flag to force verbose as a default
 $VerbosePreference ='Continue' # equiv to -verbose
-
-# Regular expression pattern to find the version in the build number 
-# and then apply it to the assemblies
-$VersionRegex = "\d+\.\d+\.\d+\.\d+"
 
 # Make sure path to source code directory is available
 if (-not (Test-Path $Path))
@@ -36,6 +34,7 @@ if (-not (Test-Path $Path))
 }
 Write-Verbose "Source Directory: $Path"
 Write-Verbose "Version Number: $VersionNumber"
+Write-Verbose "Version Filter: $VersionRegex"
 
 # Get and validate the version data
 $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
