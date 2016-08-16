@@ -27,7 +27,9 @@ param (
     [String]$Path,
     [string]$VersionNumber,
 
-    [string]$ToolPath
+    [string]$ToolPath,
+
+    $VersionRegex
 
 )
 
@@ -84,33 +86,12 @@ function Update-DacpacVerion
         [Parameter(Mandatory)]
         [System.Version]$VersionNumber,
 
-        [string]$ToolPath,
+        [string]$ToolPath
 
-        $VersionRegex
     )
     
     #Specifying the Error Preference within the function scope to help catch errors
     $ErrorActionPreference = 'Stop'
-
-    # Get and validate the version data
-    $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
-    switch($VersionData.Count)
-    {
-    0        
-        { 
-            Write-Error "Could not find version number data in $VersionNumber."
-            exit 1
-        }
-    1 {}
-    default 
-        { 
-            Write-Warning "Found more than instance of version data in $VersionNumber." 
-            Write-Warning "Will assume first instance is version."
-        }
-    }
-    $NewVersion = $VersionData[0]
-    Write-Verbose "Version: $NewVersion"
-
 
     $ToolPath = Get-Toolpath -ToolPath $ToolPath
 
@@ -161,13 +142,31 @@ function Update-DacpacVerion
 # check if we are in test mode i.e. 
 If ($VersionNumber -eq "" -and $path -eq "") {Exit}
 
-$VersionNumber = ($VersionNumber -split '_' )[-1]
+# Get and validate the version data
+$VersionData = [regex]::matches($VersionNumber,$VersionRegex)
+switch($VersionData.Count)
+{
+0        
+    { 
+        Write-Error "Could not find version number data in $VersionNumber."
+        exit 1
+    }
+1 {}
+default 
+    { 
+        Write-Warning "Found more than instance of version data in $VersionNumber." 
+        Write-Warning "Will assume first instance is version."
+    }
+}
+$NewVersion = $VersionData[0]
+Write-Verbose "Version: $NewVersion"
+
 
 $DacPacFiles = Get-ChildItem -Path $Path -Filter *.dacpac -Recurse
 
-Write-Verbose "Found $($DacPacFiles.Count) dacpacs. Beginning to apply updated version number." -Verbose
+Write-Verbose "Found $($DacPacFiles.Count) dacpacs. Beginning to apply updated version number $NewVersion." -Verbose
 
 Foreach ($DacPac in $DacPacFiles)
 {
-    Update-DacpacVerion -Path $DacPac.FullName -VersionNumber $VersionNumber -ToolPath $ToolPath
+    Update-DacpacVerion -Path $DacPac.FullName -VersionNumber $NewVersion -ToolPath $ToolPath
 }
