@@ -168,5 +168,5 @@ Write-Verbose "Found $($DacPacFiles.Count) dacpacs. Beginning to apply updated v
 
 Foreach ($DacPac in $DacPacFiles)
 {
-    Update-DacpacVerion -Path $DacPac.FullName -VersionNumber $NewVersion -ToolPath $ToolPath
+    Update-DacpacVerion -Path $DacPac.FullName -VersionNumber ([System.Version]::Parse($NewVersion)) -ToolPath $ToolPath
 }
