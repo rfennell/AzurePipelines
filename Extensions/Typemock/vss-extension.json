@@ -4,7 +4,7 @@
  "version": "1.0.1",
  "name": "(deprecated) Typemock TMockRunner Build Task",
  "publisher": "richardfennellBM",
-  "description": "(deprecated - better to use the official Typemock tasks) Run tests with Visual Studio test runner wrappered by TMockRunner (Required Typmock Isolator is installed on Build Agent, does not work with hosted agent).",
+  "description": "(deprecated) Run tests with Visual Studio test runner wrappered by TMockRunner (Required Typmock Isolator is installed on Build Agent, does not work with hosted agent).",
  "categories": [
     "Build and release"
   ],
