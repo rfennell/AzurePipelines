@@ -1,4 +1,7 @@
 ##Typemock Task##
+
+**Deprecated** Typemock have now released [official VSTS Typemock Tasks](https://marketplace.visualstudio.com/items?itemName=Typemock.Typemock-Tasks). Typemock's tasks should be used in preference to this task
+
 Typemock Isolator provides a way to ‘mock the un-mockable’, such as sealed private classes in .NET, so can be a invaluable tool in unit testing. To allow this mocking Isolator interception has to be started before any unit tests are run and stopped when completed. For a developer this is done automatically within the Visual Studio IDE, but on build systems you have to run something to do this as part of your build process. Typemock provide documentation and tools for common build systems such as MSBuild, Jenkins, Team City and TFS XAML builds. However, they don’t currently provide tools for getting it working with VSTS/TFS vNext build. 
 
 To get around this limitation this task wrappers Tmockrunner.exe, provided by Typemock, which handles the starting and stopping of mocking whilst calling any EXE of your choice.

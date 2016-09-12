@@ -1,8 +1,8 @@
 {
   "id": "54F90CF5-9DCC-42A4-99D1-A21F1318E3E6",
   "name": "Typemock",
-  "friendlyName": "Typemock TMockRunner",
-  "description": "Run tests with Visual Studio test runner wrappered by TMockRunner",
+  "friendlyName": "(deprecated) Typemock TMockRunner",
+  "description": "(deprecated - use official Typemock tasks) Run tests with Visual Studio test runner wrappered by TMockRunner",
    "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Typemock-Task/)",
 
   "category": "Test",
