@@ -5,6 +5,8 @@ V1.4.x - Added options for VSIX
 V1.5.x - Changed APPX regex filter
 V1.6.x - Make the regex filter a property for all tasks
          Added a Nuspec tasks
+V1.7.x - Nuspec task Fixed UTF8 
+         Nuspec task fixed Namespace Xpath issue
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of 

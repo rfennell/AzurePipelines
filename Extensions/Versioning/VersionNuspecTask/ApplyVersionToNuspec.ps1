@@ -66,7 +66,9 @@ if($files)
     foreach ($file in $files) {
 
         $xml = [xml](get-content -Path $file -Encoding UTF8)
-        $xml.SelectSingleNode("/package/metadata/version").InnerText = $NewVersion
+        # we use this format to we ignore any namespace settings at the package level
+        $xml.SelectSingleNode("/*[local-name()='package']/metadata/version")
+        $xml.package.metadata.version = $NewVersion
         write-verbose -Verbose "Updated the file $file with the version $NewVersion"
         $xml.Save($file)
 
