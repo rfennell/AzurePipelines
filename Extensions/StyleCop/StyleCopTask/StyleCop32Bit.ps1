@@ -22,7 +22,7 @@ if ($env:Processor_Architecture -ne "x86")
 { 
     # Get the command parameters
     $args = $myinvocation.BoundParameters.GetEnumerator() | ForEach-Object {$($_.Value)}
-    write-warning 'Launching x86 PowerShell'
+    write-verbose 'Launching x86 PowerShell'
     &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
     exit
 }
