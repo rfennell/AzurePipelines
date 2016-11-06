@@ -52,5 +52,5 @@ if ($result.OverallSuccess -eq $false)
 } 
 else
 {
-   Write-warning ("StyleCop found [{0}] violations warnings across [{1}] projects" -f $result.TotalViolations, $result.ProjectsScanned)
+   Write-Verbose ("StyleCop found [{0}] violations warnings across [{1}] projects" -f $result.TotalViolations, $result.ProjectsScanned)
 }
