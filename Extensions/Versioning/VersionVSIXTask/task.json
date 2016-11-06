@@ -17,11 +17,6 @@
   },
   "groups": [
     {
-      "name": "advanced",
-      "displayName": "Advanced",
-      "isExpanded": false
-    },
-    {
       "name": "output",
       "displayName": "Output",
       "isExpanded": false
@@ -72,9 +67,8 @@
       "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
       "required": true,
       "helpMarkDown": "Regular expression filter build number from name.",
-      "visibleRule": "UseRegex = true",
-      "groupName":"advanced"
-    },
+      "visibleRule": "UseRegex = true"
+      },
       {
       "name": "OutputVersion",
       "type": "string",
