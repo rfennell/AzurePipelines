@@ -41,7 +41,9 @@ if (-not (Test-Path $Path))
     exit 1
 }
 Write-Verbose "Source Directory: $Path"
-Write-Verbose "Version Number: $VersionNumber"
+Write-Verbose "Version Number/Build Number: $VersionNumber"
+Write-Verbose "Version Filter: $VersionRegex"
+Write-verbose "Output: Version Number Parameter Name: $outputversion"
 
 if ($UseRegex -eq $true)
 {
@@ -97,6 +99,9 @@ if($files)
         $xml.Save($file)
         Write-Verbose "$file - version applied"
     }
+    Write-Verbose "Set the output variable '$outputversion' with the value $NewVersion"
+    Write-Host "##vso[task.setvariable variable=$outputversion;]$NewVersion"
+
 }
 else
 {

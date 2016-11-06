@@ -170,3 +170,5 @@ Foreach ($DacPac in $DacPacFiles)
 {
     Update-DacpacVerion -Path $DacPac.FullName -VersionNumber ([System.Version]::Parse($NewVersion)) -ToolPath $ToolPath
 }
+Write-Verbose "Set the output variable '$outputversion' with the value $NewVersion"
+Write-Host "##vso[task.setvariable variable=$outputversion;]$NewVersion"

@@ -38,6 +38,7 @@ Write-Verbose "Source Directory: $Path"
 Write-Verbose "Version Number/Build Number: $VersionNumber"
 Write-Verbose "Version Filter: $VersionRegex"
 Write-verbose "Output: Version Number Parameter Name: $outputversion"
+
 # Get and validate the version data
 $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
 switch($VersionData.Count)

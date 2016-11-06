@@ -20,6 +20,11 @@
       "name": "advanced",
       "displayName": "Advanced",
       "isExpanded": false
+    },    
+    {
+      "name": "output",
+      "displayName": "Output",
+      "isExpanded": false
     }
   ],
   
@@ -48,6 +53,15 @@
       "required": true,
       "helpMarkDown": "Regular expression filter build number from name.",
       "groupName":"advanced"
+    },
+      {
+      "name": "OutputVersion",
+      "type": "string",
+      "label": "Output:Version Number used",
+      "defaultValue": "OutputedVersion",
+      "required": true,
+      "helpMarkDown": "The actual version number extracted and used from the build number.",
+      "groupName":"output"
     }
    ],
   "minimumAgentVersion": "1.82.0",
