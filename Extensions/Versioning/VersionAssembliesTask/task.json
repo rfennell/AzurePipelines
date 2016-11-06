@@ -47,6 +47,15 @@
       "required": true,
       "helpMarkDown": "Regular expression filter build number from name.",
       "groupName":"advanced"
+    },
+      {
+      "name": "OutputVersion",
+      "type": "string",
+      "label": "Output:Version Number used",
+      "defaultValue": "OutputVersion",
+      "required": true,
+      "helpMarkDown": "The actual version number extracted and used from the build number.",
+      "groupName":"advanced"
     }
       
    ],

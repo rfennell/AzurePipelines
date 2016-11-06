@@ -20,7 +20,9 @@ param (
     [Parameter(Mandatory)]
     [string]$VersionNumber,
 
-    $VersionRegex
+    $VersionRegex,
+
+    $outputversion
 )
 
 # Set a flag to force verbose as a default
@@ -33,9 +35,9 @@ if (-not (Test-Path $Path))
     exit 1
 }
 Write-Verbose "Source Directory: $Path"
-Write-Verbose "Version Number: $VersionNumber"
+Write-Verbose "Version Number/Build Number: $VersionNumber"
 Write-Verbose "Version Filter: $VersionRegex"
-
+Write-verbose "Output: Version Number Parameter Name: $outputversion"
 # Get and validate the version data
 $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
 switch($VersionData.Count)
@@ -53,7 +55,7 @@ switch($VersionData.Count)
       }
 }
 $NewVersion = $VersionData[0]
-Write-Verbose "Version: $NewVersion"
+Write-Verbose "Extracted Version: $NewVersion"
 
 # Apply the version to the assembly property files
 $files = gci $Path -recurse -include "*Properties*","My Project" | 
@@ -69,6 +71,8 @@ if($files)
         $filecontent -replace $VersionRegex, $NewVersion | Out-File $file
         Write-Verbose "$file - version applied"
     }
+    Write-Verbose "Set the output variable '$outputversion' with the value $NewVersion"
+    Write-Host "##vso[task.setvariable variable=$outputversion;]$NewVersion"
 }
 else
 {
