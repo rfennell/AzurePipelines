@@ -20,6 +20,11 @@
       "name": "advanced",
       "displayName": "Advanced",
       "isExpanded": false
+    },
+    {
+      "name": "output",
+      "displayName": "Output",
+      "isExpanded": false
     }
   ],
    "inputs": [
@@ -52,10 +57,10 @@
       "name": "OutputVersion",
       "type": "string",
       "label": "Output:Version Number used",
-      "defaultValue": "OutputVersion",
+      "defaultValue": "OutputedVersion",
       "required": true,
       "helpMarkDown": "The actual version number extracted and used from the build number.",
-      "groupName":"advanced"
+      "groupName":"output"
     }
       
    ],
