@@ -39,7 +39,7 @@ if (-not (Test-Path $Path))
 Write-Verbose "Source Directory: $Path"
 Write-Verbose "Version Number/Build Number: $VersionNumber"
 Write-Verbose "Version Filter to extract build number: $VersionRegex"
-Write-Verbose "Field to update (all if emmpty): $Field"
+Write-Verbose "Field to update (all if empty): $Field"
 Write-verbose "Output: Version Number Parameter Name: $outputversion"
 
 # Get and validate the version data
