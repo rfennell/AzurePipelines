@@ -23,7 +23,12 @@ All these tasks take at least two parameters, which are both defaulted
 
 * Path to files to version: Defaults to $(Build.SourcesDirectory)
 * Version number: Defaults to $(Build.BuildNumber)
-* [Advanced] Version Regex: The filter used to extract the version number from the build. 
+* [Advanced] Version Regex: The filter used to extract the version number from the build. Default to '\d+\.\d+\.\d+\.\d+'
+* [Output] OutputVersion: Outputs the actual version number extracted from build number. 
+
+The Assembly versioner also takes the following Advanced option
+
+* [Advanced] Field: The name of the version field to update, if blank updates all. Default is empty
 
 The DACPAC versioner also takes the following Advanced option
 
