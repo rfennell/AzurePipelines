@@ -47,10 +47,19 @@
       {
       "name": "VersionRegex",
       "type": "string",
-      "label": "Regex Filter",
+      "label": "Regex Filter to extract build number",
       "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
       "required": true,
-      "helpMarkDown": "Regular expression filter build number from name.",
+      "helpMarkDown": "Regular expression filter to get build number from the build name.",
+      "groupName":"advanced"
+    },
+     {
+      "name": "Field",
+      "type": "string",
+      "label": "The version field to update",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The version field to update, if blank all version fields are updated.",
       "groupName":"advanced"
     },
       {

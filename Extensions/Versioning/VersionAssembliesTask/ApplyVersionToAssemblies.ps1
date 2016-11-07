@@ -22,6 +22,8 @@ param (
 
     $VersionRegex,
 
+    $Field,
+
     $outputversion
 )
 
@@ -36,7 +38,8 @@ if (-not (Test-Path $Path))
 }
 Write-Verbose "Source Directory: $Path"
 Write-Verbose "Version Number/Build Number: $VersionNumber"
-Write-Verbose "Version Filter: $VersionRegex"
+Write-Verbose "Version Filter to extract build number: $VersionRegex"
+Write-Verbose "Field to update (all if emmpty): $Field"
 Write-verbose "Output: Version Number Parameter Name: $outputversion"
 
 # Get and validate the version data
@@ -69,7 +72,15 @@ if($files)
     foreach ($file in $files) {
         $filecontent = Get-Content($file)
         attrib $file -r
-        $filecontent -replace $VersionRegex, $NewVersion | Out-File $file
+        if ([string]::IsNullOrEmpty($field))
+        {
+            Write-Verbose "Updating all version fields"
+            $filecontent -replace $VersionRegex, $NewVersion | Out-File $file
+        } else {
+            Write-Verbose "Updating only the '$field' version"
+            $filecontent -replace "$field\(`"$VersionRegex", "$field(`"$NewVersion" | Out-File $file
+        }
+        
         Write-Verbose "$file - version applied"
     }
     Write-Verbose "Set the output variable '$outputversion' with the value $NewVersion"
