@@ -71,7 +71,7 @@ function Get-Toolpath
         }
         else
         {
-             Write-error 'Cannont find assemblies in user provide location' -verbose 
+             Write-error 'Cannot find assemblies in user provide location' -verbose 
         }
     }
 
