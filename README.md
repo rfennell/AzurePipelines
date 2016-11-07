@@ -6,7 +6,7 @@ GenerateReleaseNotes Extension ![Build Status - GenerateReleaseNotes Extension](
 https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/23/badge)
 
 Manifest Versioning Extension ![Build Status - Manifest Versioning Extension](
-https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/25/badge) Shows partial as passing test involves a call to write-error
+https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/25/badge) 
 
 Pester Extension ![Build Status - Pester Extension](
 https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/27/badge)
