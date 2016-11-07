@@ -29,7 +29,9 @@ param (
 
     [string]$ToolPath,
 
-    $VersionRegex
+    $VersionRegex,
+
+    $outputversion
 
 )
 

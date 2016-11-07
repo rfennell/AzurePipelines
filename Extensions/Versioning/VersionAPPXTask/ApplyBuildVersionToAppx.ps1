@@ -20,7 +20,9 @@ param (
     [Parameter(Mandatory)]
     [string]$VersionNumber,
 
-    [string]$VersionRegex
+    [string]$VersionRegex,
+
+    $outputversion
 )
 
 # Set a flag to force verbose as a default

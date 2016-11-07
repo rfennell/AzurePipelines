@@ -27,7 +27,9 @@ param (
     [Parameter(Mandatory)]
     [string]$DigitMode,
 
-    $VersionRegex 
+    $VersionRegex ,
+
+    $outputversion
 )
 
 

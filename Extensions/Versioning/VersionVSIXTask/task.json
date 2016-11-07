@@ -72,7 +72,7 @@
       {
       "name": "OutputVersion",
       "type": "string",
-      "label": "Output:Version Number used",
+      "label": "Version number used variable name",
       "defaultValue": "OutputedVersion",
       "required": true,
       "helpMarkDown": "The actual version number extracted and used from the build number.",
