@@ -1,21 +1,21 @@
-Build Utils Extension ![Build Status - Build Utils Extension](https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/28/badge)
+![Build Status - Build Utils Extension](https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/28/badge) Build Utils Extension 
 
-FileCopier Extension ![Build Status - FileCopiers Extension](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/21/badge)
+![Build Status - FileCopiers Extension](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/21/badge) FileCopier Extension 
 
-GenerateReleaseNotes Extension ![Build Status - GenerateReleaseNotes Extension](
-https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/23/badge)
+![Build Status - GenerateReleaseNotes Extension](
+https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/23/badge) GenerateReleaseNotes Extension 
 
-Manifest Versioning Extension ![Build Status - Manifest Versioning Extension](
-https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/25/badge) Shows partial as passing test involves a call to write-error
+![Build Status - Manifest Versioning Extension](
+https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/25/badge) Manifest Versioning Extension 
 
-Pester Extension ![Build Status - Pester Extension](
-https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/27/badge)
+![Build Status - Pester Extension](
+https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/27/badge) Pester Extension 
 
-StyleCop Extension ![Build Status - StyleCop Extension](
-https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/26/badge) 
+![Build Status - StyleCop Extension](
+https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/26/badge) StyleCop Extension 
 
-Typemock Runner Extension ![Build Status - Typemock Runner Extension](
-https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/24/badge) 
+![Build Status - Typemock Runner Extension](
+https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/24/badge) Typemock Runner Extension (depricated)
 
 # vNextBuild Tasks and Resources
 
