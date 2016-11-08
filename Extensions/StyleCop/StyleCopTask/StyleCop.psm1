@@ -102,7 +102,9 @@ function Invoke-StyleCopForFolderStructure
 
         if (![string]::IsNullOrEmpty($settingsFile) -and (Test-Path $settingsFile))
         {
-            Write-Verbose "Using settings.stylecop passed as parameter [$settingsFile]"
+            Write-Verbose "The settings.stylecop passed the parameter [$settingsFile]"
+            Write-Verbose "The IsNullOrEmpty check returned [$([string]::IsNullOrEmpty($settingsFile))]"
+            Write-Verbose "The Test-Path check returned [$(Test-Path $settingsFile))]"
         } else
         {
             # find a set of rules closest to the .csproj file
