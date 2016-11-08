@@ -6,6 +6,7 @@ Releases
 - 1.2 Updated with StyleCOp 4.7.59.0
 - 1.6 (Skipped previous point releases whilst migrating to release pipeline) fixes dictionary loading issues due to 64/32bit handling
 - 1.7 Altered logging to make some warning messages verbose messages as they are not issues
+- 1.8 Altered logging to provide more data to debug end user issue, no functional change
 
 The task takes the following arguments
 - TreatStyleCopViolationsErrorsAsWarnings - Treat StyleCop violations errors as warnings (default false).
