@@ -42,6 +42,9 @@ Write-Verbose "Version Filter to extract build number: $VersionRegex"
 Write-Verbose "Field to update (all if empty): $Field"
 Write-verbose "Output: Version Number Parameter Name: $outputversion"
 
+#dot source function for getting the file encoding.
+. .\Get-FileEncoding.ps1
+
 # Get and validate the version data
 $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
 switch($VersionData.Count)
@@ -62,23 +65,24 @@ $NewVersion = $VersionData[0]
 Write-Verbose "Extracted Version: $NewVersion"
 
 # Apply the version to the assembly property files
-$files = gci $Path -recurse -include "*Properties*","My Project" | 
-    ?{ $_.PSIsContainer } | 
-    foreach { gci -Path $_.FullName -Recurse -include AssemblyInfo.* }
+$files = Get-ChildItem $Path -recurse -include "*Properties*","My Project" | 
+    Where-Object { $_.PSIsContainer } | 
+    foreach { Get-ChildItem -Path $_.FullName -Recurse -include AssemblyInfo.* }
 if($files)
 {
     Write-Verbose "Will apply $NewVersion to $($files.count) files."
 
     foreach ($file in $files) {
-        $filecontent = Get-Content($file)
+        $FileEncoding = Get-FileEncoding -Path $File.FullName
+        $filecontent = Get-Content -Path $file.Fullname
         attrib $file -r
         if ([string]::IsNullOrEmpty($field))
         {
             Write-Verbose "Updating all version fields"
-            $filecontent -replace $VersionRegex, $NewVersion | Out-File $file
+            $filecontent -replace $VersionRegex, $NewVersion | Out-File $file -Encoding $FileEncoding
         } else {
             Write-Verbose "Updating only the '$field' version"
-            $filecontent -replace "$field\(`"$VersionRegex", "$field(`"$NewVersion" | Out-File $file
+            $filecontent -replace "$field\(`"$VersionRegex", "$field(`"$NewVersion" | Out-File $file -Encoding $FileEncoding
         }
         
         Write-Verbose "$file - version applied"
