@@ -9,6 +9,7 @@ V1.7.x - Nuspec task Fixed UTF8
          Nuspec task fixed Namespace Xpath issue
 V1.8.x - Added output variables for the version number actually used
 V1.9.x - Allow separate regex filters for extracting version and file handling in VersionAssemblies task
+V1.10.x - Fixed file encoding issue
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of 
