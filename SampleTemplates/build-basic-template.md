@@ -1,5 +1,6 @@
 #Release notes for build $defname  
-**Build Number**  : $($build.buildnumber)    
+**Build Number**  : $($build.buildnumber) 
+**Build Configuration** :  $($build.parameters | ConvertFrom-Json | select -ExpandProperty BuildConfiguration )
 **Build started** : $("{0:dd/MM/yy HH:mm:ss}" -f [datetime]$build.startTime)  
 **Source Branch** $($build.sourceBranch)  
   
