@@ -18,13 +18,13 @@ New-Item -ItemType Directory -Force -Path "$PSScriptRoot\logs" >$null 2>&1
 
 
 
-Describe "StyleCop folder based tests (using stylecop.setting in each folder and no custom rulesets)" {
+Describe "StyleCop folder based tests (using stylecop.setting in each folder and no custom rules DLLs)" {
   
-    It "Solution has 30 issues" {
+    It "Solution has 40 issues (30 + 10)" {
         $result = Invoke-StyleCopForFolderStructure -sourcefolder "$PSScriptRoot\testdata\StyleCopSample" `
                                   -loggingfolder "$PSScriptRoot\logs"                                   
         $result.OverallSuccess | Should be $true
-        $result.TotalViolations | Should be 30
+        $result.TotalViolations | Should be 40
         $result.ProjectsScanned | Should be 2
     }
 }
