@@ -105,6 +105,7 @@ function Invoke-StyleCopForFolderStructure
             Write-Verbose "The settings.stylecop passed the parameter [$settingsFile]"
             Write-Verbose "The IsNullOrEmpty check returned [$([string]::IsNullOrEmpty($settingsFile))]"
             Write-Verbose "The Test-Path check returned [$(Test-Path $settingsFile))]"
+            $projectSettingsFile = $settingsFile
         } else
         {
             # find a set of rules closest to the .csproj file
@@ -112,18 +113,18 @@ function Invoke-StyleCopForFolderStructure
             if (Test-Path $settings)
             {
                 Write-Verbose "Using found settings.stylecop file same folder as .csproj file"
-                $SettingsFile = $settings
+                $projectSettingsFile = $settings
             }  else
             {
                 $settings = Join-Path -path $sourcefolder -childpath "settings.stylecop"
                 if (Test-Path $settings)
                 {
                     Write-Verbose "Using settings.stylecop file in solution folder"
-                    $SettingsFile = $settings
+                    $projectSettingsFile = $settings
                 } else 
                 {
                     Write-Verbose "Cannot find a local settings.stylecop file, using default rules"
-                    $SettingsFile = "." # we have to pass something as this is a required param
+                    $projectSettingsFile = "." # we have to pass something as this is a required param
                 }
             }
         }
@@ -134,7 +135,7 @@ function Invoke-StyleCopForFolderStructure
                     -cacheResults $cacheResults `
                     -forceFullAnalysis $forceFullAnalysis `
                     -additionalAddInPath $additionalAddInPath `
-                    -settingsFile $settingsFile `
+                    -settingsFile $projectSettingsFile `
                     -loggingfolder $loggingfolder `
                     -runName $projfile.BaseName `
                     -sourcefolders @($projfile.Directory)
