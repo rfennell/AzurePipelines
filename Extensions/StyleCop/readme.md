@@ -8,6 +8,7 @@ Releases
 - 1.7 Altered logging to make some warning messages verbose messages as they are not issues
 - 1.8 Altered logging to provide more data to debug end user issue, no functional change
 - 1.9 Fixed issue with loading settings files from project folder (pull request from @amjrsl)
+      Added custom dictionaries to avoid name matching false errors (pull request from @amjrsl) 
 
 The task takes the following arguments
 - TreatStyleCopViolationsErrorsAsWarnings - Treat StyleCop violations errors as warnings (default false).
