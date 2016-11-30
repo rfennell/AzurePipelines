@@ -89,6 +89,16 @@
       "helpMarkDown": "Password to access remote server (if blank default creds. used)",
       "groupName":"advanced"
       }
+      ,
+      {
+      "name": "localdir",
+      "type": "string",
+      "label": "Local Directory",
+      "defaultValue": "$(SYSTEM.ARTIFACTSDIRECTORY)",
+      "required": true,
+      "helpMarkDown": "The root directory to store the artifact in, defaults to $(SYSTEM.ARTIFACTSDIRECTORY)",
+      "groupName":"advanced"
+      }
    ],
   "instanceNameFormat": "Get Artifact From UNC Share",
   "execution": {

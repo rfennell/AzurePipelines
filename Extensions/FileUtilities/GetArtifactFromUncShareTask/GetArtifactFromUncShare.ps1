@@ -17,7 +17,8 @@ param (
     $artifactname,
     $buildnumber,
     $username  ,
-    $password 
+    $password ,
+    $localdir
     
 )
 
@@ -130,7 +131,7 @@ function Get-BuildArtifactPath
 
 
 
-$localdir = $env:SYSTEM_ARTIFACTSDIRECTORY
+# $localdir = $env:SYSTEM_ARTIFACTSDIRECTORY
 # for local testing override this environment variable 
 # $localdir = "c:\tmp"
 
