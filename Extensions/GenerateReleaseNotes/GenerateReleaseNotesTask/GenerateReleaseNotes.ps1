@@ -146,7 +146,7 @@ function Get-Release
   	$jsondata
 }
 
-function Get-BuildIDsRelease
+function Get-BuildReleaseArtifacts
 {
 
     param
@@ -157,9 +157,9 @@ function Get-BuildIDsRelease
     $usedefaultcreds
     )
 
-	# get the build IDs
-    $buildIds = $release.artifacts.definitionReference.version.id
-	$buildIds
+	# get the build artifacts
+    $artifacts = $release.artifacts
+	$artifacts
 }
 
 function Indent-Space
@@ -478,9 +478,16 @@ if ( [string]::IsNullOrEmpty($releaseid))
     $release = Get-Release -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
 	# we put all the work items and changesets into an array associated with their build
     $builds = @()
-  	foreach ($buildId in (Get-BuildIDsRelease -tfsUri $collectionUrl -teamproject $teamproject -release $release -usedefaultcreds $usedefaultcreds))
+  	foreach ($artifact in (Get-BuildReleaseArtifacts -tfsUri $collectionUrl -teamproject $teamproject -release $release -usedefaultcreds $usedefaultcreds))
 	{
-		$builds += Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
+        if ($artifact.type -eq 'Build')
+        {
+            Write-Verbose "The artifact [$($artifact.alias)] is a VSTS build, will attempt to find associated commits/changesets and work items"
+		    $builds += Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $artifact.definitionReference.version.id -usedefaultcreds $usedefaultcreds
+        } else 
+        {
+            Write-Verbose "The artifact [$($artifact.alias)] is a [$($artifact.type)], will be skipped as has no associated commits/changesets and work items"
+		}
 	}
 }
 

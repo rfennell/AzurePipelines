@@ -5,6 +5,7 @@
 1.3 - Added support for Release Management
       Added support for inline definition of template 
 1.4 - Add advanced option to choose if PAT or defaultcreds are used
+1.5 - Put in logic to skip any non VSTS release artifacts
 
 This task generates a markdown release notes file based on a template passed into the tool. The output report being something like the following:
 
