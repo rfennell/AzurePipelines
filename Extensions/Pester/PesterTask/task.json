@@ -53,7 +53,16 @@
       "helpMarkDown": "Run in 32bit",
       "groupName":"advanced"
     }
-
+,
+    {
+      "name": "moduleFolder",
+      "type": "string",
+      "label": "Module Folder override",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "If left blank the Pester module stored in this task will be used, to load the Pester module from elsewhere set the path",
+      "groupName":"advanced"
+    }
 
     
   ],

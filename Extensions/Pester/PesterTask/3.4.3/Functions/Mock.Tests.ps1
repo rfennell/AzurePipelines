@@ -1244,7 +1244,22 @@ Describe 'DynamicParam blocks in other scopes' {
             DynamicParam {
                 if ($script:DoDynamicParam)
                 {
-                    Get-MockDynamicParameters -CmdletName Get-ChildItem -Parameters @{ Path = [string[]]'Cert:\' }
+                    if ($PSVersionTable.PSVersion.Major -ge 3)
+                    {
+                        # -Parameters needs to be a PSBoundParametersDictionary object to work properly, due to internal
+                        # details of the PS engine in v5.  Naturally, this is an internal type and we need to use reflection
+                        # to make a new one.
+
+                        $flags = [System.Reflection.BindingFlags]'Instance,NonPublic'
+                        $params = $PSBoundParameters.GetType().GetConstructor($flags, $null, @(), $null).Invoke(@())
+                    }
+                    else
+                    {
+                        $params = @{}
+                    }
+
+                    $params['Path'] = [string[]]'Cert:\'
+                    Get-MockDynamicParameters -CmdletName Get-ChildItem -Parameters $params
                 }
             }
 
@@ -1669,5 +1684,43 @@ Describe 'Nested Mock calls' {
         $result = @(Get-Date)
         $result.Count | Should Be 1
         $result[0] | Should Be '2012-06-13T00:00:00.0000000'
+    }
+}
+
+Describe 'Globbing characters in command name' {
+
+    function f[f]f { 'orig1' }
+    function f?f { 'orig2' }
+    function f*f { 'orig3' }
+    function fff { 'orig4' }
+
+    It 'Command with globbing characters in name should be mockable' {
+        Mock f[f]f { 'mock1' }
+        Mock f?f { 'mock2' }
+        Mock f*f { 'mock3' }
+        f[f]f | Should Be mock1
+        f?f | Should Be mock2
+        f*f | Should Be mock3
+        fff | Should Be orig4
+    }
+
+}
+
+Describe 'Naming conflicts in mocked functions' {
+    function Sample {
+        param(
+            [string]
+            ${Metadata}
+        )
+    }
+
+    function Wrapper {
+        Sample -Metadata 'test'
+    }
+
+    Mock -CommandName Sample { 'mocked' }
+
+    It 'Works with commands that contain variables named Metadata' {
+        Wrapper | Should Be 'mocked'
     }
 }

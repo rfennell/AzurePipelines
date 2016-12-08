@@ -3,8 +3,10 @@ param
 (
     [string]$scriptFolder,
     [string]$resultsFile,
-    [string]$run32Bit 
+    [string]$run32Bit,
+    [string]$moduleFolder
 )
+
 
 if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86")   
 {
@@ -16,8 +18,14 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86")
 }
 write-verbose "Running in $($env:Processor_Architecture) PowerShell" -verbose
 
+if ([string]::IsNullOrEmpty($moduleFolder))
+{
+    # we have no module path specified so use the copy we have in this task
+    $moduleFolder = "$pwd\3.4.3"
+}
 
-Import-Module $pwd\Pester.psd1
+Write-Verbose "Loading Pester module from [$moduleFolder]" -verbose
+Import-Module $moduleFolder\Pester.psd1
 Write-Verbose "Running Pester from [$scriptFolder] output sent to [$resultsFile]" -verbose
 
 $result = Invoke-Pester -PassThru -OutputFile $resultsFile -OutputFormat NUnitXml -Script $scriptFolder

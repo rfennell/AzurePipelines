@@ -4,7 +4,7 @@
 ModuleToProcess = 'Pester.psm1'
 
 # Version number of this module.
-ModuleVersion = '3.4.0'
+ModuleVersion = '3.4.3'
 
 # ID used to uniquely identify this module
 GUID = 'a699dea5-2c73-4616-a270-1f7abb777e71'
@@ -90,7 +90,7 @@ PrivateData = @{
         Category = "Scripting Techniques"
 
         # Keyword tags to help users find this module via navigations and search.
-        Tags = @('powershell','unit testing','bdd','tdd','mocking')
+        Tags = @('powershell','unit_testing','bdd','tdd','mocking')
 
         # The web address of an icon which can be used in galleries to represent this module
         IconUri = "http://pesterbdd.com/images/Pester.png"
