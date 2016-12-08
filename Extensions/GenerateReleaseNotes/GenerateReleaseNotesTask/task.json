@@ -74,6 +74,17 @@
       "helpMarkDown": "If true will use the credentials of the running agent as opposed to access token provided by build service.",
       "groupName":"advanced"
     }
+  ,
+    {
+      "name": "generateForOnlyPrimary",
+      "type": "boolean",
+      "label": "Generate release notes for only primary artifact in Release",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true will generate release notes for the primary build artifact (Release usage only)",
+      "groupName":"advanced"
+    }
+    
    ],
   "instanceNameFormat": "Generate release notes",
   "execution": {

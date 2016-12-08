@@ -41,7 +41,10 @@ param (
     $templateLocation,
 
 	[parameter(Mandatory=$false,HelpMessage="If true use default credentials, else get them from VSTS")]
-    $usedefaultcreds 
+    $usedefaultcreds, 
+
+	[parameter(Mandatory=$false,HelpMessage="If running in a release to only generate for primary artifact")]
+    $generateForOnlyPrimary
 
 )
 
@@ -480,14 +483,20 @@ if ( [string]::IsNullOrEmpty($releaseid))
     $builds = @()
   	foreach ($artifact in (Get-BuildReleaseArtifacts -tfsUri $collectionUrl -teamproject $teamproject -release $release -usedefaultcreds $usedefaultcreds))
 	{
-        if ($artifact.type -eq 'Build')
+        if (($generateForOnlyPrimary -eq $true -and $artifact.isPrimary -eq $true) -or ($generateForOnlyPrimary -eq $false))
         {
-            Write-Verbose "The artifact [$($artifact.alias)] is a VSTS build, will attempt to find associated commits/changesets and work items"
-		    $builds += Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $artifact.definitionReference.version.id -usedefaultcreds $usedefaultcreds
+            if ($artifact.type -eq 'Build')
+            {
+                Write-Verbose "The artifact [$($artifact.alias)] is a VSTS build, will attempt to find associated commits/changesets and work items"
+                $builds += Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $artifact.definitionReference.version.id -usedefaultcreds $usedefaultcreds
+            } else 
+            {
+                Write-Verbose "The artifact [$($artifact.alias)] is a [$($artifact.type)], will be skipped as has no associated commits/changesets and work items"
+            }
         } else 
         {
-            Write-Verbose "The artifact [$($artifact.alias)] is a [$($artifact.type)], will be skipped as has no associated commits/changesets and work items"
-		}
+           Write-Verbose "The artifact [$($artifact.alias)] is being skipped as it is not the primary artifact"
+        }
 	}
 }
 
