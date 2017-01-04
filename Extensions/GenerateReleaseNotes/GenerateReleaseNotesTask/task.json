@@ -76,22 +76,22 @@
     }
   ,
     {
-      "name": "generateForCurrentRelease",
+      "name": "generateForOnlyPrimary",
       "type": "boolean",
-      "label": "Generate release notes for this Release",
+      "label": "Generate for only primary artifact",
       "defaultValue": "False",
-      "required": false,
-      "helpMarkDown": "If true will generate release notes for this release (Release usage only)",
+      "required": true,
+      "helpMarkDown": "If true will generate release notes for the primary build artifact (Release usage only)",
       "groupName":"advanced"
     }
   ,
     {
-      "name": "generateForOnlyPrimary",
+      "name": "generateForCurrentRelease",
       "type": "boolean",
-      "label": "Generate release notes for only primary artifact in Release",
-      "defaultValue": "False",
-      "required": true,
-      "helpMarkDown": "If true will generate release notes for the primary build artifact (Release usage only)",
+      "label": "Generate for only this Release",
+      "defaultValue": "True",
+      "required": false,
+      "helpMarkDown": "If true will generate release notes for this release (Release usage only)",
       "groupName":"advanced"
     }
   ,
@@ -103,7 +103,7 @@
       "required": false,
       "helpMarkDown": "If set uses this value to find the last succesful deployment (Release usage only)",
       "groupName":"advanced",
-       "visibleRule": "generateForOnlyPrimary = false"
+       "visibleRule": "generateForCurrentRelease = False"
     }
     
    ],
