@@ -533,14 +533,14 @@ if ( [string]::IsNullOrEmpty($releaseid))
             if ($r.id -eq $releaseid )
             {
                 # we always add the current release that trigger the task
-                $releaseHistory += $r
+                $releases += $r
             } else 
             {
                 # add all the past releases where the this stahe ws not a success
                 $stage = $r.environments | Where-Object { $_.name -eq $stageName -and $_.status -ne "succeeded" }
                 if ($stage -ne $null)
                 {
-                    $releaseHistory += $r
+                    $releases += $r
                 } else {
                     #we have found a successful relase in this stage so quit
                     break
@@ -555,7 +555,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
     $builds = @()
     foreach ($release in $releases)
     {
-        Write-Verbose "Processing the release [$($release.name)]"
+        Write-Verbose "Processing the release [$($release.id)]"
         foreach ($artifact in (Get-BuildReleaseArtifacts -tfsUri $collectionUrl -teamproject $teamproject -release $release -usedefaultcreds $usedefaultcreds))
         {
             if (($generateForOnlyPrimary -eq $true -and $artifact.isPrimary -eq $true) -or ($generateForOnlyPrimary -eq $false))

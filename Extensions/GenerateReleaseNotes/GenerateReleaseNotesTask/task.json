@@ -98,12 +98,12 @@
     {
       "name": "overrideStageName",
       "type": "string",
-      "label": "Name of stage to look for last successful deployment",
+      "label": "Name of stage (override)",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "If set uses this value to find the last succesful deployment (Release usage only)",
+      "helpMarkDown": "If set uses this stage name to find the last succesful deployment, as opposed to the currently active stage (Release usage only)",
       "groupName":"advanced",
-       "visibleRule": "generateForCurrentRelease = False"
+       "visibleRule": "generateForCurrentRelease = false"
     }
     
    ],
