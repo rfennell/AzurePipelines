@@ -76,13 +76,34 @@
     }
   ,
     {
+      "name": "generateForCurrentRelease",
+      "type": "boolean",
+      "label": "Generate release notes for this Release",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true will generate release notes for this release (Release usage only)",
+      "groupName":"advanced"
+    }
+  ,
+    {
       "name": "generateForOnlyPrimary",
       "type": "boolean",
       "label": "Generate release notes for only primary artifact in Release",
       "defaultValue": "False",
-      "required": false,
+      "required": true,
       "helpMarkDown": "If true will generate release notes for the primary build artifact (Release usage only)",
       "groupName":"advanced"
+    }
+  ,
+    {
+      "name": "overrideStageName",
+      "type": "string",
+      "label": "Name of stage to look for last successful deployment",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "If set uses this value to find the last succesful deployment (Release usage only)",
+      "groupName":"advanced",
+       "visibleRule": "generateForOnlyPrimary = false"
     }
     
    ],

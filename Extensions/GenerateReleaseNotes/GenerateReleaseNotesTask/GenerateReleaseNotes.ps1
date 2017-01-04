@@ -44,8 +44,13 @@ param (
     $usedefaultcreds, 
 
 	[parameter(Mandatory=$false,HelpMessage="If running in a release to only generate for primary artifact")]
-    $generateForOnlyPrimary
+    $generateForOnlyPrimary,
 
+	[parameter(Mandatory=$false,HelpMessage="Only consider the current release")]
+    $generateForCurrentRelease,
+    
+	[parameter(Mandatory=$false,HelpMessage="Overide the name of the release stage to compare against")]
+     $overrideStageName
 )
 
 # Set a flag to force verbose as a default
@@ -439,7 +444,26 @@ param
     $build
  }
 
+function Get-ReleaseByDefinitionId
+{
 
+    param
+    (
+    $tfsUri,
+    $teamproject,
+    $releasedefid,
+    $usedefaultcreds
+    )
+
+    Write-Verbose "Getting details of release by definition [$releasedefid] from server [$tfsUri/$teamproject]"
+
+    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up   
+	$rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
+    $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases?definitionId=$($releasedefid)&`$Expand=environments&queryOrder=descending&api-version=3.0-preview"
+
+  	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
+  	$jsondata.value
+}
 
 # types to make the switches neater
 Add-Type -TypeDefinition @"
@@ -457,6 +481,7 @@ Add-Type -TypeDefinition @"
 $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
 $teamproject = $env:SYSTEM_TEAMPROJECT
 $releaseid = $env:RELEASE_RELEASEID
+$releasedefid = $env:RELEASE_DEFINITIONID
 $buildid = $env:BUILD_BUILDID
 $defname = $env:BUILD_DEFINITIONNAME
 $buildnumber = $env:BUILD_BUILDNUMBER
@@ -464,6 +489,9 @@ $buildnumber = $env:BUILD_BUILDNUMBER
 Write-Verbose "collectionUrl = [$env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI]"
 Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
 Write-Verbose "releaseid = [$env:RELEASE_RELEASEID]"
+Write-Verbose "releasedefid = [$env:RELEASE_DEFINITIONID]"
+Write-Verbose "stageName = [$env:RELEASE_ENVIRONMENTNAME]"
+Write-Verbose "overrideStageName = [$overrideStageName]"
 Write-Verbose "buildid = [$env:BUILD_BUILDID]"
 Write-Verbose "defname = [$env:BUILD_DEFINITIONNAME]"
 Write-Verbose "buildnumber = [$env:BUILD_BUILDNUMBER]"
@@ -478,26 +506,74 @@ if ( [string]::IsNullOrEmpty($releaseid))
 } else
 {
 	Write-Verbose "In Release mode"
-    $release = Get-Release -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
-	# we put all the work items and changesets into an array associated with their build
-    $builds = @()
-  	foreach ($artifact in (Get-BuildReleaseArtifacts -tfsUri $collectionUrl -teamproject $teamproject -release $release -usedefaultcreds $usedefaultcreds))
-	{
-        if (($generateForOnlyPrimary -eq $true -and $artifact.isPrimary -eq $true) -or ($generateForOnlyPrimary -eq $false))
+ 
+    $releases = @()
+    if ($generateForCurrentRelease -eq $true)
+    {
+        Write-Verbose "Only processing current release"
+        # we only need the current release
+        $releases += Get-Release -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
+    } else 
+    {
+        # work out the name of the stage to compare the release against
+        if ( [string]::IsNullOrEmpty($overrideStageName))
         {
-            if ($artifact.type -eq 'Build')
-            {
-                Write-Verbose "The artifact [$($artifact.alias)] is a VSTS build, will attempt to find associated commits/changesets and work items"
-                $builds += Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $artifact.definitionReference.version.id -usedefaultcreds $usedefaultcreds
-            } else 
-            {
-                Write-Verbose "The artifact [$($artifact.alias)] is a [$($artifact.type)], will be skipped as has no associated commits/changesets and work items"
-            }
+            $stageName = $env:RELEASE_ENVIRONMENTNAME
         } else 
         {
-           Write-Verbose "The artifact [$($artifact.alias)] is being skipped as it is not the primary artifact"
+            $stageName = $overrideStageName
         }
-	}
+
+        Write-Verbose "Processing all releases back to the last successful release in stage [$stageName]"
+           
+        $allRelease = Get-ReleaseByDefinitionId -tfsUri $uri -teamproject $tp -releasedefid $releasedefid -usedefaultcreds $usedefaultcreds
+        #find the set of release since the last good release of a given stage
+        foreach ($r in $allRelease)
+        {
+            if ($r.id -eq $releaseid )
+            {
+                # we always add the current release that trigger the task
+                $releaseHistory += $r
+            } else 
+            {
+                # add all the past releases where the this stahe ws not a success
+                $stage = $r.environments | Where-Object { $_.name -eq $stageName -and $_.status -ne "succeeded" }
+                if ($stage -ne $null)
+                {
+                    $releaseHistory += $r
+                } else {
+                    #we have found a successful relase in this stage so quit
+                    break
+                }
+            }       
+        }
+    }
+    
+    Write-Verbose "Discovered [$($releases.Count)] releases for processing"
+
+    # we put all the work items and changesets into an array associated with their build
+    $builds = @()
+    foreach ($release in $releases)
+    {
+        Write-Verbose "Processing the release [$($release.name)]"
+        foreach ($artifact in (Get-BuildReleaseArtifacts -tfsUri $collectionUrl -teamproject $teamproject -release $release -usedefaultcreds $usedefaultcreds))
+        {
+            if (($generateForOnlyPrimary -eq $true -and $artifact.isPrimary -eq $true) -or ($generateForOnlyPrimary -eq $false))
+            {
+                if ($artifact.type -eq 'Build')
+                {
+                    Write-Verbose "The artifact [$($artifact.alias)] is a VSTS build, will attempt to find associated commits/changesets and work items"
+                    $builds += Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $artifact.definitionReference.version.id -usedefaultcreds $usedefaultcreds
+                } else 
+                {
+                    Write-Verbose "The artifact [$($artifact.alias)] is a [$($artifact.type)], will be skipped as has no associated commits/changesets and work items"
+                }
+            } else 
+            {
+            Write-Verbose "The artifact [$($artifact.alias)] is being skipped as it is not the primary artifact"
+            }
+        }
+    }
 }
 
 $template = Get-Template -templateLocation $templateLocation -templatefile $templatefile -inlinetemplate $inlinetemplate
