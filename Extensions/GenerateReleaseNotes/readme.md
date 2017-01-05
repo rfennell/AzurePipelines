@@ -7,6 +7,7 @@
 1.4 - Add advanced option to choose if PAT or defaultcreds are used
 1.5 - Put in logic to skip any non VSTS release artifacts
 1.6 - Added parameter to limit release notes generation in a release to only primary artifact 
+2.0 - Added support to look back to through prior releases to last successful deployment
 
 This task generates a markdown release notes file based on a template passed into the tool. The output report being something like the following:
 
@@ -47,7 +48,8 @@ The only real change from standard markdown is the use of the @@TAG@@ blocks to 
 
 What is done behind the scenes is that each line of the template is evaluated as a line of PowerShell in turn, the in memory versions of the objects are used to provide the runtime values. The available objects to get data from at runtime are
 
-* $release – the release details returned by the REST call Get Release Details (only available for release based usage of the task)
+* $release – the release details returned by the REST call Get Release Details of the release that the task was triggered for (only available for release based usage of the task)
+* $releases – all the release details returned by the REST call Get Release Details (only available for release based usage of the task)
 * $build – the build details returned by the REST call Get Build Details. If used within a release, as opposed to a build, this is set to each build within the @@BUILDLOOP@@ block. For build based release notes it is set once.
 * $widetail – the details of a given work item inside the loop returned by the REST call Get Work Item (within the @@WILOOP@@@ block)
 * $csdetail – the details of a given changeset/commit inside the loop by the REST call to Changes or Commit depending on whether it is a GIT or TFVC based build (within the @@CSLOOP@@@ block)
@@ -64,6 +66,8 @@ The task takes three parameters
 * Either - The template file name, which should point to a file in source control.
 * Or - The template text.
 * (Advanced) Use default credentials - default is false so the build services personal access token is automatically used. If true the credentials of local account the agent is running as are used (only usually used on-prem)
-
+* (Advanced) Generate release notes for only primary release artifact, default is False (release mode only)
+* (Advanced) Generate release notes for only the release that contains the task, do not scan past releases, default is True (release mode only)
+* (Advanced) Name of the release stage to look for the last successful release in, default to empty value so uses the current stage of the release that the task is running in (release mode, when scanning past build only)
 
 Using the settings for the output file shown above, the release notes will be created in the specified folder, and will probably need be copied by a task such as 'Publish Artifacts' to your final required location.

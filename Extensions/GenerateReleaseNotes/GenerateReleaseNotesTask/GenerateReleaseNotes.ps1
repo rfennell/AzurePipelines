@@ -294,6 +294,7 @@ function Process-Template
 	if ($template.count -gt 0)
 	{
 		write-Verbose "Processing template"
+		write-verbose "There are [$($builds.count)] builds to process"
 
         # create our work stack and initialise
 		$modeStack = new-object  System.Collections.Stack 
@@ -459,7 +460,7 @@ function Get-ReleaseByDefinitionId
 
     # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up   
 	$rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
-    $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases?definitionId=$($releasedefid)&`$Expand=environments&queryOrder=descending&api-version=3.0-preview"
+    $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases?definitionId=$($releasedefid)&`$Expand=environments,artifacts&queryOrder=descending&api-version=3.0-preview"
 
   	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
   	$jsondata.value
@@ -551,8 +552,8 @@ if ( [string]::IsNullOrEmpty($releaseid))
     
     Write-Verbose "Discovered [$($releases.Count)] releases for processing"
 
-    # we put all the work items and changesets into an array associated with their build
-    $builds = @()
+    # we put all the builds into a hastable associated with their release
+    $buildsList = @{}
     foreach ($release in $releases)
     {
         Write-Verbose "Processing the release [$($release.id)]"
@@ -562,9 +563,16 @@ if ( [string]::IsNullOrEmpty($releaseid))
             {
                 if ($artifact.type -eq 'Build')
                 {
-                    Write-Verbose "The artifact [$($artifact.alias)] is a VSTS build, will attempt to find associated commits/changesets and work items"
-                    $builds += Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $artifact.definitionReference.version.id -usedefaultcreds $usedefaultcreds
-                } else 
+					if (($buildsList.ContainsKey($artifact.definitionReference.version.id)) -eq $false)
+					{
+						Write-Verbose "The artifact [$($artifact.alias)] is a VSTS build, will attempt to find associated commits/changesets and work items"
+						$b = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $artifact.definitionReference.version.id -usedefaultcreds $usedefaultcreds
+						$buildsList.Add($artifact.definitionReference.version.id , $b)
+					} else
+					{
+						Write-Verbose "The artifact [$($artifact.alias)] is a VSTS build, but already in the build list is is being skipped"
+					}
+				} else 
                 {
                     Write-Verbose "The artifact [$($artifact.alias)] is a [$($artifact.type)], will be skipped as has no associated commits/changesets and work items"
                 }
@@ -574,6 +582,12 @@ if ( [string]::IsNullOrEmpty($releaseid))
             }
         }
     }
+	
+	# for backwards compibility we need the $release set the tiggering release
+    # if this is not done any old templates break
+    $release = $releases[0]
+	# also for backwards compibiluty we swap the hash table for a simple array in build create order (we assume buildID is incrementing)
+	$builds = $($buildsList.GetEnumerator() | Sort-Object { $_.Value.build.id }).Value
 }
 
 $template = Get-Template -templateLocation $templateLocation -templatefile $templatefile -inlinetemplate $inlinetemplate
