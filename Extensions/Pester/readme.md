@@ -2,6 +2,7 @@ Releases
 - 1.0.x - initial public release (targets Pester 3.3.5)
 - 4.0.x - changed versioning to fit with new release pipeline (still targets Pester 3.4.0)
 - 4.1.x - now targets 3.4.3, but allows the path to the module to be overriden
+- 4.2.x.- removed non-required demand
 
 A task to install and run PowerShell Pester based tests 
 The task takes three parameters 
