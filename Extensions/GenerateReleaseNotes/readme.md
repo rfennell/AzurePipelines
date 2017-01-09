@@ -8,6 +8,7 @@
 1.5 - Put in logic to skip any non VSTS release artifacts
 1.6 - Added parameter to limit release notes generation in a release to only primary artifact 
 2.0 - Added support to look back to through prior releases to last successful deployment
+2.1 - Made the text that is shown when there is no WI or Changeset/Commit
 
 This task generates a markdown release notes file based on a template passed into the tool. The output report being something like the following:
 
@@ -66,6 +67,7 @@ The task takes three parameters
 * Either - The template file name, which should point to a file in source control.
 * Or - The template text.
 * (Advanced) Use default credentials - default is false so the build services personal access token is automatically used. If true the credentials of local account the agent is running as are used (only usually used on-prem)
+* (Advanced) Empty set text - the text to place in the results file if there is no changeset/commit or WI content
 * (Advanced) Generate release notes for only primary release artifact, default is False (release mode only)
 * (Advanced) Generate release notes for only the release that contains the task, do not scan past releases, default is True (release mode only)
 * (Advanced) Name of the release stage to look for the last successful release in, default to empty value so uses the current stage of the release that the task is running in (release mode, when scanning past build only)

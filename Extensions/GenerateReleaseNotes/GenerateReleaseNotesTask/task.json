@@ -76,6 +76,16 @@
     }
   ,
     {
+      "name": "emptySetText",
+      "type": "string",
+      "label": "Text for empty sets",
+      "defaultValue": "None",
+      "required": false,
+      "helpMarkDown": "This is the text that will be placed in the generated release notes if there are no work items or changesets/commits.",
+      "groupName":"advanced"
+    }
+  ,
+    {
       "name": "generateForOnlyPrimary",
       "type": "boolean",
       "label": "Generate for only primary artifact",

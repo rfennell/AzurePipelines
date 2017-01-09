@@ -50,7 +50,10 @@ param (
     $generateForCurrentRelease,
     
 	[parameter(Mandatory=$false,HelpMessage="Overide the name of the release stage to compare against")]
-     $overrideStageName
+     $overrideStageName,
+
+	[parameter(Mandatory=$false,HelpMessage="Overide the text to put in generated files if no data returned")]
+    $emptySetText 
 )
 
 # Set a flag to force verbose as a default
@@ -408,7 +411,7 @@ function Process-Template
                 (($modeStack.Peek().mode -eq [Mode]::CS) -and ($csdetail -eq $null)))
             {
                 # there is no data to expand
-                $out += "None"
+                $out += $emptySetText
             } else {
                	# nothing to expand just process the line
 				$out += $line | render
