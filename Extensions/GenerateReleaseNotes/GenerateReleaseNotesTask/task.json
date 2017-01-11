@@ -21,6 +21,11 @@
       "name": "advanced",
       "displayName": "Advanced",
       "isExpanded": false
+    },
+     {
+      "name": "outputs",
+      "displayName": "Outputs",
+      "isExpanded": false
     }
   ],
    "inputs": [
@@ -38,7 +43,8 @@
          "label": "Output variable",
          "defaultValue": "",
          "required": false,
-         "helpMarkDown": "The name of the variable that the markdown output should be assigned to for use later in your workflow."
+         "helpMarkDown": "The name of the variable that the markdown output should be assigned to for use later in your workflow.",
+         "groupName":"outputs"
       },
       {
       "name": "templateLocation",
