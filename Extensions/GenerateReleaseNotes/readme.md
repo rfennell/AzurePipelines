@@ -72,5 +72,6 @@ The task takes three parameters
 * (Advanced) Generate release notes for only primary release artifact, default is False (release mode only)
 * (Advanced) Generate release notes for only the release that contains the task, do not scan past releases, default is True (release mode only)
 * (Advanced) Name of the release stage to look for the last successful release in, default to empty value so uses the current stage of the release that the task is running in (release mode, when scanning past build only)
+* (Outputs) Optional: Name of the variable that markdown contents will be copied into for use in other tasks
 
 Using the settings for the output file shown above, the release notes will be created in the specified folder, and will probably need be copied by a task such as 'Publish Artifacts' to your final required location.
