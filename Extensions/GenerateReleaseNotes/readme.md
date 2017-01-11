@@ -9,6 +9,7 @@
 1.6 - Added parameter to limit release notes generation in a release to only primary artifact 
 2.0 - Added support to look back to through prior releases to last successful deployment
 2.1 - Made the text that is shown when there is no WI or Changeset/Commit
+2.2 - PR From @gregpakes - Made generate markdown available as output variable
 
 This task generates a markdown release notes file based on a template passed into the tool. The output report being something like the following:
 

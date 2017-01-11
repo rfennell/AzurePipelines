@@ -31,6 +31,9 @@ param (
     [parameter(Mandatory=$false,HelpMessage="The markdown output file")]
     $outputfile ,
 
+    [parameter(Mandatory=$false,HelpMessage="The markdown output variable name")]
+    $outputvariablename ,
+
     [parameter(Mandatory=$false,HelpMessage="The markdown template file")]
     $templatefile ,
 	
@@ -499,6 +502,7 @@ Write-Verbose "overrideStageName = [$overrideStageName]"
 Write-Verbose "buildid = [$env:BUILD_BUILDID]"
 Write-Verbose "defname = [$env:BUILD_DEFINITIONNAME]"
 Write-Verbose "buildnumber = [$env:BUILD_BUILDNUMBER]"
+Write-Verbose "outputVariableName = [$outputvariablename]"
 
 
 if ( [string]::IsNullOrEmpty($releaseid))
@@ -598,6 +602,16 @@ $outputmarkdown = Process-Template -template $template -builds $builds
 
 write-Verbose "Writing output file [$outputfile]."
 Set-Content $outputfile $outputmarkdown
+
+if ([string]::IsNullOrEmpty($outputvariablename))
+{
+    write-Verbose "Skipping setting output variable name as parameter was not set."
+} 
+else 
+{    
+    Write-Verbose "Setting variable: [$outputvariablename] = $outputmarkdown" -Verbose
+    Write-Host ("##vso[task.setvariable variable=$outputvariablename;]$outputmarkdown")
+}
 
 
 
