@@ -72,6 +72,8 @@ function Get-BuildWorkItems
     $usedefaultcreds
     )
 
+    Write-Verbose "Getting associated work items for build [$($buildid)]"
+
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/workitems?api-version=2.0"
   	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| ConvertFrom-Json
     $wiList = @();
@@ -92,6 +94,8 @@ function Get-BuildChangeSets
     $usedefaultcreds
     )
 
+    Write-Verbose "Getting associated changesets/commits for build [$($buildid)]"
+   
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/changes?api-version=2.0"
   	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
   	$csList = @();
@@ -442,10 +446,7 @@ param
  	write-verbose "Getting build details for BuildID [$buildid]"    
  	$build = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
 
-    Write-Verbose "Getting associated work items for build [$($buildid)]"
-	Write-Verbose "Getting associated changesets/commits for build [$($buildid)]"
-
-    $build = @{'build'=$build;
+     $build = @{'build'=$build;
                 'workitems'=(Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds);
                 'changesets'=(Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds )}
     $build
