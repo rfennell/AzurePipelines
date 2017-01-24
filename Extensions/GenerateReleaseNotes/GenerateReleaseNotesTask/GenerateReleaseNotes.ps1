@@ -77,7 +77,7 @@ function Get-BuildWorkItems
     $wiList = @();
   	foreach ($wi in $jsondata.value)
     {
-       $wiList += Get-Detail -uri $wi.url
+       $wiList += Get-Detail -uri $wi.url -usedefaultcreds $usedefaultcreds
     } 
     $wiList
 }
@@ -99,7 +99,7 @@ function Get-BuildChangeSets
     {
        # we can get more detail if the changeset is on VSTS or TFS
        try {
-          $csList += Get-Detail -uri $cs.location
+          $csList += Get-Detail -uri $cs.location -usedefaultcreds $usedefaultcreds
        } catch
        {
           Write-warning "Unable to get details of changeset/commit as it is not stored in TFS/VSTS"
