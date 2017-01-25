@@ -444,11 +444,11 @@ param
   )
 
  	write-verbose "Getting build details for BuildID [$buildid]"    
- 	$build = Get-Build -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
+ 	$build = Get-Build -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
 
      $build = @{'build'=$build;
-                'workitems'=(Get-BuildWorkItems -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds);
-                'changesets'=(Get-BuildChangeSets -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds )}
+                'workitems'=(Get-BuildWorkItems -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds);
+                'changesets'=(Get-BuildChangeSets -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds )}
     $build
  }
 
