@@ -260,11 +260,12 @@ function Invoke-Template
 
         # for backwards compibility we need the $release set to the tiggering release
         # if this is not done any old may templates break
-        if( @($releases).Count >0)
+        if ($releases -ne $null)
         {
+            write-verbose "From [$($releases.count)] releases"
             $release = @($releases)[0]
         }
-
+		
 		#process each line
 		For ($index =0; $index -lt $template.Count; $index++)
 		{
