@@ -246,11 +246,6 @@ function Invoke-Template
 	
 	if ($template.count -gt 0)
 	{
-
-        # for backwards compibility we need the $release set the tiggering release
-        # if this is not done any old templates break
-        $release = $releases[0]
-
 		write-Verbose "Processing template"
 		write-verbose "There are [$($builds.count)] builds to process"
 
@@ -262,7 +257,14 @@ function Invoke-Template
         # if using a release template it will be reset when processing tags
         $builditem = $builds
 		$build = $builditem.build # using two variables for legacy support
-        
+
+        # for backwards compibility we need the $release set to the tiggering release
+        # if this is not done any old may templates break
+        if( $releases.Count >0)
+        {
+            $release = $releases[0]
+        }
+
 		#process each line
 		For ($index =0; $index -lt $template.Count; $index++)
 		{
