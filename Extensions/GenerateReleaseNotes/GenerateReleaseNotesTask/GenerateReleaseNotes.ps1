@@ -170,15 +170,12 @@ if ( [string]::IsNullOrEmpty($releaseid))
         }
     }
 	
-	# for backwards compibility we need the $release set the tiggering release
-    # if this is not done any old templates break
-    $release = $releases[0]
 	# also for backwards compibiluty we swap the hash table for a simple array in build create order (we assume buildID is incrementing)
 	$builds = $($buildsList.GetEnumerator() | Sort-Object { $_.Value.build.id }).Value
 }
 
 $template = Get-Template -templateLocation $templateLocation -templatefile $templatefile -inlinetemplate $inlinetemplate
-$outputmarkdown = Process-Template -template $template -builds $builds
+$outputmarkdown = Invoke-Template -template $template -builds $builds -releases $releases -stagename $stageName
 
 write-Verbose "Writing output file [$outputfile]."
 Set-Content $outputfile $outputmarkdown

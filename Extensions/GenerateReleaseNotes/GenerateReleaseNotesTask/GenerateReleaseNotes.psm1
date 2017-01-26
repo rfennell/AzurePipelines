@@ -121,7 +121,7 @@ function Get-BuildReleaseArtifacts
 	$artifacts
 }
 
-function Indent-Space
+function Add-Space
 {
     param(
        $size =3,
@@ -211,7 +211,7 @@ function Get-Mode
      $mode
 }
 
-function Create-StackItem
+function Add-StackItem
 {
 
     param
@@ -228,22 +228,29 @@ function Create-StackItem
     {
        $queue.Enqueue($item)
     }
-    Write-Verbose "$(Indent-Space -indent ($modeStack.Count +1))$($queue.Count) items"
+    Write-Verbose "$(Add-Space -indent ($modeStack.Count +1))$($queue.Count) items"
     # place it on the stack with the blocks mode and start line index
     $modeStack.Push(@{'Mode'= $mode;
                       'BlockQueue'=$queue;
                       'Index' = $index})
 }
 
-function Process-Template 
+function Invoke-Template 
 {
 	Param(
 	  $template,
-      $builds
+      $releases,
+      $builds,
+      $stagename
 	)
 	
 	if ($template.count -gt 0)
 	{
+
+        # for backwards compibility we need the $release set the tiggering release
+        # if this is not done any old templates break
+        $release = $releases[0]
+
 		write-Verbose "Processing template"
 		write-verbose "There are [$($builds.count)] builds to process"
 
@@ -285,15 +292,15 @@ function Process-Template
                         switch ($mode)
 			            {
 			            "WI" {
-                            Write-Verbose "$(Indent-Space -indent $modeStack.Count)Getting next workitem $($item.id)"
+                            Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting next workitem $($item.id)"
 		                    $widetail = $item  
                          }
                          "CS" {
-                            Write-Verbose "$(Indent-Space -indent $modeStack.Count)Getting next changeset/commit $($item.id)"
+                            Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting next changeset/commit $($item.id)"
 		                    $csdetail = $item 
                          }
                          "BUILD" {
-                            Write-Verbose "$(Indent-Space -indent $modeStack.Count)Getting next build $($item.build.id)"
+                            Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting next build $($item.build.id)"
 		                    $builditem = $item
                             $build = $builditem.build # using two variables for legacy support
                          }
@@ -303,12 +310,12 @@ function Process-Template
                     {
                         # end of block and no more items, so exit the block
                         $mode = $modeStack.Pop().Mode
-                        Write-Verbose "$(Indent-Space -indent $modeStack.Count)Ending block $mode"
+                        Write-Verbose "$(Add-Space -indent $modeStack.Count)Ending block $mode"
                     }
                 } else {
                     # this a new block to add the stack
                     # need to get the items to process and place them in a queue
-                    Write-Verbose "$(Indent-Space -indent ($modeStack.Count))Starting block $($mode)"
+                    Write-Verbose "$(Add-Space -indent ($modeStack.Count))Starting block $($mode)"
                 ###    $queue = new-object  System.Collections.Queue  
                     #set the index to jump back to
                     $lastBlockStartIndex = $index       
@@ -316,22 +323,22 @@ function Process-Template
 			        {
 			            "WI" {
                             # store the block and load the first item
-                            Create-StackItem -items @($builditem.workItems) -modeStack $modeStack -mode $mode -index $index
+                            Add-StackItem -items @($builditem.workItems) -modeStack $modeStack -mode $mode -index $index
                             if ($modeStack.Peek().BlockQueue.Count -gt 0)
                             {
                                 $widetail = $modeStack.Peek().BlockQueue.Dequeue()
-                                Write-Verbose "$(Indent-Space -indent $modeStack.Count)Getting first workitem $($widetail.id)"
+                                Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting first workitem $($widetail.id)"
                             } else {
                                 $widetail = $null
                             }
                          }
                          "CS" {
                             # store the block and load the first item
-                            Create-StackItem -items @($builditem.changesets) -modeStack $modeStack -mode $mode -index $index
+                            Add-StackItem -items @($builditem.changesets) -modeStack $modeStack -mode $mode -index $index
                             if ($modeStack.Peek().BlockQueue.Count -gt 0)
                             {
                                $csdetail = $modeStack.Peek().BlockQueue.Dequeue()   
-                               Write-Verbose "$(Indent-Space -indent $modeStack.Count)Getting first changeset/commit $($csdetail.id)"
+                               Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting first changeset/commit $($csdetail.id)"
 		                    
                             } else {
                                 $csdetail = $null
@@ -339,12 +346,12 @@ function Process-Template
                                                       
                          }
                         "BUILD" {
-                            Create-StackItem -items @($builds) -modeStack $modeStack -mode $mode -index $index
+                            Add-StackItem -items @($builds) -modeStack $modeStack -mode $mode -index $index
                             if ($modeStack.Peek().BlockQueue.Count -gt 0)
                             {
                                $builditem = $modeStack.Peek().BlockQueue.Dequeue() 
                                $build = $builditem.build
-                               Write-Verbose "$(Indent-Space -indent $modeStack.Count)Getting first build $($build.id)"
+                               Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting first build $($build.id)"
 		                   
                             }  else {
                                 $builditem = $null
