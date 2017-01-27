@@ -14,14 +14,20 @@ function Get-BuildWorkItems
     )
 
     Write-Verbose "Getting associated work items for build [$($buildid)]"
-
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/workitems?api-version=2.0"
-  	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| ConvertFrom-Json
     $wiList = @();
-  	foreach ($wi in $jsondata.value)
-    {
-       $wiList += Get-Detail -uri $wi.url -usedefaultcreds $usedefaultcreds
-    } 
+   
+    try {
+        $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/workitems?api-version=2.0"
+  	    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| ConvertFrom-Json
+   	    foreach ($wi in $jsondata.value)
+        {
+            $wiList += Get-Detail -uri $wi.url -usedefaultcreds $usedefaultcreds
+        } 
+    }
+    catch {
+            Write-warning "Unable to get associated work items, most likely cause is the build has been deleted"
+            Write-warning $_.Exception.Message
+    }
     $wiList
 }
 
@@ -36,23 +42,30 @@ function Get-BuildChangeSets
     )
 
     Write-Verbose "Getting associated changesets/commits for build [$($buildid)]"
-   
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/changes?api-version=2.0"
-  	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
   	$csList = @();
-  	foreach ($cs in $jsondata.value)
+
+    try 
+    { 
+        $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/changes?api-version=2.0"
+        $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
+        foreach ($cs in $jsondata.value)
+        {
+        # we can get more detail if the changeset is on VSTS or TFS
+        try {
+            $csList += Get-Detail -uri $cs.location -usedefaultcreds $usedefaultcreds
+        } catch
+        {
+            Write-warning "Unable to get details of changeset/commit as it is not stored in TFS/VSTS"
+            Write-warning "For [$($cs.id)] location [$($cs.location)]"
+            Write-warning "Just using the details we have from the build"
+            $csList += $cs
+        }
+        }
+    } catch 
     {
-       # we can get more detail if the changeset is on VSTS or TFS
-       try {
-          $csList += Get-Detail -uri $cs.location -usedefaultcreds $usedefaultcreds
-       } catch
-       {
-          Write-warning "Unable to get details of changeset/commit as it is not stored in TFS/VSTS"
-          Write-warning "For [$($cs.id)] location [$($cs.location)]"
-          Write-warning "Just using the details we have from the build"
-          $csList += $cs
-       }
-    } 
+            Write-warning "Unable to get details of changeset/commit, most likely cause is the build has been deleted"
+            Write-warning $_.Exception.Message
+    }
     $csList
 }
 
