@@ -52,8 +52,7 @@ Describe "Cannot use User ToolPath settings" {
     Mock write-error -MockWith {return $msg -match "Mocked error"} -verifiable
 
     It "cannot Find DLLs" {
-        $path = Get-Toolpath -ToolPath "C:\dummy" 
-        Should throw
+        Get-Toolpath -ToolPath "C:\dummy" 
         Assert-VerifiableMocks
     }
 }
