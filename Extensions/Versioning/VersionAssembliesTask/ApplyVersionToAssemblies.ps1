@@ -24,7 +24,9 @@ param (
 
     $Field,
 
-    $outputversion
+    $outputversion,
+
+    $FilenamePattern
 )
 
 # Set a flag to force verbose as a default
@@ -37,10 +39,13 @@ if (-not (Test-Path $Path))
     exit 1
 }
 Write-Verbose "Source Directory: $Path"
+Write-Verbose "Filename Pattern: $FilenamePattern"
 Write-Verbose "Version Number/Build Number: $VersionNumber"
 Write-Verbose "Version Filter to extract build number: $VersionRegex"
 Write-Verbose "Field to update (all if empty): $Field"
 Write-verbose "Output: Version Number Parameter Name: $outputversion"
+
+
 
 #dot source function for getting the file encoding.
 . .\Get-FileEncoding.ps1
@@ -67,7 +72,7 @@ Write-Verbose "Extracted Version: $NewVersion"
 # Apply the version to the assembly property files
 $files = Get-ChildItem $Path -recurse -include "*Properties*","My Project" | 
     Where-Object { $_.PSIsContainer } | 
-    foreach { Get-ChildItem -Path $_.FullName -Recurse -include AssemblyInfo.* }
+    foreach { Get-ChildItem -Path $_.FullName -Recurse -include $FilenamePattern }
 if($files)
 {
     Write-Verbose "Will apply $NewVersion to $($files.count) files."

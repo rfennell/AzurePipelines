@@ -53,6 +53,15 @@
       "helpMarkDown": "Regular expression filter to get build number from the build name.",
       "groupName":"advanced"
     },
+      {
+      "name": "FilenamePattern",
+      "type": "string",
+      "label": "Filename Pattern",
+      "defaultValue": "AssemblyInfo.*",
+      "required": true,
+      "helpMarkDown": "The filename pattern to update.",
+      "groupName":"advanced"
+    },
      {
       "name": "Field",
       "type": "string",
