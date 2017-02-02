@@ -180,11 +180,20 @@ function Invoke-GetCommand
 function Render() {
     [CmdletBinding()]
     param ( [parameter(ValueFromPipeline = $true)] [string] $str)
-
-    #buggy in V4 seems ok in older and newer
+		
+    # following line would be the obvious choice but it is buggy in V4 seems ok in older and newer
+	# so we have to use invoke-expression
     #$ExecutionContext.InvokeCommand.ExpandString($str)
 
-    "@`"`n$str`n`"@" | iex
+	#also we have to use the complex handler so make sure we catch errors in executed lines
+ 	Try{
+       $output = (Invoke-Expression -Command "@`"`n$str`n`"@" ) 2>&1
+ 	   if ($lastexitcode) {throw $output}
+	   $output
+    } Catch{
+      write-verbose $output
+	}
+    
 }
 
 function Get-Template 
@@ -260,12 +269,12 @@ function Invoke-Template
 	if ($template.count -gt 0)
 	{
 		write-Verbose "Processing template"
-		write-verbose "There are [$($builds.count)] builds to process"
+		write-verbose "There are [$(@($builds).count)] builds to process"
 
         # create our work stack and initialise
 		$modeStack = new-object  System.Collections.Stack 
 		$modeStack.Push([Mode]::BODY)
-
+		
         # this line is to provide support the the legacy build only template
         # if using a release template it will be reset when processing tags
         $builditem = $builds
@@ -275,10 +284,10 @@ function Invoke-Template
         # if this is not done any old may templates break
         if ($releases -ne $null)
         {
-            write-verbose "From [$($releases.count)] releases"
+            write-verbose "From [$(@($releases).count)] releases"
             $release = @($releases)[0]
         }
-		
+	
 		#process each line
 		For ($index =0; $index -lt $template.Count; $index++)
 		{
@@ -307,19 +316,19 @@ function Invoke-Template
                         $index = $modeStack.Peek().Index
                         switch ($mode)
 			            {
-			            "WI" {
+			              "WI" {
                             Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting next workitem $($item.id)"
 		                    $widetail = $item  
-                         }
-                         "CS" {
+                            }
+                          "CS" {
                             Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting next changeset/commit $($item.id)"
 		                    $csdetail = $item 
-                         }
-                         "BUILD" {
+                            }
+                          "BUILD" {
                             Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting next build $($item.build.id)"
 		                    $builditem = $item
                             $build = $builditem.build # using two variables for legacy support
-                         }
+                            }
                          } #end switch
                     }
                     else
@@ -332,7 +341,7 @@ function Invoke-Template
                     # this a new block to add the stack
                     # need to get the items to process and place them in a queue
                     Write-Verbose "$(Add-Space -indent ($modeStack.Count))Starting block $($mode)"
-                ###    $queue = new-object  System.Collections.Queue  
+           
                     #set the index to jump back to
                     $lastBlockStartIndex = $index       
                     switch ($mode)
@@ -378,16 +387,17 @@ function Invoke-Template
                 }
             } else
             {
-            if ((($modeStack.Peek().mode -eq [Mode]::WI) -and ($widetail -eq $null)) -or 
-                (($modeStack.Peek().mode -eq [Mode]::CS) -and ($csdetail -eq $null)))
-            {
-                # there is no data to expand
-                $out += $emptySetText
-            } else {
-               	# nothing to expand just process the line
-				$out += $line | render
-				$out += "`n"
-                }
+                if ((($modeStack.Peek().mode -eq [Mode]::WI) -and ($widetail -eq $null)) -or 
+                  (($modeStack.Peek().mode -eq [Mode]::CS) -and ($csdetail -eq $null)))
+                {
+                    # there is no data to expand
+                    $out += $emptySetText
+                } else 
+			    {
+               	   # nothing to expand just process the line
+   			       $out += $line | render
+			       $out += "`n"
+			    }
 			}
         }
 	    $out
