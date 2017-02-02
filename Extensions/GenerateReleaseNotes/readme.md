@@ -13,6 +13,7 @@
 2.3 - PR from @yermax - Fixed bug that defaultcreds not being passed to all functions
       Fixed bug that only first line of generate markdown available in output variable
 2.4 - Added extra error traps to handle lookups on deleted builds
+2.5 - Improved error tapping on render method
 
 This task generates a markdown release notes file based on a template passed into the tool. The output report being something like the following:
 
