@@ -15,7 +15,7 @@
 2.4 - Added extra error traps to handle lookups on deleted builds
 2.5 - Improved error tapping on render method
 
-This task generates a markdown release notes file based on a template passed into the tool. The output report being something like the following:
+This task generates a release notes file based on a template passed into the tool. If the template file is markdown the output report being something like the following:
 
 > Release notes for build SampleSolution.Master
 > 
@@ -32,7 +32,11 @@ This task generates a markdown release notes file based on a template passed int
 > ID 8c3f8f9817606e48f37f8e6d25b5a212230d7a86 Start of the project
 
 ## The Template
-The use of a template allows the user to define the layout and fields shown in the release notes document. It is basically a markdown file with tags to denote the fields (the properties on the JSON response objects returned from the VSTS REST API) to be replaced when the tool generates the report file.
+The use of a template allows the user to define the format, layout and fields shown in the release notes document. It is basically a file in the format required with tags to denote the fields to be replaced when the tool generates the report file.
+
+- Most samples are in Markdown, but samples are available for HTML
+- The @@VALUE@@ tags are special loop control flags
+- The $(properties) are the fields to be expanded from properties in the JSON response objects returned from the VSTS REST API 
 
 The only real change from standard markdown is the use of the @@TAG@@ blocks to denote areas that should be looped over i.e: the points where we get the details of all the work items and commits associated with the build.
 

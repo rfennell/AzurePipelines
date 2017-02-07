@@ -2,7 +2,7 @@
   "id": "661BC005-61BE-430F-B994-065BF08C0F39",
   "name": "GenerateReleaseNotes",
   "friendlyName": "Generate Release Notes",
-  "description": "Generates a Markdown Release notes file",
+  "description": "Generates a release notes file in a format of your choice",
     "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes%20-Tasks/)",
 
   "category": "Utility",
