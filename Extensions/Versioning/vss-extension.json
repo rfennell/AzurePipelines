@@ -74,6 +74,10 @@
     {
       "path": "VersionNuspecTask"
     }
+    ,
+    {
+      "path": "VersionSharepointAppManifestTask"
+    }
     
   ],
   "contributions": [
@@ -125,6 +129,17 @@
       ],
       "properties": {
         "name": "VersionNuspecTask"
+      }
+    }
+    ,
+     {
+      "id": "Version-SharepointAppManifest-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionSharepointAppManifestTask"
       }
     }
 
