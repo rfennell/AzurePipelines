@@ -1,5 +1,5 @@
 {
-  "id": "EA3A1166-3AEE-434F-B34D-0BF5F763E1F2",
+  "id": "2d932e86-7068-4a1e-ab4d-f104fad6db37",
   "name": "VersionSharepointAppManifest",
   "friendlyName": "Version Sharepoint App Manifest",
   "description": "Applies a version to a SharepointAppManifest based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
