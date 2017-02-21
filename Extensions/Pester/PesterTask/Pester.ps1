@@ -16,7 +16,10 @@ param
     [string]$run32Bit,
 
     [validateScript({
-        if ($_)
+        If ($_ -eq $Null -or $_ -eq "") {
+             # optional value not passed
+             $true
+        } else
         {
             if (Test-Path $_)
             {
@@ -33,12 +36,8 @@ param
             {
                 Throw "Invalid path for ModuleFolder"
             }
-        } else
-        {
-           # no modulePath has been passed so nothing to validate
-           $true
         }
-        
+       
     })]
     [string]$moduleFolder,
 
