@@ -13,12 +13,17 @@
   "author": "Richard Fennell",
   "version": {
     "Major": 1,
-    "Minor": 0,
+    "Minor": 1,
     "Patch": 0
   },
   "demands": [],
   "minimumAgentVersion": "1.82.0",
   "groups": [
+    {
+      "name":"tags",
+      "displayName":"Tags",
+      "isExpanded":false
+    },
     {
       "name": "advanced",
       "displayName": "Advanced",
@@ -43,6 +48,24 @@
       "helpMarkDown": "Results File (nUnit format)"
     },
     {
+      "name": "tag",
+      "type": "string",
+      "label": "Tags",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Tags used to filter which tests to run.",
+      "groupName":"tags"
+    },
+    {
+      "name": "excludeTag",
+      "type": "string",
+      "label": "Exclude Tag",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Tags to exclude when running tests.",
+      "groupName":"tags"
+    },
+    {
       "name": "run32Bit",
       "type": "boolean",
       "label": "Run in 32bit",
@@ -50,8 +73,7 @@
       "required": true,
       "helpMarkDown": "Run in 32bit",
       "groupName":"advanced"
-    }
-,
+    },
     {
       "name": "moduleFolder",
       "type": "string",
@@ -61,8 +83,6 @@
       "helpMarkDown": "If left blank the Pester module stored in this task will be used, to load the Pester module from elsewhere set the path",
       "groupName":"advanced"
     }
-
-    
   ],
   "instanceNameFormat": "Pester Test Runner",
   "execution": {
