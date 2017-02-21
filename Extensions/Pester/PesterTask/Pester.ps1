@@ -16,20 +16,27 @@ param
     [string]$run32Bit,
 
     [validateScript({
-        if (Test-Path $_)
+        if ($_)
         {
-            if (Get-ChildItem -Path $_ -Filter Pester.psd1)
+            if (Test-Path $_)
             {
-                $true
+                if (Get-ChildItem -Path $_ -Filter Pester.psd1)
+                {
+                    $true
+                }
+                else
+                {
+                    Throw "Pester.psd1 not found at path specified"
+                }
             }
-            else
+            else 
             {
-                Throw "Pester.psd1 not found at path specified"
+                Throw "Invalid path for ModuleFolder"
             }
-        }
-        else 
+        } else
         {
-            Throw "Invalid path for ModuleFolder"
+           # no modulePath has been passed so nothing to validate
+           $true
         }
         
     })]
