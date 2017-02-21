@@ -65,13 +65,21 @@ Describe "Testing Pester Task" {
     }
 
     Context "Testing Task Output" {
+        Mock Write-Verbose { }
+        Mock Write-Warning { }
+        Mock Write-Error { }
+        mock Invoke-Pester {
+                param ($OutputFile)
+                New-Item -Path $OutputFile -ItemType File
+            }
 
         it "Creates the output xml file correctly" {
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
             Test-Path -Path TestDrive:\Output.xml | Should Be $True
         }
         it "Throws an error when pester tests fail" {
-            {&$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml} | Should Throw
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output2.xml
+            Assert-MockCalled -CommandName Write-Error
         }
 
     }
