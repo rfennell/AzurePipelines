@@ -28,6 +28,17 @@ Describe "Testing Pester Task" {
         it "Throws Exception when passed a path which doesn't contain Pester for ModuleFolder" {
             {&$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder TestDrive:\} | Should Throw
         }
+        it "Continues when passed a null ModuleFolder as VSTS task does" {
+            mock Invoke-Pester { }
+            mock Import-Module { }
+            Mock Write-Verbose { }
+            Mock Write-Warning { }
+            Mock Write-Error { }
+
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder $null
+            Assert-MockCalled Invoke-Pester
+            
+        }
         it "ModuleFolder is not Mandatory" {
             (Get-Command $sut).Parameters['ModuleFolder'].Attributes.Mandatory | Should Be $False
         }
