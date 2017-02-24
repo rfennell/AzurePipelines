@@ -15,6 +15,13 @@
     "Patch": 0
   },
   "minimumAgentVersion": "1.82.0",
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+    ],
      "inputs": [
       {
       "name": "mode",
@@ -27,7 +34,16 @@
         "Prime": "Only primary build artifact"
       },
       "helpMarkDown": "Select the builds to update."
-      }
+      },
+      {
+      "name": "usedefaultcreds",
+      "type": "boolean",
+      "label": "Use default credentials",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true will use the credentials of the running agent as opposed to access token provided by build service.",
+      "groupName":"advanced"
+    }
    ],
   "instanceNameFormat": "Update Build Retension",
   "execution": {

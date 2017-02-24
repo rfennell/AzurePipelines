@@ -1,5 +1,6 @@
 Param(
-    $mode
+    $mode,
+    $usedefaultcreds
     )
 
 function Set-BuildRetension
@@ -9,10 +10,11 @@ function Set-BuildRetension
         $tfsuri,
         $teamproject,
         $buildID,
-        $keepForever
+        $keepForever,
+        $usedefaultcreds
     )
 
-    $webclient = Get-WebClient
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
     
     write-verbose "Setting BuildID $buildID with retension set to $keepForever"
 
@@ -28,10 +30,11 @@ function Get-BuildsForRelease
     (
         $tfsuri,
         $teamproject,
-        $releaseID
+        $releaseID,
+        $usedefaultcreds
     )
 
-    $webclient = Get-WebClient
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
     
     write-verbose "Getting Builds for Release releaseID"
 
@@ -54,14 +57,26 @@ function Get-BuildsForRelease
 
 function Get-WebClient
 {
+    param
+    (
+       $usedefaultcreds
+    )
 
-    $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
-    $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
     $webclient = new-object System.Net.WebClient
-    $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
+	
+    if ([System.Convert]::ToBoolean($usedefaultcreds) -eq $true)
+    {
+        Write-Verbose "Using default credentials"
+        $webclient.UseDefaultCredentials = $true
+    } else {
+        Write-Verbose "Using SystemVssConnection personal access token"
+        $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
+        $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
+        $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
+    }
+
     $webclient.Encoding = [System.Text.Encoding]::UTF8
     $webclient.Headers["Content-Type"] = "application/json"
-
     $webclient
 
 }
@@ -80,15 +95,16 @@ Write-Verbose "collectionUrl = [$env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI]"
 Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
 Write-Verbose "releaseid = [$env:RELEASE_RELEASEID]"
 Write-Verbose "buildid = [$env:BUILD_BUILDID]"
+Write-Verbose "usedefaultcreds =[$usedefaultcreds]"
 
 if ($mode -eq "AllArtifacts")
 {
-    $builds = Get-BuildsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid
+    $builds = Get-BuildsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
     foreach($id in $builds)
     {
-        Set-BuildRetension -tfsUri $collectionUrl -teamproject $teamproject -buildid $id -keepForever $true
+        Set-BuildRetension -tfsUri $collectionUrl -teamproject $teamproject -buildid $id -keepForever $true -usedefaultcreds $usedefaultcreds
     }
 } else 
 {
-    Set-BuildRetension -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -keepForever $true
+    Set-BuildRetension -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -keepForever $true -usedefaultcreds $usedefaultcreds
 }
