@@ -50,6 +50,7 @@ function Get-BuildChangeSets
         $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
         foreach ($cs in $jsondata.value)
         {
+	if (!$cs.message) {continue} # skip commits with no description
         # we can get more detail if the changeset is on VSTS or TFS
         try {
             $csList += Get-Detail -uri $cs.location -usedefaultcreds $usedefaultcreds
