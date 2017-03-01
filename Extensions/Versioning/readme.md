@@ -12,6 +12,7 @@ V1.9.x - Allow separate regex filters for extracting version and file handling i
 V1.10.x - Fixed file encoding issue
 V1.11.x - Allows a filename pattern to be entered as a parameter for Assembly Versioning
 V1.12.x - Added versioning of Sharepoint Addin App Manifest
+V1.13.x - Added support for SQL2016 and VS2017 to DacPac task
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of 
