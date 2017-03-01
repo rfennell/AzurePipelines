@@ -44,22 +44,46 @@ function Get-Toolpath
 
     if ([string]::IsNullOrEmpty($ToolPath.Trim()))
     {
-        Write-Verbose 'No user provided ToolPath, so searching default locatons' -verbose
-        $ToolPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
+       Write-Verbose 'No user provided ToolPath, so searching default locations' -verbose
+       # for VS2017 we don't know the SKU name so we loop
+       $vs2017base = "C:\Program Files (x86)\Microsoft Visual Studio\2017"
+       if (Test-Path($vs2017base))
+       {
+            Write-Verbose 'Found a VS2017 SKU'
+            ForEach ($folder in Get-ChildItem -Path $vs2017base)
+            {
+                    $ToolPath = "$vs2017base\$folder\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130"
+                    Write-Verbose "Checking $ToolPath"
+                    if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+                    {
+                    Write-Verbose 'Found VS2017 SQL2016 (130) assemblies' -verbose
+                    return $ToolPath
+                    }
+            }
+       }
+       # for older versions we check each path
+        $ToolPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130'
         if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
         {
-           Write-Verbose 'Found SQL2014 assemblies' -verbose
-        } else
+           Write-Verbose 'Found VS2015 SQL2016 (130) assemblies' -verbose
+        } else 
         {
-            Write-Verbose 'Cound not find SQL2014 assemblies' -verbose
-            $ToolPath = 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
+            $ToolPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
             if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
             {
-                 Write-Verbose 'Found SQL2012 assemblies' -verbose 
-            }
-            else
+            Write-Verbose 'Found VS2015 SQL2014 (120) assemblies' -verbose
+            } else
             {
-                 Write-error "Cannot find DLLs in expected SQL 2012 or 2014 default locations" 
+                Write-Verbose 'Cound not find SQL2014 assemblies' -verbose
+                $ToolPath = 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
+                if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+                {
+                    Write-Verbose 'Found VS2013 SQL2012 (120) assemblies' -verbose 
+                }
+                else
+                {
+                    Write-error "Cannot find DLLs in expected VS2013, VS2015 or VS2017 default locations" 
+                }
             }
         }  
     } else
