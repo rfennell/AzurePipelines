@@ -168,7 +168,7 @@ if ($buildmode -eq "AllArtifacts")
     }
 } else 
 {
-    Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -$usedefaultcreds $usedefaultcreds
+    Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
 }
 
 
