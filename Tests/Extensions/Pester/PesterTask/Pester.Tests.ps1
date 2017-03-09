@@ -45,8 +45,32 @@ Describe "Testing Pester Task" {
         it "Tag is not Mandatory" {
             (Get-Command $sut).Parameters['Tag'].Attributes.Mandatory | Should Be $False
         }
+        it "Calls Invoke-Pester with multiple Tags specified" {
+            mock Invoke-Pester { }
+            mock Import-Module { }
+            Mock Write-Verbose { }
+            Mock Write-Warning { }
+            Mock Write-Error { }
+
+            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure,Integration'
+            $Tag.Length | Should Be 2
+            Write-Output -NoEnumerate $Tag | Should BeOfType [System.Array]
+            Write-Output -NoEnumerate $Tag | Should BeOfType [String[]]
+        }
         it "ExcludeTag is not Mandatory" {
             (Get-Command $sut).Parameters['ExcludeTag'].Attributes.Mandatory | Should Be $False
+        }       
+        it "Calls Invoke-Pester with multiple ExcludeTags specified" {
+            mock Invoke-Pester { }
+            mock Import-Module { }
+            Mock Write-Verbose { }
+            Mock Write-Warning { }
+            Mock Write-Error { }
+            
+            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example,Demo'
+            $ExcludeTag.Length | Should be 2
+            Write-Output -NoEnumerate $ExcludeTag | Should BeOfType [System.Array]
+            Write-Output -NoEnumerate $ExcludeTag | Should BeOfType [String[]]
         }
 
     }
