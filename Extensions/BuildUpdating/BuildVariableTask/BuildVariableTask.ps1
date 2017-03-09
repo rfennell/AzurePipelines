@@ -3,7 +3,9 @@ param
     $buildmode,
     $variable,
     $mode,
-    $value 
+    $value,
+    $usedefaultcreds
+ 
  )
 
 
@@ -14,10 +16,12 @@ function Set-BuildDefinationVariable
         $tfsuri,
         $teamproject,
         $buildDefID,
-        $data
+        $data,
+        $usedefaultcreds
+
     )
 
-    $webclient = Get-WebClient
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
     
     write-verbose "Updating Build Definition $builddefID for $($tfsUri)/$($teamproject)"
 
@@ -31,15 +35,26 @@ function Set-BuildDefinationVariable
 
 function Get-WebClient
 {
+    param
+    (
+       $usedefaultcreds
+    )
 
-    $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
-    $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
     $webclient = new-object System.Net.WebClient
-    $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
+	
+    if ([System.Convert]::ToBoolean($usedefaultcreds) -eq $true)
+    {
+        Write-Verbose "Using default credentials"
+        $webclient.UseDefaultCredentials = $true
+    } else {
+        Write-Verbose "Using SystemVssConnection personal access token"
+        $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
+        $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
+        $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
+    }
 
     $webclient.Encoding = [System.Text.Encoding]::UTF8
     $webclient.Headers["Content-Type"] = "application/json"
-
     $webclient
 
 }
@@ -51,10 +66,11 @@ function Get-BuildDefination
     (
         $tfsuri,
         $teamproject,
-        $buildDefID
+        $buildDefID,
+        $usedefaultcreds
     )
 
-    $webclient = Get-WebClient
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
    
     write-verbose "Getting Build Definition $builddefID "
 
@@ -74,10 +90,11 @@ function Update-Build
         $builddefid,
         $mode,
         $variable,
-        $value
+        $value,
+        $usedefaultcreds
       )
     # get the old definition
-    $def = Get-BuildDefination -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid
+    $def = Get-BuildDefination -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -usedefaultcreds $usedefaultcreds
     Write-Verbose "Current value of variable [$variable] is [$($def.variables.$variable.value)]"
     # make the change
     if ($mode -eq "Manual")
@@ -91,7 +108,7 @@ function Update-Build
     }
     Write-Verbose "Setting variable [$variable] to value [$($def.variables.$variable.value)]"
     # write it back
-    $response = Set-BuildDefinationVariable -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -data $def
+    $response = Set-BuildDefinationVariable -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -data $def -usedefaultcreds $usedefaultcreds
 
 }
 
@@ -101,10 +118,11 @@ function Get-BuildsDefsForRelease
     (
         $tfsuri,
         $teamproject,
-        $releaseID
+        $releaseID,
+        $usedefaultcreds
     )
 
-    $webclient = Get-WebClient
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
     
     write-verbose "Getting Builds for Release releaseID"
 
@@ -138,18 +156,19 @@ Write-Verbose "collectionUrl = [$env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI]"
 Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
 Write-Verbose "releaseid = [$env:RELEASE_RELEASEID]"
 Write-Verbose "builddefid = [$env:BUILD_DEFINITIONID]"
+Write-Verbose "usedefaultcreds = $usedefaultcreds"
 
 Write-Verbose "Mode is $buildmode"
 if ($buildmode -eq "AllArtifacts")
 {
-    $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid
+    $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
     foreach($id in $builddefs)
     {
-        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $id -mode $mode -value $value -variable $variable
+        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
     }
 } else 
 {
-    Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable
+    Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
 }
 
 

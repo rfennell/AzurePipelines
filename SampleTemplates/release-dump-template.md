@@ -1,17 +1,17 @@
-#Release notes for release $defname
+# Release notes for release $defname
 $($release)    
 
-##Builds  
+## Builds  
 @@BUILDLOOP@@
-###$($build.definition.name)  
+### $($build.definition.name)  
 $($build)    
   
-###Associated work items  
+### Associated work items  
 @@WILOOP@@  
 * $($widetail)  
 @@WILOOP@@  
   
-###Associated change sets/commits  
+### Associated change sets/commits  
 @@CSLOOP@@  
 * $($csdetail)    
 @@CSLOOP@@  

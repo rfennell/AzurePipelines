@@ -15,7 +15,14 @@
     "Patch": 0
   },
   "minimumAgentVersion": "1.82.0",
-    "inputs": [
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
         {
       "name": "buildmode",
       "type": "pickList",
@@ -56,8 +63,16 @@
          "required": true,
          "helpMarkDown": "The value of the build variable to update ",
           "visibleRule": "mode = Manual"
-      }
-     
+      },
+      {
+      "name": "usedefaultcreds",
+      "type": "boolean",
+      "label": "Use default credentials",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true will use the credentials of the running agent as opposed to access token provided by build service.",
+      "groupName":"advanced"
+    }
    ],
   "instanceNameFormat": "Update Build Variable",
   "execution": {
