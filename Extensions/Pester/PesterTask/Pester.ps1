@@ -84,10 +84,12 @@ $Parameters = @{
 
 if ($Tag)
 {
+    $Tag = $Tag.Split(',').Replace('"','').Replace("'","")
     $Parameters.Add('Tag',$Tag)
 }
 if ($ExcludeTag)
 {
+    $ExcludeTag = $ExcludeTag.Split(',').Replace('"','').Replace("'","")
     $Parameters.Add('ExcludeTag',$ExcludeTag)
 }
 
