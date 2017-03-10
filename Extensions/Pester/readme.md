@@ -4,6 +4,7 @@ Releases
 - 4.1.x - now targets 3.4.3, but allows the path to the module to be overriden
 - 4.2.x.- removed non-required demand
 - 4.3.x.- Added support for Tag and ExcludeTag parameters
+- 4.4.x - Added support for multiple comma separated tags
 
 A task to install and run PowerShell Pester based tests 
 The task takes five parameters 
