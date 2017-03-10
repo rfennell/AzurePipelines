@@ -14,6 +14,7 @@
       Fixed bug that only first line of generate markdown available in output variable
 2.4 - Added extra error traps to handle lookups on deleted builds
 2.5 - Improved error tapping on render method
+2.6 - Altered logging to remove items that should not be warning
 
 This task generates a release notes file based on a template passed into the tool. If the template file is markdown the output report being something like the following:
 
