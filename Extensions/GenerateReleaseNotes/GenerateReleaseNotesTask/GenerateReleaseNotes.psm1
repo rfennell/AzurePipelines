@@ -50,16 +50,16 @@ function Get-BuildChangeSets
         $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
         foreach ($cs in $jsondata.value)
         {
-        # we can get more detail if the changeset is on VSTS or TFS
-        try {
-            $csList += Get-Detail -uri $cs.location -usedefaultcreds $usedefaultcreds
-        } catch
-        {
-            Write-warning "Unable to get details of changeset/commit as it is not stored in TFS/VSTS"
-            Write-warning "For [$($cs.id)] location [$($cs.location)]"
-            Write-warning "Just using the details we have from the build"
-            $csList += $cs
-        }
+            # we can get more detail if the changeset is on VSTS or TFS
+            try {
+                $csList += Get-Detail -uri $cs.location -usedefaultcreds $usedefaultcreds
+            } catch
+            {
+                Write-Verbose "Unable to get details of changeset/commit as it is not stored in TFS/VSTS"
+                Write-Verbose "For [$($cs.id)] location [$($cs.location)]"
+                Write-Verbose "Just using the details we have from the build"
+                $csList += $cs
+            }
         }
     } catch 
     {
