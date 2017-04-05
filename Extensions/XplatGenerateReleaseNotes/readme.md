@@ -1,11 +1,11 @@
 ## Changes
 1.0 - Initial release
 
+This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's comparison calls that are also used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the VSTS UI. 
 
-TODO - sort the screenshots
-     - update the readmes
+Note: That this comparison is only done against the primary build artifact linked to the Release  
 
-This task generates a release notes file based on a template passed into the tool. If the template file is markdown the output report being something like the following:
+If the template file is markdown the output report being something like the following:
 
 > Release notes for build SampleSolution.Master
 > 
@@ -15,7 +15,7 @@ This task generates a release notes file based on a template passed into the too
 > 
 > Associated work items
 > 
-> Task 60 [Assigned by: Bill <MYDOMAIN\Bill>] Design WP8 client
+> Task 60 Assigned by: Bill <MYDOMAIN\Bill> Design WP8 client
 > Associated change sets/commits
 > 
 > ID bf9be94e61f71f87cb068353f58e860b982a2b4b Added a template
@@ -30,27 +30,26 @@ The use of a template allows the user to define the format, layout and fields sh
 
 The only real change from standard markdown is the use of the @@TAG@@ blocks to denote areas that should be looped over i.e: the points where we get the details of all the work items and commits associated with the build.
 
-    #Release notes for build $defname  
-    **Build Number**  : ${$build.buildnumber)    
-    **Build started** : $("{0:dd/MM/yy HH:mm:ss}" -f [datetime]$build.startTime)     
-    **Source Branch** : $($build.sourceBranch)  
-    ###Associated work items  
-    @@WILOOP@@  
-    * **$($widetail.fields.'System.WorkItemType') $($widetail.id)** [Assigned by: $($widetail.fields.'System.AssignedTo')]     $($widetail.fields.'System.Title') 
-    @@WILOOP@@  
-    ###Associated change sets/commits  
-    @@CSLOOP@@  
-    * **ID $($csdetail.changesetid)$($csdetail.commitid)** $($csdetail.comment)    
-    @@CSLOOP@@   
+```
+# Release notes 
+## Notes for release  ${releaseDetails.releaseDefinition.name}
+**Release Number**  : ${releaseDetails.name} 
+**Release completed** : ${releaseDetails.modifiedOn} 
 
-* Note 1: We can return the builds startTime and/or finishTime, remember if you are running the template within an automated build the build by definition has not finished so the finishTime property is empty to can’t be parsed. This does not stop the generation of the release notes, but an error is logged in the build logs.
-* Note 2: We have some special handling in the @@CSLOOP@@ section, we include both the changesetid and the commitid values, only one of there will contain a value, the other is blank. Thus allowing the template to work for both GIT and TFVC builds.
+### Associated work items  
+@@WILOOP@@  
+* ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
+@@WILOOP@@  
+  
+### Associated commits
+@@CSLOOP@@  
+* **ID ${csdetail.commitId} ** ${csdetail.comment}    
+@@CSLOOP@@  
+```
 
-What is done behind the scenes is that each line of the template is evaluated as a line of PowerShell in turn, the in memory versions of the objects are used to provide the runtime values. The available objects to get data from at runtime are
+What is done behind the scenes is that each line of the template is evaluated as a line of Node.JS in turn, the in memory versions of the objects are used to provide the runtime values. The available objects to get data from at runtime are
 
 * $release – the release details returned by the REST call Get Release Details of the release that the task was triggered for (only available for release based usage of the task)
-* $releases – all the release details returned by the REST call Get Release Details (only available for release based usage of the task)
-* $build – the build details returned by the REST call Get Build Details. If used within a release, as opposed to a build, this is set to each build within the @@BUILDLOOP@@ block. For build based release notes it is set once.
 * $widetail – the details of a given work item inside the loop returned by the REST call Get Work Item (within the @@WILOOP@@@ block)
 * $csdetail – the details of a given changeset/commit inside the loop by the REST call to Changes or Commit depending on whether it is a GIT or TFVC based build (within the @@CSLOOP@@@ block)
 
@@ -65,10 +64,7 @@ The task takes three parameters
 * A picker allows you to set if the template is provided as a file in source control (usually used for builds) or an inline file (usually used for release management). The setting of this picker effects which third parameter is shown
 * Either - The template file name, which should point to a file in source control.
 * Or - The template text.
-* (Advanced) Use default credentials - default is false so the build services personal access token is automatically used. If true the credentials of local account the agent is running as are used (only usually used on-prem)
 * (Advanced) Empty set text - the text to place in the results file if there is no changeset/commit or WI content
-* (Advanced) Generate release notes for only primary release artifact, default is False (release mode only)
-* (Advanced) Generate release notes for only the release that contains the task, do not scan past releases, default is True (release mode only)
 * (Advanced) Name of the release stage to look for the last successful release in, default to empty value so uses the current stage of the release that the task is running in (release mode, when scanning past build only)
 * (Outputs) Optional: Name of the variable that markdown contents will be copied into for use in other tasks
 

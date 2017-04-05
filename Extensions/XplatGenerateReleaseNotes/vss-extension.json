@@ -2,7 +2,7 @@
  "manifestVersion": 1,
  "id": "BM-VSTS-XplatGenerateReleaseNotes",
  "version": "1.0.0",
- "name": "Generate Release Notes (Xplat)",
+ "name": "Generate Release Notes (Crossplatform)",
  "publisher": "richardfennellBM",
   "description": "Generates a Markdown Release notes file.",
  "categories": [
@@ -39,9 +39,6 @@
   "screenshots": [
     {
       "path": "images/screenshot.png"
-    },
-      {
-      "path": "images/screenshot1.png"
     }
   ],
   "content": {
