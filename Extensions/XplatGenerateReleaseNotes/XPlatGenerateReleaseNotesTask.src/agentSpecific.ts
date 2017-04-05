@@ -1,4 +1,5 @@
 import tl = require('vsts-task-lib/task');
+import fs = require('fs');
 
 // moving the logging function to a separate file
 
@@ -24,8 +25,13 @@ export function logError (msg :string)
 
 export function writeVariable (variableName : string ,value : string)
 {
-    tl.setVariable(variableName, value);
-    logInfo(`Writing output variable ${variableName}`)
+     if (variableName){
+        logInfo(`Writing output variable ${variableName}`)
+        // the newlines cause a problem only first line shown
+        // so remove them
+        var newlineRemoved = value.split("\n").join("  ");
+        tl.setVariable(variableName, newlineRemoved );
+    }
 }
 
 // Below logic exists in nuget common module as well, but due to tooling issue

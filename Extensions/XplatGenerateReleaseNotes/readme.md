@@ -7,19 +7,19 @@ Note: That this comparison is only done against the primary build artifact linke
 
 If the template file is markdown the output report being something like the following:
 
-> Release notes for build SampleSolution.Master
-> 
-> Build Number: 20160229.3
-> Build started: 29/02/16 15:47:58
-> Source Branch: refs/heads/master
-> 
-> Associated work items
-> 
-> Task 60 Assigned by: Bill <MYDOMAIN\Bill> Design WP8 client
-> Associated change sets/commits
-> 
-> ID bf9be94e61f71f87cb068353f58e860b982a2b4b Added a template
-> ID 8c3f8f9817606e48f37f8e6d25b5a212230d7a86 Start of the project
+```
+# Release notes
+## Notes for release  New Empty Definition 25-Mar
+**Release Number**  : Release-5
+**Release completed** : 2017-04-03T19:32:25.76Z
+**Compared Release Number**  : Release-4
+
+### Associated work items
+* ** Epic 21 ** Assigned by: Richard Fennell (Work MSA) <bm-richard.fennell@outlook.com>  Add items
+
+### Associated commits
+* **ID f5f964fe5ab27b1b312f6aa45ea1c5898d74358a ** Updated Readme.md #21
+```
 
 ## The Template
 The use of a template allows the user to define the format, layout and fields shown in the release notes document. It is basically a file in the format required with tags to denote the fields to be replaced when the tool generates the report file.
@@ -35,6 +35,7 @@ The only real change from standard markdown is the use of the @@TAG@@ blocks to 
 ## Notes for release  ${releaseDetails.releaseDefinition.name}
 **Release Number**  : ${releaseDetails.name} 
 **Release completed** : ${releaseDetails.modifiedOn} 
+**Compared Release Number**  : ${compareReleaseDetails.name} 
 
 ### Associated work items  
 @@WILOOP@@  
@@ -49,9 +50,10 @@ The only real change from standard markdown is the use of the @@TAG@@ blocks to 
 
 What is done behind the scenes is that each line of the template is evaluated as a line of Node.JS in turn, the in memory versions of the objects are used to provide the runtime values. The available objects to get data from at runtime are
 
-* $release – the release details returned by the REST call Get Release Details of the release that the task was triggered for (only available for release based usage of the task)
-* $widetail – the details of a given work item inside the loop returned by the REST call Get Work Item (within the @@WILOOP@@@ block)
-* $csdetail – the details of a given changeset/commit inside the loop by the REST call to Changes or Commit depending on whether it is a GIT or TFVC based build (within the @@CSLOOP@@@ block)
+* releaseDetails – the release details returned by the REST call Get Release Details of the release that the task was triggered for.
+* compareReleaseDetails - the release that the REST call is using to comapre against
+* widetail – the details of a given work item inside the loop returned by the REST call Get Work Item (within the @@WILOOP@@@ block)
+* csdetail – the details of a given changeset/commit inside the loop by the REST call to Changes or Commit depending on whether it is a GIT or TFVC based build (within the @@CSLOOP@@@ block)
 
 There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes and dumps out all the available fields (to help you find all the available options) for both builds and releases  
 

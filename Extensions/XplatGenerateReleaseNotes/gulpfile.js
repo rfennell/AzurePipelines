@@ -23,7 +23,7 @@ gulp.task('copy', function () {
 });
 
 
-gulp.task('build', ['clean'], function () {
+gulp.task('build', function () {
     exec('tsc -p XPlatGenerateReleaseNotesTask.src/.' );
 });
 

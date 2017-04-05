@@ -194,7 +194,7 @@ export function getTemplate(templateLocation : string,
     return template
 }
 
-export function processTemplate(template, workItems, commits, releaseDetails, emptySetText) : string
+export function processTemplate(template, workItems, commits, releaseDetails, compareReleaseDetails, emptySetText) : string
 {
     var commits; // to move to param
     var widetail = undefined;
