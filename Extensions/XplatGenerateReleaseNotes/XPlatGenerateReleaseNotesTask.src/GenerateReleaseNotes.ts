@@ -33,21 +33,22 @@ var outputVariableName = tl.getInput("outputVariableName");
 
 var overrideStage = tl.getInput("overrideStageName");
 
-console.log(`Variable: Teamproject ${teamproject}`);
-console.log(`Variable: CurrentReleaseId ${currentReleaseId}`);
-console.log(`Variable: VSTS Instance ${instance}`);
-console.log(`Variable: EmptyDataset ${emptyDataset}`);
-console.log(`Variable: Current Environment Stage ${currentStage}`);
-console.log(`Variable: TemplateLocation ${templateLocation}`);
-console.log(`Variable: TemplateFile ${templateFile}`);
-console.log(`Variable: InlineTemplate ${inlineTemplate}`);
-console.log(`Variable: Outputfile ${outputfile}`);
-console.log(`Variable: OutputVariableName ${outputVariableName}`);
-console.log(`Variable: OverrideStage ${overrideStage}`);
+console.log(`Variable: Teamproject [${teamproject}]`);
+console.log(`Variable: CurrentReleaseId [${currentReleaseId}]`);
+console.log(`Variable: VSTS Instance [${instance}]`);
+console.log(`Variable: EmptyDataset [${emptyDataset}]`);
+console.log(`Variable: Current Environment Stage [${currentStage}]`);
+console.log(`Variable: TemplateLocation [${templateLocation}]`);
+console.log(`Variable: TemplateFile [${templateFile}]`);
+console.log(`Variable: InlineTemplate [${inlineTemplate}]`);
+console.log(`Variable: Outputfile [${outputfile}]`);
+console.log(`Variable: OutputVariableName [${outputVariableName}]`);
+console.log(`Variable: OverrideStage [${overrideStage}]`);
 
 getRelease(instance, teamproject, encodedPat, currentReleaseId, function(details)
 {
-    // get the current release details first
+
+   // get the current release details first
     var currentReleaseDetails = details;
     getBuild(instance, teamproject, encodedPat, getPrimaryBuildIdFromRelease(currentReleaseDetails), function(details)
     {
@@ -75,14 +76,22 @@ getRelease(instance, teamproject, encodedPat, currentReleaseId, function(details
                     {
                         var workItems = details;
 
-                        // this form only works for Git, needs a different function for tfvc
-                        getCommitsBetweenCommitIds (instance, teamproject, encodedPat, currentBuildDetails.repository.id, currentBuildDetails.sourceVersion, compareBuildDetails.sourceVersion, function (commits)
+                        getCommitsBetweenCommitIds (
+                            instance, 
+                            teamproject, 
+                            encodedPat, 
+                            currentBuildDetails.repository.type,
+                            currentBuildDetails.definition.id, 
+                            currentBuildDetails.repository.id, 
+                            currentBuildDetails.sourceVersion, 
+                            compareBuildDetails.sourceVersion, function (commits)
                         {
                             var template = getTemplate(templateLocation,templateFile,inlineTemplate);
 
                             var outputString = processTemplate(template, workItems, commits, currentReleaseDetails, compareReleaseDetails, emptyDataset);
                             writeFile(outputfile, outputString);
-                            writeVariable(outputVariableName,outputString);
+                            writeVariable(outputVariableName,outputString.toString());
+                           
                         });    
                     });
                 });
@@ -90,6 +99,4 @@ getRelease(instance, teamproject, encodedPat, currentReleaseId, function(details
         });
     });
 });
-
-
 
