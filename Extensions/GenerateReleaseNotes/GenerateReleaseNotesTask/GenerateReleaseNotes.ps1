@@ -190,7 +190,8 @@ else
     # is returned as in the output varibable if we just try to pipe the local variable
     $file = Get-Content $outputfile
     Write-Verbose "Setting variable: [$outputvariablename] = $file" -Verbose
-    Write-Host ("##vso[task.setvariable variable=$outputvariablename;]$file")
+    $joined = $file -join '`n'
+    Write-Host ("##vso[task.setvariable variable=$outputvariablename;]$joined")
 }
 
 
