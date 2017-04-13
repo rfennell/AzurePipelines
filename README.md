@@ -2,8 +2,11 @@
 
 ![Build Status - FileCopiers Extension](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/21/badge) FileCopier Extension 
 
-![Build Status - GenerateReleaseNotes Extension](
-https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/23/badge) GenerateReleaseNotes Extension 
+![Build Status - GenerateReleaseNotes Extension (PowerShell)](
+https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/23/badge) GenerateReleaseNotes Extension (PowerShell)
+
+![Build Status - GenerateReleaseNotes Extension (XPlat)](
+https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/40/badge) GenerateReleaseNotes Extension (XPlat)
 
 ![Build Status - Manifest Versioning Extension](
 https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/25/badge) Manifest Versioning Extension 
