@@ -116,10 +116,11 @@ function Invoke-StyleCopForFolderStructure
                 $projectSettingsFile = $settings
             }  else
             {
-                $settings = Join-Path -path $sourcefolder -childpath "settings.stylecop"
+                # look for the first stylecop.settings in a solution folder structure
+                $settings = Join-Path -path (Get-ChildItem $sourcefolder -Filter *.sln -Recurse | Select-Object -First 1).Directory -childpath "settings.stylecop"
                 if (Test-Path $settings)
                 {
-                    Write-Verbose "Using settings.stylecop file in solution folder"
+                    Write-Verbose "Using the first settings.stylecop file found in a solution folder"
                     $projectSettingsFile = $settings
                 } else 
                 {
