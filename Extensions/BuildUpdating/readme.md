@@ -3,6 +3,7 @@
 - 1.1.x - Logic fixed for updating
 - 1.2.x - Added boolean to allow use of default build agent creditials
 - 1.3.x - Fixed bug with handling of defaultcreds
+- 1.4.x - Include PR from insanity13 to handle compress
 
 A set of tasks to manage builds, it is assumed these tasks will usually be called from a release pipeline.
 

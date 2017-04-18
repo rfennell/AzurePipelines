@@ -26,7 +26,7 @@ function Set-BuildDefinationVariable
     write-verbose "Updating Build Definition $builddefID for $($tfsUri)/$($teamproject)"
 
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=2.0"
-    $jsondata = $data | ConvertTo-Json -Depth 10 #else we don't get lower level items
+    $jsondata = $data | ConvertTo-Json -Compress -Depth 10 #else we don't get lower level items
 
     $response = $webclient.UploadString($uri,"PUT", $jsondata) 
     $response
