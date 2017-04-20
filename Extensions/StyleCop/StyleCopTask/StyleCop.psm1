@@ -116,15 +116,23 @@ function Invoke-StyleCopForFolderStructure
                 $projectSettingsFile = $settings
             }  else
             {
-                $settings = Join-Path -path $sourcefolder -childpath "settings.stylecop"
-                if (Test-Path $settings)
+                # look for a stylecop.settings in a solution folder containing an SLN file
+                $pathToSln = (Get-ChildItem $sourcefolder -Filter *.sln -Recurse | Select-Object -First 1).Directory
+                if ($pathToSln -ne $null)
                 {
-                    Write-Verbose "Using settings.stylecop file in solution folder"
-                    $projectSettingsFile = $settings
-                } else 
-                {
-                    Write-Verbose "Cannot find a local settings.stylecop file, using default rules"
-                    $projectSettingsFile = "." # we have to pass something as this is a required param
+                    $settings = Join-Path -path $pathToSln -childpath "settings.stylecop"
+                    if (Test-Path $settings)
+                    {
+                        Write-Verbose "Using the first settings.stylecop file found in a solution folder"
+                        $projectSettingsFile = $settings
+                    } else 
+                    {
+                        Write-Verbose "Cannot find a settings.stylecop file in the same folder as the first SLN file, using default rules"
+                        $projectSettingsFile = "." # we have to pass something as this is a required param
+                    }
+                } else {
+                     Write-Verbose "Cannot find a folder containing an SLN file, using default rules"
+                     $projectSettingsFile = "." # we have to pass something as this is a required param
                 }
             }
         }
