@@ -188,7 +188,7 @@ $NewVersion = $VersionData[0]
 Write-Verbose "Version: $NewVersion"
 
 
-$DacPacFiles = Get-ChildItem -Path $Path -Filter *.dacpac -Recurse
+$DacPacFiles = Get-ChildItem -Path $Path -Include *.dacpac -Exclude master.dacpac,msdb.dacpac -Recurse
 
 Write-Verbose "Found $($DacPacFiles.Count) dacpacs. Beginning to apply updated version number $NewVersion." -Verbose
 
