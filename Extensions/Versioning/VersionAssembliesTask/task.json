@@ -89,6 +89,10 @@
       "target": "$(currentDirectory)\\ApplyVersionToAssemblies.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
-    }
+    },
+     "Node": {
+       "target": "$(currentDirectory)\\ApplyVersionToAssemblies.js",
+       "argumentFormat": ""
+     }
   }
 }
