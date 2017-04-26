@@ -115,19 +115,24 @@ if ( [string]::IsNullOrEmpty($releaseid))
         Write-Verbose "Processing all releases back to the last successful release in stage [$stageName]"
            
         $allRelease = Get-ReleaseByDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -releasedefid $releasedefid -usedefaultcreds $usedefaultcreds
-        #find the set of release since the last good release of a given stage
-        foreach ($r in $allRelease)
+        
+        # find the set of release since the last good release of a given stage
+        # we filter for any release newer than the current release 
+        # we assume the releases are ordered by date
+        foreach ($r in $allRelease | Where-Object { $_.id -le $releaseid })
         {
             if ($r.id -eq $releaseid )
             {
                 # we always add the current release that trigger the task
+                Write-Verbose "   Adding release [$r.id] to list"
                 $releases += $r
             } else 
             {
-                # add all the past releases where the this stahe ws not a success
+                # add all the past releases where the this stage was not a success
                 $stage = $r.environments | Where-Object { $_.name -eq $stageName -and $_.status -ne "succeeded" }
                 if ($stage -ne $null)
                 {
+                    Write-Verbose "   Adding release [$r.id] to list"
                     $releases += $r
                 } else {
                     #we have found a successful relase in this stage so quit
@@ -137,7 +142,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
         }
     }
     
-    Write-Verbose "Discovered [$($releases.Count)] releases for processing"
+    Write-Verbose "Discovered [$($releases.Count)] releases for processing after checking a total of [$($allRelease.Count)] releases"
 
     # we put all the builds into a hastable associated with their release
     $buildsList = @{}
