@@ -16,6 +16,7 @@
 2.5 - Improved error tapping on render method
 2.6 - Altered logging to remove items that should not be warning
 2.7 - Included PR from @Beej126 hide changeset with no comment and @gregpakes added newlines to output variable string
+2.8 - Fixed for Issues #109, fixed build detection logic
 
 This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's:
 - if used in a build it is the current active build
