@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "commonjs",
+         "watch": false,
+         "outDir": "../VersionAssembliesTask/"
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
