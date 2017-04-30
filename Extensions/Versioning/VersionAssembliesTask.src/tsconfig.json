@@ -3,8 +3,9 @@
         "target": "ES6",
         "module": "commonjs",
          "watch": false,
-         "outDir": "../VersionAssembliesTask/"
-    },
+         "outDir": "../VersionAssembliesTask/",
+         "sourceMap":  true
+     },
     "exclude": [
         "node_modules"
     ]
