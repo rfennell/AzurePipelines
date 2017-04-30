@@ -19,7 +19,7 @@ gulp.task('clean', function () {
 
 gulp.task('copy', function () {
     del('VersionAssembliesTask//node_modules');
-    gulp.src(['VersionAssembliesTask.src/node_modules/**/*']).pipe(gulp.dest('XPlatGenerateReleaseNotesTask/node_modules'));
+    gulp.src(['VersionAssembliesTask.src/node_modules/**/*']).pipe(gulp.dest('VersionAssembliesTask/node_modules'));
 });
 
 

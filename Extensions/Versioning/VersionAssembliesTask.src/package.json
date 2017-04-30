@@ -3,6 +3,7 @@
   "description": "VersionAssembliesTask",
   "main": "VersionAssembliesTask.js",
   "dependencies": {
+    "jschardet": "^1.4.2",
     "Buffer": "^0.0.0",
     "fs": "^0.0.1-security",
     "request": "^2.80.0",
