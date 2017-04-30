@@ -13,8 +13,8 @@ V1.10.x - Fixed file encoding issue
 V1.11.x - Allows a filename pattern to be entered as a parameter for Assembly Versioning
 V1.12.x - Added versioning of Sharepoint Addin App Manifest
 V1.13.x - Added support for SQL2016 and VS2017 to DacPac task
-V1.14.x - Filtered DacPac task to not version master or msdb DacPacs.
-V1.14.x - Added cross platform support for assebmly versioning
+V1.14.x - DAC pack exclusing fixed
+V1.15.x - Added cross platform support for assebmly versioning
           Added WIX versioning
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
