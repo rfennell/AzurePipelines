@@ -10,14 +10,6 @@ var field = tl.getInput("Field");
 var outputversion = tl.getInput("outputversion");
 var filenamePattern = tl.getInput("FilenamePattern");
 
-path = "C:\\projects\\vsts\\DotNetCoreValidation";
-versionNumber = "fred 1.2.3.4";
-versionRegex =  "\\d+\\.\\d+\\.\\d+\\.\\d+";
-
-field = "VersionA";
-outputversion = "";
-filenamePattern = ".csproj";
-
 console.log (`Source Directory:  ${path}`);
 console.log (`Filename Pattern: ${filenamePattern}`);
 console.log (`Version Number/Build Number: ${versionNumber}`);
