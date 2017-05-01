@@ -21,6 +21,7 @@ A set of tasks based on the versioning sample script to version tamping assembli
 ). These allow versioning of 
 
 * VersionAssemblies - sets the version in the assemblyinfo.cs or .vb (used pre build)
+* VersionDotNetCoreAssemblies - sets the version in the .csproj (used pre build)
 * VersionAPPX - sets the version in the Package.appxmanifest (used pre build)
 * VersionVSIX - sets the version in the source.extension.vsixmanifest (used pre build)
 * VersionDacpac - sets the version in a SQL DACPAC (used post build)
@@ -33,7 +34,7 @@ All these tasks take at least two parameters, which are both defaulted
 * [Advanced] Version Regex: The filter used to extract the version number from the build. Default to '\d+\.\d+\.\d+\.\d+'
 * [Output] OutputVersion: Outputs the actual version number extracted from build number. 
 
-The Assembly versioner also takes the following Advanced option
+The Assembly & .NEt Core versioner also takes the following Advanced option
 
 * [Advanced] Field: The name of the version field to update, if blank updates all. Default is empty
 
