@@ -57,7 +57,7 @@
       "name": "FilenamePattern",
       "type": "string",
       "label": "Filename Pattern",
-      "defaultValue": "AssemblyInfo.*",
+      "defaultValue": ".csproj",
       "required": true,
       "helpMarkDown": "The filename pattern to update.",
       "groupName":"advanced"
@@ -68,7 +68,7 @@
       "label": "The version field to update",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "The version field to update, if blank all version fields are updated.",
+      "helpMarkDown": "The version field to update, if blank all version fields are updated usually <version>1.1.1.1</version>.",
       "groupName":"advanced"
     },
       {
