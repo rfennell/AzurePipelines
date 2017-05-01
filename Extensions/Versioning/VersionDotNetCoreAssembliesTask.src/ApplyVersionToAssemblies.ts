@@ -10,6 +10,14 @@ var field = tl.getInput("Field");
 var outputversion = tl.getInput("outputversion");
 var filenamePattern = tl.getInput("FilenamePattern");
 
+path = "C:\\projects\\vsts\\DotNetCoreValidation";
+versionNumber = "fred 1.2.3.4";
+versionRegex =  "\\d+\\.\\d+\\.\\d+\\.\\d+";
+
+field = "VersionA";
+outputversion = "";
+filenamePattern = ".csproj";
+
 console.log (`Source Directory:  ${path}`);
 console.log (`Filename Pattern: ${filenamePattern}`);
 console.log (`Version Number/Build Number: ${versionNumber}`);
@@ -28,7 +36,6 @@ function findFiles (dir, filename , filelist) {
       filelist = findFiles(path.join(dir, file), filename, filelist);
     }
     else {
-      console.log(`${file}   - ${filename} `);  
       if (file.toLowerCase().endsWith(filename.toLowerCase()))
       {
         filelist.push(path.join(dir, file));
@@ -65,7 +72,7 @@ var newVersion = versionData[0]
 console.log (`Extracted Version: ${newVersion}`);
 
 // Apply the version to the assembly property files
-var files = findFiles(`${path}`, filenamePattern, files); // ,filenamePattern needs to be added
+var files = findFiles(`${path}`, filenamePattern, files); 
 
 
 if (files.length>0) {
@@ -73,7 +80,6 @@ if (files.length>0) {
     console.log (`Will apply ${newVersion} to ${files.length} files.`);
 
     files.forEach(file => {
-        //        $FileEncoding = Get-FileEncoding -Path $File.FullName
         var fileEncoding = jschardet.detect(fs.readFileSync(file));
 
         var filecontent = fs.readFileSync(file, fileEncoding.encoding);
@@ -81,10 +87,10 @@ if (files.length>0) {
         if (field && field.length > 0)
         {
             console.log (`Updating only the ${field} version`);
-            regexp = new RegExp(`${field}\\(\\"${versionRegex}`);
-            newVersion = `${field}(\"${newVersion}`;
+            regexp = new RegExp(`<${field}>${versionRegex}<\/${field}>`);
+            newVersion = `<${field}>${newVersion}<\/${field}>`;
         } else {
-            console.log ("Updating all version fields");
+            console.log (`Updating all version fields that match Regex ${versionRegex}`);
             regexp = new RegExp(versionRegex, "g"); // the g get all occurances
         }
         fs.writeFileSync(file,filecontent.toString().replace(regexp, newVersion),fileEncoding.encoding);
