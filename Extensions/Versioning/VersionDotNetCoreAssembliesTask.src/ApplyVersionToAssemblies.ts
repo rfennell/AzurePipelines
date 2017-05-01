@@ -10,13 +10,6 @@ var field = tl.getInput("Field");
 var outputversion = tl.getInput("outputversion");
 var filenamePattern = tl.getInput("FilenamePattern");
 
-field = null;
-path="c:\\tmp"
-versionNumber="20170501.4"
-versionRegex="\\d+\\.\\d+\\.\\d+\\.\\d+";
-outputversion="OutputedVersion";
-filenamePattern=".csproj";
-
 console.log (`Source Directory:  ${path}`);
 console.log (`Filename Pattern: ${filenamePattern}`);
 console.log (`Version Number/Build Number: ${versionNumber}`);
