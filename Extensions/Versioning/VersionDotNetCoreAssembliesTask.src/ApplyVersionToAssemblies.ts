@@ -10,6 +10,13 @@ var field = tl.getInput("Field");
 var outputversion = tl.getInput("outputversion");
 var filenamePattern = tl.getInput("FilenamePattern");
 
+field = null;
+path="c:\\tmp"
+versionNumber="20170501.4"
+versionRegex="\\d+\\.\\d+\\.\\d+\\.\\d+";
+outputversion="OutputedVersion";
+filenamePattern=".csproj";
+
 console.log (`Source Directory:  ${path}`);
 console.log (`Filename Pattern: ${filenamePattern}`);
 console.log (`Version Number/Build Number: ${versionNumber}`);
@@ -47,15 +54,22 @@ if (!fs.existsSync(path))
 // Get and validate the version data
 var regexp = new RegExp(versionRegex);
 var versionData = regexp.exec(versionNumber);
+if (!versionData)
+{
+    // extra check as we don't get zero size array but a null 
+    tl.error(`Could not find version number data in ${versionNumber} that matches ${versionRegex}.`);
+    process.exit(1);
+}
 switch(versionData.length)
 {
-   case 0:        
-         tl.error(`Could not find version number data in ${versionNumber}.`);
+   case 0:       
+         // this is trapped by the null check above 
+         tl.error(`Could not find version number data in ${versionNumber} that matches ${versionRegex}.`);
          process.exit(1);
    case 1:
         break;
    default: 
-         tl.warning(`Found more than instance of version data in ${versionNumber}.`); 
+         tl.warning(`Found more than instance of version data in ${versionNumber}  that matches ${versionRegex}.`); 
          tl.warning(`Will assume first instance is version.`);
          break;
 }
