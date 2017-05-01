@@ -13,18 +13,18 @@ function getFolders(dir) {
 }
 
 gulp.task('clean', function () {
-	del('VersionAssembliesTask/*.js');
-    
+	del('VersionDotNetCoreAssembliesTask/*.js');
+	del('VersionDotNetCoreAssembliesTask/*.js.map');
 });
 
 gulp.task('copy', function () {
-    del('VersionAssembliesTask//node_modules');
-    gulp.src(['VersionAssembliesTask.src/node_modules/**/*']).pipe(gulp.dest('VersionAssembliesTask/node_modules'));
+    del('VersionDotNetCoreAssembliesTask//node_modules');
+    gulp.src(['VersionDotNetCoreAssembliesTask.src/node_modules/**/*']).pipe(gulp.dest('VersionDotNetCoreAssembliesTask/node_modules'));
 });
 
 
 gulp.task('build', function () {
-    exec('tsc -p VersionAssembliesTask.src/.' );
+    exec('tsc -p VersionDotNetCoreAssembliesTask.src/.' );
 });
 
 gulp.task('default', ['build']);
