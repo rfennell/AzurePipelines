@@ -81,10 +81,22 @@
     {
       "path": "VersionDotNetCoreAssembliesTask"
     }
-    
+    ,
+    {
+      "path": "VersionWixTask"
+    }
   ],
   "contributions": [
     {
+      "id": "Version-WIX-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionWixTask"
+      }
+    }, {
       "id": "Version-APPX-Task",
       "type": "ms.vss-distributed-task.task",
       "targets": [
