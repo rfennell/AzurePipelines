@@ -1,0 +1,93 @@
+{
+  "id": "4578fa22-6039-4d83-90e0-3e12f68d6b26",
+  "name": "VersionDotNetCoreAssemblies",
+  "friendlyName": "Version .NET Core Assemblies",
+  "description": "Applies a version to a .NET Core assembly via the .cspro files based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
+     "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Version-Assemblies-and-Packages-Tasks/)",
+ "category": "Build",
+  "visibility": [
+                "Build",
+                "Release"
+                ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 2,
+    "Patch": 0
+  },
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    },
+    {
+      "name": "output",
+      "displayName": "Output",
+      "isExpanded": false
+    }
+  ],
+   "inputs": [
+      {
+         "name": "Path",
+         "type": "string",
+         "label": "Source folder",
+         "defaultValue": "$(Build.SourcesDirectory)",
+         "required": true,
+         "helpMarkDown": "Source folder for assemblies files, can be root as it will find all files recursively"
+      },
+      {
+         "name": "VersionNumber",
+         "type": "string",
+         "label": "Version Number",
+         "defaultValue": "$(Build.BuildNumber)",
+         "required": true,
+         "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000.0' format"
+      },
+      {
+      "name": "VersionRegex",
+      "type": "string",
+      "label": "Regex Filter to extract build number",
+      "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
+      "required": true,
+      "helpMarkDown": "Regular expression filter to get build number from the build name.",
+      "groupName":"advanced"
+    },
+      {
+      "name": "FilenamePattern",
+      "type": "string",
+      "label": "Filename Pattern",
+      "defaultValue": ".csproj",
+      "required": true,
+      "helpMarkDown": "The filename pattern to update.",
+      "groupName":"advanced"
+    },
+     {
+      "name": "Field",
+      "type": "string",
+      "label": "The version field to update",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The version field to update, if blank all version fields are updated usually <version>1.1.1.1</version>.",
+      "groupName":"advanced"
+    },
+      {
+      "name": "OutputVersion",
+      "type": "string",
+      "label": "Version number used variable name",
+      "defaultValue": "OutputedVersion",
+      "required": true,
+      "helpMarkDown": "The actual version number extracted and used from the build number.",
+      "groupName":"output"
+    }
+      
+   ],
+  "minimumAgentVersion": "1.82.0",
+   "instanceNameFormat": "Version .NET Core Assemblies",
+  "execution": {
+     "Node": {
+       "target": "ApplyVersionToAssemblies.js",
+       "argumentFormat": ""
+     }
+  }
+}

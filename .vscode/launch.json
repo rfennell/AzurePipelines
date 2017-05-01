@@ -3,12 +3,23 @@
     "configurations": 
     [ 
         {
-            "name": "PowerShell",
+             "type": "node",
+            "request": "launch",
+            "name": "Node - VersionDotNetCoreAssembliesTask",
+            "program": "${workspaceRoot}/Extensions/Versioning/VersionDotNetCoreAssembliesTask/ApplyVersionToAssemblies.js",
+            "cwd": "${workspaceRoot}"
+        },
+        {
+            "name": "PowerShell - all tests",
             "type": "PowerShell",
             "request": "launch",
             "program": "${workspaceRoot}/Tests/Invoke-Tests.ps1"
-            // Or to run the current file
-            // "program": "${file}"
+        },
+        {
+            "name": "PowerShell - current file",
+            "type": "PowerShell",
+            "request": "launch",
+            "program": "${file}"
         }
     ]
 }
