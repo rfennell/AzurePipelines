@@ -86,7 +86,7 @@
    "instanceNameFormat": "Version .NET Core Assemblies",
   "execution": {
      "Node": {
-       "target": "$(currentDirectory)\\ApplyVersionToAssemblies.js",
+       "target": "ApplyVersionToAssemblies.js",
        "argumentFormat": ""
      }
   }
