@@ -3,7 +3,7 @@
         "target": "ES6",
         "module": "commonjs",
          "watch": false,
-         "outDir": "../VersionAssembliesTask/",
+         "outDir": "../VersionDotNetCoreAssembliesTask/",
          "sourceMap":  true
      },
     "exclude": [

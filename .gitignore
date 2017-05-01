@@ -200,5 +200,5 @@ Tests/Extensions/StyleCopTask/logs
 
 # Exclusions for generated node.js for Node extensions
 Extensions/XplatGenerateReleaseNotes/XPlatGenerateReleaseNotesTask/*.js
-Extensions/Versioning/VersionAssembliesTask/*.js
-Extensions/Versioning/VersionAssembliesTask/*.js.map
+Extensions/Versioning/VersionDotNetCoreAssembliesTask/*.js
+Extensions/Versioning/VersionDotNetCoreAssembliesTask/*.js.map

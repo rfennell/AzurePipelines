@@ -6,7 +6,7 @@
              "type": "node",
             "request": "launch",
             "name": "Node",
-            "program": "${workspaceRoot}/Extensions/Versioning/VersionAssembliesTask/ApplyVersionToAssemblies.js",
+            "program": "${workspaceRoot}/Extensions/Versioning/VersionDotNetCoreAssembliesTask/ApplyVersionToAssemblies.js",
             "cwd": "${workspaceRoot}"
         },
         {
