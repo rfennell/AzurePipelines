@@ -1,0 +1,85 @@
+{
+  "id": "fd2ef332-9676-4e8f-8e95-b22be61ec9dd",
+  "name": "VersionWix",
+  "friendlyName": "Version Wix manifest",
+  "description": "Applies a version to a Wix manifest based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
+    "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Version-Assemblies-and-Packages-Tasks/)",
+ "category": "Build",
+  "visibility": [
+                "Build",
+                "Release"
+                ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 1,
+    "Patch": 1
+  },
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    },
+    {
+      "name": "output",
+      "displayName": "Output",
+      "isExpanded": false
+    }
+  ],
+    "inputs": [
+      {
+         "name": "Path",
+         "type": "string",
+         "label": "Source folder",
+         "defaultValue": "$(Build.SourcesDirectory)",
+         "required": true,
+         "helpMarkDown": "Source folder for Wix files, can be root as it will find all files recursively"
+      },
+       {
+         "name": "File",
+         "type": "string",
+         "label": "Include file",
+         "defaultValue": "InstallerVersion.wxi",
+         "required": true,
+         "helpMarkDown": "The name of include file contaong the version"
+      },
+      {
+         "name": "VersionNumber",
+         "type": "string",
+         "label": "Version Number",
+         "defaultValue": "$(Build.BuildNumber)",
+         "required": true,
+         "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000.0' format"
+      }
+        ,
+    {
+      "name": "VersionRegex",
+      "type": "string",
+      "label": "Regex Filter",
+      "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
+      "required": true,
+      "helpMarkDown": "Regular expression filter build number from name.",
+      "groupName":"advanced"
+    },
+      {
+      "name": "OutputVersion",
+      "type": "string",
+      "label": "Version number used variable name",
+      "defaultValue": "OutputedVersion",
+      "required": true,
+      "helpMarkDown": "The actual version number extracted and used from the build number.",
+      "groupName":"output"
+    }
+      
+   ],
+  "minimumAgentVersion": "1.82.0",
+  "instanceNameFormat": "Version Wix",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\ApplyBuildVersionToWix.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}

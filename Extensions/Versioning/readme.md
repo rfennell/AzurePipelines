@@ -13,12 +13,15 @@ V1.10.x - Fixed file encoding issue
 V1.11.x - Allows a filename pattern to be entered as a parameter for Assembly Versioning
 V1.12.x - Added versioning of Sharepoint Addin App Manifest
 V1.13.x - Added support for SQL2016 and VS2017 to DacPac task
-V1.14.x - Filtered DacPac task to not version master or msdb DacPacs.
+V1.14.x - DAC pack exclusing fixed
+V1.15.x - Added cross platform support for assebmly versioning
+          Added WIX versioning
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of 
 
 * VersionAssemblies - sets the version in the assemblyinfo.cs or .vb (used pre build)
+* VersionDotNetCoreAssemblies - sets the version in the .csproj (used pre build)
 * VersionAPPX - sets the version in the Package.appxmanifest (used pre build)
 * VersionVSIX - sets the version in the source.extension.vsixmanifest (used pre build)
 * VersionDacpac - sets the version in a SQL DACPAC (used post build)
@@ -31,7 +34,7 @@ All these tasks take at least two parameters, which are both defaulted
 * [Advanced] Version Regex: The filter used to extract the version number from the build. Default to '\d+\.\d+\.\d+\.\d+'
 * [Output] OutputVersion: Outputs the actual version number extracted from build number. 
 
-The Assembly versioner also takes the following Advanced option
+The Assembly & .NEt Core versioner also takes the following Advanced option
 
 * [Advanced] Field: The name of the version field to update, if blank updates all. Default is empty
 

@@ -118,7 +118,7 @@ export function getRelease(vstsinstance: string, teamproject: string, encodedPat
       method: 'GET',
       headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` },
       url: `${fixRmUrl(vstsinstance)}/${teamproject}/_apis/Release/releases/${releaseId}`,
-      qs: { 'api-version': '3.2-preview.1' }
+      qs: { 'api-version': '3.1-preview.1' }
     };
     logInfo(`Getting the details of release ${releaseId}`)
     request(options, function (error, response, body) {
@@ -136,7 +136,7 @@ export function getWorkItemBetweenReleases(vstsinstance: string,teamproject: str
       method: 'GET',
       headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}`},
       url: `${fixRmUrl(vstsinstance)}/${teamproject}/_apis/Release/releases/${releaseId}/workitems?baseReleaseId=${compareId}&%24top=250`,
-      qs: { 'api-version': '3.2-preview.1' }
+      qs: { 'api-version': '3.1-preview.1' }
     };
     logInfo(`Getting the workitems associated between release ${releaseId} and release ${compareId}`)
     request(options, function (error, response, body) {
@@ -171,7 +171,7 @@ export function getCommitsBetweenCommitIds (
             method: 'POST',
             headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` ,'Content-Type':'application/json'},
             url: `${vstsinstance}/${teamproject}/_apis/git/repositories/${repositoryId}/commitsBatch`,
-            qs: { 'api-version': '3.2-preview.1' },
+            qs: { 'api-version': '3.1' },
             json : JSON.parse(data) 
         };
         

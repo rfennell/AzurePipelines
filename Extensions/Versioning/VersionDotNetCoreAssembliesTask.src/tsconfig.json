@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "commonjs",
+         "watch": false,
+         "outDir": "../VersionDotNetCoreAssembliesTask/",
+         "sourceMap":  true
+     },
+    "exclude": [
+        "node_modules"
+    ]
+}
