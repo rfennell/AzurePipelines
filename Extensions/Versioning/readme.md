@@ -26,6 +26,8 @@ A set of tasks based on the versioning sample script to version tamping assembli
 * VersionVSIX - sets the version in the source.extension.vsixmanifest (used pre build)
 * VersionDacpac - sets the version in a SQL DACPAC (used post build)
 * VersionNuspec - sets the version in a Nuget Nuspec file (used pre packing)
+* VersionSharePoint - sets the version in a SharePoint 2013/2016/O365 Add-In 
+* VersionWix - sets the version in a Wix Project
 
 All these tasks take at least two parameters, which are both defaulted
 
