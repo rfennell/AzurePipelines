@@ -10,24 +10,39 @@
 # "Build HelloWorld_1.2.15019.1"
 # This script would then apply version 1.2.15019.1 to your VSIX.
 
-# Enable -Verbose option
 [CmdletBinding()]
+# Enable -Verbose option
 param (
-
-    [Parameter(Mandatory)]
-    [String]$Path,
-
-    [Parameter(Mandatory)]
-    [string]$VersionNumber,
-
-    [string]$VersionRegex,
-
-    $outputversion
+   [String]$Path,
+   [String]$File,
+   [string]$VersionNumber,
+   [string]$VersionRegex,
+   $outputversion
 )
+
+function ReplaceVersion {
+    [CmdletBinding()]
+    param (
+        [parameter(ValueFromPipeline)]
+        $contents,
+        $name,
+        $value
+    )
+
+    # regex for a single digit replace
+    $regex = "<\?define\s+{0}\s+=\s+\""\d+\""\s+\?>"
+    if ([regex]::IsMatch($value , "\d+\.\d+\.\d+\.\d+"))
+    {
+        # we need to handle a full version
+        $regex = "<\?define\s+{0}\s+=\s+\""\d+\.\d+\.\d+\.\d+\""\s+\?>"
+    }
+
+    return $contents -replace  [string]::Format($regex, $name),  [string]::Format("<?define {0} = ""{1}"" ?>", $name, $value)
+}
+
 
 # Set a flag to force verbose as a default
 $VerbosePreference ='Continue' # equiv to -verbose
-
 
 # Make sure path to source code directory is available
 if (-not (Test-Path $Path))
@@ -36,6 +51,7 @@ if (-not (Test-Path $Path))
     exit 1
 }
 Write-Verbose "Source Directory: $Path"
+Write-Verbose "Target File $file"
 Write-Verbose "Version Number/Build Number: $VersionNumber"
 Write-Verbose "Version Filter: $VersionRegex"
 Write-verbose "Output: Version Number Parameter Name: $outputversion"
@@ -59,24 +75,34 @@ switch($VersionData.Count)
 # AppX will not allow leading zeros, so we strip them out
 $extracted = [string]$VersionData[0]
 $parts = $extracted.Split(".")
-$NewVersion =  [string]::Format("{0}.{1}.{2}.{3}" ,[int]$parts[0],[int]$parts[1],[int]$parts[2],[int]$parts[3])
+
+if ($parts.Count -ne 4)
+{
+    Write-Error "Could not find the expected 4 parts in version number data in $VersionNumber."
+    exit 1
+}
+
+$versionData = @{MajorVersion = [int]$parts[0]; MinorVersion = [int]$parts[1];BuildNumber = [int]$parts[2];Revision = [int]$parts[3];FullVersion =  [string]::Format("{0}.{1}.{2}.{3}" ,[int]$parts[0],[int]$parts[1],[int]$parts[2],[int]$parts[3])}
 
 Write-Verbose "Version: $NewVersion"
 
 # Apply the version to the assembly property files
-$files = gci $path -recurse -include "Package.appxmanifest" 
+$files = gci $path -recurse -include $file 
 if($files)
 {
     Write-Verbose "Will apply $NewVersion to $($files.count) files."
 
     foreach ($file in $files) {
-        $xml = [xml](Get-Content($file))
+        # I would like to treat this an XML file, but can't see to handle the XmlProcessingInstructions, so using simple replace
+        $fileContents = Get-Content -path $file -raw
         attrib $file -r
 
-        $node = $xml.Package.Identity
-        $node.Version = $NewVersion.ToString()
-
-        $xml.Save($file)
+        foreach ($key in $VersionData.Keys)
+        {
+            $fileContents = $fileContents | ReplaceVersion -name $key -value $VersionData.$key
+        }
+    
+        $fileContents | Set-Content($file)
         Write-Verbose "$file - version applied"
     }
     Write-Verbose "Set the output variable '$outputversion' with the value $NewVersion"
@@ -86,3 +112,5 @@ else
 {
     Write-Warning "Found no files."
 }
+
+

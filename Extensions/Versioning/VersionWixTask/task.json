@@ -34,7 +34,15 @@
          "label": "Source folder",
          "defaultValue": "$(Build.SourcesDirectory)",
          "required": true,
-         "helpMarkDown": "Source folder for APPX files, can be root as it will find all files recursively"
+         "helpMarkDown": "Source folder for Wix files, can be root as it will find all files recursively"
+      },
+       {
+         "name": "File",
+         "type": "string",
+         "label": "Include file",
+         "defaultValue": "InstallerVersion.wxi",
+         "required": true,
+         "helpMarkDown": "The name of include file contaong the version"
       },
       {
          "name": "VersionNumber",
@@ -49,7 +57,7 @@
       "name": "VersionRegex",
       "type": "string",
       "label": "Regex Filter",
-      "defaultValue": "(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])(\\.(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])){3}",
+      "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
       "required": true,
       "helpMarkDown": "Regular expression filter build number from name.",
       "groupName":"advanced"
