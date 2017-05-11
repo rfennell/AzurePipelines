@@ -64,10 +64,9 @@
   "minimumAgentVersion": "1.82.0",
   "instanceNameFormat": "XmlFileUpdateTask",
   "execution": {
-    "PowerShell": {
-      "target": "$(currentDirectory)\\FileUpdate.ps1",
-      "argumentFormat": "",
-      "workingDirectory": "$(currentDirectory)"
-    }
+   "Node": {
+       "target": "FileUpdate.js",
+       "argumentFormat": ""
+     }
   }
 }

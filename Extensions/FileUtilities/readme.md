@@ -5,6 +5,7 @@ Releases
 2.1 Added replacing InnerText of XML nodes as well as attributes in XML task
     Added support for multi-files on XML tasl
 2.2 Made the location of the local copy of the artifact configurable
+3.0 Converted the XML Task to Node from PowerShell to make it cross platform
 
 
 This set of tasks perform file copy related actions

@@ -9,6 +9,13 @@
             "program": "${workspaceRoot}/Extensions/Versioning/VersionDotNetCoreAssembliesTask/ApplyVersionToAssemblies.js",
             "cwd": "${workspaceRoot}"
         },
+         {
+             "type": "node",
+            "request": "launch",
+            "name": "Node - XmlFileTask",
+            "program": "${workspaceRoot}/Extensions/FileUtilities/XmlFileUpdateTask.src/FileUpdate.ts",
+            "outFiles": ["${workspaceRoot}/Extensions/FileUtilities/XmlFileUpdateTask/*.js"]
+          },
         {
             "name": "PowerShell - all tests",
             "type": "PowerShell",

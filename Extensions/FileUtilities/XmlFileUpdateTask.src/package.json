@@ -1,0 +1,23 @@
+{
+  "name": "XmlFileUpdateTask",
+  "description": "XmlFileUpdateTask",
+  "main": "XmlFileUpdateTask.js",
+  "dependencies": {
+    "Buffer": "^0.0.0",
+    "fs": "^0.0.1-security",
+    "request": "^2.80.0",
+    "tsd": "^0.6.5",
+    "vsts-task-lib": "^1.1.0",
+    "xmldom": "^0.1.27",
+    "xpath": "^0.0.24"
+  },
+  "devDependencies": {
+    "@types/node": "^7.0.13",
+    "gulp": "^3.9.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Richard Fennell",
+  "license": "MIT"
+}
