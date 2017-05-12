@@ -36,7 +36,7 @@ All these tasks take at least two parameters, which are both defaulted
 * [Advanced] Version Regex: The filter used to extract the version number from the build. Default to '\d+\.\d+\.\d+\.\d+'
 * [Output] OutputVersion: Outputs the actual version number extracted from build number. 
 
-The Assembly & .NEt Core versioner also takes the following Advanced option
+The Assembly & .NET Core versioner also takes the following Advanced option
 
 * [Advanced] Field: The name of the version field to update, if blank updates all. Default is empty
 
@@ -44,7 +44,7 @@ The DACPAC versioner also takes the following Advanced option
 
 * ToolPath: The path to the folder containing the files Microsoft.SqlServer.Dac.dll and Microsoft.SqlServer.Dac.Extensions.dll. This should be used if these files are not in the default location either C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120 or C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120"
 
-The VSIX versioner also tasks the following parameters
+The VSIX versioner also takes the following parameters
 
 * If the versionumber parameter is treated as a version number or a build number (from which the version needs to be extracted)
 * If the discovered version should be trimmed to 2 digit field
