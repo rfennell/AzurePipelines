@@ -72,17 +72,21 @@ $releasedefid = $env:RELEASE_DEFINITIONID
 $buildid = $env:BUILD_BUILDID
 $defname = $env:BUILD_DEFINITIONNAME
 $buildnumber = $env:BUILD_BUILDNUMBER
+$currentStageName = $env:RELEASE_ENVIRONMENTNAME
 
-Write-Verbose "collectionUrl = [$env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI]"
-Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
-Write-Verbose "releaseid = [$env:RELEASE_RELEASEID]"
-Write-Verbose "releasedefid = [$env:RELEASE_DEFINITIONID]"
-Write-Verbose "stageName = [$env:RELEASE_ENVIRONMENTNAME]"
+
+Write-Verbose "collectionUrl = [$collectionUrl]"
+Write-Verbose "teamproject = [$teamproject]"
+Write-Verbose "releaseid = [$releaseid]"
+Write-Verbose "releasedefid = [$releasedefid]"
+Write-Verbose "stageName = [$currentStageName]]"
 Write-Verbose "overrideStageName = [$overrideStageName]"
-Write-Verbose "buildid = [$env:BUILD_BUILDID]"
-Write-Verbose "defname = [$env:BUILD_DEFINITIONNAME]"
-Write-Verbose "buildnumber = [$env:BUILD_BUILDNUMBER]"
+Write-Verbose "buildid = [$buildid]"
+Write-Verbose "defname = [$defname]"
+Write-Verbose "buildnumber = [$buildnumber]"
 Write-Verbose "outputVariableName = [$outputvariablename]"
+Write-Verbose "generateForOnlyPrimary = [$generateForOnlyPrimary]"
+Write-Verbose "generateForCurrentRelease = [$generateForCurrentRelease]"
 
 
 if ( [string]::IsNullOrEmpty($releaseid))
@@ -96,17 +100,19 @@ if ( [string]::IsNullOrEmpty($releaseid))
 	Write-Verbose "In Release mode"
  
     $releases = @()
+    $allReleases = @()
     if ($generateForCurrentRelease -eq $true)
     {
         Write-Verbose "Only processing current release"
         # we only need the current release
         $releases += Get-Release -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
+        $allReleases += $releases # add this for backwards support
     } else 
     {
         # work out the name of the stage to compare the release against
         if ( [string]::IsNullOrEmpty($overrideStageName))
         {
-            $stageName = $env:RELEASE_ENVIRONMENTNAME
+            $stageName = $currentStageName
         } else 
         {
             $stageName = $overrideStageName
@@ -114,20 +120,25 @@ if ( [string]::IsNullOrEmpty($releaseid))
 
         Write-Verbose "Processing all releases back to the last successful release in stage [$stageName]"
            
-        $allRelease = Get-ReleaseByDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -releasedefid $releasedefid -usedefaultcreds $usedefaultcreds
-        #find the set of release since the last good release of a given stage
-        foreach ($r in $allRelease)
+        $allReleases = Get-ReleaseByDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -releasedefid $releasedefid -usedefaultcreds $usedefaultcreds
+
+        # find the set of release since the last good release of a given stage
+        # we filter for any release newer than the current release 
+        # we assume the releases are ordered by date
+        foreach ($r in $allReleases | Where-Object { $_.id -le $releaseid })
         {
             if ($r.id -eq $releaseid )
             {
                 # we always add the current release that trigger the task
+                Write-Verbose "   Adding release [$r.id] to list"
                 $releases += $r
             } else 
             {
-                # add all the past releases where the this stahe ws not a success
+                # add all the past releases where the this stage was not a success
                 $stage = $r.environments | Where-Object { $_.name -eq $stageName -and $_.status -ne "succeeded" }
                 if ($stage -ne $null)
                 {
+                    Write-Verbose "   Adding release [$r.id] to list"
                     $releases += $r
                 } else {
                     #we have found a successful relase in this stage so quit
@@ -137,35 +148,48 @@ if ( [string]::IsNullOrEmpty($releaseid))
         }
     }
     
-    Write-Verbose "Discovered [$($releases.Count)] releases for processing"
+    Write-Verbose "Discovered [$($releases.Count)] releases for processing after checking a total of [$($allReleases.Count)] releases"
 
-    # we put all the builds into a hastable associated with their release
-    $buildsList = @{}
-    foreach ($release in $releases)
+    # we put all the builddefs into an array
+    $buildsDefinitionList = @()
+    
+    # get our boundary releases, we have to force it to be an array in case there is a single entry
+    $currentRelease = @($releases)[0]
+    $lastSuccessfulRelease = @($releases)[-1]
+  
+    # find the list of artifacts
+    foreach ($artifact in  $currentRelease.artifacts)
     {
-        Write-Verbose "Processing the release [$($release.id)]"
-        foreach ($artifact in (Get-BuildReleaseArtifacts -tfsUri $collectionUrl -teamproject $teamproject -release $release -usedefaultcreds $usedefaultcreds))
+        if (($generateForOnlyPrimary -eq $true -and $artifact.isPrimary -eq $true) -or ($generateForOnlyPrimary -eq $false))
         {
-            if (($generateForOnlyPrimary -eq $true -and $artifact.isPrimary -eq $true) -or ($generateForOnlyPrimary -eq $false))
+            if ($artifact.type -eq 'Build')
             {
-                if ($artifact.type -eq 'Build')
-                {
-					if (($buildsList.ContainsKey($artifact.definitionReference.version.id)) -eq $false)
-					{
-						Write-Verbose "The artifact [$($artifact.alias)] is a VSTS build, will attempt to find associated commits/changesets and work items"
-						$b = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $artifact.definitionReference.version.id -usedefaultcreds $usedefaultcreds
-						$buildsList.Add($artifact.definitionReference.version.id , $b)
-					} else
-					{
-						Write-Verbose "The artifact [$($artifact.alias)] is a VSTS build, but already in the build list is is being skipped"
-					}
-				} else 
-                {
-                    Write-Verbose "The artifact [$($artifact.alias)] is a [$($artifact.type)], will be skipped as has no associated commits/changesets and work items"
-                }
+                Write-Verbose "The artifact [$($artifact.alias)] is a VSTS build, will attempt to find associated commits/changesets and work items"
+                $buildsDefinitionList +=($artifact.definitionReference.definition.id)
             } else 
             {
-            Write-Verbose "The artifact [$($artifact.alias)] is being skipped as it is not the primary artifact"
+                Write-Verbose "The artifact [$($artifact.alias)] is a [$($artifact.type)], will be skipped as has no associated commits/changesets and work items"
+            }
+        }
+    }
+
+    # we put all the builds into a hashtable associated with their release
+    $buildsList = @{}
+
+    Write-Verbose "Found $($buildsDefinitionList.Count) build artifacts to check for builds that fall in range"
+
+    foreach ($defId in $buildsDefinitionList)
+    {
+        Write-Verbose "Checking build artifacts for the Build Defintion ID $($defId)"
+        $lastBuild = $currentRelease.artifacts | Where-Object { $_.definitionReference.definition.id -eq $defId} 
+        $firstBuild = $lastSuccessfulRelease.artifacts | Where-Object { $_.definitionReference.definition.id -eq $defId} 
+        foreach ($build in Get-BuildsByDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -buildDefid $defId -usedefaultcreds $usedefaultcreds)
+        {
+            # if build in build number range and completed
+            if ($build.id -le $lastBuild.definitionReference.version.id -and ($build.id -gt $firstBuild.definitionReference.version.id -or $build.id -eq $lastBuild.definitionReference.version.id) -and $build.status -eq "completed")
+            {
+				$b = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -usedefaultcreds $usedefaultcreds
+				$buildsList.Add($build.id , $b)
             }
         }
     }
