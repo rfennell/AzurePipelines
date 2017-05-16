@@ -28,8 +28,8 @@ export function writeVariable (variableName : string ,value : string)
      if (variableName){
         logInfo(`Writing output variable ${variableName}`)
         // the newlines cause a problem only first line shown
-        // so remove them
-        var newlineRemoved = value.split("\n").join("  ");
+        // so replace them 
+        var newlineRemoved = value.replace(/\n/gi, '`n')
         tl.setVariable(variableName, newlineRemoved );
     }
 }
