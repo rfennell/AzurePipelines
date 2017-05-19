@@ -1,5 +1,4 @@
 import tl = require("vsts-task-lib/task");
-import Q  = require("q");
 
 import { encodePat, 
          getRelease,
