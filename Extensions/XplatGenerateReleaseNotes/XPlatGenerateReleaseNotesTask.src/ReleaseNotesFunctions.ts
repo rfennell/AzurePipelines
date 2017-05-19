@@ -26,22 +26,23 @@ export function getPrimaryBuildIdFromRelease(details) {
     return id;
 }
 
-export function getBuild(vstsinstance: string, teamproject: string, encodedPat: string, buildId, callback)  {
-    var options = {
-      method: 'GET',
-      headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` },
-      url: `${vstsinstance}/${teamproject}/_apis/Build/Builds/${buildId}`,
-      qs: { 'api-version': '2.0' }
-    };
-    logInfo(`Getting the details of build ${buildId}`)
-    request(options, function (error, response, body) {
-      if (error) {
-        throw new Error(error);
-      } 
-      var build = JSON.parse(body);
-      return  callback(build)
+export function getBuild(vstsinstance: string, teamproject: string, encodedPat: string, buildId) : Promise<any>  {
+    return new Promise<any>((resolve, reject) => {        
+        var options = {
+        method: 'GET',
+        headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` },
+        url: `${vstsinstance}/${teamproject}/_apis/Build/Builds/${buildId}`,
+        qs: { 'api-version': '2.0' }
+        };
+        logInfo(`Getting the details of build ${buildId}`)
+        request(options, function (error, response, body) {
+            if (error) {
+                reject(error)
+            } 
+            var build = JSON.parse(body);
+                resolve(build)
+        });
     });
-
 }
 
 export function  getBuildDefinition(vstsinstance: string, teamproject: string, encodedPat: string, buildDefId, callback)  {
@@ -63,90 +64,100 @@ export function  getBuildDefinition(vstsinstance: string, teamproject: string, e
 }
 
 
-export function getPastSuccessfulRelease(vstsinstance, teamproject, encodedPat, currentReleaseDetails, stage,  callback)
+export function getPastSuccessfulRelease(vstsinstance, teamproject, encodedPat, currentReleaseDetails, stage) : Promise<any>
 {
-    //get all releases 
-    //loop back to find lass  "succeeded"
-    //get this build
-    var options = {
-      method: 'GET',
-      headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` },
-      url: `${fixRmUrl(vstsinstance)}/${teamproject}//_apis/release/releases?definitionId=${currentReleaseDetails.releaseDefinition.id}&$Expand=environments,artifacts&queryOrder=descending`,
-      qs: { 'api-version': '3.0-preview' }
-    };
-    logInfo(`Getting the details of last release using definiton '${currentReleaseDetails.releaseDefinition.name}' that was successful in environment '${stage}' `)
-    request(options, function (error, response, body) {
-      if (error) {
-        throw new Error(error);
-      } 
-      var releases = JSON.parse(body);
-      var releaseId = 0;
-      var earliestId = 0;
-      
-      releases.value.forEach(release => {
-          release.environments.forEach(environment => {
-              // make sure we check that we are not seeing the current active release 
-              // we have to trap to see if we have found a release ID as there is no break; out of foreach in Javascript
-              if ((releaseId === 0) && (release.id < currentReleaseDetails.id) && (environment.name === stage) && (environment.status ==="succeeded"))
-              {
-                 releaseId = release.id;
-              }
-              // we need to check if there was no successful release
-              if ((earliestId ===0) || (release.id < earliestId))
-              {
-                  earliestId = release.id;
-              }
-          });
-      });
+    return new Promise<any>((resolve, reject) => {
+        //get all releases 
+        //loop back to find lass  "succeeded"
+        //get this build
+        var options = {
+        method: 'GET',
+        headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` },
+        url: `${fixRmUrl(vstsinstance)}/${teamproject}//_apis/release/releases?definitionId=${currentReleaseDetails.releaseDefinition.id}&$Expand=environments,artifacts&queryOrder=descending`,
+        qs: { 'api-version': '3.0-preview' }
+        };
+        logInfo(`Getting the details of last release using definiton '${currentReleaseDetails.releaseDefinition.name}' that was successful in environment '${stage}' `)
+        request(options, function (error, response, body) {
+        if (error) {
+            reject(error);
+        } 
+        var releases = JSON.parse(body);
+        var releaseId = 0;
+        var earliestId = 0;
+        
+        for(let release of releases.value){
+            for(let environment of release.environments){
+                // make sure we check that we are not seeing the current active release 
+                // we have to trap to see if we have found a release ID as there is no break; out of foreach in Javascript
+                if ((releaseId === 0) && (release.id < currentReleaseDetails.id) && (environment.name === stage) && (environment.status ==="succeeded"))
+                {
+                    releaseId = release.id;
+                }
+                // we need to check if there was no successful release
+                if ((earliestId ===0) || (release.id < earliestId))
+                {
+                    earliestId = release.id;
+                }
+            }
+        }
 
-      // no valid release so we will use the oldest release
-      if (releaseId ===0)
-      {
-          logInfo(`Can find not successful release to the request stage, using first release as baseline`)
-          releaseId = earliestId;
-      }
-      getRelease(vstsinstance, teamproject, encodedPat, releaseId, function (details)
-      {
-          return callback(details);
-      });
-      
+        // no valid release so we will use the oldest release
+        if (releaseId ===0)
+        {
+            logInfo(`Can find not successful release to the request stage, using first release as baseline`)
+            releaseId = earliestId;
+        }
+        resolve(getRelease(vstsinstance, teamproject, encodedPat, releaseId));
+        
+        });
     });
 }
 
-export function getRelease(vstsinstance: string, teamproject: string, encodedPat: string, releaseId, callback)  {
-    var options = {
-      method: 'GET',
-      headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` },
-      url: `${fixRmUrl(vstsinstance)}/${teamproject}/_apis/Release/releases/${releaseId}`,
-      qs: { 'api-version': '3.1-preview.1' }
-    };
-    logInfo(`Getting the details of release ${releaseId}`)
-    request(options, function (error, response, body) {
-      if (error) {
-        throw new Error(error);
-      } 
-      var release = JSON.parse(body);
-      return  callback(release)
+export function getRelease(vstsinstance: string, teamproject: string, encodedPat: string, releaseId) : Promise<any>  {
+    return new Promise<any>((resolve, reject) => {
+        var options = {
+        method: 'GET',
+        headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` },
+        url: `${fixRmUrl(vstsinstance)}/${teamproject}/_apis/Release/releases/${releaseId}`,
+        qs: { 'api-version': '3.1-preview.1'}
+        };
+        logInfo(`Getting the details of release ${releaseId}`)
+        request(options, function (error, response, body) {
+            if (error) {
+                logInfo(`Error in getRelease: ${options.url}`)
+                reject(error)
+            }
+            try{          
+                var release = JSON.parse(body);
+                resolve(release)
+            }catch(e){
+                logInfo(`Error in parsing the response from: ${options.url}`)
+                logInfo(`ResponseBody: ${body}`)
+                reject(e)
+            }
+        });
     });
 
 }
 
-export function getWorkItemBetweenReleases(vstsinstance: string,teamproject: string, encodedPat: string, releaseId, compareId, callback)  {
-    var options = {
-      method: 'GET',
-      headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}`},
-      url: `${fixRmUrl(vstsinstance)}/${teamproject}/_apis/Release/releases/${releaseId}/workitems?baseReleaseId=${compareId}&%24top=250`,
-      qs: { 'api-version': '3.1-preview.1' }
-    };
-    logInfo(`Getting the workitems associated between release ${releaseId} and release ${compareId}`)
-    request(options, function (error, response, body) {
-      if (error) {
-        throw new Error(error);
-      } 
-      var workItems = JSON.parse(body);
-      return  callback(workItems.value)
+export function getWorkItemBetweenReleases(vstsinstance: string,teamproject: string, encodedPat: string, releaseId, compareId) : Promise<any>  {
+    return new Promise<any>((resolve, reject) => {
+        var options = {
+        method: 'GET',
+        headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}`},
+        url: `${fixRmUrl(vstsinstance)}/${teamproject}/_apis/Release/releases/${releaseId}/workitems?baseReleaseId=${compareId}&%24top=250`,
+        qs: { 'api-version': '3.1-preview.1' }
+        };
+        logInfo(`Getting the workitems associated between release ${releaseId} and release ${compareId}`)
+        request(options, function (error, response, body) {
+            if (error) {
+                reject(error)
+                throw new Error(error);
+            } 
+            var workItems = JSON.parse(body);
+            resolve(workItems.value);
+        });
     });
-
 }
 
 export function getCommitsBetweenCommitIds (
@@ -157,72 +168,73 @@ export function getCommitsBetweenCommitIds (
                              buildDefId,
                              repositoryId, 
                              currentSourceVersion, 
-                             compareSourceVersion, 
-                             callback)  {
+                             compareSourceVersion) : Promise<Array<any>>  {
 
-    logInfo(`Repository type ${repositoryType}`)          
+    return new Promise<any>((resolve, reject) => {
+        logInfo(`Repository type ${repositoryType}`)          
 
-    if (repositoryType ==="TfsGit")
-    {                
-        // the item and compare are note the obvious way around, in the rest of the task we have current and compare to an old version
-        // this call takes an old version as the base and compares later versions, hence the revise
-        var data =   `{"itemPath":"","user":null,"$top":250,"itemVersion":{"versionType":"commit","version":"${compareSourceVersion}"},"compareVersion":{"versionType":"commit","version":"${currentSourceVersion}"}}`
-        var options = {
-            method: 'POST',
-            headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` ,'Content-Type':'application/json'},
-            url: `${vstsinstance}/${teamproject}/_apis/git/repositories/${repositoryId}/commitsBatch`,
-            qs: { 'api-version': '3.1' },
-            json : JSON.parse(data) 
-        };
-        
-            logInfo(`Getting the commits between commit ID ${currentSourceVersion} and ${compareSourceVersion} from repo ${repositoryId}`)
-            request(options, function (error, response, body) {
-            if (error) {
-                throw new Error(error);
-            } 
-            return  callback(body.value)
-        });
-    } else 
-    {
-        // for TfVC it is more complex
-        // first we need to get the build definition
-         getBuildDefinition(vstsinstance, teamproject, encodedPat,buildDefId , function(details)
-         {
-             // we need to extract the active mappings and check for changes on each of
-             // these paths in turn. The VSTS UI uses a non-REST call that allows an
-             // array to be passed, but this does not seem to be available to third parties
+        if (repositoryType ==="TfsGit")
+        {                
+            // the item and compare are note the obvious way around, in the rest of the task we have current and compare to an old version
+            // this call takes an old version as the base and compares later versions, hence the revise
+            var data =   `{"itemPath":"","user":null,"$top":250,"itemVersion":{"versionType":"commit","version":"${compareSourceVersion}"},"compareVersion":{"versionType":"commit","version":"${currentSourceVersion}"}}`
+            var options = {
+                method: 'POST',
+                headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` ,'Content-Type':'application/json'},
+                url: `${vstsinstance}/${teamproject}/_apis/git/repositories/${repositoryId}/commitsBatch`,
+                qs: { 'api-version': '3.1' },
+                json : JSON.parse(data) 
+            };
+            
+                logInfo(`Getting the commits between commit ID ${currentSourceVersion} and ${compareSourceVersion} from repo ${repositoryId}`)
+                request(options, function (error, response, body) {
+                if (error) {
+                    reject(error)
+                } 
+                resolve(body.value)
+            });
+        } else 
+        {
+            // for TfVC it is more complex
+            // first we need to get the build definition
+            getBuildDefinition(vstsinstance, teamproject, encodedPat,buildDefId , function(details)
+            {
+                // we need to extract the active mappings and check for changes on each of
+                // these paths in turn. The VSTS UI uses a non-REST call that allows an
+                // array to be passed, but this does not seem to be available to third parties
 
-             var mappings =  []
-             JSON.parse(details.repository.properties.tfvcMapping).mappings.forEach(element => {
-                if(element.mappingType === "map")
-                {
-                    mappings.push(element.serverPath);
+                var mappings =  []
+                for(let element of JSON.parse(details.repository.properties.tfvcMapping).mappings){
+                    if(element.mappingType === "map")
+                    {
+                        mappings.push(element.serverPath);
+                    }
                 }
-             });  // foreach 
 
-             // Using this pattern http://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example?rq=1
-             var allDetails = [];
-              // as jajvascript functions are async, we have to put a count check in to 
-            // return when all the mappings are checked - kludge but best way I know of
-             var count =0;
-             mappings.forEach(function(mapping) {
-                getTfvcDetails(
-                   vstsinstance,
-                   teamproject,
-                   encodedPat,
-                   repositoryId,
-                   compareSourceVersion,
-                   currentSourceVersion,mapping, function(details) {
-                        count ++;
-                        allDetails.push.apply(allDetails, details);
-                        if (count === mappings.length)
-                        {
-                            return  callback(allDetails)
-                        }
-                });  // get details
-             });  // for each mapping`
-       });  // get build def 
-    } // if Git/Tfvc
+                // Using this pattern http://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example?rq=1
+                var allDetails = [];
+                // as jajvascript functions are async, we have to put a count check in to 
+                // return when all the mappings are checked - kludge but best way I know of
+                var count =0;
+                for(let mapping of mappings){
+                    getTfvcDetails(     
+                        vstsinstance,
+                        teamproject,
+                        encodedPat,
+                        repositoryId,
+                        compareSourceVersion,
+                        currentSourceVersion,mapping, function(details) {
+                                count ++;
+                                allDetails.push.apply(allDetails, details);
+                                if (count === mappings.length)
+                                {
+                                    resolve(allDetails)
+                                }
+                        });
+                }
+        });  // get build def 
+        } // if Git/Tfvc
+    });
 }
 
 
@@ -235,49 +247,51 @@ function getTfvcDetails(vstsinstance :string ,
                         mappings: string,
                         callback) {
             // the call parameters use inclusive bounds, we need to exclude the lower one
-            var fixedStartId = compareSourceVersion;// parseInt(compareSourceVersion)+1;
+            // The changesets are prefixed with C - needs to be removed.
+            var fixedStartId = compareSourceVersion.substring(1);// parseInt(compareSourceVersion)+1;
+            var currentChangesetId = currentSourceVersion.substring(1)
             var options = {
                     method: 'GET',
                     headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` ,'Content-Type':'application/json'},
-                    url: `${vstsinstance}/${teamproject}/_apis/tfvc/changesets?searchCriteria.fromId=${fixedStartId}&searchCriteria.toId=${currentSourceVersion}&searchCriteria.itemPath=${mappings}`,
+                    url: `${vstsinstance}/${teamproject}/_apis/tfvc/changesets?searchCriteria.fromId=${fixedStartId}&searchCriteria.toId=${currentChangesetId}&searchCriteria.itemPath=${mappings}&maxCommentLength=1000&$top=1000`,
                     qs: { 'api-version': '1.0' },
                 };
-                    logInfo(`Getting the differences between changeset with an ID greater than ${compareSourceVersion} up to and including ${currentSourceVersion} from repo ${repositoryId} for mapping ${mappings}`)
+                    logInfo(`Getting the differences between changeset with an ID greater than ${compareSourceVersion} up to and including ${currentChangesetId} from repo ${repositoryId} for mapping ${mappings}`)
                     request(options, function (error, response, body) {
                     if (error) {
                         throw new Error(error);
                     } 
                     var data = JSON.parse(body);
-                    logInfo(data);
                     return callback(data.value)
                 });
 }
                         
 
 
-export function getWorkItems(vstsinstance: string, encodedPat: string, ids, callback)  {
-    var options = {
-      method: 'GET',
-      headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` },
-      url: `${vstsinstance}/_apis/wit/workitems?ids=${ids}&api-version=1.0`,
-      qs: { 'api-version': '1.0' }
-    };
+export function getWorkItems(vstsinstance: string, encodedPat: string, ids) : Promise<any>  {
+    return new Promise<any>((resolve, reject) => {
+        var options = {
+        method: 'GET',
+        headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` },
+        url: `${vstsinstance}/_apis/wit/workitems?ids=${ids}&api-version=1.0`,
+        qs: { 'api-version': '1.0' }
+        };
 
-    if (ids)
-    {
-        logInfo(`Getting the workitem details for ${ids}`)
-        request(options, function (error, response, body) {
-        if (error) {
-            throw new Error(error);
-        } 
-        var workItems = JSON.parse(body);
-        return  callback(workItems.value)
-        });
-    } else {
-        logInfo(`No workitems requested for which to get details`)
-        return callback(null)
-    }
-
+        if (ids)
+        {
+            logInfo(`Getting the workitem details for ${ids}`)
+            request(options, function (error, response, body) {
+                if (error) {
+                    reject(error)
+                } 
+                var workItems = JSON.parse(body);
+                resolve(workItems.value)
+            });
+        } else {
+            logInfo(`No workitems requested for which to get details`)
+            resolve(null)
+        }
+    });
 }
 
 export function getTemplate(templateLocation : string,
@@ -314,12 +328,12 @@ export function processTemplate(template, workItems, commits, releaseDetails, co
 	    logInfo("Processing template")
 		 
       // create our work stack and initialise
-		  var modeStack = [];
-		  modeStack.push(Mode.BODY);
+        var modeStack = [];
+        modeStack.push(Mode.BODY);
 		
   		//process each line
       for (var index = 0; index < template.length; index++) {
-
+          logInfo("Processing Line: " + (index +1))
           var line = template[index];        
            
           // get the line change mode if any
@@ -389,7 +403,7 @@ export function processTemplate(template, workItems, commits, releaseDetails, co
                         break;
                       case Mode.CS:
                          // store the block and load the first item
-                         addStackItem (commits , modeStack, mode, index)
+                         addStackItem (commits, modeStack, mode, index)
                          if (modeStack[modeStack.length-1].BlockQueue.length > 0)
                          {
                              csdetail = modeStack[modeStack.length-1].BlockQueue.shift();  
@@ -410,6 +424,7 @@ export function processTemplate(template, workItems, commits, releaseDetails, co
                 }
             } else
             {
+                logInfo("Mode != BODY")
                 if (line.trim().length ===0)
                 {
                     // we have a blank line, we can't eval this
@@ -423,10 +438,14 @@ export function processTemplate(template, workItems, commits, releaseDetails, co
                       output +=emptySetText
                   } else 
                   {
+                      logInfo("Nothing to expand, just process the line")
                        // nothing to expand just process the line
                        var fixedline = fixline (line)
                        var processedLine = eval(fixedline);
-                       output += processedLine;
+                       var lines = processedLine.split('\r\n')
+                       for(var i = 0; i < lines.length; i ++){
+                            output += lines[i];
+                       }
                   }
                     // always add a line feed
                     output += "\n";
@@ -477,15 +496,14 @@ function addStackItem (
         index
     )
 {
-
     // Create a queue of the items
     var queue = []
     // add each item to the queue if we have any
     if (items)
     {
-      items.forEach(item => {
-        queue.push(item);
-      });
+        for(let item of items){
+            queue.push(item);
+        }      
     };
 
     logDebug (`${addSpace(modeStack.length +1)} Added ${queue.length} items to queue for ${mode}`)
