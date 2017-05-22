@@ -45,58 +45,79 @@ console.log(`Variable: Outputfile [${outputfile}]`);
 console.log(`Variable: OutputVariableName [${outputVariableName}]`);
 console.log(`Variable: OverrideStage [${overrideStage}]`);
 
-getRelease(instance, teamproject, encodedPat, currentReleaseId, function(details)
+// see if we are overriding the stage we are interested in?
+if (overrideStage === null)
 {
+    overrideStage = currentStage;
+}
 
-   // get the current release details first
-    var currentReleaseDetails = details;
-    getBuild(instance, teamproject, encodedPat, getPrimaryBuildIdFromRelease(currentReleaseDetails), function(details)
+
+
+async function run() {
+
+    var template = getTemplate(templateLocation,templateFile,inlineTemplate);
+    var globalWorkitems = [];
+    var globalCommits = [];
+
+    var currentReleaseDetails = await getRelease(instance, teamproject, encodedPat, currentReleaseId);
+
+    var pastSuccessfulRelease = await getPastSuccessfulRelease(instance, teamproject, encodedPat, currentReleaseDetails, overrideStage);
+
+    console.log(`Found ${currentReleaseDetails.artifacts.length + 1} artifacts in this release`)
+    for (let artifact of currentReleaseDetails.artifacts)
     {
-        var currentBuildDetails =  details;
+        console.log(`Looking at artifact [${artifact.alias}]`)
+        console.log(`Getting build associated with artifact. Build Id [${artifact.definitionReference.version.id}]`)
 
-        // see if we are overriding the stage we are interested in?
-        if (overrideStage === null)
-        {
-            overrideStage = currentStage;
+        var currentReleaseBuild = await getBuild(instance, teamproject, encodedPat, artifact.definitionReference.version.id)
+
+        console.log(`Looking for a matching artifact in the last successful release to ${overrideStage}`)
+        // Get the build from the past successful release
+        var pastSuccessfulMatchingArtifact = pastSuccessfulRelease.artifacts.find(item => item.definitionReference.definition.id == artifact.definitionReference.definition.id);
+
+        if (pastSuccessfulMatchingArtifact != null){
+            console.log(`Located matching artifact. Alias: ${pastSuccessfulMatchingArtifact.alias}.`)
+
+            // We have a matching build
+            var pastSuccessfulMatchingBuild = await getBuild(instance, teamproject, encodedPat, pastSuccessfulMatchingArtifact.definitionReference.version.id)
+
+            console.log(`Getting work items between release [${currentReleaseId}] and [${pastSuccessfulRelease.id}]`)
+
+            var workItems = await getWorkItemBetweenReleases(instance, teamproject, encodedPat, currentReleaseId, pastSuccessfulRelease.id)
+            var ids = [];
+                if (workItems){
+                // get list of work item ids
+                ids = workItems.map(w => w.id);
+            }
+
+            console.log(`Work items found: ${ids.length}`)
+
+            // and expand the details
+            var workItemDetails = await getWorkItems(instance, encodedPat, ids.join())
+
+            console.log(`Getting commits between [${currentReleaseBuild.sourceVersion}] and [${pastSuccessfulMatchingBuild.sourceVersion}].`)
+            var commits:Array<any> = await getCommitsBetweenCommitIds(
+                instance, 
+                teamproject, 
+                encodedPat, 
+                currentReleaseBuild.repository.type,
+                currentReleaseBuild.definition.id, 
+                currentReleaseBuild.repository.id, 
+                currentReleaseBuild.sourceVersion, 
+                pastSuccessfulMatchingBuild.sourceVersion);
+
+            console.log(`Commits found: ${commits.length}`)
+            globalWorkitems = globalWorkitems.concat(workItemDetails)
+            globalCommits = globalCommits.concat(commits)
+
         }
-        
-        getPastSuccessfulRelease(instance, teamproject, encodedPat, currentReleaseDetails, overrideStage,  function(details)
-        {
-            var compareReleaseDetails = details;
-            getBuild(instance, teamproject, encodedPat, getPrimaryBuildIdFromRelease(compareReleaseDetails), function(details)
-            {
-                var compareBuildDetails =  details;
-         
-                getWorkItemBetweenReleases(instance, teamproject, encodedPat, currentReleaseId, compareReleaseDetails.id, function (workItems)
-                {
-                    // get list of work item ids
-                    var ids = workItems.map(w => w.id);
-                    // and expand the details
-                    getWorkItems(instance, encodedPat, ids.join(), function (details)
-                    {
-                        var workItems = details;
 
-                        getCommitsBetweenCommitIds (
-                            instance, 
-                            teamproject, 
-                            encodedPat, 
-                            currentBuildDetails.repository.type,
-                            currentBuildDetails.definition.id, 
-                            currentBuildDetails.repository.id, 
-                            currentBuildDetails.sourceVersion, 
-                            compareBuildDetails.sourceVersion, function (commits)
-                        {
-                            var template = getTemplate(templateLocation,templateFile,inlineTemplate);
+    };
+    console.log(`Total commits found: ${globalCommits.length}`)
+    console.log(`Total workitems found: ${globalWorkitems.length}`)
+    var outputString = processTemplate(template, globalWorkitems, globalCommits, currentReleaseDetails, pastSuccessfulRelease, emptyDataset);
+    writeFile(outputfile, outputString);
+    writeVariable(outputVariableName,outputString.toString());
+};
 
-                            var outputString = processTemplate(template, workItems, commits, currentReleaseDetails, compareReleaseDetails, emptyDataset);
-                            writeFile(outputfile, outputString);
-                            writeVariable(outputVariableName,outputString.toString());
-                           
-                        });    
-                    });
-                });
-            });
-        });
-    });
-});
-
+run()
