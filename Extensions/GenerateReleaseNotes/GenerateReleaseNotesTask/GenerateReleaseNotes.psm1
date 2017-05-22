@@ -280,7 +280,9 @@ function Invoke-Template
 	  $template,
       $releases,
       $builds,
-      $stagename
+      $stagename,
+      $defname,
+      $releasedefname
 	)
 	
 	if ($template.count -gt 0)

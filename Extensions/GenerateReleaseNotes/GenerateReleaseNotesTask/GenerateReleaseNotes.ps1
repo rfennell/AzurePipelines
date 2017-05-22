@@ -70,7 +70,8 @@ $teamproject = $env:SYSTEM_TEAMPROJECT
 $releaseid = $env:RELEASE_RELEASEID
 $releasedefid = $env:RELEASE_DEFINITIONID
 $buildid = $env:BUILD_BUILDID
-$defname = $env:BUILD_DEFINITIONNAME
+$builddefname = $env:BUILD_DEFINITIONNAME
+$releasedefname = $env:RELEASE_DEFINITIONNAME
 $buildnumber = $env:BUILD_BUILDNUMBER
 $currentStageName = $env:RELEASE_ENVIRONMENTNAME
 
@@ -79,10 +80,11 @@ Write-Verbose "collectionUrl = [$collectionUrl]"
 Write-Verbose "teamproject = [$teamproject]"
 Write-Verbose "releaseid = [$releaseid]"
 Write-Verbose "releasedefid = [$releasedefid]"
-Write-Verbose "stageName = [$currentStageName]]"
+Write-Verbose "stageName = [$currentStageName]"
 Write-Verbose "overrideStageName = [$overrideStageName]"
 Write-Verbose "buildid = [$buildid]"
-Write-Verbose "defname = [$defname]"
+Write-Verbose "builddefname = [$builddefname]"
+Write-Verbose "releasedefname = [$releasedefname]"
 Write-Verbose "buildnumber = [$buildnumber]"
 Write-Verbose "outputVariableName = [$outputvariablename]"
 Write-Verbose "generateForOnlyPrimary = [$generateForOnlyPrimary]"
@@ -107,6 +109,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
         # we only need the current release
         $releases += Get-Release -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
         $allReleases += $releases # add this for backwards support
+        $stageName = $currentStageName
     } else 
     {
         # work out the name of the stage to compare the release against
@@ -199,7 +202,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
 }
 
 $template = Get-Template -templateLocation $templateLocation -templatefile $templatefile -inlinetemplate $inlinetemplate
-$outputmarkdown = Invoke-Template -template $template -builds $builds -releases $releases -stagename $stageName
+$outputmarkdown = Invoke-Template -template $template -builds $builds -releases $releases -stagename $stageName -defname $builddefname -releasedefname $releasedefname
 
 write-Verbose "Writing output file [$outputfile]."
 Set-Content $outputfile $outputmarkdown
