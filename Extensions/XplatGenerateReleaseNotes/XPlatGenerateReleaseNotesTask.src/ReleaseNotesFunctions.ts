@@ -239,7 +239,7 @@ function getTfvcDetails(vstsinstance :string ,
             var options = {
                     method: 'GET',
                     headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` ,'Content-Type':'application/json'},
-                    url: `${vstsinstance}/${teamproject}/_apis/tfvc/changesets?searchCriteria.fromId=${fixedStartId}&searchCriteria.toId=${currentSourceVersion}&searchCriteria.itemPath=${mappings}`,
+                    url: `${vstsinstance}/${teamproject}/_apis/tfvc/changesets?searchCriteria.fromId=${fixedStartId}&searchCriteria.toId=${currentSourceVersion}&searchCriteria.itemPath=${mappings}&maxCommentLength=1000`,
                     qs: { 'api-version': '1.0' },
                 };
                     logInfo(`Getting the differences between changeset with an ID greater than ${compareSourceVersion} up to and including ${currentSourceVersion} from repo ${repositoryId} for mapping ${mappings}`)
