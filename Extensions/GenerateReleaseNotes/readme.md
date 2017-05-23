@@ -1,22 +1,23 @@
 ## Changes
-1.0 - Initial release
-1.1 - Bug fix, issue with REST call made to return build details
-1.2 - Bug fix, UTF8 encoding issue
-1.3 - Added support for Release Management
-      Added support for inline definition of template 
-1.4 - Add advanced option to choose if PAT or defaultcreds are used
-1.5 - Put in logic to skip any non VSTS release artifacts
-1.6 - Added parameter to limit release notes generation in a release to only primary artifact 
-2.0 - Added support to look back to through prior releases to last successful deployment
-2.1 - Made the text that is shown when there is no WI or Changeset/Commit
-2.2 - PR from @gregpakes - Made generate markdown available as output variablefrom 
-2.3 - PR from @yermax - Fixed bug that defaultcreds not being passed to all functions
-      Fixed bug that only first line of generate markdown available in output variable
-2.4 - Added extra error traps to handle lookups on deleted builds
-2.5 - Improved error tapping on render method
-2.6 - Altered logging to remove items that should not be warning
-2.7 - Included PR from @Beej126 hide changeset with no comment and @gregpakes added newlines to output variable string
-2.8 - Fixed for Issues #109, fixed build detection logic
+- 1.0 - Initial release
+- 1.1 - Bug fix, issue with REST call made to return build details
+- 1.2 - Bug fix, UTF8 encoding issue
+- 1.3 - Added support for Release Management
+        Added support for inline definition of template 
+- 1.4 - Add advanced option to choose if PAT or defaultcreds are used
+- 1.5 - Put in logic to skip any non VSTS release artifacts
+- 1.6 - Added parameter to limit release notes generation in a release to only primary artifact 
+- 2.0 - Added support to look back to through prior releases to last successful deployment
+- 2.1 - Made the text that is shown when there is no WI or Changeset/Commit
+- 2.2 - PR from @gregpakes - Made generate markdown available as output variablefrom 
+- 2.3 - PR from @yermax - Fixed bug that defaultcreds not being passed to all functions
+        Fixed bug that only first line of generate markdown available in output variable
+- 2.4 - Added extra error traps to handle lookups on deleted builds
+- 2.5 - Improved error tapping on render method
+- 2.6 - Altered logging to remove items that should not be warning
+- 2.7 - Included PR from @Beej126 hide changeset with no comment and @gregpakes added newlines to output variable string
+- 2.8 - Fixed for Issues #109, fixed build detection logic
+- 2.9 - PR from @paulxb Fixed a bug with $defname and $stagename not populating 
 
 This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's:
 - if used in a build it is the current active build
