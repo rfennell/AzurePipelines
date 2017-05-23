@@ -69,8 +69,11 @@ getRelease(instance, teamproject, encodedPat, currentReleaseId, function(details
          
                 getWorkItemBetweenReleases(instance, teamproject, encodedPat, currentReleaseId, compareReleaseDetails.id, function (workItems)
                 {
-                    // get list of work item ids
-                    var ids = workItems.map(w => w.id);
+                    var ids = [];
+                    if (workItems){
+                        // get list of work item ids
+                        ids = workItems.map(w => w.id);
+                    }
                     // and expand the details
                     getWorkItems(instance, encodedPat, ids.join(), function (details)
                     {
