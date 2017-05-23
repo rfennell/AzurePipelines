@@ -426,7 +426,11 @@ export function processTemplate(template, workItems, commits, releaseDetails, co
                        // nothing to expand just process the line
                        var fixedline = fixline (line)
                        var processedLine = eval(fixedline);
-                       output += processedLine;
+		       // support for line endings in comments
+                       var lines = processedLine.split('\r\n')
+                       for(var i = 0; i < lines.length; i ++){
+                           output += lines[i];
+                       }
                   }
                     // always add a line feed
                     output += "\n";
