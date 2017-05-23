@@ -16,6 +16,7 @@ V1.13.x - Added support for SQL2016 and VS2017 to DacPac task
 V1.14.x - DAC pack exclusing fixed
 V1.15.x - Added cross platform support for assebmly versioning
           Added WIX versioning
+V1.16   - Fixed bug on .NETcore versioning
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of 
