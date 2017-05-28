@@ -75,6 +75,12 @@ $releasedefname = $env:RELEASE_DEFINITIONNAME
 $buildnumber = $env:BUILD_BUILDNUMBER
 $currentStageName = $env:RELEASE_ENVIRONMENTNAME
 
+if ( [string]::IsNullOrEmpty($releasedefid) )
+{
+  $releasedefinition = Get-ReleaseDefinitionByName -tfsUri $collectionUrl -teamproject $teamproject -releasename $releasedefname -usedefaultcreds $usedefaultcreds
+
+  $releasedefid = $releasedefinition.id
+}
 
 Write-Verbose "collectionUrl = [$collectionUrl]"
 Write-Verbose "teamproject = [$teamproject]"

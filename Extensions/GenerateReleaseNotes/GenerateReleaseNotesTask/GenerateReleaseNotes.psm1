@@ -114,6 +114,22 @@ function Get-BuildsByDefinitionId
   	$jsondata.value
 }
 
+function Get-ReleaseDefinitionByName
+{
+  param
+	  (
+    $tfsUri,
+    $teamproject,
+    $releasename,
+    $usedefaultcreds  
+	  )
+  
+  $uri = "$($tfsUri)/$($teamproject)/_apis/release/definitions?api-version=3.0-preview.1"
+  $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
+  $jsondata.value | where { $_.name -eq $releasename  }
+
+}
+
 function Get-Release
 {
 
