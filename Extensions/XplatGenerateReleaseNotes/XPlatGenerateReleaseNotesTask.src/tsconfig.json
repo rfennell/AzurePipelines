@@ -3,7 +3,8 @@
         "target": "ES6",
         "module": "commonjs",
          "watch": false,
-         "outDir": "../XPlatGenerateReleaseNotesTask/"
+         "outDir": "../XPlatGenerateReleaseNotesTask/",
+         "sourceMap": true
     },
     "exclude": [
         "node_modules"
