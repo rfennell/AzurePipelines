@@ -5,9 +5,18 @@
         {
              "type": "node",
             "request": "launch",
+            "name": "Node - XPlatGenerateReleaseNotes",
+            "program": "${workspaceRoot}/Extensions/XplatGenerateReleaseNotes/XPlatGenerateReleaseNotesTask/GenerateReleaseNotes.js",
+            "outFiles": ["${workspaceRoot}/Extensions/XplatGenerateReleaseNotes/XPlatGenerateReleaseNotesTask/*.js"],
+            "cwd": "${workspaceRoot}"
+        },
+         {
+            "type": "node",
+            "request": "launch",
             "name": "Node - VersionDotNetCoreAssembliesTask",
             "program": "${workspaceRoot}/Extensions/Versioning/VersionDotNetCoreAssembliesTask/ApplyVersionToAssemblies.js",
-            "cwd": "${workspaceRoot}"
+            "outFiles": ["${workspaceRoot}/Extensions/Versioning/VersionDotNetCoreAssembliesTask/*.js"],
+              "cwd": "${workspaceRoot}"
         },
         {
             "name": "PowerShell - all tests",
