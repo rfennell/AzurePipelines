@@ -18,6 +18,7 @@
 - 2.7 - Included PR from @Beej126 hide changeset with no comment and @gregpakes added newlines to output variable string
 - 2.8 - Fixed for Issues #109, fixed build detection logic
 - 2.9 - PR from @paulxb Fixed a bug with $defname and $stagename not populating 
+- 2.10 - PR from @uioporqwerty #134 to fix issue with TFS2015.2 adn releases
 
 This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's:
 - if used in a build it is the current active build
