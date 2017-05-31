@@ -87,12 +87,13 @@ if (files.length>0) {
         {
             console.log (`Updating only the ${field} version`);
             regexp = new RegExp(`<${field}>${versionRegex}<\/${field}>`);
-            newVersion = `<${field}>${newVersion}<\/${field}>`;
+            var newVersionField = `<${field}>${newVersion}<\/${field}>`;
+            fs.writeFileSync(file,filecontent.toString().replace(regexp, newVersionField),fileEncoding.encoding);
         } else {
             console.log (`Updating all version fields that match Regex ${versionRegex}`);
             regexp = new RegExp(versionRegex, "g"); // the g get all occurances
+            fs.writeFileSync(file,filecontent.toString().replace(regexp, newVersion),fileEncoding.encoding);
         }
-        fs.writeFileSync(file,filecontent.toString().replace(regexp, newVersion),fileEncoding.encoding);
         console.log (`${file} - version applied`);
     });
 
