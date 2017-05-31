@@ -75,11 +75,12 @@ $releasedefname = $env:RELEASE_DEFINITIONNAME
 $buildnumber = $env:BUILD_BUILDNUMBER
 $currentStageName = $env:RELEASE_ENVIRONMENTNAME
 
-if ( [string]::IsNullOrEmpty($releasedefid) )
+if ( ([string]::IsNullOrEmpty($releaseid) -eq $false) -and [string]::IsNullOrEmpty($releasedefid) )
 {
-  $releasedefinition = Get-ReleaseDefinitionByName -tfsUri $collectionUrl -teamproject $teamproject -releasename $releasedefname -usedefaultcreds $usedefaultcreds
-
-  $releasedefid = $releasedefinition.id
+    Write-Verbose "Looking up ReleaseDefId for TFS2015.2"
+    # we are in release mode, checking we have a releasedefif, if not look it up - needed for TFS2015.2
+    $releasedefinition = Get-ReleaseDefinitionByName -tfsUri $collectionUrl -teamproject $teamproject -releasename $releasedefname -usedefaultcreds $usedefaultcreds
+    $releasedefid = $releasedefinition.id
 }
 
 Write-Verbose "collectionUrl = [$collectionUrl]"
