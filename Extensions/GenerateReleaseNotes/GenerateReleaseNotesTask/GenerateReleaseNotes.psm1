@@ -13,7 +13,7 @@ function Get-BuildWorkItems
     $usedefaultcreds
     )
 
-    Write-Verbose "Getting associated work items for build [$($buildid)]"
+    Write-Verbose "        Getting associated work items for build [$($buildid)]"
     $wiList = @();
    
     try {
@@ -25,7 +25,7 @@ function Get-BuildWorkItems
         } 
     }
     catch {
-            Write-warning "Unable to get associated work items, most likely cause is the build has been deleted"
+            Write-warning "        Unable to get associated work items, most likely cause is the build has been deleted"
             Write-warning $_.Exception.Message
     }
     $wiList
@@ -41,7 +41,7 @@ function Get-BuildChangeSets
     $usedefaultcreds
     )
 
-    Write-Verbose "Getting associated changesets/commits for build [$($buildid)]"
+    Write-Verbose "        Getting associated changesets/commits for build [$($buildid)]"
   	$csList = @();
 
     try 
@@ -56,15 +56,15 @@ function Get-BuildChangeSets
                $csList += Get-Detail -uri $cs.location -usedefaultcreds $usedefaultcreds
             } catch
             {
-                Write-warning "Unable to get details of changeset/commit as it is not stored in TFS/VSTS"
-                Write-warning "For [$($cs.id)] location [$($cs.location)]"
-                Write-warning "Just using the details we have from the build"
+                Write-warning "        Unable to get details of changeset/commit as it is not stored in TFS/VSTS"
+                Write-warning "        For [$($cs.id)] location [$($cs.location)]"
+                Write-warning "        Just using the details we have from the build"
                 $csList += $cs
             }
         }
     } catch 
     {
-            Write-warning "Unable to get details of changeset/commit, most likely cause is the build has been deleted"
+            Write-warning "        Unable to get details of changeset/commit, most likely cause is the build has been deleted"
             Write-warning $_.Exception.Message
     }
     $csList
@@ -96,6 +96,38 @@ function Get-Build
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=2.0"
   	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
   	$jsondata 
+}
+
+function Get-BuildsByDefinitionId
+{
+
+    param
+    (
+    $tfsUri,
+    $teamproject,
+    $buildDefid,
+    $usedefaultcreds
+    )
+
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?definitions=$($builddefid)&api-version=2.0"
+  	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
+  	$jsondata.value
+}
+
+function Get-ReleaseDefinitionByName
+{
+  param
+	  (
+    $tfsUri,
+    $teamproject,
+    $releasename,
+    $usedefaultcreds  
+	  )
+  
+  $uri = "$($tfsUri)/$($teamproject)/_apis/release/definitions?api-version=3.0-preview.1"
+  $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
+  $jsondata.value | where { $_.name -eq $releasename  }
+
 }
 
 function Get-Release
@@ -166,11 +198,11 @@ function Invoke-GetCommand
         Write-Verbose "Using default credentials"
         $webclient.UseDefaultCredentials = $true
     } else {
-        Write-Verbose "Using SystemVssConnection personal access token"
+        # Write-Verbose "Using SystemVssConnection personal access token"
         $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
         $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
         $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
-    }
+}
     
 	#write-verbose "REST Call [$uri]"
     $webclient.DownloadString($uri)
@@ -264,7 +296,9 @@ function Invoke-Template
 	  $template,
       $releases,
       $builds,
-      $stagename
+      $stagename,
+      $defname,
+      $releasedefname
 	)
 	
 	if ($template.count -gt 0)
@@ -418,7 +452,7 @@ param
     $usedefaultcreds
   )
 
- 	write-verbose "Getting build details for BuildID [$buildid]"    
+ 	write-verbose "    Getting build details for BuildID [$buildid]"    
  	$build = Get-Build -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
 
      $build = @{'build'=$build;
