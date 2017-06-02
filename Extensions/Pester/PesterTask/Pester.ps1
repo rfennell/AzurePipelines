@@ -15,6 +15,8 @@ param
 
     [string]$run32Bit,
 
+    [string]$pesterVersion,
+
     [validateScript({
         If ($_ -eq $Null -or $_ -eq "") {
              # optional value not passed
@@ -60,7 +62,7 @@ write-verbose "Running in $($env:Processor_Architecture) PowerShell" -verbose
 if ([string]::IsNullOrEmpty($moduleFolder) -and (-not(Get-Module -ListAvailable Pester)))
 {
     # we have no module path specified so use the copy we have in this task
-    $moduleFolder = "$pwd\3.4.3"
+    $moduleFolder = "$pwd\$pesterVersion"
     Write-Verbose "Loading Pester module from [$moduleFolder]" -verbose
     Import-Module $moduleFolder\Pester.psd1
 }

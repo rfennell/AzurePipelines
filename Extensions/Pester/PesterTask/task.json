@@ -66,6 +66,19 @@
       "groupName":"tags"
     },
     {
+      "name": "pesterVersion",
+      "type": "pickList",
+      "label": "Pester version",
+      "defaultValue": "3.4.3",
+      "required": true,
+      "helpMarkDown": "Verson of Pester to use",
+      "groupName":"advanced",
+      "options": {
+          "3.4.3": "3.4.3",
+          "4.0.3": "4.0.3"
+      }
+    },
+    {
       "name": "run32Bit",
       "type": "boolean",
       "label": "Run in 32bit",

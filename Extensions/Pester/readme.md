@@ -5,16 +5,23 @@ Releases
 - 4.2.x.- removed non-required demand
 - 4.3.x.- Added support for Tag and ExcludeTag parameters
 - 4.4.x - Added support for multiple comma separated tags
+- 5.0.x - Added optional support for Pester 4.0.3
 
 A task to install and run PowerShell Pester based tests 
 The task takes five parameters 
+
+The main ones are
 
 - The root folder to look for test scripts with the naming convention  *.tests.ps1. Defaults to $(Build.SourcesDirectory)\*
 - The results file name, defaults to $(Build.SourcesDirectory)\Test-Pester.XML. 
 - Tagged test cases to run.
 - Tagged test cases to exclude from test run.
+
+The advanced ones are
+
 - Should the instance of PowerShell used to run the test be forced to run in 32bit, defaults to false.
-- Custom module path should Pester be stored in a non-standard location, not mandatory and defaults to the installed version of pester or the version provided with the extension if not installed already.
+- (New in 5.x) You can pick if the Pester 3.4.3 or 4.0.3 modules (both are included in the task) are used
+- If neither 3.4.3 or 4.0.3 is suitable then a custom module path pointing to where the required Pester.psd1 and related files are stored can be entered. This will be used in preference to the embedded versions
 
 The Pester task does not in itself upload the test results, it just throws an error if tests fails. It relies on the standard test results upload task. 
 
