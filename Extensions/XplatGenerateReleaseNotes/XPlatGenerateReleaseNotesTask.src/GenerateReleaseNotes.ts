@@ -121,11 +121,12 @@ async function run() {
         var outputString = processTemplate(template, globalWorkitems, globalCommits, currentReleaseDetails, pastSuccessfulRelease, emptyDataset);
         writeFile(outputfile, outputString);
         writeVariable(outputVariableName,outputString.toString());
+        tl.setResult(tl.TaskResult.Succeeded, "Generate Release Notes Task Succeeded");
     }
     catch(err)
     {
         tl.error(err.message);
-        tl.setResult(tl.TaskResult.Failed, tl.loc('GenerateReleaseNotesFailed', err.message));
+        tl.setResult(tl.TaskResult.Failed, "Generate Release Notes Task failed: " + err.message);
     }
 };
 
