@@ -356,11 +356,11 @@ export function processTemplate(template, workItems, commits, releaseDetails, co
                       // reset the index to process the block
                       index = modeStack[modeStack.length-1].Index
                       switch (mode)
-			                {
-			                    case Mode.WI :
-                              logDebug (`${addSpace(modeStack.length +1)} Getting next workitem ${item.id}`)
+                      {
+                            case Mode.WI :
+                                  logDebug (`${addSpace(modeStack.length +1)} Getting next workitem ${item.id}`)
 		                          widetail = item ;  
-                              break;
+                            break;
                           case Mode.CS :
                              if (csdetail.commitId)
                              {
