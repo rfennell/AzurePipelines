@@ -55,69 +55,78 @@ if (overrideStage === null)
 
 async function run() {
 
-    var template = getTemplate(templateLocation,templateFile,inlineTemplate);
-    var globalWorkitems = [];
-    var globalCommits = [];
+    try{
+        var template = getTemplate(templateLocation,templateFile,inlineTemplate);
+        var globalWorkitems = [];
+        var globalCommits = [];
 
-    var currentReleaseDetails = await getRelease(instance, teamproject, encodedPat, currentReleaseId);
+        var currentReleaseDetails = await getRelease(instance, teamproject, encodedPat, currentReleaseId);
 
-    var pastSuccessfulRelease = await getPastSuccessfulRelease(instance, teamproject, encodedPat, currentReleaseDetails, overrideStage);
+        var pastSuccessfulRelease = await getPastSuccessfulRelease(instance, teamproject, encodedPat, currentReleaseDetails, overrideStage);
 
-    console.log(`Found ${currentReleaseDetails.artifacts.length + 1} artifacts in this release`)
-    for (let artifact of currentReleaseDetails.artifacts)
-    {
-        console.log(`Looking at artifact [${artifact.alias}]`)
-        console.log(`Getting build associated with artifact. Build Id [${artifact.definitionReference.version.id}]`)
+        console.log(`Found ${currentReleaseDetails.artifacts.length + 1} artifacts in this release`)
+        for (let artifact of currentReleaseDetails.artifacts)
+        {
+            console.log(`Looking at artifact [${artifact.alias}]`)
+            console.log(`Getting build associated with artifact. Build Id [${artifact.definitionReference.version.id}]`)
 
-        var currentReleaseBuild = await getBuild(instance, teamproject, encodedPat, artifact.definitionReference.version.id)
+            var currentReleaseBuild = await getBuild(instance, teamproject, encodedPat, artifact.definitionReference.version.id)
 
-        console.log(`Looking for a matching artifact in the last successful release to ${overrideStage}`)
-        // Get the build from the past successful release
-        var pastSuccessfulMatchingArtifact = pastSuccessfulRelease.artifacts.find(item => item.definitionReference.definition.id == artifact.definitionReference.definition.id);
+            console.log(`Looking for a matching artifact in the last successful release to ${overrideStage}`)
+            // Get the build from the past successful release
+            var pastSuccessfulMatchingArtifact = pastSuccessfulRelease.artifacts.find(item => item.definitionReference.definition.id == artifact.definitionReference.definition.id);
 
-        if (pastSuccessfulMatchingArtifact != null){
-            console.log(`Located matching artifact. Alias: ${pastSuccessfulMatchingArtifact.alias}.`)
+            if (pastSuccessfulMatchingArtifact != null){
+                console.log(`Located matching artifact. Alias: ${pastSuccessfulMatchingArtifact.alias}.`)
 
-            // We have a matching build
-            var pastSuccessfulMatchingBuild = await getBuild(instance, teamproject, encodedPat, pastSuccessfulMatchingArtifact.definitionReference.version.id)
+                // We have a matching build
+                var pastSuccessfulMatchingBuild = await getBuild(instance, teamproject, encodedPat, pastSuccessfulMatchingArtifact.definitionReference.version.id)
 
-            console.log(`Getting work items between release [${currentReleaseId}] and [${pastSuccessfulRelease.id}]`)
+                console.log(`Getting work items between release [${currentReleaseId}] and [${pastSuccessfulRelease.id}]`)
 
-            var workItems = await getWorkItemBetweenReleases(instance, teamproject, encodedPat, currentReleaseId, pastSuccessfulRelease.id)
-            var ids = [];
+                var workItems = await getWorkItemBetweenReleases(instance, teamproject, encodedPat, currentReleaseId, pastSuccessfulRelease.id)
+                var ids = [];
                 if (workItems){
-                // get list of work item ids
-                ids = workItems.map(w => w.id);
+                    // get list of work item ids
+                    ids = workItems.map(w => w.id);
+                }
+                console.log(`Work items found: ${ids.length}`)
+
+                // and expand the details
+                var workItemDetails = await getWorkItems(instance, encodedPat, ids.join())
+
+                console.log(`Getting commits between [${currentReleaseBuild.sourceVersion}] and [${pastSuccessfulMatchingBuild.sourceVersion}].`)
+                var commits:Array<any> = await getCommitsBetweenCommitIds(
+                    instance, 
+                    teamproject, 
+                    encodedPat, 
+                    currentReleaseBuild.repository.type,
+                    currentReleaseBuild.definition.id, 
+                    currentReleaseBuild.repository.id, 
+                    currentReleaseBuild.sourceVersion, 
+                    pastSuccessfulMatchingBuild.sourceVersion);
+
+                console.log(`Commits found: ${commits.length}`)
+
+                if (workItemDetails != null){
+                    globalWorkitems = globalWorkitems.concat(workItemDetails)
+                }
+                globalCommits = globalCommits.concat(commits)
+
             }
 
-            console.log(`Work items found: ${ids.length}`)
-
-            // and expand the details
-            var workItemDetails = await getWorkItems(instance, encodedPat, ids.join())
-
-            console.log(`Getting commits between [${currentReleaseBuild.sourceVersion}] and [${pastSuccessfulMatchingBuild.sourceVersion}].`)
-            var commits:Array<any> = await getCommitsBetweenCommitIds(
-                instance, 
-                teamproject, 
-                encodedPat, 
-                currentReleaseBuild.repository.type,
-                currentReleaseBuild.definition.id, 
-                currentReleaseBuild.repository.id, 
-                currentReleaseBuild.sourceVersion, 
-                pastSuccessfulMatchingBuild.sourceVersion);
-
-            console.log(`Commits found: ${commits.length}`)
-            globalWorkitems = globalWorkitems.concat(workItemDetails)
-            globalCommits = globalCommits.concat(commits)
-
-        }
-
-    };
-    console.log(`Total commits found: ${globalCommits.length}`)
-    console.log(`Total workitems found: ${globalWorkitems.length}`)
-    var outputString = processTemplate(template, globalWorkitems, globalCommits, currentReleaseDetails, pastSuccessfulRelease, emptyDataset);
-    writeFile(outputfile, outputString);
-    writeVariable(outputVariableName,outputString.toString());
+        };
+        console.log(`Total commits found: ${globalCommits.length}`)
+        console.log(`Total workitems found: ${globalWorkitems.length}`)
+        var outputString = processTemplate(template, globalWorkitems, globalCommits, currentReleaseDetails, pastSuccessfulRelease, emptyDataset);
+        writeFile(outputfile, outputString);
+        writeVariable(outputVariableName,outputString.toString());
+    }
+    catch(err)
+    {
+        tl.error(err.message);
+        tl.setResult(tl.TaskResult.Failed, tl.loc('GenerateReleaseNotesFailed', err.message));
+    }
 };
 
-run()
+run();
