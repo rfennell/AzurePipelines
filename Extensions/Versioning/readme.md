@@ -17,6 +17,7 @@ V1.14.x - DAC pack exclusing fixed
 V1.15.x - Added cross platform support for assebmly versioning
           Added WIX versioning
 V1.16   - Fixed bug on .NETcore versioning
+V1.17   - Fixed bug with nuspec versioning that was not finding files in the root path.
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of 

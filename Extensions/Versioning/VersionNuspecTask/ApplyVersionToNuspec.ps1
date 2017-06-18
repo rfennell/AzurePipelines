@@ -15,12 +15,19 @@
 param (
 
     [Parameter(Mandatory)]
+    [ValidateScript({
+        If (-not (Test-Path -Path $_)) {
+            throw 'Invalid path specified'
+        }
+        $True
+    })]
     [String]$Path,
 
     [Parameter(Mandatory)]
     [string]$VersionNumber,
 
-    $VersionRegex,
+    [ValidateNotNullOrEmpty()]
+    [string]$VersionRegex,
 
     $outputversion
 )
@@ -28,12 +35,6 @@ param (
 # Set a flag to force verbose as a default
 $VerbosePreference ='Continue' # equiv to -verbose
 
-# Make sure path to source code directory is available
-if (-not (Test-Path $Path))
-{
-    Write-Error "Source directory does not exist: $Path"
-    exit 1
-}
 Write-Verbose "Source Directory: $Path"
 Write-Verbose "Version Number/Build Number: $VersionNumber"
 Write-Verbose "Version Filter: $VersionRegex"
@@ -59,9 +60,7 @@ $NewVersion = $VersionData[0]
 Write-Verbose "Version: $NewVersion"
 
 # Apply the version to the assembly property files
-$files = gci $Path -recurse | 
-    ?{ $_.PSIsContainer } | 
-    foreach { gci -Path $_.FullName -Recurse -include *.nuspec }
+$files = Get-ChildItem -Path $Path -Recurse -Include *.nuspec
 if($files)
 {
     Write-Verbose "Will apply $NewVersion to $($files.count) files."
