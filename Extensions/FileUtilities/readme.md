@@ -1,10 +1,11 @@
 Releases
 
-1.0 Initial interna release
+1.0 Initial internal release
 2.0 Public release
 2.1 Added replacing InnerText of XML nodes as well as attributes in XML task
-    Added support for multi-files on XML tasl
+    Added support for multi-files on XML task
 2.2 Made the location of the local copy of the artifact configurable
+2.3 Issue147 fixed filter for successful builds on UNC copy task
 3.0 Converted the XML Task to Node from PowerShell to make it cross platform
 
 
