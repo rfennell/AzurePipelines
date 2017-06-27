@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+       "target": "es5",
+       "module": "amd",
+       "moduleResolution": "node",
+       "rootDir": "XmlFileUpdateTask.src/",
+         "watch": false,
+//         "outDir": "../XmlFileUpdateTask/",
+        "types": [
+          "node"
+        ]
+     },
+     "filesGlob": [
+        "./XmlFileUpdateTask.src//.ts",
+        "./typings/index.d.ts",
+        "./node_modules/@types//.d.ts"
+    ],
+    "exclude": [
+          "node_modules",
+          "typings"
+    ]
+}

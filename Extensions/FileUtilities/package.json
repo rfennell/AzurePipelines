@@ -1,0 +1,33 @@
+{
+  "name": "FileUtilities",
+  "scripts": {
+    "build": "npm run clean && npm run transpile && npm run package",
+    "package": "npm prune -production && npm run copy",
+    "copy": "ncp ./node_modules ./XmlFileUpdateTask/node_modules",
+    "clean": "rimraf ./XmlFileUpdateTask/*.js && rimraf ./XmlFileUpdateTask/*.map.js && rimraf ./XmlFileUpdateTask/node_modules",
+    "cleanmodules": "rimraf ./XmlFileUpdateTask/node_modules",
+    "transpile": "tsc -p ./XmlFileUpdateTask.src",
+    "lint": "tslint -c tslint.json \"XmlFileUpdateTask.src/*.ts"
+  },
+  "dependencies": {
+    "Buffer": "^0.0.0",
+    "fs": "0.0.1-security",
+    "ncp": "^2.0.0",
+    "request": "^2.80.0",
+    "tsd": "^0.6.5",
+    "vsts-task-lib": "^1.1.0",
+    "xmldom": "^0.1.27",
+    "xpath": "^0.0.24"
+  },
+  "devDependencies": {
+    "rimraf": "^2.5.4",
+    "@types/node": "^7.0.18",
+    "chai": "^3.5.0",
+    "mocha": "^3.3.0",
+    "sinon": "^2.2.0",
+    "ts-loader": "^2.0.3",
+    "tslint": "^5.2.0",
+    "typescript": "^2.3.2",
+    "webpack": "^2.5.1"
+  }
+}
