@@ -53,12 +53,17 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86")
 {
     # Get the command parameters
     $args = $myinvocation.BoundParameters.GetEnumerator() | ForEach-Object { 
-        If ($_.Value -eq 'True' -and $_.Key -ne 'run32Bit') {
-            "-$($_.Key)"
-        }
-        else {
-            "-$($_.Key)"
-            "$($_.Value)"
+        if ([string]::IsNullOrWhiteSpace($_.Value)) 
+        {
+            If ($_.Value -eq 'True' -and $_.Key -ne 'run32Bit') 
+            {
+                "-$($_.Key)"
+            }
+            else 
+            {
+                "-$($_.Key)"
+                "$($_.Value)"
+            }
         }
     }
     write-warning 'Re-launching in x86 PowerShell'
