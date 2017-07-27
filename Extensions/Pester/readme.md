@@ -6,6 +6,7 @@ Releases
 - 4.3.x.- Added support for Tag and ExcludeTag parameters
 - 4.4.x - Added support for multiple comma separated tags
 - 5.0.x - Added optional support for Pester 4.0.3
+- 5.1.x - Fixes issue with running tests using the 32Bit process switch (#150)
 
 A task to install and run PowerShell Pester based tests 
 The task takes five parameters 
