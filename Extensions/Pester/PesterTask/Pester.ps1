@@ -77,7 +77,7 @@ if ([string]::IsNullOrEmpty($moduleFolder) -and (-not(Get-Module -ListAvailable 
     # we have no module path specified so use the copy we have in this task
     $moduleFolder = "$pwd\$pesterVersion"
     Write-Verbose "Loading Pester module from [$moduleFolder]" -verbose
-    Import-Module $moduleFolder\Pester.psd1 
+    Import-Module $moduleFolder\Pester.psd1
 }
 elseif ($moduleFolder)
 {
