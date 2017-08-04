@@ -64,50 +64,89 @@ export function  getBuildDefinition(vstsinstance: string, teamproject: string, e
 }
 
 
-export function getPastSuccessfulRelease(vstsinstance, teamproject, encodedPat, currentReleaseDetails, stage) : Promise<any>
+export async function getPastSuccessfulRelease(vstsinstance, teamproject, encodedPat, currentReleaseDetails, stage) : Promise<any>
 {
     return new Promise<any>((resolve, reject) => {
         //get all releases 
-        //loop back to find lass  "succeeded"
+        //loop back to find last "succeeded"
         //get this build
         var options = {
-        method: 'GET',
-        headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` },
-        url: `${fixRmUrl(vstsinstance)}/${teamproject}//_apis/release/releases?definitionId=${currentReleaseDetails.releaseDefinition.id}&$Expand=environments,artifacts&queryOrder=descending`,
-        qs: { 'api-version': '3.0-preview' }
+            method: 'GET',
+            headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` },
+            url: `${fixRmUrl(vstsinstance)}/${teamproject}/_apis/release/releases?definitionId=${currentReleaseDetails.releaseDefinition.id}&$Expand=environments,artifacts&queryOrder=descending`,
+            qs: { 'api-version': '3.0-preview' }
         };
         logInfo(`Getting the details of last release using definiton '${currentReleaseDetails.releaseDefinition.name}' that was successful in environment '${stage}' `)
-        request(options, function (error, response, body) {
-        if (error) {
-            reject(error);
-        } 
-        var releases = JSON.parse(body);
-        var releaseId = 0;
-        var earliestId = 0;
-        
-        for(let release of releases.value){
-            for(let environment of release.environments){
-                // make sure we check that we are not seeing the current active release 
-                // we have to trap to see if we have found a release ID as there is no break; out of foreach in Javascript
-                if ((releaseId === 0) && (release.id < currentReleaseDetails.id) && (environment.name === stage) && (environment.status ==="succeeded"))
-                {
-                    releaseId = release.id;
-                }
-                // we need to check if there was no successful release
-                if ((earliestId ===0) || (release.id < earliestId))
-                {
-                    earliestId = release.id;
+        request(options, async function (error, response, body) {
+            if (error) {
+                reject(error);
+            } 
+            var releases = JSON.parse(body);
+            var earliestId = 0;
+            var successfulReleases = [];
+            
+            for(let release of releases.value){
+
+                // Get details fo release - this is required so we can get details of multiple deployments to the same environment
+                var releaseDeatils = await getRelease(vstsinstance, teamproject, encodedPat, release.id);
+
+                for(let environment of releaseDeatils.environments){
+                    // make sure we check that we are not seeing the current active release 
+                    // we have to trap to see if we have found a release ID as there is no break; out of foreach in Javascript
+                    if ((environment.name === stage))
+                    {
+                        // This is the right environment
+                        for(let deployment of environment.deploySteps){
+                            if (deployment.status === "succeeded"){
+                                successfulReleases.push({
+                                    releaseId: release.id,
+                                    queuedOn: deployment.job.finishTime
+                                });
+                            }
+                        }
+
+                        
+                    }
+                    // we need to check if there was no successful release
+                    if ((earliestId ===0) || (release.id < earliestId))
+                    {
+                        earliestId = release.id;
+                    }
                 }
             }
-        }
+            
+            var releaseId = 0;
 
-        // no valid release so we will use the oldest release
-        if (releaseId ===0)
-        {
-            logInfo(`Can find not successful release to the request stage, using first release as baseline`)
-            releaseId = earliestId;
-        }
-        resolve(getRelease(vstsinstance, teamproject, encodedPat, releaseId));
+            // no valid release so we will use the oldest release
+            if (successfulReleases.length ===0)
+            {
+                logInfo(`Can not find successful release to the requested stage, using first release as baseline`)
+                releaseId = earliestId;
+            }
+            else
+            {
+                logInfo(`Found '${successfulReleases.length}' successful releases.  Sorting them to find the most recent successful deployment.`);
+
+                for(var i = 0; i< successfulReleases.length;i++){
+                    logInfo(`ReleaseId: '${successfulReleases[i].releaseId}', Date: '${successfulReleases[i].queuedOn}'`)
+                }
+
+                // We need to loop through the successful releases and try to find the latest (by queuedOn) successful
+                successfulReleases = successfulReleases.sort(function(a,b){
+                    return +new Date(b.queuedOn) - +new Date(a.queuedOn);
+                })
+
+                for(var i = 0; i< successfulReleases.length;i++){
+                    logInfo(`ReleaseId: '${successfulReleases[i].releaseId}', Date: '${successfulReleases[i].queuedOn}'`)
+                }
+                
+                // Take the first one
+                releaseId = successfulReleases[0].releaseId;
+            }
+
+            logInfo(`Most recent successful release: '${releaseId}'`)
+
+            resolve(getRelease(vstsinstance, teamproject, encodedPat, releaseId));
         
         });
     });
@@ -116,10 +155,10 @@ export function getPastSuccessfulRelease(vstsinstance, teamproject, encodedPat, 
 export function getRelease(vstsinstance: string, teamproject: string, encodedPat: string, releaseId) : Promise<any>  {
     return new Promise<any>((resolve, reject) => {
         var options = {
-        method: 'GET',
-        headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` },
-        url: `${fixRmUrl(vstsinstance)}/${teamproject}/_apis/Release/releases/${releaseId}`,
-        qs: { 'api-version': '3.1-preview.1'}
+            method: 'GET',
+            headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` },
+            url: `${fixRmUrl(vstsinstance)}/${teamproject}/_apis/Release/releases/${releaseId}`,
+            qs: { 'api-version': '3.1-preview.1'}
         };
         logInfo(`Getting the details of release ${releaseId}`)
         request(options, function (error, response, body) {
