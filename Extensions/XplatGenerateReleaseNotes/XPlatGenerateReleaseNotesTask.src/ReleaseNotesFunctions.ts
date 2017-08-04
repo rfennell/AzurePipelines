@@ -210,7 +210,13 @@ export function getCommitsBetweenCommitIds (
                              compareSourceVersion) : Promise<Array<any>>  {
 
     return new Promise<any>((resolve, reject) => {
-        logInfo(`Repository type ${repositoryType}`)          
+        logInfo(`Repository type ${repositoryType}`)   
+        
+        if (currentSourceVersion === compareSourceVersion){
+            logInfo(`[${currentSourceVersion}] is equal to [${compareSourceVersion}] - There are no commits/changesets. Skipping...`);
+            resolve([]);
+            return;
+        }
 
         if (repositoryType ==="TfsGit")
         {                
@@ -252,7 +258,7 @@ export function getCommitsBetweenCommitIds (
 
                 // Using this pattern http://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example?rq=1
                 var allDetails = [];
-                // as jajvascript functions are async, we have to put a count check in to 
+                // as javascript functions are async, we have to put a count check in to 
                 // return when all the mappings are checked - kludge but best way I know of
                 var count =0;
                 for(let mapping of mappings){
@@ -285,24 +291,24 @@ function getTfvcDetails(vstsinstance :string ,
                         currentSourceVersion: string,
                         mappings: string,
                         callback) {
-            // the call parameters use inclusive bounds, we need to exclude the lower one
-            // The changesets are prefixed with C - needs to be removed.
-            var fixedStartId = compareSourceVersion.substring(1);// parseInt(compareSourceVersion)+1;
-            var currentChangesetId = currentSourceVersion.substring(1)
-            var options = {
-                    method: 'GET',
-                    headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` ,'Content-Type':'application/json'},
-                    url: `${vstsinstance}/${teamproject}/_apis/tfvc/changesets?searchCriteria.fromId=${fixedStartId}&searchCriteria.toId=${currentChangesetId}&searchCriteria.itemPath=${mappings}&maxCommentLength=1000&$top=1000`,
-                    qs: { 'api-version': '1.0' },
-                };
-                    logInfo(`Getting the differences between changeset with an ID greater than ${compareSourceVersion} up to and including ${currentChangesetId} from repo ${repositoryId} for mapping ${mappings}`)
-                    request(options, function (error, response, body) {
-                    if (error) {
-                        throw new Error(error);
-                    } 
-                    var data = JSON.parse(body);
-                    return callback(data.value)
-                });
+    // the call parameters use inclusive bounds, we need to exclude the lower one
+    // The changesets are prefixed with C - needs to be removed.
+    var fixedStartId = compareSourceVersion.substring(1);// parseInt(compareSourceVersion)+1;
+    var currentChangesetId = currentSourceVersion.substring(1)
+    var options = {
+        method: 'GET',
+        headers: { 'cache-control': 'no-cache', 'authorization': `Basic ${encodedPat}` ,'Content-Type':'application/json'},
+        url: `${vstsinstance}/${teamproject}/_apis/tfvc/changesets?searchCriteria.fromId=${fixedStartId}&searchCriteria.toId=${currentChangesetId}&searchCriteria.itemPath=${mappings}&maxCommentLength=1000&$top=1000`,
+        qs: { 'api-version': '1.0' },
+    };
+    logInfo(`Getting the differences between changeset with an ID greater than ${compareSourceVersion} up to and including ${currentChangesetId} from repo ${repositoryId} for mapping ${mappings}`)
+    request(options, function (error, response, body) {
+        if (error) {
+            throw new Error(error);
+        } 
+        var data = JSON.parse(body);
+        return callback(data.value)
+    });
 }
                         
 
