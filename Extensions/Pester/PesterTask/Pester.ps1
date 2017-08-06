@@ -52,7 +52,20 @@ param
 if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86")   
 {
     # Get the command parameters
-    $args = $myinvocation.BoundParameters.GetEnumerator() | ForEach-Object {$($_.Value)}
+    $args = $myinvocation.BoundParameters.GetEnumerator() | ForEach-Object { 
+        if (-not([string]::IsNullOrWhiteSpace($_.Value)))
+        {
+            If ($_.Value -eq 'True' -and $_.Key -ne 'run32Bit') 
+            {
+                "-$($_.Key)"
+            }
+            else 
+            {
+                "-$($_.Key)"
+                "$($_.Value)"
+            }
+        }
+    }
     write-warning 'Re-launching in x86 PowerShell'
     &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
     exit
