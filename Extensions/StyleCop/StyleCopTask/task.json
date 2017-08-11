@@ -3,11 +3,11 @@
   "name": "StyleCop",
   "friendlyName": "StyleCop Runner by Black Marble",
   "description": "Black Marble's StyleCop test runner that use settings files in the project folders. (Using StyleCop 4.7.59.0)",
- "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/StyleCop-Runner-Task/)",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/StyleCop-Runner-Task/)",
   "category": "Build",
   "visibility": [
-                "Build"
-                ],
+    "Build"
+  ],
   "author": "Black Marble",
   "version": {
     "Major": 1,
@@ -48,8 +48,18 @@
       "label": "Max. Violation Count",
       "defaultValue": "1000",
       "required": true,
-      "helpMarkDown": "Maximum violations before analysis stops",
+      "helpMarkDown": "Maximum project violations before analysis stops",
       "groupName":"advanced"
+    }
+    ,
+    {
+      "name": "allowableViolationCount",
+      "type": "string",
+      "label": "Allowable Violation Count",
+      "defaultValue": "0",
+      "required": true,
+      "helpMarkDown": "Number of violations allowed before the task fails",
+      "groupName": "advanced"
     }
     ,
     {
