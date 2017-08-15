@@ -10,12 +10,14 @@ Releases
 - 1.9 Fixed issue with loading settings files from project folder (pull request from @amjrsl)
       Added custom dictionaries to avoid name matching false errors (pull request from @amjrsl) 
 - 1.10 Fixed issues with discovering settings.stylecop files in solution folder (Issue #104)
+- 1.11 Added parameter for adding allowable violations, which sets a threshold of acceptable number of violations (pull request from @jynxeh)
 
 The task takes the following arguments
 - TreatStyleCopViolationsErrorsAsWarnings - Treat StyleCop violations errors as warnings (default false).
 
 And on the advanced panel
 - MaximumViolationCount - Maximum violations before analysis stops (default 1000)
+- AllowableViolationCount - Threshold of violations to allow, still reports on which ones occured. (default 0)
 - ShowOutput - Sets the flag so StyleCop scanner outputs progress to the console (default false)
 - CacheResults - Cache analysis results for reuse (default false)
 - ForceFullAnalysis - Force complete re-analysis (default true)
