@@ -2,7 +2,7 @@ param
 (
     [string]$treatStyleCopViolationsErrorsAsWarnings,
     [string]$maximumViolationCount,
-	[string]$allowableViolationCount,
+    [string]$allowableViolationCount,
     [string]$showOutput,
     [string]$cacheResults,
     [string]$forceFullAnalysis,
