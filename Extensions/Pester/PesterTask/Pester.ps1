@@ -108,7 +108,9 @@ if ($ExcludeTag) {
     $Parameters.Add('ExcludeTag', $ExcludeTag)
 }
 if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge '4.0.4') {
+    $Files = Get-ChildItem -Path $scriptFolder -Filter *.ps1 -Recurse | Select-object -ExpandProperty Fullname
     $Parameters.Add('CodeCoverageOutputFile', $CodeCoverageOutputFile)
+    $Parameters.Add('CodeCoverage', $Files)
 }
 elseif ($CodeCoverageOutputFile -and (Get-Module Pester).Version -lt '4.0.4') {
     Write-Warning -Message "Code coverage output not supported on Pester versions before 4.0.4."
