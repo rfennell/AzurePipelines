@@ -112,7 +112,7 @@ if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge '4.0.4') {
         Select-object -ExpandProperty Fullname
 
     if ($Files) {
-        $Parameters.Add('CodeCoverage', $Files -join ',')
+        $Parameters.Add('CodeCoverage', $Files)
         $Parameters.Add('CodeCoverageOutputFile', $CodeCoverageOutputFile)
     }
     else {
