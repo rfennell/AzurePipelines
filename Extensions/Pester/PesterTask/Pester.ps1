@@ -107,8 +107,11 @@ if ($ExcludeTag) {
     $ExcludeTag = $ExcludeTag.Split(',').Replace('"', '').Replace("'", "")
     $Parameters.Add('ExcludeTag', $ExcludeTag)
 }
-if ($CodeCoverageOutputFile) {
+if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge '4.0.4') {
     $Parameters.Add('CodeCoverageOutputFile', $CodeCoverageOutputFile)
+}
+elseif ($CodeCoverageOutputFile -and (Get-Module Pester).Version -lt '4.0.4') {
+    Write-Warning -Message "Code coverage output not supported on Pester versions before 4.0.4."
 }
 
 $result = Invoke-Pester @Parameters
