@@ -37,7 +37,7 @@ Describe "Testing Pester Task" {
 
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder $null
             Assert-MockCalled Invoke-Pester
-            
+
         }
         it "ModuleFolder is not Mandatory" {
             (Get-Command $sut).Parameters['ModuleFolder'].Attributes.Mandatory | Should Be $False
@@ -59,20 +59,34 @@ Describe "Testing Pester Task" {
         }
         it "ExcludeTag is not Mandatory" {
             (Get-Command $sut).Parameters['ExcludeTag'].Attributes.Mandatory | Should Be $False
-        }       
+        }
         it "Calls Invoke-Pester with multiple ExcludeTags specified" {
             mock Invoke-Pester { }
             mock Import-Module { }
             Mock Write-Verbose { }
             Mock Write-Warning { }
             Mock Write-Error { }
-            
+
             . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example,Demo'
             $ExcludeTag.Length | Should be 2
             Write-Output -NoEnumerate $ExcludeTag | Should BeOfType [System.Array]
             Write-Output -NoEnumerate $ExcludeTag | Should BeOfType [String[]]
         }
 
+        it "Handles CodeCoverageOutputFile being null from VSTS" {
+            mock Invoke-Pester { }
+            mock Import-Module { }
+            Mock Write-Verbose { }
+            Mock Write-Warning { }
+            Mock Write-Error { }
+
+            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile $null
+            Assert-MockCalled Invoke-Pester
+        }
+
+        it "Throw an error if CodeCoverageOutputFile is not an xml file" {
+            {. $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile TestDrive:\codecoverage.csv} | Should Throw
+        }
     }
 
     Context "Testing Task Processing" {
@@ -96,6 +110,11 @@ Describe "Testing Pester Task" {
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example'
             Assert-MockCalled Invoke-Pester -ParameterFilter {$ExcludeTag -and $ExcludeTag -eq 'Example'}
         }
+        it "Calls Invoke-Pester with the CodeCoverageOutputFile specified" {
+            #Mock Invoke-Pester -MockWith {}
+            &$Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile TestDrive:\codecoverage.xml
+            Assert-MockCalled Invoke-Pester -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage.xml'}
+        }
 
     }
 
@@ -104,9 +123,16 @@ Describe "Testing Pester Task" {
         Mock Write-Warning { }
         Mock Write-Error { }
         mock Invoke-Pester {
-                param ($OutputFile)
-                New-Item -Path $OutputFile -ItemType File
-            }
+            param ($OutputFile)
+            New-Item -Path $OutputFile -ItemType File
+        } -ParameterFilter {$ResultsFile -and $ResultsFile -eq 'TestDrive:\output.xml'}
+
+        mock Invoke-Pester {
+            param ($CodeCoverageOutputFile)
+            New-Item -Path $CodeCoverageOutputFile -ItemType File
+        } -ParameterFilter {$CodeCoverageOutputFile}
+
+        mock Invoke-Pester {}
 
         it "Creates the output xml file correctly" {
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
@@ -115,6 +141,11 @@ Describe "Testing Pester Task" {
         it "Throws an error when pester tests fail" {
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output2.xml
             Assert-MockCalled -CommandName Write-Error
+        }
+
+        it "Creates the CodeCoverage output file correctly" {
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -CodeCoverageOutputFile TestDrive:\codecoverage.xml
+            Test-Path -Path TestDrive:\codecoverage.xml | Should Be $True
         }
 
     }
