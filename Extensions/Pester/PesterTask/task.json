@@ -47,6 +47,14 @@
       "helpMarkDown": "Results File (nUnit format)"
     },
     {
+      "name": "CodeCoverageOutputFile",
+      "type": "string",
+      "label": "Code Coverage Output File",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Code coverage output file (JaCoCo format) - Requires Pester version 4.0.4+"
+    },
+    {
       "name": "tag",
       "type": "string",
       "label": "Tags",
