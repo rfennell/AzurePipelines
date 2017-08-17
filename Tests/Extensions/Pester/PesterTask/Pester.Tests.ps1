@@ -111,8 +111,11 @@ Describe "Testing Pester Task" {
             Assert-MockCalled Invoke-Pester -ParameterFilter {$ExcludeTag -and $ExcludeTag -eq 'Example'}
         }
         it "Calls Invoke-Pester with the CodeCoverageOutputFile specified" {
-            #Mock Invoke-Pester -MockWith {}
-            &$Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile TestDrive:\codecoverage.xml
+            New-Item -Path TestDrive:\ -Name TestFile1.ps1 | Out-Null
+            New-Item -Path TestDrive:\ -Name TestFile2.ps1 | Out-Null
+            New-Item -Path TestDrive:\ -Name TestFile3.ps1 | Out-Null
+
+            &$Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml'
             Assert-MockCalled Invoke-Pester -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage.xml'}
         }
 
@@ -128,9 +131,8 @@ Describe "Testing Pester Task" {
         } -ParameterFilter {$ResultsFile -and $ResultsFile -eq 'TestDrive:\output.xml'}
 
         mock Invoke-Pester {
-            param ($CodeCoverageOutputFile)
             New-Item -Path $CodeCoverageOutputFile -ItemType File
-        } -ParameterFilter {$CodeCoverageOutputFile}
+        } -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage.xml'}
 
         mock Invoke-Pester {}
 
@@ -144,7 +146,11 @@ Describe "Testing Pester Task" {
         }
 
         it "Creates the CodeCoverage output file correctly" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -CodeCoverageOutputFile TestDrive:\codecoverage.xml
+            New-Item -Path TestDrive:\ -Name TestFile1.ps1 | Out-Null
+            New-Item -Path TestDrive:\ -Name TestFile2.ps1 | Out-Null
+            New-Item -Path TestDrive:\ -Name TestFile3.ps1 | Out-Null
+
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml'
             Test-Path -Path TestDrive:\codecoverage.xml | Should Be $True
         }
 
