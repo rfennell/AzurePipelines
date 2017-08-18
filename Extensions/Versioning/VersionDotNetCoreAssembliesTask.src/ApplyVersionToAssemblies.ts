@@ -83,18 +83,34 @@ if (files.length>0) {
 
         var filecontent = fs.readFileSync(file, fileEncoding.encoding);
         fs.chmodSync(file,"600");
+
+         // Check that the field to update is present 
+        var tmpField = "AssemblyVersion";
         if (field && field.length > 0)
         {
-            console.log (`Updating only the ${field} version`);
-            regexp = new RegExp(`<${field}>${versionRegex}<\/${field}>`);
-            var newVersionField = `<${field}>${newVersion}<\/${field}>`;
-            fs.writeFileSync(file,filecontent.toString().replace(regexp, newVersionField),fileEncoding.encoding);
-        } else {
-            console.log (`Updating all version fields that match Regex ${versionRegex}`);
-            regexp = new RegExp(versionRegex, "g"); // the g get all occurances
-            fs.writeFileSync(file,filecontent.toString().replace(regexp, newVersion),fileEncoding.encoding);
+            tmpField = field;
+        } 
+        
+        if (filecontent.toString().toLowerCase().indexOf(tmpField.toLowerCase()) === -1) { 
+            console.log (`The ${tmpField} version is not present in the .csproj file so adding it`);
+            // add the field, trying to avoid having to load library to parse xml
+             var newVersionField = `</TargetFramework><${tmpField}>${newVersion}<\/${tmpField}>`;
+             fs.writeFileSync(file,filecontent.toString().replace(`</TargetFramework>`, newVersionField),fileEncoding.encoding);
+        } else
+        {
+            if (field && field.length > 0)
+            {
+                console.log (`Updating only the ${field} version`);
+                regexp = new RegExp(`<${field}>${versionRegex}<\/${field}>`);
+                var newVersionField = `<${field}>${newVersion}<\/${field}>`;
+                fs.writeFileSync(file,filecontent.toString().replace(regexp, newVersionField),fileEncoding.encoding);
+            } else {
+                console.log (`Updating all version fields that match Regex ${versionRegex}`);
+                regexp = new RegExp(versionRegex, "g"); // the g get all occurances
+                fs.writeFileSync(file,filecontent.toString().replace(regexp, newVersion),fileEncoding.encoding);
+            }
+            console.log (`${file} - version applied`);
         }
-        console.log (`${file} - version applied`);
     });
 
     if (outputversion && outputversion.length > 0)
