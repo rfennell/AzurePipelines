@@ -155,9 +155,10 @@ function Get-Build
     $usedefaultcreds
     )
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=2.0"
-  	$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
-  	$jsondata 
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
+    $response = $webclient.DownloadString($uri)
+    $jsondata = $response | ConvertFrom-Json
+ 	$jsondata 
 }
 
 # Output execution parameters.
