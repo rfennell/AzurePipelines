@@ -155,9 +155,11 @@ function Get-Build
     $usedefaultcreds
     )
 
+    write-verbose "Getting BuildDef for Build"
+
     $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=2.0"
-    $jsondata = $webclient.DownloadString($uri)
+    $jsondata = $webclient.DownloadString($uri) | ConvertFrom-Json
     $jsondata 
 }
 
@@ -182,6 +184,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
 {
     Write-Verbose "Running inside a build so updating current build $buildid"
     $build = Get-Build -tfsuri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
+    
     $builddefid = $build.definition.id
     Write-Verbose "Build has definition id of $builddefid"
  
