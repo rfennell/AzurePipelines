@@ -156,9 +156,9 @@ function Get-Build
     )
 
     $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
-    $response = $webclient.DownloadString($uri)
-    $jsondata = $response | ConvertFrom-Json
- 	$jsondata 
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=2.0"
+    $jsondata = $webclient.DownloadString($uri)
+    $jsondata 
 }
 
 # Output execution parameters.
