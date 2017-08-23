@@ -169,6 +169,7 @@ $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
 $teamproject = $env:SYSTEM_TEAMPROJECT
 $releaseid = $env:RELEASE_RELEASEID
 $builddefid = $env:BUILD_DEFINITIONID
+$buildid = $env:BUILD_BUILDID
 
 Write-Verbose "collectionUrl = [$env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI]"
 Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
