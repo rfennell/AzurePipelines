@@ -6,6 +6,7 @@
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BuildTasks-Task/)",
   "category": "Utility",
   "visibility": [
+                "Build",
                 "Release"
                 ],
   "author": "Richard Fennell",
@@ -33,7 +34,7 @@
         "AllArtifacts": "All build artifacts",
         "Prime": "Only primary build artifact"
       },
-      "helpMarkDown": "Select the builds to update."
+      "helpMarkDown": "Select the builds to update (Used in Releases only)."
       },
       {
          "name": "variable",

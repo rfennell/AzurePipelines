@@ -4,6 +4,7 @@
 - 1.2.x - Added boolean to allow use of default build agent creditials
 - 1.3.x - Fixed bug with handling of defaultcreds
 - 1.4.x - Include PR from insanity13 to handle compress
+- 1.5.x - Allow the build variable updater to be used in a build as well as a release
 
 A set of tasks to manage builds, it is assumed these tasks will usually be called from a release pipeline.
 

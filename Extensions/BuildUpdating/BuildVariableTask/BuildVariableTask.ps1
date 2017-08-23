@@ -158,17 +158,25 @@ Write-Verbose "releaseid = [$env:RELEASE_RELEASEID]"
 Write-Verbose "builddefid = [$env:BUILD_DEFINITIONID]"
 Write-Verbose "usedefaultcreds = $usedefaultcreds"
 
-Write-Verbose "Mode is $buildmode"
-if ($buildmode -eq "AllArtifacts")
+if ( [string]::IsNullOrEmpty($releaseid))
 {
-    $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
-    foreach($id in $builddefs)
-    {
-        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
-    }
-} else 
-{
+    Write-Verbose "Running inside a build so updating current build"
     Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
-}
 
+} else {
+
+    Write-Verbose "Running inside a release so updating asking which build(s) to update"
+    Write-Verbose "Mode is $buildmode"
+    if ($buildmode -eq "AllArtifacts")
+    {
+        $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
+        foreach($id in $builddefs)
+        {
+            Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
+        }
+    } else 
+    {
+        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
+    }
+}
 
