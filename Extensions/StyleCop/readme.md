@@ -11,6 +11,7 @@ Releases
       Added custom dictionaries to avoid name matching false errors (pull request from @amjrsl) 
 - 1.10 Fixed issues with discovering settings.stylecop files in solution folder (Issue #104)
 - 1.11 Added parameter for adding allowable violations, which sets a threshold of acceptable number of violations (pull request from @jynxeh)
+- 1.12 Fixed 'Test Warnings as Errors' flag being ignored (pull request from @jynxeh)
 
 The task takes the following arguments
 - TreatStyleCopViolationsErrorsAsWarnings - Treat StyleCop violations errors as warnings (default false).
