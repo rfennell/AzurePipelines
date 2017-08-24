@@ -58,7 +58,7 @@ else
 }
 
 # Determine if the task should error
-if ([int]$result.TotalViolations -gt [int]$allowableViolationCount)
+if ($result.OverallSuccess -eq $false -and [int]$result.TotalViolations -gt [int]$allowableViolationCount)
 {
    Write-Error ($resultMessage)
 } 
