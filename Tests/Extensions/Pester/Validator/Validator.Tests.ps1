@@ -5,7 +5,7 @@ function MyValidator($thing_to_validate) {
 
 function Invoke-SomethingThatUsesMyValidator {
     param(
-        [ValidateScript({MyValidator $_})]
+        [ValidateScript( {MyValidator $_})]
         $some_param
     )
 }
@@ -25,12 +25,12 @@ Describe "MyValidator" {
 
     It "passes things that start with the letter S" {
         $result = MyValidator "summer"
-        $result | Should Be $true
+        $result | Should -Be $true
     }
 
     It "does not pass a param that does not start with S" {
         $result = MyValidator "bummer"
-        $result | Should Be $false
+        $result | Should -Be $false
     }
 }
 
