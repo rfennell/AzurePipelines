@@ -7,7 +7,7 @@ Releases
 - 4.4.x - Added support for multiple comma separated tags
 - 5.0.x - Added optional support for Pester 4.0.3
 - 5.1.x - Fixes issue with running tests using the 32Bit process switch (#150)
-- 5.2.x - Add support for JaCoCo code coverage as provided by Pester 4.0.4 ([issue #152](https://github.com/rfennell/vNextBuild/issues/152))
+- 6.0.x - Add support for JaCoCo code coverage as provided by Pester 4.0.8 ([issue #152](https://github.com/rfennell/vNextBuild/issues/152))
 
 A task to install and run PowerShell Pester based tests
 The task takes five parameters
@@ -23,8 +23,8 @@ The main ones are
 The advanced ones are
 
 - Should the instance of PowerShell used to run the test be forced to run in 32bit, defaults to false.
-- (New in 5.x) You can pick if the Pester 3.4.3 or 4.0.3 modules (both are included in the task) are used
-- If neither 3.4.3 or 4.0.3 is suitable then a custom module path pointing to where the required Pester.psd1 and related files are stored can be entered. This will be used in preference to the embedded versions
+- (New in 5.x) You can pick if the Pester 3.4.3 or 4.0.8 modules (both are included in the task) are used
+- If neither 3.4.3 or 4.0.8 is suitable then a custom module path pointing to where the required Pester.psd1 and related files are stored can be entered. This will be used in preference to the embedded versions
 
 The Pester task does not in itself upload the test results, it just throws an error if tests fails. It relies on the standard test results upload task.
 
