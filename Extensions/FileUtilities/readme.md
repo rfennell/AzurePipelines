@@ -1,22 +1,22 @@
 Releases
 
-1.0 Initial internal release
-2.0 Public release
-2.1 Added replacing InnerText of XML nodes as well as attributes in XML task
-    Added support for multi-files on XML task
-2.2 Made the location of the local copy of the artifact configurable
-2.3 Issue147 fixed filter for successful builds on UNC copy task
+- 1.0 Initial internal release
+- 2.0 Public release
+- 2.1 Added replacing InnerText of XML nodes as well as attributes in XML task
+    - Added support for multi-files on XML task
+- 2.2 Made the location of the local copy of the artifact configurable
+- 2.3 Issue147 fixed filter for successful builds on UNC copy task
 
 
 This set of tasks perform file copy related actions
 
-## File Copy with Filters 
+## File Copy with Filters
 
 This task finds all the files that match a given pattern via a recursive search of the source folder. The selected files are the copied to the single target folder e.g. find all the DACPAC file and place them in the **.\drops\db folder**
 
-This task was developed as a short term fix around the time of TFS 2015.1. In this and earlier versions of vNext build the 'Publish Build Artifacts' searched for files, copied them to the staging folder and then onto the drops location. In later versions these steps are split into two task, one to build the folder structure, the other to move the content. This split functionality is what this task was designed to assist with. 
+This task was developed as a short term fix around the time of TFS 2015.1. In this and earlier versions of vNext build the 'Publish Build Artifacts' searched for files, copied them to the staging folder and then onto the drops location. In later versions these steps are split into two task, one to build the folder structure, the other to move the content. This split functionality is what this task was designed to assist with.
 
-The reason to use still use this task over the built in one is that it flattens folder structures by default. Useful to get all the files of a single type into a single folder. 
+The reason to use still use this task over the built in one is that it flattens folder structures by default. Useful to get all the files of a single type into a single folder.
 
 ###Usage
 
@@ -27,9 +27,9 @@ The reason to use still use this task over the built in one is that it flattens 
 
 In effect this task wrappers [Get-ChildItem](https://technet.microsoft.com/en-us/library/hh849800.aspx), see this commands online documentation for the filtering options
 
-This tasks would usually be followed by a 'Publish Build Artifacts' task to move the contents to the build drop. 
+This tasks would usually be followed by a 'Publish Build Artifacts' task to move the contents to the build drop.
 
-## GetArtifactFromUncShareTask 
+## GetArtifactFromUncShareTask
 
 With TFS 2015.2 (and the associated VSTS version) Release Management cannot pick-up build artifacts from a remote TFS server.
 
@@ -42,7 +42,7 @@ It is hoped that at some point in the future there will be a build in way to ach
 To use the new task
 
 - Install the task in your VSTS or TFS 2015.2 instance.
-- In your release definition, disable the auto getting of the artifacts for the environment this is on the environments general tab. 
+- In your release definition, disable the auto getting of the artifacts for the environment this is on the environments general tab.
 
 **Note**: In some scenarios you might choose to use both the built in linking to artifacts and this custom task
 
@@ -61,9 +61,9 @@ When the task runs it should drop artifacts in the same location as the standard
 - The agent running the task will almost certainly be hosted on your network as it will need to be able to resolve the address the TFS server to copy artifacts from. This is unlikely to be possible for the Microsoft hosted build agent.
 - The task in its current form does not provide any linking of artifacts to the build reports, or allow the selection of build versions when the release is created. Thus removing audit trail features of TFS vNext Release Management.
 
-Even given these limitations, it does provide a means to get a pair of TFS servers working together, so can certainly enable some more edge case scenarios 
+Even given these limitations, it does provide a means to get a pair of TFS servers working together, so can certainly enable some more edge case scenarios
 
-## Update XML file 
+## Update XML file
 
 This task edits the value if an attribute in a XML file based on a XPath filter
 
