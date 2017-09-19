@@ -97,4 +97,13 @@ Describe "StyleCop single file tests" {
         $result.ViolationCount | Should be 1 
     }
 
+    It "File has 0 issues with local function" {
+        $result = Invoke-StyleCop -sourcefolders "$PSScriptRoot\testdata\FileWithLocalFunction.cs" `
+                                  -SettingsFile "$PSScriptRoot\testdata\AllSettingsEnabled.StyleCop" `
+                                  -loggingfolder "$PSScriptRoot\logs" `
+                                  -runName "TestRunLocalFunction"
+        $result.Succeeded | Should be $true
+        $result.ViolationCount | Should be 0
+    }
+
 } 
