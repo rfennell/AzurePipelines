@@ -20,7 +20,7 @@ Describe -Tags "Example" "Add-Numbers" {
     }
 
     It "should not be 0" {
-        Add-Numbers 2 3 | Should Not -Be 0
+        Add-Numbers 2 3 | Should -Not -Be 0
     }
 }
 
