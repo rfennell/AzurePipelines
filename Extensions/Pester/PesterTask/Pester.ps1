@@ -18,7 +18,7 @@ param
     [string]$pesterVersion,
 
     [validateScript( {
-            If ($_ -eq $Null -or $_ -eq "") {
+            If ([String]::IsNullOrWhiteSpace($_)) {
                 # optional value not passed
                 $true
             }

@@ -39,6 +39,17 @@ Describe "Testing Pester Task" {
             Assert-MockCalled Invoke-Pester
 
         }
+        it "Continues when passed a whitespace string ModuleFolder" {
+            mock Invoke-Pester { }
+            mock Import-Module { }
+            Mock Write-Verbose { }
+            Mock Write-Warning { }
+            Mock Write-Error { }
+
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "   "
+            Assert-MockCalled Invoke-Pester
+
+        }
         it "ModuleFolder is not Mandatory" {
             (Get-Command $sut).Parameters['ModuleFolder'].Attributes.Mandatory | Should -Be $False
         }
