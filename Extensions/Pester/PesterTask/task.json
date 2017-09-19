@@ -76,13 +76,13 @@
       "name": "pesterVersion",
       "type": "pickList",
       "label": "Pester version",
-      "defaultValue": "3.4.3",
+      "defaultValue": "4.0.8",
       "required": true,
       "helpMarkDown": "Verson of Pester to use",
       "groupName": "advanced",
       "options": {
         "3.4.3": "3.4.3",
-        "4.0.6": "4.0.6"
+        "4.0.6": "4.0.8"
       }
     },
     {
