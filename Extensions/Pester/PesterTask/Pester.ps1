@@ -32,7 +32,7 @@ param
                     }
                 }
                 else {
-                    Throw "Invalid path for ModuleFolder"
+                    Throw "Invalid path for ModuleFolder: $_"
                 }
             }
 
