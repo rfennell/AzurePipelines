@@ -203,3 +203,6 @@ Extensions/XplatGenerateReleaseNotes/XPlatGenerateReleaseNotesTask/*.js
 Extensions/XplatGenerateReleaseNotes/XPlatGenerateReleaseNotesTask/*.js.map
 Extensions/Versioning/VersionDotNetCoreAssembliesTask/*.js
 Extensions/Versioning/VersionDotNetCoreAssembliesTask/*.js.map
+
+# Visual Studio Code
+.vscode/
