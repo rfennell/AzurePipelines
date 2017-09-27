@@ -5,7 +5,7 @@ param
     $mode,
     $value,
     $usedefaultcreds
- 
+
  )
 
 
@@ -22,15 +22,15 @@ function Set-BuildDefinationVariable
     )
 
     $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
-    
+
     write-verbose "Updating Build Definition $builddefID for $($tfsUri)/$($teamproject)"
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=2.0"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=4.0"
     $jsondata = $data | ConvertTo-Json -Compress -Depth 10 #else we don't get lower level items
 
-    $response = $webclient.UploadString($uri,"PUT", $jsondata) 
+    $response = $webclient.UploadString($uri,"PUT", $jsondata)
     $response
-    
+
 }
 
 function Get-WebClient
@@ -41,7 +41,7 @@ function Get-WebClient
     )
 
     $webclient = new-object System.Net.WebClient
-	
+
     if ([System.Convert]::ToBoolean($usedefaultcreds) -eq $true)
     {
         Write-Verbose "Using default credentials"
@@ -71,14 +71,14 @@ function Get-BuildDefination
     )
 
     $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
-   
+
     write-verbose "Getting Build Definition $builddefID "
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=2.0"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=4.0"
 
-    $response = $webclient.DownloadString($uri) | ConvertFrom-Json 
+    $response = $webclient.DownloadString($uri) | ConvertFrom-Json
     $response
-    
+
 }
 
 
@@ -102,7 +102,7 @@ function Update-Build
     {
         Write-Verbose "Manually updating variable"
         $def.variables.$variable.value = "$value"
-    } else 
+    } else
     {
         Write-Verbose "Autoincrementing variable"
         $def.variables.$variable.value = "$([convert]::ToInt32($def.variables.$variable.value) +1)"
@@ -124,10 +124,10 @@ function Get-BuildsDefsForRelease
     )
 
     $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
-    
+
     write-verbose "Getting Builds for Release releaseID"
 
-    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up   
+    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up
 	$rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseId)?api-version=3.0-preview"
     $response = $webclient.DownloadString($uri)
@@ -158,9 +158,9 @@ function Get-Build
     write-verbose "Getting BuildDef for Build"
 
     $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=2.0"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=4.0"
     $jsondata = $webclient.DownloadString($uri) | ConvertFrom-Json
-    $jsondata 
+    $jsondata
 }
 
 # Output execution parameters.
@@ -184,10 +184,10 @@ if ( [string]::IsNullOrEmpty($releaseid))
 {
     Write-Verbose "Running inside a build so updating current build $buildid"
     $build = Get-Build -tfsuri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
-    
+
     $builddefid = $build.definition.id
     Write-Verbose "Build has definition id of $builddefid"
- 
+
     Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
 
 } else {
@@ -201,7 +201,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
         {
             Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
         }
-    } else 
+    } else
     {
         Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
     }
