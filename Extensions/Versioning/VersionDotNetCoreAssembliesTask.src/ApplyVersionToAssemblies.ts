@@ -121,9 +121,20 @@ if (files.length>0) {
                 var newVersionField = `<${field}>${newVersion}<\/${field}>`;
                 fs.writeFileSync(file,filecontent.toString().replace(regexp, newVersionField),fileEncoding.encoding);
             } else {
-                console.log (`Updating all version fields that match Regex ${versionRegex}`);
-                regexp = new RegExp(versionRegex, "g"); // the g get all occurances
-                fs.writeFileSync(file,filecontent.toString().replace(regexp, newVersion),fileEncoding.encoding);
+                console.log(`Updating all version fields with ${newVersion}`);
+                const csprojVersionRegex = /(<\w+Version>)(.*)(<\/\w+Version>)/gmi;
+                let content: string = filecontent.toString();
+                let matches;
+                while ((matches = csprojVersionRegex.exec(content)) !== null)
+                {
+                    var existingTag: string = matches[0];
+                    console.log(`Existing Tag: ${existingTag}`);
+                    var replacementTag: string = `${matches[1]}${newVersion}${matches[3]}`;
+                    console.log(`Replacement Tag: ${replacementTag}`);
+                    content = content.replace(existingTag, replacementTag);
+                }
+
+                fs.writeFileSync(file, content, fileEncoding.encoding);
             }
             console.log (`${file} - version applied`);
         }
@@ -139,6 +150,3 @@ else
 {
     tl.warning("Found no files.");
 }
-
-
-
