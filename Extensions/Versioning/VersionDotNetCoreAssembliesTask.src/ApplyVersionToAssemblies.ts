@@ -85,7 +85,7 @@ if (files.length>0) {
         fs.chmodSync(file,"600");
 
          // Check that the field to update is present
-        var tmpField = "AssemblyVersion";
+        var tmpField = "Version";
         if (field && field.length > 0)
         {
             tmpField = field;
