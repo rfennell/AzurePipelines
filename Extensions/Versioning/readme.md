@@ -20,6 +20,7 @@
 - V1.17   - Fixed bug with nuspec versioning that was not finding files in the root path.
 - V1.18   - Issue 129
 - V1.19   - Issue 160 with .NET Core and Standard Versioning
+- V1.22   - Fixed Issue 166 with .NET Core not versioning csproj files targetting multiple frameworks.
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of
