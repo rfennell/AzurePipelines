@@ -98,6 +98,7 @@ if (files.length>0) {
              regexp = new RegExp("</TargetFramework>","g")
              if (regexp.exec(filecontent.toString()))
              {
+                console.log (`The ${file} .csproj file only targets 1 framework`);
                 var newVersionField = `</TargetFramework><${tmpField}>${newVersion}<\/${tmpField}>`;
                 fs.writeFileSync(file,filecontent.toString().replace(`</TargetFramework>`, newVersionField),fileEncoding.encoding);
              }
@@ -105,6 +106,7 @@ if (files.length>0) {
              regexp = new RegExp("</TargetFrameworks>","g")
              if (regexp.exec(filecontent.toString()))
              {
+                console.log (`The ${file} .csproj file targets multiple frameworks`);
                 var newVersionField = `</TargetFrameworks><${tmpField}>${newVersion}<\/${tmpField}>`;
                 fs.writeFileSync(file,filecontent.toString().replace(`</TargetFrameworks>`, newVersionField),fileEncoding.encoding);
              }
