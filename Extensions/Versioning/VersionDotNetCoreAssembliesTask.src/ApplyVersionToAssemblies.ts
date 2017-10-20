@@ -85,10 +85,10 @@ if (files.length>0) {
         fs.chmodSync(file,"600");
 
          // Check that the field to update is present
-        var tmpField = "Version";
+        var tmpField = "<Version>";
         if (field && field.length > 0)
         {
-            tmpField = field;
+            tmpField = `<${field}>`;
         }
 
         if (filecontent.toString().toLowerCase().indexOf(tmpField.toLowerCase()) === -1) {
@@ -96,6 +96,7 @@ if (files.length>0) {
             // add the field, trying to avoid having to load library to parse xml
             // Check for TargetFramework when only using a single framework
              regexp = new RegExp("</TargetFramework>","g")
+             tmpField = tmpField.replace('<','').replace('>','')
              if (regexp.exec(filecontent.toString()))
              {
                 console.log (`The ${file} .csproj file only targets 1 framework`);
