@@ -22,10 +22,10 @@ https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/def
 
 # vNextBuild Tasks and Resources
 
-This repo contains TFS vNext tasks and useful PowerShell scripts.It has eveoleved over time
+This repo contains TFS vNext tasks and useful PowerShell scripts. It has evolved over time
 
 - Initially it contained PowerShell scripts to perform build tasks
-- Next I moved to vNext build tasks to wrapper the PowerShell
+- Next I moved to vNext build tasks to wrap PowerShell
 - Finally the tasks have been placed in VSTS/TFS extensions for ease of installation 
 
 ## Building Tasks ##
