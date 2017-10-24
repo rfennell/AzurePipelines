@@ -32,6 +32,6 @@ This repo contains TFS vNext tasks and useful PowerShell scripts.It has eveoleve
 
 For details of how to build and deploy these tasks/extensions see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki)
 
-## Included Scripts, Tasks and Extensions in the Repo##
+## Included Scripts, Tasks and Extensions in the Repo 
 For more details of how to use these tasks see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki)
 
