@@ -23,6 +23,7 @@
 - V1.22   - Fixed Issue 166 with .NET Core not versioning csproj files targetting multiple frameworks.
     - Fixed Issue 167 with .NET Core versioning not applying correctly to nupkg and product version fields.
 - V1.23   - Fixed Issue 183 which broke due to V1.22 changing default behaviour.
+- V1.24   - Added task to version Android manifest files for Xamarin projects.
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of
@@ -35,6 +36,7 @@ A set of tasks based on the versioning sample script to version tamping assembli
 * VersionNuspec - sets the version in a Nuget Nuspec file (used pre packing)
 * VersionSharePoint - sets the version in a SharePoint 2013/2016/O365 Add-In
 * VersionWix - sets the version in a Wix Project
+* VersionAndroidManifest - Sets the versionName and versionCode values in an Android project
 
 All these tasks take at least two parameters, which are both defaulted
 
@@ -55,3 +57,8 @@ The VSIX versioner also takes the following parameters
 
 * If the versionumber parameter is treated as a version number or a build number (from which the version needs to be extracted)
 * If the discovered version should be trimmed to 2 digit field
+
+The Android manifest versioner takes the following extra parameters:
+
+* Version Name Pattern - This is the pattern you'd like the publicly visible version name to take in. This should be in the format {1}.{2} or similar but will also work with 1.2.3 etc.
+* Version Code Pattern - This is the elements that you'd like to use to store the internal version number that Google uses for detecting if a version of the app is newer than an existing version, both in the play store and on the device. This will concatenate any specifies parts together into a single integer. It Accepts single values like {3} or multiple like {1}{2}{3}, delmiting with `{x}` is optional and should work with 123.
