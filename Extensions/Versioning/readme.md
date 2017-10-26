@@ -26,6 +26,7 @@
 - V1.24   - Added task to version Android manifest files for Xamarin projects.
 - V1.25   - Fixed Issue 176 where the task assumes the existing version number matches the provided version number (PR from @esbenbach)
           - Fixed Issue 185 where the task wasn't replacing existing version numbers correctly.
+          - Fixed Issue 177 where the task wouldn't find assembly info files if they weren't in specific folders.
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of
