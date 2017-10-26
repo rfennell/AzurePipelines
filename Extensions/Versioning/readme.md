@@ -24,6 +24,8 @@
     - Fixed Issue 167 with .NET Core versioning not applying correctly to nupkg and product version fields.
 - V1.23   - Fixed Issue 183 which broke due to V1.22 changing default behaviour.
 - V1.24   - Added task to version Android manifest files for Xamarin projects.
+- V1.25   - Fixed Issue 176 where the task assumes the existing version number matches the provided version number (PR from @esbenbach)
+          - Fixed Issue 185 where the task wasn't replacing existing version numbers correctly.
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of
