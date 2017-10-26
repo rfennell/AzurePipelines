@@ -117,9 +117,20 @@ if (files.length>0) {
             if (field && field.length > 0)
             {
                 console.log (`Updating only the ${field} version`);
-                regexp = new RegExp(`<${field}>${versionRegex}<\/${field}>`);
-                var newVersionField = `<${field}>${newVersion}<\/${field}>`;
-                fs.writeFileSync(file,filecontent.toString().replace(regexp, newVersionField),fileEncoding.encoding);
+                const csprojVersionRegex = `(<${field}>)(.*)(<\/${field}>)`;
+                var regexp = new RegExp(csprojVersionRegex,'gmi');
+                let content: string = filecontent.toString();
+                let matches;
+                while ((matches = regexp.exec(content)) !== null)
+                {
+                    var existingTag: string = matches[0];
+                    console.log(`Existing Tag: ${existingTag}`);
+                    var replacementTag: string = `${matches[1]}${newVersion}${matches[3]}`;
+                    console.log(`Replacement Tag: ${replacementTag}`);
+                    content = content.replace(existingTag, replacementTag);
+                }
+                fs.writeFileSync(file, content, fileEncoding.encoding);
+
             } else {
                 console.log(`Updating all version fields with ${newVersion}`);
                 const csprojVersionRegex = /(<\w+Version>)(.*)(<\/\w+Version>)/gmi;
@@ -133,7 +144,6 @@ if (files.length>0) {
                     console.log(`Replacement Tag: ${replacementTag}`);
                     content = content.replace(existingTag, replacementTag);
                 }
-
                 fs.writeFileSync(file, content, fileEncoding.encoding);
             }
             console.log (`${file} - version applied`);
