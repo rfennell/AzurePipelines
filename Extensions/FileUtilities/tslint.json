@@ -11,7 +11,7 @@
             "spaces"
         ],
         "no-consecutive-blank-lines": true,
-        "no-console": true,
+        "no-console": false,
         "no-duplicate-variable": true,
         "no-eval": true,
         "no-internal-module": true,

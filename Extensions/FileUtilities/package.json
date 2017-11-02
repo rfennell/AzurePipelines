@@ -4,7 +4,7 @@
     "build": "npm run clean && npm run transpile && npm run package",
     "package": "npm prune -production && npm run copy",
     "copy": "ncp ./node_modules ./XmlFileUpdateTask/node_modules",
-    "clean": "rimraf ./XmlFileUpdateTask/*.js && rimraf ./XmlFileUpdateTask/*.map.js && rimraf ./XmlFileUpdateTask/node_modules",
+    "clean": "rimraf ./XmlFileUpdateTask/*.js && rimraf ./XmlFileUpdateTask/*.js.map && rimraf ./XmlFileUpdateTask/node_modules",
     "cleanmodules": "rimraf ./XmlFileUpdateTask/node_modules",
     "transpile": "tsc -p ./XmlFileUpdateTask.src",
     "lint": "tslint -c tslint.json \"XmlFileUpdateTask.src/*.ts"
