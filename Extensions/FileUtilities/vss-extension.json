@@ -58,7 +58,7 @@
     }
     ,
     {
-      "path": "XmlFileUpdateTask"
+      "path": "XmlFileUpdateTask/XmlFileUpdateTask"
     }
   ],
   "contributions": [
