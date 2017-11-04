@@ -13,7 +13,7 @@ import { logDebug,
        }  from "./agentSpecificFunctions";
 
 const filename = getVariable("filename");
-const xpathQuery =getVariable("xpath");
+const xpathQuery = getVariable("xpath");
 const attribute = getVariable("attribute");
 const value = getVariable("value");
 const recurse = new Boolean(getVariable("recurse"));
@@ -24,12 +24,11 @@ logInfo (`Param: xpath - ${xpathQuery}`);
 logInfo (`Param: attribute - ${attribute}`);
 logInfo (`Param: value - ${value}`);
 
-
 let files;
 findFiles(path.dirname(filename), path.basename(filename), recurse, files);
 
 files.forEach(file => {
     let rawContent = fs.readFileSync(file).toString();
-    document = processFile(xpathQuery, file, rawContent, value, attribute, logInfo)
+    document = processFile(xpathQuery, file, rawContent, value, attribute, logInfo);
     fs.writeFileSync(file, document);
 });

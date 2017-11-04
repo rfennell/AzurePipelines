@@ -1,13 +1,12 @@
 {
   "name": "FileUtilities",
   "scripts": {
-    "build": "npm run clean && npm run transpile && npm run package",
+    "build": "npm run clean && npm run lint && npm run transpile && npm run package",
     "package": "npm prune -production && npm run copy",
-    "copy": "ncp ./node_modules ./dist/node_modules",
-    "clean": "rimraf ./dist/*.js && rimraf ./dist/*.js.map && rimraf ./dist/node_modules",
-    "cleanmodules": "rimraf ./dist/node_modules",
+    "copy": "ncp ./node_modules ./task/node_modules && ncp ./dist/src ./task",
+    "clean": "rimraf ./dist/src && rimraf ./dist/test && rimraf ./task/*.js && rimraf ./task/*.js.map && rimraf ./task/node_modules",
     "transpile": "tsc -p ./",
-    "lint": "tslint -c tslint.json \"src/*.ts",
+    "lint": "tslint -c tslint.json src/*.ts test/*.ts",
     "test": "mocha -r ts-node/register ./test/*.ts"
   },
   "dependencies": {
@@ -29,7 +28,7 @@
     "@types/node": "^7.0.18",
     "chai": "^3.5.0",
     "mocha": "^3.5.3",
-    "rimraf": "^2.5.4",
+    "rimraf": "^2.6.2",
     "sinon": "^2.2.0",
     "ts-loader": "^2.0.3",
     "ts-node": "^3.3.0",

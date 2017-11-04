@@ -4,27 +4,16 @@
        "target": "es6",
        "noImplicitAny": false,
        "moduleResolution": "node",
-     //  "rootDir": "XmlFileUpdateTask.src/",
         "rootDirs": [
           "src/",
           "test/"
         ],
-      //  "watch": false,
         "outDir": "dist",
       //  "types": [
       //    "node"
       //  ],
         "sourceMap":  true
      },
-   //  "filesGlob": [
-   //     "./XmlFileUpdateTask.src//.ts",
-   //     "./typings/index.d.ts",
-   //     "./node_modules/@types//.d.ts"
-   // ],
-   // "exclude": [
-   //       "node_modules",
-   //       "typings"
-   // ]
    "baseUrl": ".",
    "paths": {
        "*": [

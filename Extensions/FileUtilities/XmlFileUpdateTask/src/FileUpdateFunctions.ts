@@ -8,7 +8,7 @@ function escapeRegExp(str) {
 }
 
 // List all files in a directory in Node.js recursively in a synchronous fashion
-export function findFiles (dir, filenamePattern , recurse, filelist) : any {
+export function findFiles (dir, filenamePattern, recurse, filelist): any {
 
   const regex = "^" + escapeRegExp(filenamePattern).replace(/\*/, ".*") + "$";
   const r = new RegExp(regex, "i"); // make it case insensitive
@@ -33,12 +33,11 @@ export function findFiles (dir, filenamePattern , recurse, filelist) : any {
   return filelist;
 }
 
-export function processFile(xpathQuery, file, rawContent, value, attribute, logFunction) :any
-{
+export function processFile(xpathQuery, file, rawContent, value, attribute, logFunction): any {
   const dom = xmldom.DOMParser;
-  
+
   let document = new dom().parseFromString(rawContent);
-  
+
   //  XPathResult.FIRST_ORDERED_NODE_TYPE using int equiv 9 else build transpile issue
   let xmlNode = xpath.evaluate( xpathQuery , document, null, 9, null );
   if (xmlNode != null) {
