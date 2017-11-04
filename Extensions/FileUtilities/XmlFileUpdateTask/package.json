@@ -1,7 +1,7 @@
 {
   "name": "FileUtilities",
   "scripts": {
-    "build": "npm run clean && npm run lint && npm run transpile s",
+    "build": "npm run clean && npm run lint && npm run transpile ",
     "package": "npm prune -production && npm run copy",
     "copy": "ncp ./node_modules ./task/node_modules && ncp ./dist/src ./task",
     "clean": "rimraf ./dist/src && rimraf ./dist/test && rimraf ./task/*.js && rimraf ./task/*.js.map && rimraf ./task/node_modules",
