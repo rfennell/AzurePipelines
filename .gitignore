@@ -208,3 +208,4 @@ Extensions/FileUtilities/XmlFileUpdateTask/task/*.js.map
 Extensions/FileUtilities/XmlFileUpdateTask/task/node_modules
 Extensions/FileUtilities/XmlFileUpdateTask/node_modules
 Extensions/FileUtilities/XmlFileUpdateTask/dist
+Extensions/FileUtilities/XmlFileUpdateTask/test-output
