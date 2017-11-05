@@ -1,8 +1,6 @@
-import path = require("path") ;
-import fs = require("fs") ;
-
 import { findFiles,
-         processFile
+         processFile,
+         processFiles
        } from "./FileUpdateFunctions";
 
 import { logDebug,
@@ -24,13 +22,4 @@ logInfo (`Param: xpath - ${xpathQuery}`);
 logInfo (`Param: attribute - ${attribute}`);
 logInfo (`Param: value - ${value}`);
 
-let files;
-logDebug (`Looking in folder [${path.dirname(filename)}] for files that match pattern [${path.basename(filename)}]`);
-
-files = findFiles(path.dirname(filename), path.basename(filename), recurse, files);
-
-files.forEach(file => {
-    let rawContent = fs.readFileSync(file).toString();
-    document = processFile(xpathQuery, file, rawContent, value, attribute, logInfo);
-    fs.writeFileSync(file, document);
-});
+processFiles (filename, recurse, xpathQuery, value, attribute, logInfo, logDebug );

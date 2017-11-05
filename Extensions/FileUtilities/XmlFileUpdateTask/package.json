@@ -7,7 +7,8 @@
     "clean": "rimraf ./dist/src && rimraf ./dist/test && rimraf ./task/*.js && rimraf ./task/*.js.map && rimraf ./task/node_modules",
     "transpile": "tsc -p ./",
     "lint": "tslint -c tslint.json src/*.ts test/*.ts",
-    "test": "mocha -r ts-node/register ./test/*.ts --reporter mocha-junit-reporter --reporter-options mochaFile=./test-output/test-results.xml "
+    "test": "mocha -r ts-node/register ./test/*.ts --reporter mocha-junit-reporter --reporter-options mochaFile=./test-output/test-results.xml ",
+    "test-no-logger": "mocha -r ts-node/register ./test/*.ts "
   },
   "dependencies": {
     "@types/node": "^7.0.46",
@@ -15,6 +16,7 @@
     "@types/xmldom": "^0.1.29",
     "Buffer": "^0.0.0",
     "fs": "0.0.1-security",
+    "fs-copy-file-sync": "^1.0.1",
     "ncp": "^2.0.0",
     "request": "^2.80.0",
     "tsd": "^0.6.5",

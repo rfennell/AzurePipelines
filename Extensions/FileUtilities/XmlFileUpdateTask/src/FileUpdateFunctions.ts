@@ -7,6 +7,19 @@ function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
+export function processFiles (filename, recurse, xpathQuery, value, attribute, logInfo, logDebug ) {
+  let files;
+  logDebug (`Looking in folder [${path.dirname(filename)}] for files that match pattern [${path.basename(filename)}]`);
+
+  files = findFiles(path.dirname(filename), path.basename(filename), recurse, files);
+
+  files.forEach(file => {
+      let rawContent = fs.readFileSync(file).toString();
+      let document = processFile(xpathQuery, file, rawContent, value, attribute, logInfo);
+      fs.writeFileSync(file, document);
+  });
+}
+
 // List all files in a directory in Node.js recursively in a synchronous fashion
 export function findFiles (dir, filenamePattern, recurse, filelist): any {
 

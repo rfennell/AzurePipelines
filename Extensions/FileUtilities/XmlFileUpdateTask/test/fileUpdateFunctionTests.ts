@@ -1,14 +1,16 @@
 import { findFiles,
-         processFile
+         processFile,
+         processFiles
 } from "../src/FileUpdateFunctions";
 
 import fs = require("fs") ;
+const copyFileSync = require("fs-copy-file-sync");
 import { expect } from "chai";
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import "mocha";
 
 function loggingFunction (msg: string) {
-   // a way to dump the console message if needed, uncomment line below
+   // a way to dump the console message if needed, uncomment line below if needed
    // console.log(msg);
 }
 
@@ -69,6 +71,7 @@ describe("ProcessFile function", () => {
 
     it("should throw error when named attribute cannot be found", () => {
       let rawContent = fs.readFileSync("test/testdata/1.xml").toString();
+
       expect(function () { // have to wrapper in function
         let updateDoc = processFile(
           "/configuration/appSettings/add[@key='Version']",
@@ -79,4 +82,32 @@ describe("ProcessFile function", () => {
           loggingFunction);
        }).to.throw(Error);
     });
+});
+
+describe("ProcessFiles function", () => {
+  before(function() {
+     // make a copy we can overright with breaking test data
+    // fs.createReadStream("test/testdata/1.xml").pipe(fs.createWriteStream("test/testdata/writeable.xml"));
+     copyFileSync("test/testdata/1.xml", "test/testdata/writeable.xml");
+  });
+  it("should find a list of files and update them", () => {
+    let documentFilter = "test/testdata/writeable.xml";
+    let expected = fs.readFileSync("test/testdata/1a.updated").toString();
+    processFiles(
+      documentFilter,
+      false, // don't recurse, other tests cover this makes test management easier
+      "/configuration/appSettings/add[@key='Enabled']",
+      "true",
+      "",
+      loggingFunction,
+      loggingFunction);
+
+    let updatedDoc = fs.readFileSync(documentFilter).toString();
+    expect(updatedDoc.toString()).to.equal(expected.toString());
+
+  });
+  after(function() {
+    // remove the file if created
+    fs.unlink("test/testdata/writeable.xml");
+  });
 });

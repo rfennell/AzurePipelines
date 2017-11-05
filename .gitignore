@@ -209,3 +209,4 @@ Extensions/FileUtilities/XmlFileUpdateTask/task/node_modules
 Extensions/FileUtilities/XmlFileUpdateTask/node_modules
 Extensions/FileUtilities/XmlFileUpdateTask/dist
 Extensions/FileUtilities/XmlFileUpdateTask/test-output
+Extensions/FileUtilities/XmlFileUpdateTask/test/testdata/writeable.xml
