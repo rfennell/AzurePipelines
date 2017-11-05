@@ -25,7 +25,9 @@ logInfo (`Param: attribute - ${attribute}`);
 logInfo (`Param: value - ${value}`);
 
 let files;
-findFiles(path.dirname(filename), path.basename(filename), recurse, files);
+logDebug (`Looking in folder [${path.dirname(filename)}] for files that match pattern [${path.basename(filename)}]`);
+
+files = findFiles(path.dirname(filename), path.basename(filename), recurse, files);
 
 files.forEach(file => {
     let rawContent = fs.readFileSync(file).toString();
