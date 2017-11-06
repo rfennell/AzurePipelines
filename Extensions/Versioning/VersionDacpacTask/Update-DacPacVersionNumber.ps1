@@ -35,7 +35,6 @@ param (
 
 )
 
-
 function Get-Toolpath
 {
     param(
@@ -52,33 +51,38 @@ function Get-Toolpath
             Write-Verbose 'Found a VS2017 SKU'
             ForEach ($folder in Get-ChildItem -Path $vs2017base)
             {
-                    $ToolPath = "$vs2017base\$folder\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130"
-                    Write-Verbose "Checking $ToolPath"
-                    if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+                    $TestPath = "$vs2017base\$folder\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130"
+                    Write-Verbose "Checking $TestPath"
+                    if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
                     {
                     Write-Verbose 'Found VS2017 SQL2016 (130) assemblies' -verbose
-                    return $ToolPath
+                    return $TestPath
                     }
             }
        }
        # for older versions we check each path
-        $ToolPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130'
-        if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+        $TestPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130'
+        if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
         {
            Write-Verbose 'Found VS2015 SQL2016 (130) assemblies' -verbose
-        } else
+           return $TestPath
+        }
+        else
         {
-            $ToolPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
-            if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+            $TestPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
+            if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
             {
-            Write-Verbose 'Found VS2015 SQL2014 (120) assemblies' -verbose
-            } else
+                Write-Verbose 'Found VS2015 SQL2014 (120) assemblies' -verbose
+                return $TestPath
+            }
+            else
             {
                 Write-Verbose 'Cound not find SQL2014 assemblies' -verbose
-                $ToolPath = 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
-                if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+                $TestPath = 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
+                if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
                 {
                     Write-Verbose 'Found VS2013 SQL2012 (120) assemblies' -verbose
+                    return $TestPath
                 }
                 else
                 {
@@ -86,24 +90,27 @@ function Get-Toolpath
                 }
             }
         }
-        $ToolPath = 'C:\Program Files\Microsoft SQL Server\140\DAC\bin'
-        if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+        $TestPath = 'C:\Program Files\Microsoft SQL Server\140\DAC\bin'
+        if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
         {
             Write-Verbose 'Found SQL2017 (140) assemblies' -verbose
+            return $TestPath
         }
         else
         {
-            $ToolPath = 'C:\Program Files\Microsoft SQL Server\130\DAC\bin'
-            if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+            $TestPath = 'C:\Program Files\Microsoft SQL Server\130\DAC\bin'
+            if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
             {
                 Write-Verbose 'Found SQL2016 (130) assemblies' -verbose
+                return $TestPath
             }
             else
             {
-                $ToolPath = 'C:\Program Files\Microsoft SQL Server\120\DAC\bin'
-                if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+                $TestPath = 'C:\Program Files\Microsoft SQL Server\120\DAC\bin'
+                if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
                 {
                     Write-Verbose 'Found SQL2014 (120) assemblies' -verbose
+                    return $TestPath
                 }
                 else
                 {
@@ -187,7 +194,6 @@ function Update-DacpacVerion
         Write-Warning "Failed to update DacPac $($DacPacObject.Name), due to error:"
         Write-Warning "$($error[0])"
     }
-
 }
 
 # check if we are in test mode i.e.
