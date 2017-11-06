@@ -6,7 +6,7 @@ Releases
     Added support for multi-files on XML task
 2.2 Made the location of the local copy of the artifact configurable
 2.3 Issue147 fixed filter for successful builds on UNC copy task
-3.0 Converted the XML Task to Node from PowerShell to make it cross platform Issue74
+3.0 Converted the XML Task to Node.JS from PowerShell to make it cross platform Issue74
 
 
 This set of tasks perform file copy related actions
@@ -72,7 +72,7 @@ The prime use for this is to set environment specific value in web.config or app
 
 ###Usage
 
-- Filename e.g. $(SYSTEM.ARTIFACTSDIRECTORY)\myfile.dll.config [can include wildcards $(SYSTEM.ARTIFACTSDIRECTORY)\*.config]
+- Filename e.g. $(SYSTEM.ARTIFACTSDIRECTORY)/myfile.dll.config [can include wildcards $(SYSTEM.ARTIFACTSDIRECTORY)/*.config]
 - XPath e.g. /configuration/appSettings/add[@key='A variable']
 - Attribute e.g. value [optional: if left blank the InnerText on the selected node will be updated]
 - Value e.g. 'the new value'
