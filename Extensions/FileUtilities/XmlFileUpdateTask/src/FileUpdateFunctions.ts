@@ -7,7 +7,7 @@ function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
-export function processFiles (filename, recurse, xpathQuery, value, attribute, logInfo, logDebug ) {
+export function processFiles (filename: string, recurse: boolean, xpathQuery: string , value, attribute, logInfo, logDebug ) {
   let files;
   logDebug (`Looking in folder [${path.dirname(filename)}] for files that match pattern [${path.basename(filename)}] using recursion [${recurse}]`);
 
