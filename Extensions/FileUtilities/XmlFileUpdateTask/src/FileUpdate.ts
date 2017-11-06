@@ -8,7 +8,7 @@ import { logDebug,
          logInfo,
          logError,
          getVariable
-       }  from "./agentSpecificFunctions";
+       }  from "./AgentSpecificFunctions";
 
 const filename = getVariable("filename");
 const xpathQuery = getVariable("xpath");
