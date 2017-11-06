@@ -9,7 +9,7 @@ function escapeRegExp(str) {
 
 export function processFiles (filename, recurse, xpathQuery, value, attribute, logInfo, logDebug ) {
   let files;
-  logDebug (`Looking in folder [${path.dirname(filename)}] for files that match pattern [${path.basename(filename)}]`);
+  logDebug (`Looking in folder [${path.dirname(filename)}] for files that match pattern [${path.basename(filename)}] using recursion [${recurse}]`);
 
   files = findFiles(path.dirname(filename), path.basename(filename), recurse, files);
 

@@ -5,6 +5,7 @@ import { findFiles,
 
 import fs = require("fs") ;
 const copyFileSync = require("fs-copy-file-sync");
+const del = require("del");
 import { expect } from "chai";
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import "mocha";
@@ -84,18 +85,17 @@ describe("ProcessFile function", () => {
     });
 });
 
-describe("ProcessFiles function", () => {
+describe("ProcessFiles function - no recursion", () => {
   before(function() {
      // make a copy we can overright with breaking test data
-    // fs.createReadStream("test/testdata/1.xml").pipe(fs.createWriteStream("test/testdata/writeable.xml"));
      copyFileSync("test/testdata/1.xml", "test/testdata/writeable.xml");
-  });
-  it("should find a list of files and update them", () => {
+    });
+  it("should find a list of files and update them when recursion is off", () => {
     let documentFilter = "test/testdata/writeable.xml";
     let expected = fs.readFileSync("test/testdata/1a.updated").toString();
     processFiles(
       documentFilter,
-      false, // don't recurse, other tests cover this makes test management easier
+      false,
       "/configuration/appSettings/add[@key='Enabled']",
       "true",
       "",
@@ -108,6 +108,37 @@ describe("ProcessFiles function", () => {
   });
   after(function() {
     // remove the file if created
-    fs.unlink("test/testdata/writeable.xml");
+    del.sync("test/testdata/writeable.xml");
+  });
+});
+
+describe("ProcessFiles function - with recursion", () => {
+  before(function() {
+     // make a copy we can overright with breaking test data
+     copyFileSync("test/testdata/1.xml", "test/testdata/writeable.xml");
+     copyFileSync("test/testdata/folder1/3.xml", "test/testdata/folder1/writeable.xml");
+    });
+  it("should find a list of files and update them when recursion is on", () => {
+    let expected = fs.readFileSync("test/testdata/1a.updated").toString();
+    processFiles(
+      "test/testdata/writeable.xml",
+      true,
+      "/configuration/appSettings/add[@key='Enabled']",
+      "true",
+      "",
+      loggingFunction,
+      loggingFunction);
+
+    let updatedDoc = fs.readFileSync("test/testdata/writeable.xml").toString();
+    expect(updatedDoc.toString()).to.equal(expected.toString());
+
+    updatedDoc = fs.readFileSync("test/testdata/folder1/writeable.xml").toString();
+    expect(updatedDoc.toString()).to.equal(expected.toString());
+
+  });
+  after(function() {
+    // remove the file if created
+    del.sync("test/testdata/writeable.xml");
+    del.sync("test/testdata/folder1/writeable.xml");
   });
 });
