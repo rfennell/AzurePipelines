@@ -3,11 +3,11 @@
   "name": "StyleCop",
   "friendlyName": "StyleCop Runner by Black Marble",
   "description": "Black Marble's StyleCop test runner that use settings files in the project folders. (Using StyleCop 4.7.59.0)",
- "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/StyleCop-Runner-Task/)",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/StyleCop-Runner-Task/)",
   "category": "Build",
   "visibility": [
-                "Build"
-                ],
+    "Build"
+  ],
   "author": "Black Marble",
   "version": {
     "Major": 1,
@@ -48,10 +48,18 @@
       "label": "Max. Violation Count",
       "defaultValue": "1000",
       "required": true,
-      "helpMarkDown": "Maximum violations before analysis stops",
+      "helpMarkDown": "Maximum project violations before analysis stops",
       "groupName":"advanced"
-    }
-    ,
+    },
+    {
+      "name": "allowableViolationCount",
+      "type": "string",
+      "label": "Allowable Violation Count",
+      "defaultValue": "0",
+      "required": true,
+      "helpMarkDown": "Number of violations allowed before the task fails",
+      "groupName": "advanced"
+    },
     {
       "name": "showOutput",
       "type": "boolean",
@@ -60,8 +68,7 @@
       "required": true,
       "helpMarkDown": "Show analysis output in log",
       "groupName":"advanced"
-    }
-    ,
+    },
     {
       "name": "cacheResults",
       "type": "boolean",
@@ -70,8 +77,7 @@
       "required": true,
       "helpMarkDown": "Cache analysis results for reuse",
       "groupName":"advanced"
-    }
-    ,
+    },
     {
       "name": "forceFullAnalysis",
       "type": "boolean",
@@ -80,8 +86,7 @@
       "required": true,
       "helpMarkDown": "Force complete re-analysis (ignores any cached results)",
       "groupName":"advanced"
-    }
-    ,
+    },
     {
       "name": "additionalAddInPath",
       "type": "filePath",
@@ -90,8 +95,7 @@
       "required": false,
       "helpMarkDown": "Path to any custom rulesets, the directory should not be a sub directory of the current directory at runtime as this is automatically scanned",
       "groupName":"advanced"
-    }
-    ,
+    },
     {
       "name": "settingsFile",
       "type": "filePath",
@@ -101,7 +105,7 @@
       "helpMarkDown": "Path to single settings files to use (as opposed to files in project folders)",
       "groupName":"advanced"
     },
-     {
+    {
       "name": "loggingfolder",
       "type": "string",
       "label": "Logging Folder",
@@ -109,9 +113,8 @@
       "required": true,
       "helpMarkDown": "Folder to place the detailed text and XML formated log files",
       "groupName":"advanced"
-    }
-    ,
-     {
+    },
+    {
       "name": "summaryFileName",
       "type": "string",
       "label": "Summary File Name",

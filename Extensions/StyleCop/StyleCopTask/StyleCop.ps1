@@ -2,6 +2,7 @@ param
 (
     [string]$treatStyleCopViolationsErrorsAsWarnings,
     [string]$maximumViolationCount,
+    [string]$allowableViolationCount,
     [string]$showOutput,
     [string]$cacheResults,
     [string]$forceFullAnalysis,
@@ -46,11 +47,23 @@ Add-Content $summaryMdPath ("`nStyleCop found [{0}] violations across [{1}] proj
 Write-verbose "Uploading summary results file"
 Write-Host "##vso[build.uploadsummary]$summaryMdPath"
 
+# Set the message that will be returned
 if ($result.OverallSuccess -eq $false)
 {
-   Write-Error ("StyleCop found [{0}] violations across [{1}] projects" -f $result.TotalViolations, $result.ProjectsScanned)
+   $resultMessage = ("StyleCop found [{0}] violations across [{1}] projects" -f $result.TotalViolations, $result.ProjectsScanned)
 } 
 else
 {
-   Write-Verbose ("StyleCop found [{0}] violations warnings across [{1}] projects" -f $result.TotalViolations, $result.ProjectsScanned)
+   $resultMessage = ("StyleCop found [{0}] violations warnings across [{1}] projects" -f $result.TotalViolations, $result.ProjectsScanned)
 }
+
+# Determine if the task should error
+if ($result.OverallSuccess -eq $false -and [int]$result.TotalViolations -gt [int]$allowableViolationCount)
+{
+   Write-Error ($resultMessage)
+} 
+else
+{
+   Write-Verbose ($resultMessage)
+}
+

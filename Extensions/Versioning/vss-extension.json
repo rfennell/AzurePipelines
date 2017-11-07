@@ -17,10 +17,10 @@
     "Version",
     "Package",
     "Build"
-  ],  
+  ],
   "galleryFlags": [
         "Public"
-    ], 
+    ],
   "branding": {
         "color": "#f97923",
         "theme": "dark"
@@ -84,6 +84,9 @@
     ,
     {
       "path": "VersionWixTask"
+    },
+    {
+      "path": "VersionAndroidManifest"
     }
   ],
   "contributions": [
@@ -165,6 +168,16 @@
       ],
       "properties": {
         "name": "VersionSharepointAppManifestTask"
+      }
+    },
+    {
+      "id": "Version-AndroidManifest-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionAndroidManifest"
       }
     }
 
