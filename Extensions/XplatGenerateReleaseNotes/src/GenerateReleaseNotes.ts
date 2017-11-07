@@ -89,6 +89,10 @@ async function run() {
 
             // and expand the details
             var workItemDetails = await getWorkItems(instance, encodedPat, ids.join());
+            // using the promise model we end up returns a null, this gets added to array, so we check for null here
+            if (workItemDetails !== null) {
+                globalWorkitems = globalWorkitems.concat(workItemDetails);
+            }
 
             console.log(`Getting commits between [${currentReleaseBuild.sourceVersion}] and [${pastSuccessfulMatchingBuild.sourceVersion}].`);
             var commits: Array<any> = await getCommitsBetweenCommitIds (
@@ -103,7 +107,6 @@ async function run() {
 
             console.log(`Commits found: ${commits.length}`);
 
-            globalWorkitems = globalWorkitems.concat(workItemDetails);
             globalCommits = globalCommits.concat(commits);
 
         }
