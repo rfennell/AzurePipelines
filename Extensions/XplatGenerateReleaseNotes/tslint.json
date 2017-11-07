@@ -13,10 +13,10 @@
         "no-consecutive-blank-lines": true,
         "no-console": false,
         "no-duplicate-variable": true,
-        "no-eval": true,
+        "no-eval": false, // needed for this code base usually true
         "no-internal-module": true,
         "no-trailing-whitespace": true,
-        "no-var-keyword": false,
+        "no-var-keyword": false, // should swapout as refactor
         "one-line": [
             true,
             "check-open-brace",
