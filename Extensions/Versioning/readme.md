@@ -1,3 +1,4 @@
+
 - V1.0.0 - Original Release
 - V1.2.x - Skipped
 - V1.3.x - Added tool path choice for DACPACs

@@ -58,7 +58,7 @@
     }
     ,
     {
-      "path": "XmlFileUpdateTask"
+      "path": "XmlFileUpdateTask/task"
     }
   ],
   "contributions": [
@@ -89,7 +89,7 @@
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "XmlFileUpdateTask"
+        "name": "XmlFileUpdateTask/task"
       }
     }
 
