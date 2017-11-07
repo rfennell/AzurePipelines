@@ -203,6 +203,7 @@ Extensions/XplatGenerateReleaseNotes/XPlatGenerateReleaseNotesTask/*.js
 Extensions/XplatGenerateReleaseNotes/XPlatGenerateReleaseNotesTask/*.js.map
 Extensions/Versioning/VersionDotNetCoreAssembliesTask/*.js
 Extensions/Versioning/VersionDotNetCoreAssembliesTask/*.js.map
+
 Extensions/FileUtilities/XmlFileUpdateTask/task/*.js
 Extensions/FileUtilities/XmlFileUpdateTask/task/*.js.map
 Extensions/FileUtilities/XmlFileUpdateTask/task/node_modules
@@ -210,3 +211,10 @@ Extensions/FileUtilities/XmlFileUpdateTask/node_modules
 Extensions/FileUtilities/XmlFileUpdateTask/dist
 Extensions/FileUtilities/XmlFileUpdateTask/test-output
 Extensions/FileUtilities/XmlFileUpdateTask/test/testdata/writeable.xml
+
+Extensions/XplatGenerateReleaseNotes/task/*.js
+Extensions/XplatGenerateReleaseNotes/task/*.js.map
+Extensions/XplatGenerateReleaseNotes/task/node_modules
+Extensions/XplatGenerateReleaseNotes/node_modules
+Extensions/XplatGenerateReleaseNotes/dist
+Extensions/XplatGenerateReleaseNotes/test-output

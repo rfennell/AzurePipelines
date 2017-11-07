@@ -4,6 +4,7 @@
 - 1.2 - Includes PR130 @gregpakes that added multiple artifact support, moved to async/await model
 - 1.3 - Includes PR141 @gregpakes that address issues with errors being swallowed and no work items being listed
 - 1.4 - Includes PR157 @gregpakes that address issues with redeployments
+- 1.5 - Issue200 Engineering fixes for build process, also fixes an issue if empty work item list is returned when checking between releases
 
 This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's comparison calls that are also used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the VSTS UI.
 
