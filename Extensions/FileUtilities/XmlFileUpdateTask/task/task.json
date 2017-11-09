@@ -1,0 +1,72 @@
+{
+  "id": "dc3a86bb-803b-4851-afa5-ee708a61cd6f",
+  "name": "XmlFileUpdateTask",
+  "friendlyName": "Update XML file attribute",
+  "description": "Update an attribute in an Xml file based on XPath filter",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/File-Copier-Tasks/)",
+
+  "category": "Utility",
+  "visibility": [
+                "Build",
+                "Release"
+                ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  
+   "inputs": [
+      {
+         "name": "filename",
+         "type": "string",
+         "label": "Filename",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The file to update e.g: $(SYSTEM.ARTIFACTSDIRECTORY)\\myfile.dll.config"
+      },
+      {
+         "name": "xpath",
+         "type": "string",
+         "label": "Xpath query",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The Xpath query to select a node e.g: /configuration/appSettings/add[@key='A variable']"
+      }
+      ,
+      {
+         "name": "attribute",
+         "type": "string",
+         "label": "Attribute",
+         "defaultValue": "",
+         "required": false,
+         "helpMarkDown": "The attribute name to update e.g. value (if not set InnerText of node will be updated)"
+      }
+      ,
+      {
+         "name": "value",
+         "type": "string",
+         "label": "Value",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The new value to set e.g. 'new value'"
+      } ,
+    {
+      "name": "recurse",
+      "type": "boolean",
+      "label": "Recurse",
+      "defaultValue": "True",
+      "required": false,
+      "helpMarkDown": "If true will search for files recursivally, default is true."
+    }
+   ],
+  "minimumAgentVersion": "1.82.0",
+  "instanceNameFormat": "XmlFileUpdateTask",
+  "execution": {
+   "Node": {
+       "target": "FileUpdate.js",
+       "argumentFormat": ""
+     }
+  }
+}

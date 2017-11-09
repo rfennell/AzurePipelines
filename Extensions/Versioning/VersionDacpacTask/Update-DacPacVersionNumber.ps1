@@ -5,7 +5,7 @@
     This script will update the version number of a specifed DACPAC file using the SQL DacPackage
     namespace methods. Catches any errors that occur on the versioning section and uses Write-Warning
     to output what went wrong, this is to prevent the whole build failing because it can't version some files
-    which haven't been versioned perviously. 
+    which haven't been versioned perviously.
 
     Any errors which are thrown by the DLLs not being available will return -1 exit code which will stop the build
     process however (as it's likely to cause other problems with those DLLs not being available).
@@ -35,7 +35,6 @@ param (
 
 )
 
-
 function Get-Toolpath
 {
     param(
@@ -52,50 +51,83 @@ function Get-Toolpath
             Write-Verbose 'Found a VS2017 SKU'
             ForEach ($folder in Get-ChildItem -Path $vs2017base)
             {
-                    $ToolPath = "$vs2017base\$folder\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130"
-                    Write-Verbose "Checking $ToolPath"
-                    if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+                    $TestPath = "$vs2017base\$folder\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130"
+                    Write-Verbose "Checking $TestPath"
+                    if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
                     {
                     Write-Verbose 'Found VS2017 SQL2016 (130) assemblies' -verbose
-                    return $ToolPath
+                    return $TestPath
                     }
             }
        }
        # for older versions we check each path
-        $ToolPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130'
-        if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+        $TestPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130'
+        if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
         {
            Write-Verbose 'Found VS2015 SQL2016 (130) assemblies' -verbose
-        } else 
-        {
-            $ToolPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
-            if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
-            {
-            Write-Verbose 'Found VS2015 SQL2014 (120) assemblies' -verbose
-            } else
-            {
-                Write-Verbose 'Cound not find SQL2014 assemblies' -verbose
-                $ToolPath = 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
-                if (Test-Path ("$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"))
-                {
-                    Write-Verbose 'Found VS2013 SQL2012 (120) assemblies' -verbose 
-                }
-                else
-                {
-                    Write-error "Cannot find DLLs in expected VS2013, VS2015 or VS2017 default locations" 
-                }
-            }
-        }  
-    } else
-    {
-        Write-Verbose "Looking for tools in user provided [$ToolPath]" -verbose
-        if (Test-Path "$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll") 
-        {
-             Write-Verbose 'Found assemblies in user provide location' -verbose 
+           return $TestPath
         }
         else
         {
-             Write-error 'Cannot find assemblies in user provide location' -verbose 
+            $TestPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
+            if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+            {
+                Write-Verbose 'Found VS2015 SQL2014 (120) assemblies' -verbose
+                return $TestPath
+            }
+            else
+            {
+                Write-Verbose 'Cound not find SQL2014 assemblies' -verbose
+                $TestPath = 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
+                if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+                {
+                    Write-Verbose 'Found VS2013 SQL2012 (120) assemblies' -verbose
+                    return $TestPath
+                }
+                else
+                {
+                    Write-error "Cannot find DLLs in expected VS2013, VS2015 or VS2017 default locations"
+                }
+            }
+        }
+        $TestPath = 'C:\Program Files\Microsoft SQL Server\140\DAC\bin'
+        if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+        {
+            Write-Verbose 'Found SQL2017 (140) assemblies' -verbose
+            return $TestPath
+        }
+        else
+        {
+            $TestPath = 'C:\Program Files\Microsoft SQL Server\130\DAC\bin'
+            if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+            {
+                Write-Verbose 'Found SQL2016 (130) assemblies' -verbose
+                return $TestPath
+            }
+            else
+            {
+                $TestPath = 'C:\Program Files\Microsoft SQL Server\120\DAC\bin'
+                if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
+                {
+                    Write-Verbose 'Found SQL2014 (120) assemblies' -verbose
+                    return $TestPath
+                }
+                else
+                {
+                    Write-error "Cannot find DLLs in expected SQL Server locations"
+                }
+            }
+        }
+    } else
+    {
+        Write-Verbose "Looking for tools in user provided [$ToolPath]" -verbose
+        if (Test-Path "$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll")
+        {
+             Write-Verbose 'Found assemblies in user provide location' -verbose
+        }
+        else
+        {
+             Write-error 'Cannot find assemblies in user provide location' -verbose
         }
     }
 
@@ -115,7 +147,7 @@ function Update-DacpacVerion
         [string]$ToolPath
 
     )
-    
+
     #Specifying the Error Preference within the function scope to help catch errors
     $ErrorActionPreference = 'Stop'
 
@@ -162,25 +194,24 @@ function Update-DacpacVerion
         Write-Warning "Failed to update DacPac $($DacPacObject.Name), due to error:"
         Write-Warning "$($error[0])"
     }
-
 }
 
-# check if we are in test mode i.e. 
+# check if we are in test mode i.e.
 If ($VersionNumber -eq "" -and $path -eq "") {Exit}
 
 # Get and validate the version data
 $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
 switch($VersionData.Count)
 {
-0        
-    { 
+0
+    {
         Write-Error "Could not find version number data in $VersionNumber."
         exit 1
     }
 1 {}
-default 
-    { 
-        Write-Warning "Found more than instance of version data in $VersionNumber." 
+default
+    {
+        Write-Warning "Found more than instance of version data in $VersionNumber."
         Write-Warning "Will assume first instance is version."
     }
 }

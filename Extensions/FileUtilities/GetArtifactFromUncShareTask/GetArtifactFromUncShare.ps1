@@ -85,7 +85,7 @@ function Get-LastSuccessfulBuildId
     )
 
     $wc = Get-WebClient -username $username -password $password
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?api-version=2.0&definitions=$($defid)&statusFilter=completed&resultFilter=successed&`$top=1"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?api-version=2.0&definitions=$($defid)&statusFilter=completed&`$top=1"
     $jsondata = $wc.DownloadString($uri) | ConvertFrom-Json 
     $jsondata.value.id
 }

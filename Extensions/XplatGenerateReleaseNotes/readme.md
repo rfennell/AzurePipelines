@@ -1,13 +1,14 @@
 ## Changes
-1.0 - Initial release
-1.1 - Reduced the API version requirement to allow support for TFS 2017 as well as VSTS (still using preview API)
-1.2 - Includes PR130 @gregpakes that added multiple artifact support, moved to async/await model
-1.3 - Includes PR141 @gregpakes that address issues with errors being swallowed and no work items being listed
-1.4 - Includes PR157 @gregpakes that address issues with redeployments
+- 1.0 - Initial release
+- 1.1 - Reduced the API version requirement to allow support for TFS 2017 as well as VSTS (still using preview API)
+- 1.2 - Includes PR130 @gregpakes that added multiple artifact support, moved to async/await model
+- 1.3 - Includes PR141 @gregpakes that address issues with errors being swallowed and no work items being listed
+- 1.4 - Includes PR157 @gregpakes that address issues with redeployments
+- 1.5 - Issue200 Engineering fixes for build process, also fixes an issue if empty work item list is returned when checking between releases
 
-This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's comparison calls that are also used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the VSTS UI. 
+This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's comparison calls that are also used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the VSTS UI.
 
-Note: That this comparison is only done against the primary build artifact linked to the Release  
+Note: That this comparison is only done against the primary build artifact linked to the Release
 
 If the template file is markdown the output report being something like the following:
 
@@ -30,26 +31,26 @@ The use of a template allows the user to define the format, layout and fields sh
 
 - Most samples are in Markdown, but samples are available for HTML
 - The @@VALUE@@ tags are special loop control flags
-- The ${properties} are the fields to be expanded from properties in the JSON response objects returned from the VSTS REST API 
+- The ${properties} are the fields to be expanded from properties in the JSON response objects returned from the VSTS REST API
 
 The only real change from standard markdown is the use of the @@TAG@@ blocks to denote areas that should be looped over i.e: the points where we get the details of all the work items and commits associated with the build.
 
 ```
-# Release notes 
+# Release notes
 ## Notes for release  ${releaseDetails.releaseDefinition.name}
-**Release Number**  : ${releaseDetails.name} 
-**Release completed** : ${releaseDetails.modifiedOn} 
-**Compared Release Number**  : ${compareReleaseDetails.name} 
+**Release Number**  : ${releaseDetails.name}
+**Release completed** : ${releaseDetails.modifiedOn}
+**Compared Release Number**  : ${compareReleaseDetails.name}
 
-### Associated work items  
-@@WILOOP@@  
-* ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
-@@WILOOP@@  
-  
+### Associated work items
+@@WILOOP@@
+* ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}
+@@WILOOP@@
+
 ### Associated commits
-@@CSLOOP@@  
-* **ID ${csdetail.commitId} ** ${csdetail.comment}    
-@@CSLOOP@@  
+@@CSLOOP@@
+* **ID ${csdetail.commitId} ** ${csdetail.comment}
+@@CSLOOP@@
 ```
 
 What is done behind the scenes is that each line of the template is evaluated as a line of Node.JS in turn, the in memory versions of the objects are used to provide the runtime values. The available objects to get data from at runtime are
@@ -59,14 +60,14 @@ What is done behind the scenes is that each line of the template is evaluated as
 * widetail – the details of a given work item inside the loop returned by the REST call Get Work Item (within the @@WILOOP@@@ block)
 * csdetail – the details of a given changeset/commit inside the loop by the REST call to Changes or Commit depending on whether it is a GIT or TFVC based build (within the @@CSLOOP@@@ block)
 
-There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes and dumps out all the available fields (to help you find all the available options) for both builds and releases  
+There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes and dumps out all the available fields (to help you find all the available options) for both builds and releases
 
 ## Usage
 Once the extension is added to your TFS or VSTS server, the task should be available in the utilities section of 'add tasks'
 
 The task takes three parameters
 
-* The output file name, for builds this will normally be set to $(Build.ArtifactStagingDirectory)\releasenotes.md as the release notes will usually be part of your build artifacts. For release management usage the parameter should be set to something like $(System.DefaultWorkingDirectory)\releasenotes.md. Where you choose to send the created files is down to your deployment needs. 
+* The output file name, for builds this will normally be set to $(Build.ArtifactStagingDirectory)\releasenotes.md as the release notes will usually be part of your build artifacts. For release management usage the parameter should be set to something like $(System.DefaultWorkingDirectory)\releasenotes.md. Where you choose to send the created files is down to your deployment needs.
 * A picker allows you to set if the template is provided as a file in source control (usually used for builds) or an inline file (usually used for release management). The setting of this picker effects which third parameter is shown
 * Either - The template file name, which should point to a file in source control.
 * Or - The template text.
