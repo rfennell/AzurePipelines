@@ -219,3 +219,5 @@ Extensions/XplatGenerateReleaseNotes/task/node_modules
 Extensions/XplatGenerateReleaseNotes/node_modules
 Extensions/XplatGenerateReleaseNotes/dist
 Extensions/XplatGenerateReleaseNotes/test-output
+
+Extensions/stylecop/test/logs
