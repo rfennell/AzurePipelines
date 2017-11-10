@@ -106,10 +106,10 @@
     {
       "name": "ForceUseOfPesterInTasks",
       "type": "boolean",
-      "label": "Force Use of Task's Pesteer Module",
+      "label": "Force the use of a Pester Module shipped within this task",
       "defaultValue": "False",
       "required": true,
-      "helpMarkDown": "FOrce the use of the Pester version in this task, even if Pester installed on agent.",
+      "helpMarkDown": "Force the use of the Pester version shipped in this task, even if Pester installed on agent.",
       "groupName": "advanced"
     }
   ],
