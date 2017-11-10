@@ -64,7 +64,7 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
     # Get the command parameters
     $args = $myinvocation.BoundParameters.GetEnumerator() | ForEach-Object {
         if (-not([string]::IsNullOrWhiteSpace($_.Value))) {
-            If ($_.Value -eq 'True' -and $_.Key -ne 'run32Bit') {
+            If ($_.Value -eq 'True' -and (($_.Key -ne 'run32Bit') -or ($_.Key -ne 'ForceUseOfPesterInTasks'))) {
                 "-$($_.Key)"
             }
             else {
