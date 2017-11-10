@@ -73,7 +73,7 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
             }
         }
     }
-    write-warning 'Re-launching in x86 PowerShell'
+    write-warning "Re-launching in x86 PowerShell with args $($args -join ', ')"
     &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
     exit
 }
