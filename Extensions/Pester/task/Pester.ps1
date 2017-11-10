@@ -64,7 +64,7 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
     # Get the command parameters
     $args = $myinvocation.BoundParameters.GetEnumerator() | ForEach-Object {
         if (-not([string]::IsNullOrWhiteSpace($_.Value))) {
-            If ($_.Value -eq 'True' -and (($_.Key -ne 'run32Bit') -or ($_.Key -ne 'ForceUseOfPesterInTasks'))) {
+            If ($_.Value -eq 'True' -and $_.Key -ne 'run32Bit' -and $_.Key -ne 'ForceUseOfPesterInTasks') {
                 "-$($_.Key)"
             }
             else {
@@ -72,8 +72,9 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
                 "$($_.Value)"
             }
         }
+        
     }
-    write-warning "Re-launching in x86 PowerShell with args $($args -join ', ')"
+    write-warning "Re-launching in x86 PowerShell with $($args -join ' ')"
     &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
     exit
 }
