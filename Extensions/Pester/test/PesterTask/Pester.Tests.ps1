@@ -179,7 +179,7 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
      
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "$pwd\1.2.3" -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "False"
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "$pwd\3.4.3" -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "False"
             Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\4.0.8\Pester.psd1" }
             Assert-MockCalled Invoke-Pester
         }
@@ -203,8 +203,8 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
      
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "$pwd\1.2.3" -ForceUseOfPesterInTasks "False" 
-            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\1.2.3\Pester.psd1" }
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "$pwd\3.4.3" -ForceUseOfPesterInTasks "False" 
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\3.4.3\Pester.psd1" }
             Assert-MockCalled Invoke-Pester
         }
 
