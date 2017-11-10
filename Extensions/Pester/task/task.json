@@ -102,7 +102,17 @@
       "required": false,
       "helpMarkDown": "If left blank the Pester module stored in this task will be used, to load the Pester module from elsewhere set the path",
       "groupName": "advanced"
-    }
+    },
+    {
+      "name": "ForceUseOfPesterInTasks",
+      "type": "boolean",
+      "label": "Force Use of Task's Pesteer Module",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "FOrce the use of the Pester version in this task, even if Pester installed on agent.",
+      "groupName": "advanced"
+    },
+
   ],
   "instanceNameFormat": "Pester Test Runner",
   "execution": {

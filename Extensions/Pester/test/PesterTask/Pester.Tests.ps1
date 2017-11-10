@@ -1,4 +1,6 @@
-$sut = Join-Path -Path "$PSScriptRoot\..\..\..\..\extensions\Pester\PesterTask\" -ChildPath Pester.ps1 -Resolve
+Write-host $PSScriptRoot
+
+$sut = Join-Path -Path "$PSScriptRoot\..\..\Task\" -ChildPath Pester.ps1 -Resolve
 
 Describe "Testing Pester Task" {
 
@@ -28,28 +30,6 @@ Describe "Testing Pester Task" {
         it "Throws Exception when passed a path which doesn't contain Pester for ModuleFolder" {
             {&$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder TestDrive:\} | Should -Throw
         }
-        it "Continues when passed a null ModuleFolder as VSTS task does" {
-            mock Invoke-Pester { }
-            mock Import-Module { }
-            Mock Write-Verbose { }
-            Mock Write-Warning { }
-            Mock Write-Error { }
-
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder $null
-            Assert-MockCalled Invoke-Pester
-
-        }
-        it "Continues when passed a whitespace string ModuleFolder" {
-            mock Invoke-Pester { }
-            mock Import-Module { }
-            Mock Write-Verbose { }
-            Mock Write-Warning { }
-            Mock Write-Error { }
-
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "   "
-            Assert-MockCalled Invoke-Pester
-
-        }
         it "ModuleFolder is not Mandatory" {
             (Get-Command $sut).Parameters['ModuleFolder'].Attributes.Mandatory | Should -Be $False
         }
@@ -63,7 +43,7 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
 
-            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure,Integration'
+            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure,Integration' -ForceUseOfPesterInTasks "False"
             $Tag.Length | Should Be 2
             Write-Output -NoEnumerate $Tag | Should -BeOfType [System.Array]
             Write-Output -NoEnumerate $Tag | Should -BeOfType [String[]]
@@ -78,7 +58,7 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
 
-            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example,Demo'
+            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example,Demo' -ForceUseOfPesterInTasks "False"
             $ExcludeTag.Length | Should be 2
             Write-Output -NoEnumerate $ExcludeTag | Should -BeOfType [System.Array]
             Write-Output -NoEnumerate $ExcludeTag | Should -BeOfType [String[]]
@@ -91,7 +71,7 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
 
-            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile $null
+            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile $null -ForceUseOfPesterInTasks "False"
             Assert-MockCalled Invoke-Pester
         }
 
@@ -110,15 +90,15 @@ Describe "Testing Pester Task" {
         Mock Write-Error { }
 
         it "Calls Invoke-Pester correctly with ScriptFolder and ResultsFile specified" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ForceUseOfPesterInTasks "False"
             Assert-MockCalled Invoke-Pester
         }
         it "Calls Invoke-Pester with Tag specified" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure'
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure' -ForceUseOfPesterInTasks "False"
             Assert-MockCalled Invoke-Pester -ParameterFilter {$Tag -and $Tag -eq 'Infrastructure'}
         }
         it "Calls Invoke-Pester with ExcludeTag specified" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example'
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example' -ForceUseOfPesterInTasks "False"
             Assert-MockCalled Invoke-Pester -ParameterFilter {$ExcludeTag -and $ExcludeTag -eq 'Example'}
         }
         it "Calls Invoke-Pester with the CodeCoverageOutputFile specified" {
@@ -126,7 +106,7 @@ Describe "Testing Pester Task" {
             New-Item -Path TestDrive:\ -Name TestFile2.ps1 | Out-Null
             New-Item -Path TestDrive:\ -Name TestFile3.ps1 | Out-Null
 
-            &$Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml'
+            &$Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml' -ForceUseOfPesterInTasks "False"
             Assert-MockCalled Invoke-Pester -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage.xml'}
         }
 
@@ -148,11 +128,11 @@ Describe "Testing Pester Task" {
         mock Invoke-Pester {}
 
         it "Creates the output xml file correctly" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ForceUseOfPesterInTasks "False"
             Test-Path -Path TestDrive:\Output.xml | Should -Be $True
         }
         it "Throws an error when pester tests fail" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output2.xml
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output2.xml -ForceUseOfPesterInTasks "False"
             Assert-MockCalled -CommandName Write-Error
         }
 
@@ -161,9 +141,87 @@ Describe "Testing Pester Task" {
             New-Item -Path TestDrive:\ -Name TestFile2.ps1 | Out-Null
             New-Item -Path TestDrive:\ -Name TestFile3.ps1 | Out-Null
 
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml'
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml' -ForceUseOfPesterInTasks "False"
             Test-Path -Path TestDrive:\codecoverage.xml | Should -Be $True
         }
 
     }
+
+    Context "Testing Pester Module Version Loading" {
+        
+        it "Loads Pester version contained in task when ForceUse is set to true " {
+            mock Invoke-Pester { }
+            mock Import-Module { }
+            Mock Write-Verbose { }
+            Mock Write-Warning { }
+            Mock Write-Error { }
+     
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder $null -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "True"
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\4.0.8\Pester.psd1" }
+            Assert-MockCalled Invoke-Pester
+        }
+        it "Loads Pester version contained in task as Pester not installed on agent and ModuleFolder is Null " {
+            mock Invoke-Pester { }
+            mock Import-Module { }
+            Mock Write-Verbose { }
+            Mock Write-Warning { }
+            Mock Write-Error { }
+     
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder $null -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "False"
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\4.0.8\Pester.psd1" }
+            Assert-MockCalled Invoke-Pester
+        }
+
+        it "Loads Pester version contained in task when ForceUse is set to true event whenModuleFolder is set " {
+            mock Invoke-Pester { }
+            mock Import-Module { }
+            Mock Write-Verbose { }
+            Mock Write-Warning { }
+            Mock Write-Error { }
+     
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "$pwd\1.2.3" -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "False"
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\4.0.8\Pester.psd1" }
+            Assert-MockCalled Invoke-Pester
+        }
+
+        it "Loads Pester version contained in task as Pester not installed on agent and ModuleFolder contains whitespace " {
+            mock Invoke-Pester { }
+            mock Import-Module { }
+            Mock Write-Verbose { }
+            Mock Write-Warning { }
+            Mock Write-Error { }
+     
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "   " -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "False" 
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\4.0.8\Pester.psd1" }
+            Assert-MockCalled Invoke-Pester
+        }
+
+        it "Loads Pester version specified by ModuleFolder " {
+            mock Invoke-Pester { }
+            mock Import-Module { }
+            Mock Write-Verbose { }
+            Mock Write-Warning { }
+            Mock Write-Error { }
+     
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "$pwd\1.2.3" -ForceUseOfPesterInTasks "False" 
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\1.2.3\Pester.psd1" }
+            Assert-MockCalled Invoke-Pester
+        }
+
+        it "Loads default Pester version if ModuleFolder and Force use of task contained version not set" {
+            mock Invoke-Pester { }
+            mock Import-Module { }
+            Mock Write-Verbose { }
+            Mock Write-Warning { }
+            Mock Write-Error { }
+     
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ForceUseOfPesterInTasks "False" 
+            Assert-MockCalled  Import-Module
+            # can't check the presvious assert for empty parameters, so check the message
+            Assert-MockCalled Write-Verbose -ParameterFilter { $Message -eq "No Pester module location parameters passed, and not forcing use of Pester in task, so using Powershell default module location" }
+            Assert-MockCalled Invoke-Pester
+        }
+
+    }
+
 }
