@@ -172,14 +172,14 @@ Describe "Testing Pester Task" {
             Assert-MockCalled Invoke-Pester
         }
 
-        it "Loads Pester version contained in task when ForceUse is set to true event whenModuleFolder is set " {
+        it "Loads Pester version contained in task when ForceUse is set to true even whenModuleFolder is set " {
             mock Invoke-Pester { }
             mock Import-Module { }
             Mock Write-Verbose { }
             Mock Write-Warning { }
             Mock Write-Error { }
      
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "$pwd\3.4.3" -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "False"
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "$pwd\3.4.3" -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "True"
             Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\4.0.8\Pester.psd1" }
             Assert-MockCalled Invoke-Pester
         }
