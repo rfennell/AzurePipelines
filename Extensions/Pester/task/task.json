@@ -75,10 +75,10 @@
     {
       "name": "pesterVersion",
       "type": "pickList",
-      "label": "Pester version",
+      "label": "Pester version (stored in task)",
       "defaultValue": "4.0.8",
       "required": true,
-      "helpMarkDown": "Verson of Pester to use",
+      "helpMarkDown": "Verson of Pester to use from a choice of versions shipped in task. Will be used if Pester not installed in agent, or ForceUsage parameter set",
       "groupName": "advanced",
       "options": {
         "3.4.3": "3.4.3",
