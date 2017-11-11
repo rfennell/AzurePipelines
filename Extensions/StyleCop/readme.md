@@ -12,7 +12,7 @@ Releases
 - 1.10 Fixed issues with discovering settings.stylecop files in solution folder (Issue #104)
 - 1.11 Added parameter for adding allowable violations, which sets a threshold of acceptable number of violations (pull request from @jynxeh)
 - 1.12 Fixed 'Test Warnings as Errors' flag being ignored (pull request from @jynxeh)
-- 2.0 PR171 (thomasddn) - Upgrade to StyleCop V5 and some engineering restructoring of the repo
+- 2.0 PR171 (thomasddn) - Upgrade to StyleCop 5.0.6419.0 and some engineering (Issue #202) restructoring of the repo to improve testing
 
 The task takes the following arguments
 - TreatStyleCopViolationsErrorsAsWarnings - Treat StyleCop violations errors as warnings (default false).
