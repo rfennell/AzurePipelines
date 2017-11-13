@@ -63,7 +63,7 @@
       "path": "VersionAPPXTask"
     },
     {
-      "path": "VersionDacpacTask"
+      "path": "VersionDacpacTask/src"
     },
     {
       "path": "VersionVSIXTask"
@@ -116,7 +116,7 @@
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "VersionDacpacTask"
+        "name": "VersionDacpacTask/src"
       }
     },
      {
