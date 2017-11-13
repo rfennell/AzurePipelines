@@ -56,7 +56,14 @@ param (
      $overrideStageName,
 
 	[parameter(Mandatory=$false,HelpMessage="Overide the text to put in generated files if no data returned")]
-    $emptySetText 
+    $emptySetText,
+    
+    [parameter(Mandatory=$false,HelpMessage="Overide the default of 50 changesets/commits items returned")]
+    $maxChanges, 
+
+    [parameter(Mandatory=$false,HelpMessage="Overide the default of 50 work items returned")]
+    $maxWi 
+
 )
 
 # Set a flag to force verbose as a default
@@ -96,13 +103,15 @@ Write-Verbose "buildnumber = [$buildnumber]"
 Write-Verbose "outputVariableName = [$outputvariablename]"
 Write-Verbose "generateForOnlyPrimary = [$generateForOnlyPrimary]"
 Write-Verbose "generateForCurrentRelease = [$generateForCurrentRelease]"
+Write-Verbose "maxWi = [$maxWi]"
+Write-Verbose "maxChanges = [$maxChanges]"
 
 
 if ( [string]::IsNullOrEmpty($releaseid))
 {
     
    Write-Verbose "In Build mode"
-   $builds = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
+   $builds = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges
     
 } else
 {
@@ -198,7 +207,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
             # if build in build number range and completed
             if ($build.id -le $lastBuild.definitionReference.version.id -and ($build.id -gt $firstBuild.definitionReference.version.id -or $build.id -eq $lastBuild.definitionReference.version.id) -and $build.status -eq "completed")
             {
-				$b = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -usedefaultcreds $usedefaultcreds
+				$b = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges
 				$buildsList.Add($build.id , $b)
             }
         }
