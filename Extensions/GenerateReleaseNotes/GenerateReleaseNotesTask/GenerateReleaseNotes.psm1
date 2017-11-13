@@ -14,7 +14,7 @@ function Get-BuildWorkItems
     $maxItems
     )
 
-    Write-Verbose "        Getting  up to $(maxItems) associated work items for build [$($buildid)]"
+    Write-Verbose "        Getting up to $(maxItems) associated work items for build [$($buildid)]"
     $wiList = @();
    
     try {
@@ -456,12 +456,17 @@ param
     $maxChanges
   )
 
+write-verbose "wi $maxWi"
+write-verbose "cs $maxChanges"
+
+
+
  	write-verbose "    Getting build details for BuildID [$buildid]"    
  	$build = Get-Build -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
 
-     $build = @{'build'=$build;
-                'workitems'=(Get-BuildWorkItems -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxWi);
-                'changesets'=(Get-BuildChangeSets -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxChanges )}
+    $build = @{'build'=$build;
+               'workitems'=(Get-BuildWorkItems -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxWi);
+               'changesets'=(Get-BuildChangeSets -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxChanges )}
     $build
  }
 
