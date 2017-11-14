@@ -1,5 +1,4 @@
 # Load the script under test
-. "..\src\Update-DacPacVersionNumber.ps1" 
 import-module "$PSScriptRoot\..\src\Update-DacPacVersionNumber.ps1"
 
 Describe "Use VS2013 SQL2012 120 ToolPath settings" {
