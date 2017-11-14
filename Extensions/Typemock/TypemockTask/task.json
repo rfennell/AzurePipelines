@@ -4,7 +4,7 @@
   "friendlyName": "(deprecated) Typemock TMockRunner",
   "description": "(deprecated - use official Typemock tasks) Run tests with Visual Studio test runner wrappered by TMockRunner",
    "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Typemock-Task/)",
-
+   "deprecated": true,
   "category": "Test",
   "visibility": [
                 "Build",
