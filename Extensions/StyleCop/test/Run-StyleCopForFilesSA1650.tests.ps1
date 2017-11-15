@@ -1,6 +1,16 @@
 
 write-warning "Processor Architecture $env:Processor_Architecture"
 
+#############################################################################
+#If Powershell is running the 32-bit version on a 64-bit machine, we 
+#need to force powershell to run in 64-bit mode .
+#############################################################################
+if ($env:PROCESSOR_ARCHITEW6432 -eq "AMD64") {
+    write-warning "Reloading as 64-bit process"
+    &"$env:windir\sysnative\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
+    exit $lastexitcode
+}
+
 # Check that the required powershell module is loaded if it is remove it as it might be an older version
 if ((get-module -name StyleCop ) -ne $null)
 {
