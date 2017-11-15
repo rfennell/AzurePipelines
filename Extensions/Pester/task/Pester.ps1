@@ -121,7 +121,7 @@ if ($ExcludeTag) {
     $Parameters.Add('ExcludeTag', $ExcludeTag)
 }
 if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge '4.0.4') {
-    $Files = Get-ChildItem -Path $scriptFolder -include *.ps1 -Exclude *.Tests.ps1 -Recurse |
+    $Files = Get-ChildItem -Path $scriptFolder -include *.ps1, *.psm1 -Exclude *.Tests.ps1 -Recurse |
         Select-object -ExpandProperty Fullname
 
     if ($Files) {
