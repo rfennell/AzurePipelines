@@ -10,14 +10,15 @@ function Get-BuildWorkItems
     $tfsUri,
     $teamproject,
     $buildid,
-    $usedefaultcreds
+    $usedefaultcreds,
+    $maxItems
     )
 
-    Write-Verbose "        Getting associated work items for build [$($buildid)]"
+    Write-Verbose "        Getting up to $($maxItems) associated work items for build [$($buildid)]"
     $wiList = @();
    
     try {
-        $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/workitems?api-version=2.0"
+        $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/workitems?api-version=2.0&`$top=$($maxItems)"
   	    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| ConvertFrom-Json
    	    foreach ($wi in $jsondata.value)
         {
@@ -38,15 +39,16 @@ function Get-BuildChangeSets
     $tfsUri,
     $teamproject,
     $buildid,
-    $usedefaultcreds
+    $usedefaultcreds,
+    $maxItems
     )
 
-    Write-Verbose "        Getting associated changesets/commits for build [$($buildid)]"
+    Write-Verbose "        Getting up to $($maxItems) associated changesets/commits for build [$($buildid)]"
   	$csList = @();
 
     try 
     { 
-        $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/changes?api-version=2.0"
+        $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/changes?api-version=2.0&`$top=$($maxItems)"
         $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
         foreach ($cs in $jsondata.value)
         {
@@ -449,15 +451,17 @@ param
     $tfsUri,
     $teamproject,
     $buildid,
-    $usedefaultcreds
+    $usedefaultcreds,
+    $maxWi,
+    $maxChanges
   )
 
  	write-verbose "    Getting build details for BuildID [$buildid]"    
  	$build = Get-Build -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
 
-     $build = @{'build'=$build;
-                'workitems'=(Get-BuildWorkItems -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds);
-                'changesets'=(Get-BuildChangeSets -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds )}
+    $build = @{'build'=$build;
+               'workitems'=(Get-BuildWorkItems -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxWi);
+               'changesets'=(Get-BuildChangeSets -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxChanges )}
     $build
  }
 
