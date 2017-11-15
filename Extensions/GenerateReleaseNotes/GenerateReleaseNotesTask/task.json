@@ -129,6 +129,26 @@
       "groupName":"advanced",
        "visibleRule": "generateForCurrentRelease = false"
     }
+    ,
+    {
+      "name": "maxWi",
+      "type": "integer",
+      "label": "Maximum Work Items to return",
+      "defaultValue": "50",
+      "required": false,
+      "helpMarkDown": "The maximum Work Items to return in the report",
+      "groupName":"advanced"
+    }
+    ,
+    {
+      "name": "maxChanges",
+      "type": "integer",
+      "label": "Maximum Changeset/Commits to return",
+      "defaultValue": "50",
+      "required": false,
+      "helpMarkDown": "The maximum Changeset/Commits to return in the report",
+      "groupName":"advanced"
+    }
     
    ],
   "instanceNameFormat": "Generate release notes",

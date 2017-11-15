@@ -202,8 +202,11 @@ Tests/Extensions/StyleCopTask/logs
 .vscode/
 
 # Exclusions for generated node.js for Node extensions
-Extensions/Versioning/VersionDotNetCoreAssembliesTask/*.js
-Extensions/Versioning/VersionDotNetCoreAssembliesTask/*.js.map
+Extensions/Versioning/VersionDotNetCoreAssembliesTask/task/*.js
+Extensions/Versioning/VersionDotNetCoreAssembliesTask/task/*.js.map
+Extensions/Versioning/VersionDotNetCoreAssembliesTask/task/node_modules
+Extensions/Versioning/VersionDotNetCoreAssembliesTask/node_modules
+Extensions/Versioning/VersionDotNetCoreAssembliesTask/dist
 
 Extensions/FileUtilities/XmlFileUpdateTask/task/*.js
 Extensions/FileUtilities/XmlFileUpdateTask/task/*.js.map
@@ -219,5 +222,7 @@ Extensions/XplatGenerateReleaseNotes/task/node_modules
 Extensions/XplatGenerateReleaseNotes/node_modules
 Extensions/XplatGenerateReleaseNotes/dist
 Extensions/XplatGenerateReleaseNotes/test-output
+Extensions/Versioning/VersionDotNetCoreAssembliesTask/dist/test/test.js
+Extensions/Versioning/VersionDotNetCoreAssembliesTask/dist/test/test.js.map
 
 Extensions/stylecop/test/logs
