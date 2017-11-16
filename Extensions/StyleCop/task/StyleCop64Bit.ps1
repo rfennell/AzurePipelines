@@ -27,7 +27,7 @@ if ($env:Processor_Architecture -ne "AMD64")
     &"$env:windir\sysnative\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
     exit
 }
-write-verbose "Running in 32bit PowerShell at this point as dictionaries loaded by StyleCop are 64bit only."
+write-verbose "Running in 64bit PowerShell at this point as dictionaries loaded by StyleCop are 64bit only."
 
 import-module "$PSScriptRoot\stylecop.psm1" 
 

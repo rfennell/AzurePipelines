@@ -226,3 +226,5 @@ Extensions/Versioning/VersionDotNetCoreAssembliesTask/dist/test/test.js
 Extensions/Versioning/VersionDotNetCoreAssembliesTask/dist/test/test.js.map
 
 Extensions/stylecop/test/logs
+Extensions/StyleCop/test/TestData/results.xml
+Extensions/StyleCop/test/TestData/StyleCopSample/results.xml
