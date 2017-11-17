@@ -29,7 +29,7 @@
             "name": "PowerShell - all tests",
             "type": "PowerShell",
             "request": "launch",
-            "program": "${workspaceRoot}/Tests/Invoke-Tests.ps1"
+            "program": "${workspaceRoot}/Extensions/StyleCop/test/runtests.ps1"
         },
         {
             "name": "PowerShell - current file",

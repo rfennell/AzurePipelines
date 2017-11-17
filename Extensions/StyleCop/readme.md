@@ -1,5 +1,5 @@
 ### StyleCop Runner Task ###
-A task to run [StyleCop 4.7.59.0](https://github.com/Visual-Stylecop/Visual-StyleCop), not the older series of versions [on codeplex](https://stylecop.codeplex.com/)
+A task to run [StyleCop 5.0.6419.0](https://www.nuget.org/packages/StyleCop/), not the older series of versions [on codeplex](https://stylecop.codeplex.com/)
 
 Releases
 - 1.1 First public release
@@ -12,6 +12,7 @@ Releases
 - 1.10 Fixed issues with discovering settings.stylecop files in solution folder (Issue #104)
 - 1.11 Added parameter for adding allowable violations, which sets a threshold of acceptable number of violations (pull request from @jynxeh)
 - 1.12 Fixed 'Test Warnings as Errors' flag being ignored (pull request from @jynxeh)
+- 2.0 PR171 (thomasddn) - Upgrade to StyleCop 5.0.6419.0 and some engineering (Issue #202) restructoring of the repo to improve testing. Note that this version does not evaluate dictionary based tests i.e. SA1650. This has been done a major release so users get the choice of which version of StyleCop to use V1 of the task for StyleCop 4.7.59.0 and V2 for StyleCop 5.0.6419.0
 
 The task takes the following arguments
 - TreatStyleCopViolationsErrorsAsWarnings - Treat StyleCop violations errors as warnings (default false).

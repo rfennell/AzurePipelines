@@ -21,7 +21,7 @@ import-module "Microsoft.TeamFoundation.DistributedTask.Task.Common" # to get th
 # Run the script that does the work in a separate script
 # so we can force it to be loaded in 32bit PowerShell as this is required for disctionary loading
 # We need to leave the non-Stylecop bit still function
-& "$PSScriptRoot\stylecop32bit.ps1" `
+& "$PSScriptRoot\stylecop64bit.ps1" `
             -treatStyleCopViolationsErrorsAsWarnings $treatStyleCopViolationsErrorsAsWarnings `
             -maximumViolationCount $maximumViolationCount `
     	    -showOutput $showOutput `

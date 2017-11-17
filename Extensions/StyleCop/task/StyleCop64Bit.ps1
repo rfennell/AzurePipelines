@@ -18,15 +18,16 @@ $VerbosePreference ='Continue' # equiv to -verbose
 # This way of doing it seems the least complex, means the module and 
 # VSTS task script don't have to worry over 32/64bit issues
 
-if ($env:Processor_Architecture -ne "x86")   
+
+if ($env:Processor_Architecture -ne "AMD64")   
 { 
     # Get the command parameters
     $args = $myinvocation.BoundParameters.GetEnumerator() | ForEach-Object {$($_.Value)}
-    write-verbose 'Launching x86 PowerShell'
-    &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
+    write-verbose 'Launching x64 PowerShell'
+    &"$env:windir\sysnative\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
     exit
 }
-write-verbose "Running in 32bit PowerShell at this point as dictionaries loaded by StyleCop are 32bit only."
+write-verbose "Running in 64bit PowerShell at this point as dictionaries loaded by StyleCop are 64bit only."
 
 import-module "$PSScriptRoot\stylecop.psm1" 
 

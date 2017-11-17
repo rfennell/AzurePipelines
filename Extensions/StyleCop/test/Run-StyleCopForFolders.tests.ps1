@@ -1,22 +1,25 @@
-if ($env:Processor_Architecture -ne "x86")   
-{ write-warning 'Launching x86 PowerShell'
-&"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noninteractive -noprofile -file $myinvocation.Mycommand.path -executionpolicy bypass
-exit
+write-warning "Processor Architecture $env:Processor_Architecture"
+#############################################################################
+#If Powershell is running the 32-bit version on a 64-bit machine, we 
+#need to force powershell to run in 64-bit mode .
+#############################################################################
+if ($env:PROCESSOR_ARCHITEW6432 -eq "AMD64") {
+    write-warning "Reloading as 64-bit process"
+    &"$env:windir\sysnative\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
+    exit $lastexitcode
 }
-write-verbose "Running in 32bit PowerShell at this point as dictionaries loaded by StyleCop are 32bit only."
-
 
 # Check that the required powershell module is loaded if it is remove it as it might be an older version
 if ((get-module -name StyleCop ) -ne $null)
 {
   remove-module StyleCop 
 } 
-import-module "$PSScriptRoot\..\..\..\extensions\stylecop\stylecoptask\StyleCop.psm1"
+
+write-warning "PSScriptRoot is $PSScriptRoot"
+import-module "$PSScriptRoot\..\task\StyleCop.psm1"
 
 # Make sure we have a log folder
 New-Item -ItemType Directory -Force -Path "$PSScriptRoot\logs" >$null 2>&1
-
-
 
 Describe "StyleCop folder based tests (using stylecop.setting in each folder and no custom rules DLLs)" {
   
