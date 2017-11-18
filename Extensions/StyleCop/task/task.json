@@ -122,6 +122,15 @@
       "required": true,
       "helpMarkDown": "The file to save the StyleCop analysis summary markdown file",
       "groupName":"advanced"
+    },
+    {
+      "name": "detailedSummary",
+      "type": "boolean",
+      "label": "Detailed Summary",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "If true list all the violations, if false just the totals are shown",
+      "groupName":"advanced"
     }
   ],
   "instanceNameFormat": "StyleCop Runner ",
