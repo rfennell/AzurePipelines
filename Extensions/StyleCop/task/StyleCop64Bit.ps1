@@ -29,6 +29,10 @@ if ($env:Processor_Architecture -ne "AMD64")
 }
 write-verbose "Running in 64bit PowerShell at this point as dictionaries loaded by StyleCop are 64bit only."
 
+# just to avoid pinning of modules
+if ((Get-Module -Name "stylecop")) {
+    Remove-Module stylecop
+}
 import-module "$PSScriptRoot\stylecop.psm1" 
 
 $result = Invoke-StyleCopForFolderStructure `
