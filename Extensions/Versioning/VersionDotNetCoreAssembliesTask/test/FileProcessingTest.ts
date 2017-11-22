@@ -5,7 +5,7 @@ import "mocha";
 import { findFiles,
   ProcessFile
 } from "../src/AppyVersionToAssembliesFunctions";
-import jschardet = require("jschardet");
+
 import fs = require("fs");
 const copyFileSync = require("fs-copy-file-sync");
 const del = require("del");
