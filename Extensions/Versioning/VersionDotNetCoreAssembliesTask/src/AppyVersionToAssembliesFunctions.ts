@@ -21,7 +21,7 @@ export function findFiles (dir, filename , filelist) {
 }
 
 export function ProcessFile(file, field, newVersion) {
-  
+
     var filecontent = fs.readFileSync(file);
     fs.chmodSync(file, "600");
 
