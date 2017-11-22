@@ -19,7 +19,6 @@
     "del": "^3.0.0",
     "fs": "^0.0.1-security",
     "fs-copy-file-sync": "^1.0.1",
-    "jschardet": "^1.4.2",
     "ncp": "^2.0.0",
     "request": "^2.80.0",
     "tsd": "^0.6.5",

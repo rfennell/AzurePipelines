@@ -21,22 +21,20 @@ describe("Test the file processing", () => {
       var file = "test/testdata/core.csproj"
       ProcessFile(file, "AssemblyVersion", "9.9.9.9")
 
-      var fileEncoding = jschardet.detect(fs.readFileSync(file));
-      var editedfilecontent = fs.readFileSync(file, fileEncoding.encoding);
-      var expectedfilecontent = fs.readFileSync(`${file}.expected`, fileEncoding.encoding);
+      var editedfilecontent = fs.readFileSync(file);
+      var expectedfilecontent = fs.readFileSync(`${file}.expected`);
       
-      expect(editedfilecontent).equals(expectedfilecontent);
+      expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
     });
 
     it("should be able to update a version in a UTF8 file", () => {
       var file = "test/testdata/coreUTF8.csproj"
       ProcessFile(file, "AssemblyVersion", "9.9.9.9")
 
-      var fileEncoding = jschardet.detect(fs.readFileSync(file));
-      var editedfilecontent = fs.readFileSync(file, fileEncoding.encoding);
-      var expectedfilecontent = fs.readFileSync(`${file}.expected`, fileEncoding.encoding);
+      var editedfilecontent = fs.readFileSync(file);
+      var expectedfilecontent = fs.readFileSync(`${file}.expected`);
       
-      expect(editedfilecontent).equals(expectedfilecontent);
+      expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
     });
  
     after(function() {

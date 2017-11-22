@@ -1,6 +1,5 @@
 import fs = require("fs");
 import path = require("path");
-import jschardet = require("jschardet");
 
 // List all files in a directory in Node.js recursively in a synchronous fashion
 export function findFiles (dir, filename , filelist) {
@@ -22,9 +21,8 @@ export function findFiles (dir, filename , filelist) {
 }
 
 export function ProcessFile(file, field, newVersion) {
-    var fileEncoding = jschardet.detect(fs.readFileSync(file));
-
-    var filecontent = fs.readFileSync(file, fileEncoding.encoding);
+  
+    var filecontent = fs.readFileSync(file);
     fs.chmodSync(file, "600");
 
     // Check that the field to update is present
@@ -42,14 +40,14 @@ export function ProcessFile(file, field, newVersion) {
         if (regexp.exec(filecontent.toString())) {
             console.log (`The ${file} .csproj file only targets 1 framework`);
             var newVersionField = `</TargetFramework><${tmpField}>${newVersion}<\/${tmpField}>`;
-            fs.writeFileSync(file, filecontent.toString().replace(`</TargetFramework>`, newVersionField), fileEncoding.encoding);
+            fs.writeFileSync(file, filecontent.toString().replace(`</TargetFramework>`, newVersionField));
         }
         // Check for TargetFrameworks when using multiple frameworks
         regexp = new RegExp("</TargetFrameworks>", "g");
         if (regexp.exec(filecontent.toString())) {
             console.log (`The ${file} .csproj file targets multiple frameworks`);
             var newVersionField1 = `</TargetFrameworks><${tmpField}>${newVersion}<\/${tmpField}>`;
-            fs.writeFileSync(file, filecontent.toString().replace(`</TargetFrameworks>`, newVersionField1), fileEncoding.encoding);
+            fs.writeFileSync(file, filecontent.toString().replace(`</TargetFrameworks>`, newVersionField1));
         }
 
     } else {
@@ -66,7 +64,7 @@ export function ProcessFile(file, field, newVersion) {
                 console.log(`Replacement Tag: ${replacementTag1}`);
                 content = content.replace(existingTag1, replacementTag1);
             }
-            fs.writeFileSync(file, content, fileEncoding.encoding);
+            fs.writeFileSync(file, content);
 
         } else {
             console.log(`Updating all version fields with ${newVersion}`);
@@ -80,7 +78,7 @@ export function ProcessFile(file, field, newVersion) {
                 console.log(`Replacement Tag: ${replacementTag}`);
                 content = content.replace(existingTag, replacementTag);
             }
-            fs.writeFileSync(file, content, fileEncoding.encoding);
+            fs.writeFileSync(file, content);
         }
         console.log (`${file} - version applied`);
     }
