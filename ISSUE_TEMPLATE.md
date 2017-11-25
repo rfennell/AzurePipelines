@@ -7,6 +7,6 @@
 ### Version of Extension/Task
 *I assume it is the currently public version, if you are using an older version on-premises let me know, but the answer will probably involve upgrading to the currently public version*
 
-### Expected behavior and actual behavior
+### Expected behaviour and actual behaviour
 
 ### Steps to reproduce the problem
