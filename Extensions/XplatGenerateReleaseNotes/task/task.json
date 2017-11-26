@@ -3,7 +3,7 @@
   "name": "XplatGenerateReleaseNotes",
   "friendlyName": "Generate Release Notes based on Release Comparision API",
   "description": "Generates a release notes file in a format of your choice from the release history",
-    "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/XplatGenerateReleaseNotes/)",
+    "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task/)",
 
   "category": "Utility",
   "visibility": ["Release"],
