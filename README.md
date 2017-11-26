@@ -20,18 +20,18 @@ https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-
 ![Build Status - Typemock Runner Extension](
 https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/24/badge) Typemock Runner Extension (depricated)
 
-# vNextBuild Tasks and Resources
+# vNextBuild Extensions Repo
 
-This repo contains TFS vNext tasks and useful PowerShell scripts. It has evolved over time
+This repo contains VSTS/TFS Extensions. It has evolved over time
 
 - Initially it contained PowerShell scripts to perform build tasks
-- Next I moved to vNext build tasks to wrap PowerShell
-- Finally the tasks have been placed in VSTS/TFS extensions for ease of installation 
+- Next I moved these scripts into VSTS/TFS Build tasks to wrapper PowerShell scripts. 
+- Finally the tasks have been placed in VSTS/TFS extensions for ease of installation. Any remaining PowerShell scripts have been moved to [this repo](https://github.com/rfennell/VSTSPowershell) 
 
-## Building Tasks ##
+## Building Extensions ##
 
 For details of how to build and deploy these tasks/extensions see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki)
 
-## Included Scripts, Tasks and Extensions in the Repo 
+## Included Extensions in the Repo 
 For more details of how to use these tasks see [this repo's wiki](https://github.com/rfennell/vNextBuild/wiki)
 
