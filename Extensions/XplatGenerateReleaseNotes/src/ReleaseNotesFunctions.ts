@@ -227,7 +227,7 @@ export function getCommitsBetweenCommitIds (
                 }
                 resolve(body.value);
             });
-        } else {
+        } else if (repositoryType === " TfsVersionControl") {
             // for TfVC it is more complex
             // first we need to get the build definition
             getBuildDefinition (vstsinstance, teamproject, encodedPat, buildDefId, function(details) {
@@ -264,7 +264,9 @@ export function getCommitsBetweenCommitIds (
                                 }
                         });
                 }
-        }); // get build def
+            }); // get build def
+        } else {
+            logInfo(`Cannot get any commit/changeset details as build based on none VSTS repository`);
         } // if Git/Tfvc
     });
 }

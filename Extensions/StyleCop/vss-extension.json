@@ -4,7 +4,7 @@
  "version": "1.0.0",
  "name": "StyleCop Runner Build Task",
  "publisher": "richardfennellBM",
-  "description": "Run tests StyleCop using settings files in the project folders. Using StyleCop 4.7.59.0.",
+  "description": "Run tests StyleCop using settings files in the project folders. Using StyleCop 5.0.6419.0.",
  "categories": [
     "Build and release"
   ],
@@ -54,7 +54,7 @@
   },
   "files": [
     {
-      "path": "StyleCopTask"
+      "path": "task"
     }
   ],
   "contributions": [
@@ -65,7 +65,7 @@
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "StyleCopTask"
+        "name": "task"
       }
     }
   ]

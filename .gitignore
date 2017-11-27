@@ -198,6 +198,9 @@ ModelManifest.xml
 # Powershell for this project
 Tests/Extensions/StyleCopTask/logs
 
+# Visual Studio Code
+.vscode/
+
 # Exclusions for generated node.js for Node extensions
 Extensions/Versioning/VersionDotNetCoreAssembliesTask/task/*.js
 Extensions/Versioning/VersionDotNetCoreAssembliesTask/task/*.js.map
@@ -221,3 +224,7 @@ Extensions/XplatGenerateReleaseNotes/dist
 Extensions/XplatGenerateReleaseNotes/test-output
 Extensions/Versioning/VersionDotNetCoreAssembliesTask/dist/test/test.js
 Extensions/Versioning/VersionDotNetCoreAssembliesTask/dist/test/test.js.map
+
+Extensions/stylecop/test/logs
+Extensions/StyleCop/test/TestData/results.xml
+Extensions/StyleCop/test/TestData/StyleCopSample/results.xml
