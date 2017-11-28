@@ -64,7 +64,7 @@
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "DevTestLabsStartVm"
+        "name": "StartVM"
       }
     },
     {
@@ -74,7 +74,7 @@
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "DevTestLabsStartVm"
+        "name": "StopVM"
       }
     }
   ]
