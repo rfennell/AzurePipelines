@@ -68,7 +68,7 @@ try
 
     Show-InputParameters
 
-    AzureStartTask -LabVMId "$LabVMId"
+    Invoke-AzureStartTask -LabVMId "$LabVMId"
 
     Write-Host 'Completing Azure DevTest Labs Delete VM Task'
 }

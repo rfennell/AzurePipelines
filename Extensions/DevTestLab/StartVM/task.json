@@ -3,7 +3,7 @@
   "name": "DevTestLabsStartVm",
   "friendlyName": "Start a DevTest Labs VM",
   "description": "Start a DevTest Labs VM",
-  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BuildTasks-Task/)",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/DevTestLabs/)",
   "category": "Utility",
   "visibility": [
                 "Release"

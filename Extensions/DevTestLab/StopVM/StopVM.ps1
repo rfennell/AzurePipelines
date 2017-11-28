@@ -68,7 +68,7 @@ try
 
     Show-InputParameters
 
-    AzureStopTask -LabVMId "$LabVMId"
+    Invoke-AzureStopTask -LabVMId "$LabVMId"
 
     Write-Host 'Completing Azure DevTest Labs Stop VM Task'
 }
