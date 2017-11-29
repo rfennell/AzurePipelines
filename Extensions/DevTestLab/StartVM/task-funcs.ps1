@@ -19,6 +19,7 @@ function Show-InputParameters
 
     Write-Host "Task called with the following parameters:"
     Write-Host "  ConnectedServiceName = $ConnectedServiceName"
+    Write-Host "  ConnectedServiceNameClassic = $ConnectedServiceNameClassic"
     Write-Host "  LabVMId = $LabVMId"
 }
 

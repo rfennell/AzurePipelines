@@ -28,6 +28,14 @@
           "helpMarkDown": "Azure Resource Manager subscription to configure before running."
       },
       {
+        "name": "ConnectedServiceNameClassic",
+        "type": "connectedService:Azure",
+        "label": "Azure Classic Subscription",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "Azure Classic subscription to configure before running."
+    },
+      {
           "name": "LabVMId",
           "type": "string",
           "label": "Lab VM ID",

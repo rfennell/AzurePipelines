@@ -19,6 +19,7 @@
 [CmdletBinding()]
 Param(
     [string]$ConnectedServiceName,
+    [string]$ConnectedServiceNameClassic,
     [string]$LabVMId
 )
 
@@ -67,6 +68,12 @@ try
     Write-Host 'Starting Azure DevTest Labs Delete VM Task'
 
     Show-InputParameters
+
+    $endpoint = Get-Endpoint -connectedServiceName $connectedServiceName
+    Write-Host "$connectedServiceName - $endpoint" 
+
+    $endpoint1 = Get-Endpoint -connectedServiceName $ConnectedServiceNameClassic
+    Write-Host "$connectedServiceNameCLassic - $endpoint1" 
 
     Invoke-AzureStartTask -LabVMId "$LabVMId"
 
