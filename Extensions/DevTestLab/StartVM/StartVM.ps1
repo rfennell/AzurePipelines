@@ -26,6 +26,31 @@ Param(
 ###################################################################################################
 
 #
+<##################################################################################################
+
+    Description
+    ===========
+
+	Start a Lab VM given its resource ID.
+
+    Coming soon / planned work
+    ==========================
+
+    - N/A.    
+
+##################################################################################################>
+
+#
+# Parameters to this script file are read using Get-VstsInput
+#
+
+[CmdletBinding()]
+Param(
+)
+
+###################################################################################################
+
+#
 # PowerShell configurations
 #
 
@@ -65,21 +90,36 @@ trap
 
 try
 {
-    Write-Host 'Starting Azure DevTest Labs Delete VM Task'
+    Write-Host 'Starting Azure DevTest Labs Start VM Task'
+
+	# Get the parameters
+	$ConnectedServiceName = Get-VstsInput -Name "ConnectedServiceName"
+	$LabVMId = Get-VstsInput -Name "LabVMId"
 
     Show-InputParameters
+	
+	# Get the end point
+	$Endpoint = Get-VstsEndpoint -Name $ConnectedServiceName -Require
 
-    $endpoint = Get-Endpoint -connectedServiceName $connectedServiceName
-    Write-Host "$connectedServiceName - $endpoint" 
+    # Get the Authentication
+    $clientID = $Endpoint.Auth.parameters.serviceprincipalid
+    $key = $Endpoint.Auth.parameters.serviceprincipalkey 
+	$tenantId = $Endpoint.Auth.parameters.tenantid
+	
+    $SecurePassword = $key | ConvertTo-SecureString -AsPlainText -Force
+    $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $clientID, $SecurePassword
 
-    $endpoint1 = Get-Endpoint -connectedServiceName $ConnectedServiceNameClassic
-    Write-Host "$connectedServiceNameCLassic - $endpoint1" 
-
+	# Authenticate
+    Login-AzureRmAccount -Credential $cred -TenantId $tenantId -ServicePrincipal
+	
     Invoke-AzureStartTask -LabVMId "$LabVMId"
 
-    Write-Host 'Completing Azure DevTest Labs Delete VM Task'
+    Write-Host 'Completing Azure DevTest Labs Start VM Task'
 }
 finally
 {
+    popd
+}
+
     popd
 }

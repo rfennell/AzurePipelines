@@ -3,7 +3,7 @@
     Description
     ===========
 
-	Stops a Lab VM given its resource ID.
+	Start a Lab VM given its resource ID.
 
     Coming soon / planned work
     ==========================
@@ -13,13 +13,11 @@
 ##################################################################################################>
 
 #
-# Parameters to this script file.
+# Parameters to this script file are read using Get-VstsInput
 #
 
 [CmdletBinding()]
 Param(
-    [string]$ConnectedServiceName,
-    [string]$LabVMId
 )
 
 ###################################################################################################
@@ -66,8 +64,26 @@ try
 {
     Write-Host 'Starting Azure DevTest Labs Stop VM Task'
 
-    Show-InputParameters
+	# Get the parameters
+	$ConnectedServiceName = Get-VstsInput -Name "ConnectedServiceName"
+	$LabVMId = Get-VstsInput -Name "LabVMId"
 
+    Show-InputParameters
+	
+	# Get the end point
+	$Endpoint = Get-VstsEndpoint -Name $ConnectedServiceName -Require
+
+    # Get the Authentication
+    $clientID = $Endpoint.Auth.parameters.serviceprincipalid
+    $key = $Endpoint.Auth.parameters.serviceprincipalkey 
+	$tenantId = $Endpoint.Auth.parameters.tenantid
+	
+    $SecurePassword = $key | ConvertTo-SecureString -AsPlainText -Force
+    $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $clientID, $SecurePassword
+
+	# Authenticate
+    Login-AzureRmAccount -Credential $cred -TenantId $tenantId -ServicePrincipal
+	
     Invoke-AzureStopTask -LabVMId "$LabVMId"
 
     Write-Host 'Completing Azure DevTest Labs Stop VM Task'

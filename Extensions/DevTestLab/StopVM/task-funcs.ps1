@@ -33,7 +33,7 @@ function Invoke-AzureStopTask
     $labVMName = $labVMParts.Get($labVMParts.Length - 1)
     $labName = $labVMParts.Get($labVMParts.IndexOf('labs') + 1)
 
-    Write-Host "Starting Lab VM '$labVMName' from Lab '$labName'"
+    Write-Host "Stopping Lab VM '$labVMName' from Lab '$labName'"
 
     Invoke-AzureRmResourceAction -ResourceId $LabVMId -Action Stop -Force | Out-Null
 }

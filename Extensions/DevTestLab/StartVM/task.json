@@ -17,7 +17,7 @@
     "Minor": 0,
     "Patch": 0
   },
-  "minimumAgentVersion": "1.95.1",
+  "minimumAgentVersion": "1.97.1",
   "inputs": [
       {
           "name": "ConnectedServiceName",
@@ -27,14 +27,6 @@
           "required": true,
           "helpMarkDown": "Azure Resource Manager subscription to configure before running."
       },
-      {
-        "name": "ConnectedServiceNameClassic",
-        "type": "connectedService:Azure",
-        "label": "Azure Classic Subscription",
-        "defaultValue": "",
-        "required": true,
-        "helpMarkDown": "Azure Classic subscription to configure before running."
-    },
       {
           "name": "LabVMId",
           "type": "string",
