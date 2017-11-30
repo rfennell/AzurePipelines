@@ -31,17 +31,27 @@ if (!fs.existsSync(path)) {
 }
 
 // Apply the version to the assembly property files
-var files = findFiles(`${path}`, filenamePattern, files);
-console.log (`Found ${files.count} to update.`);
+var files = findFiles(path, filenamePattern, files);
+console.log (`Found ${files.length} files to update.`);
 
-// Get and validate the version data
-var versionData = versionRegex.match(versionNumber);
-if (versionData.length === 0) {
-    tl.error (`Could not find version number data in ${versionNumber}.`);
+var regexp = new RegExp(versionRegex);
+var versionData = regexp.exec(versionNumber);
+if (!versionData) {
+    // extra check as we don't get zero size array but a null
+    tl.error(`Could not find version number data in ${versionNumber} that matches ${versionRegex}.`);
     process.exit(1);
-} else if (versionData.length > 1) {
-    tl.warning (`Found more than instance of version data in ${versionNumber}.`);
-    tl.warning ("Will assume first instance is version.");
+}
+switch (versionData.length) {
+   case 0:
+         // this is trapped by the null check above
+         tl.error(`Could not find version number data in ${versionNumber} that matches ${versionRegex}.`);
+         process.exit(1);
+   case 1:
+        break;
+   default:
+         tl.warning(`Found more than instance of version data in ${versionNumber}  that matches ${versionRegex}.`);
+         tl.warning(`Will assume first instance is version.`);
+         break;
 }
 
 const newVersion = versionData[0];
