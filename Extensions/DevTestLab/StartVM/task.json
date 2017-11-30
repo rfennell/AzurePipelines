@@ -38,10 +38,10 @@
    ],
   "instanceNameFormat": "Start a DevTest Labs VM",
   "execution": {
-    "PowerShell": {
-      "target": "$(currentDirectory)\\StartVM.ps1",
-      "argumentFormat": "",
-      "workingDirectory": "$(currentDirectory)"
-    }
-  }
+		"PowerShell3": {
+			"target": "$(currentDirectory)\\StartVM.ps1",
+			"argumentFormat": "",
+			"workingDirectory": "$(currentDirectory)"
+		}
+	}
 }

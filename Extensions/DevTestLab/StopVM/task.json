@@ -41,7 +41,7 @@
   
   "instanceNameFormat": "Stop a DevTest Labs VM",
   "execution": {
-    "PowerShell": {
+		"PowerShell3": {
       "target": "$(currentDirectory)\\StopVM.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
