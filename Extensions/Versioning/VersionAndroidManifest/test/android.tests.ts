@@ -24,13 +24,13 @@ describe ("Find files tests", () => {
 describe ("Version number split tests", () => {
 
     it ("should be able to get version name", () => {
-        var actual = getVersionName ("{1}.{2}", "1.2.3.4");
-        expect(actual).to.equal("1.2");
+        var actual = getVersionName ("{1}.{2}", "7.6.17334.5");
+        expect(actual).to.equal("7.6");
     });
 
     it ("should be able to get version code", () => {
-        var actual = getVersionCode("{3}{4}", "1.2.3.4");
-        expect(actual).to.equal("34");
+        var actual = getVersionCode("{3}{4}", "7.6.17334.5");
+        expect(actual).to.equal("173345");
     });
 
 });

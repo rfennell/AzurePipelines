@@ -4,14 +4,14 @@ import path = require("path");
 export function getVersionName (format, version) {
     const versionNumberSplit = version.split(".");
     const versionNumberMatches = format.match(/\d/g);
-    const versionName = versionNumberMatches.join(".");
+    const versionName = (versionNumberMatches.map((item) => versionNumberSplit[item - 1])).join(".");
     return versionName;
 }
 
 export function getVersionCode (format, version) {
     const versionCodeSplit = version.split(".");
     const versionCodeMatches = format.match(/\d/g);
-    const versionCode = versionCodeMatches.join("");
+    const versionCode = (versionCodeMatches.map((item) => versionCodeSplit[item - 1])).join("");
     return versionCode;
 }
 
