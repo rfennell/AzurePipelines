@@ -1,0 +1,50 @@
+{
+  "id": "aedfa360-b2a1-4dae-9c0d-19d6e9571949",
+  "name": "DevTestLabsStartVm",
+  "friendlyName": "Stop a DevTest Labs VM",
+  "description": "Stop a DevTest Labs VM",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/DevTestLabs/)",
+  "category": "Utility",
+  "visibility": [
+                "Build",
+                "Release"
+                ],
+  "demands": [
+                  "azureps"
+                ],
+   
+  "author": "Richard Fennell",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "minimumAgentVersion": "1.97.1",
+   "inputs": [
+      {
+          "name": "ConnectedServiceName",
+          "type": "connectedService:AzureRM",
+          "label": "Azure RM Subscription",
+          "defaultValue": "",
+          "required": true,
+          "helpMarkDown": "Azure Resource Manager subscription to configure before running."
+      },
+      {
+          "name": "LabVMId",
+          "type": "string",
+          "label": "Lab VM ID",
+          "defaultValue": "$(labVMId)",
+          "required": true,
+          "helpMarkDown": "Resource ID of the lab VM to stop. Default is `$(labVMId)`. You can use any variable such as `$(labVMId)`, which is the output of calling **Create Azure DevTest Labs VM**, that contains a value in the form `/subscriptions/{subId}/resourceGroups/{rgName}/providers/Microsoft.DevTestLab/labs/{labName}/virtualMachines/{vmName}`."
+      }
+   ],
+  
+  "instanceNameFormat": "Stop a DevTest Labs VM",
+  "execution": {
+		"PowerShell3": {
+      "target": "$(currentDirectory)\\StopVM.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}

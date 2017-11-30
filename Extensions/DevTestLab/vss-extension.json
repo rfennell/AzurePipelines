@@ -1,0 +1,81 @@
+{
+ "manifestVersion": 1,
+ "id": "BM-VSTS-DevTestLab",
+ "version": "1.0.0",
+ "name": "DevTest Lab Tasks",
+ "publisher": "richardfennellBM",
+ "description": "A set of tasks that control DevTest Labs.",
+ "categories": [
+    "Build and release"
+  ],
+ "targets": [
+         {
+             "id": "Microsoft.VisualStudio.Services"
+         }
+     ],
+  "tags": [
+    "Release",
+    "Build"
+  ],   
+    "galleryFlags": [
+        "Public"
+    ],
+  "branding": {
+        "color": "#f97923",
+        "theme": "dark"
+  },
+  "icons": {
+      "default": "images/logo.png"
+  },
+   "links": {
+    "getstarted": {
+      "uri": "https://github.com/rfennell/vNextBuild/wiki/DevTestLabs"
+    },
+    "support": {
+      "uri": "https://github.com/rfennell/vNextBuild/issues"
+    }
+  },
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot.png"
+    }
+  ],
+  "files": [
+    {
+      "path": "StopVM"
+    },
+     {
+      "path": "StartVM"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "DevTestLabsStartVm",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "StartVM"
+      }
+    },
+    {
+      "id": "DevTestLabsStopVm",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "StopVM"
+      }
+    }
+  ]
+}
