@@ -1,28 +1,3 @@
-<##################################################################################################
-
-    Description
-    ===========
-
-	Start a Lab VM given its resource ID.
-
-    Coming soon / planned work
-    ==========================
-
-    - N/A.    
-
-##################################################################################################>
-
-#
-# Parameters to this script file.
-#
-
-[CmdletBinding()]
-Param(
-    [string]$ConnectedServiceName,
-    [string]$ConnectedServiceNameClassic,
-    [string]$LabVMId
-)
-
 ###################################################################################################
 
 #
@@ -118,8 +93,5 @@ try
 }
 finally
 {
-    popd
-}
-
     popd
 }
