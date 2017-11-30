@@ -1,0 +1,50 @@
+import { expect } from "chai";
+// if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
+import "mocha";
+
+import {
+    getVersionName,
+    getVersionCode,
+    updateManifestFile
+} from "../src/ApplyVersionToManifestFunctions";
+
+import fs = require("fs");
+const copyFileSync = require("fs-copy-file-sync");
+const del = require("del");
+
+describe ("Version number split tests", () => {
+
+    it ("should be able to get version name", () => {
+        var actual = getVersionName ("{1}.{2}", "1.2.3.4");
+        expect(actual).to.equal("1.2");
+    });
+
+    it ("should be able to get version code", () => {
+        var actual = getVersionCode("{3}{4}", "1.2.3.4");
+        expect(actual).to.equal("34");
+    });
+
+});
+
+describe("Test the file processing", () => {
+    before(function() {
+      // make a copy we can overright with breaking test data
+      copyFileSync("test/testdata/sample.xml.initial", "test/testdata/sample.xml");
+    });
+
+    it("should be able to update a version in a file", () => {
+      var file = "test/testdata/sample.xml";
+      updateManifestFile(file, "34", "1.2");
+
+      var editedfilecontent = fs.readFileSync(file);
+      var expectedfilecontent = fs.readFileSync(`${file}.expected`);
+
+      expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
+    });
+
+    after(function() {
+      // remove the file if created
+      del.sync("test/testdata/sample.xml");
+    });
+
+  });
