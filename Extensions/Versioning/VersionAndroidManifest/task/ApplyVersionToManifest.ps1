@@ -58,25 +58,15 @@ switch($VersionData.Count)
 $NewVersion = $VersionData[0].value
 Write-Verbose "Extracted Version: $NewVersion"
 
-$VersionNumberSplit = $NewVersion.Split('.')
-
-$VersionNameMatches = $VersionNameFormat | Select-String -Pattern '\d' -AllMatches
-$VersionName = ($VersionNameMatches.Matches.value | Foreach-Object {$VersionNumberSplit[$_ - 1]}) -join '.'
+$VersionName = Get-VersionName -Format $VersionNameFormat -Version $NewVersion
 Write-Verbose -Message "Version Name will be: $VersionName"
 
-$VersionCodeMatches = $VersionCodeFormat | Select-String -Pattern '\d' -AllMatches
-$VersionCode = ($VersionCodeMatches.Matches.value | Foreach-Object {$VersionNumberSplit[$_ - 1]}) -join ''
+$VersionCode = Get-VersionCode -Format $VersionCodeFormat -Version $NewVersion
 Write-Verbose -Message "Version Code will be $VersionCode"
-
 
 foreach ($File in $Files) {
     Write-Verbose -Message "Updating $($File.Fullname)"
-    $Content = Get-Content $File.Fullname -Raw
-
-    $Content = $Content -Replace 'VersionCode="\d+',"versionCode=`"$VersionCode"
-    $Content = $Content -replace 'versionName="(\d+\.\d+){1,}',"versionName=`"$VersionName"
-
-    $Content | Set-Content -Path $File.Fullname
+    Update-ManifestFile -filename $File.Fullname -versioncode $VersionCode -versionname $VersionName
     Write-Verbose -Message "Set version numbers."
 }
 
