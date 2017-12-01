@@ -61,7 +61,12 @@ const versionName = getVersionName(versionNameFormat, newVersion);
 console.log (`Version Name will be: ${versionName}`);
 
 const versionCode = getVersionCode(versionCodeFormat, newVersion);
-console.log (`Version Code will be ${versionCode}`);
+if (parseInt(versionCode, 10) >= 2100000000) {
+    tl.error(`Version Code of ${versionCode} is too long, must be below 2100000000 for submission to Google Play Store`);
+    process.exit(1);
+} else {
+    console.log (`Version Code will be ${versionCode}`);
+}
 
 if (files.length > 0) {
     console.log (`Will apply versionName: ${versionName} and versionCode: ${versionCode} $to ${files.length} files.`);
