@@ -86,7 +86,7 @@
       "path": "VersionWixTask"
     },
     {
-      "path": "VersionAndroidManifest"
+      "path": "VersionAndroidManifest/task"
     }
   ],
   "contributions": [
@@ -177,7 +177,7 @@
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "VersionAndroidManifest"
+        "name": "VersionAndroidManifest/task"
       }
     }
 

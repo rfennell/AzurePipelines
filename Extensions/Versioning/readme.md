@@ -31,6 +31,7 @@
 - V1.26   - Fixed Issue 197 where the task wouldn't correctly run on Hosted agents due to changes in the DacFx install location.
 - V1.27   - Engineering Issue #202
 - V1.28   - Issue #213 fix for UTF8 File encoding problems 
+- V1.29   - Issue #217 moved the ANdroid versioner to NodeJS
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of

@@ -208,6 +208,12 @@ Extensions/Versioning/VersionDotNetCoreAssembliesTask/task/node_modules
 Extensions/Versioning/VersionDotNetCoreAssembliesTask/node_modules
 Extensions/Versioning/VersionDotNetCoreAssembliesTask/dist
 
+Extensions/Versioning/VersionAndroidManifest/task/*.js
+Extensions/Versioning/VersionAndroidManifest/task/*.js.map
+Extensions/Versioning/VersionAndroidManifest/task/node_modules
+Extensions/Versioning/VersionAndroidManifest/node_modules
+Extensions/Versioning/VersionAndroidManifest/dist
+
 Extensions/FileUtilities/XmlFileUpdateTask/task/*.js
 Extensions/FileUtilities/XmlFileUpdateTask/task/*.js.map
 Extensions/FileUtilities/XmlFileUpdateTask/task/node_modules
@@ -222,9 +228,8 @@ Extensions/XplatGenerateReleaseNotes/task/node_modules
 Extensions/XplatGenerateReleaseNotes/node_modules
 Extensions/XplatGenerateReleaseNotes/dist
 Extensions/XplatGenerateReleaseNotes/test-output
-Extensions/Versioning/VersionDotNetCoreAssembliesTask/dist/test/test.js
-Extensions/Versioning/VersionDotNetCoreAssembliesTask/dist/test/test.js.map
 
 Extensions/stylecop/test/logs
 Extensions/StyleCop/test/TestData/results.xml
 Extensions/StyleCop/test/TestData/StyleCopSample/results.xml
+
