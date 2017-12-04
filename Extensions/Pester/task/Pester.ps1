@@ -84,7 +84,7 @@ if (([bool]::Parse($ForceUseOfPesterInTasks) -eq $true) -and $(-not([string]::Is
     # we have no module path specified and Pester is not installed on the PC
     # have to use a version in this task
     $moduleFolder = "$pwd\$pesterVersion"
-    Write-host "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension" -verbose
+    Write-Verbose "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension" -verbose
     Import-Module -Name $moduleFolder\Pester.psd1
 }
 elseif ([string]::IsNullOrEmpty($moduleFolder) -and 
