@@ -1,6 +1,5 @@
-Write-host $PSScriptRoot
-
-$sut = Join-Path -Path "$PSScriptRoot\..\..\Task\" -ChildPath Pester.ps1 -Resolve
+$taskPath = "$PSScriptRoot\..\..\Task"
+$sut = Join-Path -Path $taskPath -ChildPath Pester.ps1 -Resolve
 
 Describe "Testing Pester Task" {
 
@@ -155,32 +154,43 @@ Describe "Testing Pester Task" {
             Mock Write-Verbose { }
             Mock Write-Warning { }
             Mock Write-Error { }
-     
+            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.0.8") } 
+            Mock Get-ChildItem  { return $true }
+
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder $null -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "True"
-            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\4.0.8\Pester.psd1" }
+
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name.EndsWith("\4.0.8\Pester.psd1") }
             Assert-MockCalled Invoke-Pester
         }
+
         it "Loads Pester version contained in task as Pester not installed on agent and ModuleFolder is Null " {
             mock Invoke-Pester { }
             mock Import-Module { }
             Mock Write-Verbose { }
             Mock Write-Warning { }
             Mock Write-Error { }
+            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.0.8") } 
+            Mock Get-ChildItem  { return $true }
      
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder $null -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "False"
-            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\4.0.8\Pester.psd1" }
+
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name.EndsWith("\4.0.8\Pester.psd1") }
             Assert-MockCalled Invoke-Pester
         }
 
-        it "Loads Pester version contained in task when ForceUse is set to true even whenModuleFolder is set " {
+        it "Loads Pester version contained in task when ForceUse is set to true even when ModuleFolder is set " {
             mock Invoke-Pester { }
             mock Import-Module { }
             Mock Write-Verbose { }
             Mock Write-Warning { }
             Mock Write-Error { }
+
+            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("$pwd\3.4.3") } 
+            Mock Get-ChildItem  { return $true }
      
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "$pwd\3.4.3" -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "True"
-            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\4.0.8\Pester.psd1" }
+  
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name.EndsWith("\4.0.8\Pester.psd1") }
             Assert-MockCalled Invoke-Pester
         }
 
@@ -190,9 +200,12 @@ Describe "Testing Pester Task" {
             Mock Write-Verbose { }
             Mock Write-Warning { }
             Mock Write-Error { }
-     
+            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.0.8") } 
+            Mock Get-ChildItem  { return $true }
+  
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "   " -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "False" 
-            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\4.0.8\Pester.psd1" }
+  
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name.EndsWith("\4.0.8\Pester.psd1") }
             Assert-MockCalled Invoke-Pester
         }
 
