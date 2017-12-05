@@ -62,14 +62,20 @@ param (
     $maxChanges, 
 
     [parameter(Mandatory=$false,HelpMessage="Overide the default of 50 work items returned")]
-    $maxWi 
+    $maxWi,
+
+    [parameter(Mandatory=$false,HelpMessage="A comma-separated list of Work Item types that should be included in the output.")]
+    $wiFilter,
+
+    [parameter(Mandatory=$false,HelpMessage="A comma-separated list of Work Item states that should be included in the output.")]
+    $wiStateFilter
 
 )
 
 # Set a flag to force verbose as a default
 $VerbosePreference ='Continue' # equiv to -verbose
 
-Import-Module -Name "$PSScriptRoot\GenerateReleaseNotes.psm1" 
+Import-Module -Name "$PSScriptRoot\GenerateReleaseNotes.psm1" -Force 
 
 # Get the build and release details
 $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
@@ -105,13 +111,14 @@ Write-Verbose "generateForOnlyPrimary = [$generateForOnlyPrimary]"
 Write-Verbose "generateForCurrentRelease = [$generateForCurrentRelease]"
 Write-Verbose "maxWi = [$maxWi]"
 Write-Verbose "maxChanges = [$maxChanges]"
-
+Write-Verbose "wiFilter = [$wiFilter]"
+Write-Verbose "wiStateFilter = [$wiStateFilter]"
 
 if ( [string]::IsNullOrEmpty($releaseid))
 {
     
    Write-Verbose "In Build mode"
-   $builds = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges
+   $builds = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges -wiFilter $wiFilter -wiStateFilter $wiStateFilter
     
 } else
 {
