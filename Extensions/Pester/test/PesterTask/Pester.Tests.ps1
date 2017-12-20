@@ -42,7 +42,7 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
 
-            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure,Integration' -ForceUseOfPesterInTasks "False"
+            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure,Integration' -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
             $Tag.Length | Should Be 2
             Write-Output -NoEnumerate $Tag | Should -BeOfType [System.Array]
             Write-Output -NoEnumerate $Tag | Should -BeOfType [String[]]
@@ -57,7 +57,7 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
 
-            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example,Demo' -ForceUseOfPesterInTasks "False"
+            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example,Demo' -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
             $ExcludeTag.Length | Should be 2
             Write-Output -NoEnumerate $ExcludeTag | Should -BeOfType [System.Array]
             Write-Output -NoEnumerate $ExcludeTag | Should -BeOfType [String[]]
@@ -70,7 +70,7 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
 
-            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile $null -ForceUseOfPesterInTasks "False"
+            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile $null -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
             Assert-MockCalled Invoke-Pester
         }
 
@@ -89,15 +89,15 @@ Describe "Testing Pester Task" {
         Mock Write-Error { }
 
         it "Calls Invoke-Pester correctly with ScriptFolder and ResultsFile specified" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ForceUseOfPesterInTasks "False"
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
             Assert-MockCalled Invoke-Pester
         }
         it "Calls Invoke-Pester with Tag specified" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure' -ForceUseOfPesterInTasks "False"
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure' -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
             Assert-MockCalled Invoke-Pester -ParameterFilter {$Tag -and $Tag -eq 'Infrastructure'}
         }
         it "Calls Invoke-Pester with ExcludeTag specified" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example' -ForceUseOfPesterInTasks "False"
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example' -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
             Assert-MockCalled Invoke-Pester -ParameterFilter {$ExcludeTag -and $ExcludeTag -eq 'Example'}
         }
         it "Calls Invoke-Pester with the CodeCoverageOutputFile specified" {
@@ -105,7 +105,7 @@ Describe "Testing Pester Task" {
             New-Item -Path TestDrive:\ -Name TestFile2.ps1 | Out-Null
             New-Item -Path TestDrive:\ -Name TestFile3.ps1 | Out-Null
 
-            &$Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml' -ForceUseOfPesterInTasks "False"
+            &$Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml' -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
             Assert-MockCalled Invoke-Pester -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage.xml'}
         }
 
