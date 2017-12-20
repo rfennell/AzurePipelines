@@ -72,7 +72,7 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
                 "$($_.Value)"
             }
         }
-        
+
     }
     write-warning "Re-launching in x86 PowerShell with $($args -join ' ')"
     &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
@@ -83,15 +83,15 @@ write-verbose "Running in $($env:Processor_Architecture) PowerShell" -verbose
 if (([bool]::Parse($ForceUseOfPesterInTasks) -eq $true) -and $(-not([string]::IsNullOrEmpty($pesterVersion)))) {
     # we have no module path specified and Pester is not installed on the PC
     # have to use a version in this task
-    $moduleFolder = "$pwd\$pesterVersion"
+    $moduleFolder = "$PSScriptRoot\$pesterVersion"
     Write-Verbose "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension" -verbose
     Import-Module -Name $moduleFolder\Pester.psd1
 }
-elseif ([string]::IsNullOrEmpty($moduleFolder) -and 
+elseif ([string]::IsNullOrEmpty($moduleFolder) -and
     (-not(Get-Module -ListAvailable Pester))) {
     # we have no module path specified and Pester is not installed on the PC
     # have to use a version in this task
-    $moduleFolder = "$pwd\$pesterVersion"
+    $moduleFolder = "$PSScriptRoot\$pesterVersion"
     Write-Verbose "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension, as not installed on PC" -verbose
     Import-Module $moduleFolder\Pester.psd1
 }
