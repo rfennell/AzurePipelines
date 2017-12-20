@@ -114,6 +114,7 @@ Describe "Testing Pester Task" {
     Context "Testing Task Output" {
         Mock Write-Verbose { }
         Mock Write-Warning { }
+        Mock Import-Module { }
         Mock Write-Error { }
         mock Invoke-Pester {
             param ($OutputFile)
