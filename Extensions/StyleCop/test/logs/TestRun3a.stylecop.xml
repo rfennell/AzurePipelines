@@ -1,0 +1,5 @@
+<StyleCopViolations>
+  <Violation Section="Root.WindowsFormsApplication1.Program" LineNumber="8" Source="C:\projects\github\vNextBuild\Extensions\StyleCop\test\testdata\FileWith7Errors.cs" RuleNamespace="StyleCop.CSharp.DocumentationRules" Rule="ElementsMustBeDocumented" RuleId="SA1600">The class must have a documentation header.</Violation>
+  <Violation Section="Root" LineNumber="1" Source="C:\projects\github\vNextBuild\Extensions\StyleCop\test\testdata\FileWith7Errors.cs" RuleNamespace="StyleCop.CSharp.DocumentationRules" Rule="FileMustHaveHeader" RuleId="SA1633">The file has no header, the header Xml is invalid, or the header is not located at the top of the file.</Violation>
+  <Violation Section="Root.WindowsFormsApplication1.Program.Main" LineNumber="14" Source="C:\projects\github\vNextBuild\Extensions\StyleCop\test\testdata\FileWith7Errors.cs" RuleNamespace="StyleCop.CSharp.MaintainabilityRules" Rule="AccessModifierMustBeDeclared" RuleId="SA1400">The method must have an access modifier.</Violation>
+</StyleCopViolations>

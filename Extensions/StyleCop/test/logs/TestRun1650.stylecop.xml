@@ -1,0 +1,3 @@
+<StyleCopViolations>
+  <Violation Section="Root.ClassLibrary1.Class1.JoinNames%string%string" LineNumber="17" Source="C:\projects\github\vNextBuild\Extensions\StyleCop\test\testdata\FileWithSA1650Errors.cs" RuleNamespace="StyleCop.CSharp.DocumentationRules" Rule="ElementDocumentationMustBeSpelledCorrectly" RuleId="SA1650">The documentation text within the summary tag contains incorrectly spelled words: 'Joinsnames'</Violation>
+</StyleCopViolations>

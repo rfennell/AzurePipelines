@@ -75,10 +75,10 @@
     {
       "name": "pesterVersion",
       "type": "pickList",
-      "label": "Pester version",
+      "label": "Pester version (stored in task)",
       "defaultValue": "4.0.8",
       "required": true,
-      "helpMarkDown": "Verson of Pester to use",
+      "helpMarkDown": "Verson of Pester to use from a choice of versions shipped in task. Will be used if Pester not installed in agent, or ForceUsage parameter set",
       "groupName": "advanced",
       "options": {
         "3.4.3": "3.4.3",
@@ -101,6 +101,15 @@
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "If left blank the Pester module stored in this task will be used, to load the Pester module from elsewhere set the path",
+      "groupName": "advanced"
+    },
+    {
+      "name": "ForceUseOfPesterInTasks",
+      "type": "boolean",
+      "label": "Force the use of a Pester Module shipped within this task",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "Force the use of the Pester version shipped in this task, even if Pester installed on agent.",
       "groupName": "advanced"
     }
   ],

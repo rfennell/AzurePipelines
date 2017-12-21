@@ -54,7 +54,9 @@ param
                 $true
             }
         })]
-    [string]$CodeCoverageOutputFile
+    [string]$CodeCoverageOutputFile,
+
+    [string]$ForceUseOfPesterInTasks
 )
 
 
@@ -62,7 +64,7 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
     # Get the command parameters
     $args = $myinvocation.BoundParameters.GetEnumerator() | ForEach-Object {
         if (-not([string]::IsNullOrWhiteSpace($_.Value))) {
-            If ($_.Value -eq 'True' -and $_.Key -ne 'run32Bit') {
+            If ($_.Value -eq 'True' -and $_.Key -ne 'run32Bit' -and $_.Key -ne 'ForceUseOfPesterInTasks') {
                 "-$($_.Key)"
             }
             else {
@@ -70,24 +72,35 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
                 "$($_.Value)"
             }
         }
+
     }
-    write-warning 'Re-launching in x86 PowerShell'
+    write-warning "Re-launching in x86 PowerShell with $($args -join ' ')"
     &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
     exit
 }
 write-verbose "Running in $($env:Processor_Architecture) PowerShell" -verbose
 
-if ([string]::IsNullOrEmpty($moduleFolder) -and (-not(Get-Module -ListAvailable Pester))) {
-    # we have no module path specified so use the copy we have in this task
-    $moduleFolder = "$pwd\$pesterVersion"
-    Write-Verbose "Loading Pester module from [$moduleFolder]" -verbose
+if (([bool]::Parse($ForceUseOfPesterInTasks) -eq $true) -and $(-not([string]::IsNullOrEmpty($pesterVersion)))) {
+    # we have no module path specified and Pester is not installed on the PC
+    # have to use a version in this task
+    $moduleFolder = "$PSScriptRoot\$pesterVersion"
+    Write-Verbose "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension" -verbose
+    Import-Module -Name $moduleFolder\Pester.psd1
+}
+elseif ([string]::IsNullOrEmpty($moduleFolder) -and
+    (-not(Get-Module -ListAvailable Pester))) {
+    # we have no module path specified and Pester is not installed on the PC
+    # have to use a version in this task
+    $moduleFolder = "$PSScriptRoot\$pesterVersion"
+    Write-Verbose "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension, as not installed on PC" -verbose
     Import-Module $moduleFolder\Pester.psd1
 }
 elseif ($moduleFolder) {
-    Write-Verbose "Loading Pester module from [$moduleFolder]" -verbose
+    Write-Verbose "Loading Pester module from [$moduleFolder] using user specificed overrided location" -verbose
     Import-Module $moduleFolder\Pester.psd1
 }
 else {
+    Write-Verbose "No Pester module location parameters passed, and not forcing use of Pester in task, so using Powershell default module location"
     Import-Module Pester
 }
 
@@ -108,7 +121,7 @@ if ($ExcludeTag) {
     $Parameters.Add('ExcludeTag', $ExcludeTag)
 }
 if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge '4.0.4') {
-    $Files = Get-ChildItem -Path $scriptFolder -include *.ps1 -Exclude *.Tests.ps1 -Recurse |
+    $Files = Get-ChildItem -Path $scriptFolder -include *.ps1, *.psm1 -Exclude *.Tests.ps1 -Recurse |
         Select-object -ExpandProperty Fullname
 
     if ($Files) {
