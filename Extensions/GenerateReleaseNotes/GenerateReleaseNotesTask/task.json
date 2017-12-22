@@ -3,7 +3,7 @@
   "name": "GenerateReleaseNotes",
   "friendlyName": "Generate Release Notes",
   "description": "Generates a release notes file in a format of your choice",
-    "helpMarkDown": "Version: 3.0.0. [More Information](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes%20-Tasks/)",
+    "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes%20-Tasks/)",
 
   "category": "Utility",
   "visibility": [
@@ -11,7 +11,7 @@
                 ],
   "author": "Black Marble",
   "version": {
-    "Major": 3,
+    "Major": 1,
     "Minor": 0,
     "Patch": 0
   },
