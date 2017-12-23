@@ -68,7 +68,10 @@ param (
     $wiFilter,
 
     [parameter(Mandatory=$false,HelpMessage="A comma-separated list of Work Item states that should be included in the output.")]
-    $wiStateFilter
+    $wiStateFilter,
+
+    [parameter(Mandatory=$false,HelpMessage="A boolean flag whether to added parent work items of those associated with a build.")]
+    $showParents
 
 )
 
@@ -111,6 +114,7 @@ Write-Verbose "generateForOnlyPrimary = [$generateForOnlyPrimary]"
 Write-Verbose "generateForCurrentRelease = [$generateForCurrentRelease]"
 Write-Verbose "maxWi = [$maxWi]"
 Write-Verbose "maxChanges = [$maxChanges]"
+Write-Verbose "showParents  =[$showParents]"
 Write-Verbose "wiFilter = [$wiFilter]"
 Write-Verbose "wiStateFilter = [$wiStateFilter]"
 
@@ -118,7 +122,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
 {
     
    Write-Verbose "In Build mode"
-   $builds = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges -wiFilter $wiFilter -wiStateFilter $wiStateFilter
+   $builds = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges -wiFilter $wiFilter -wiStateFilter $wiStateFilter -showParents $showParents
     
 } else
 {
@@ -214,7 +218,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
             # if build in build number range and completed
             if ($build.id -le $lastBuild.definitionReference.version.id -and ($build.id -gt $firstBuild.definitionReference.version.id -or $build.id -eq $lastBuild.definitionReference.version.id) -and $build.status -eq "completed")
             {
-				$b = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges
+				$b = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges -wiFilter $wiFilter -wiStateFilter $wiStateFilter -showParents $showParents
 				$buildsList.Add($build.id , $b)
             }
         }

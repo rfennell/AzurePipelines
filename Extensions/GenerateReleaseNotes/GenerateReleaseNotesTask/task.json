@@ -141,13 +141,23 @@
       "groupName": "advanced"
     },
     {
+      "name": "showParents",
+      "type": "boolean",
+      "label": "Show parent workitems",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "A boolean flag whether to added parent work items of those associated with a build.",
+      "groupName": "advanced"
+    },
+    {
       "name": "wiFilter",
       "type": "string",
       "label": "List of Work Item types to include",
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "A comma-separated list of Work Item types to include in the report. Use this to exclude Tasks, for instance.",
-      "groupName": "advanced"
+      "groupName": "advanced",
+      "visibleRule": "showParents = true"
     },
     {
       "name": "wiStateFilter",
@@ -156,7 +166,8 @@
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "A comma-separated list of Work Item states to include in the report.",
-      "groupName": "advanced"
+      "groupName": "advanced",
+      "visibleRule": "showParents = true"
     }
 
   ],
