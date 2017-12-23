@@ -20,6 +20,8 @@
 - 2.9 - PR from @paulxb Fixed a bug with $defname and $stagename not populating 
 - 2.10 - PR from @uioporqwerty #134 to fix issue with TFS2015.2 adn releases
 - 2.11 - Issue195 Added override in advanced settings to more than 50 wi or changesets/commits can be returned
+- 2.12 - PR221 SWarnberg - Show parent work items of those directly associated with build
+         Added option to append to output file as opposed to just overwriting
 
 This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's:
 - if used in a build it is the current active build
@@ -91,6 +93,10 @@ The task takes three parameters
 * (Advanced) Generate release notes for only primary release artifact, default is False (release mode only)
 * (Advanced) Generate release notes for only the release that contains the task, do not scan past releases, default is True (release mode only)
 * (Advanced) Name of the release stage to look for the last successful release in, default to empty value so uses the current stage of the release that the task is running in (release mode, when scanning past build only)
+* (Advanced) A boolean flag whether to over-write output file or append to it
+* (Advanced) A boolean flag whether to added parent work items of those associated with a build
+* (Advanced) A comma-separated list of Work Item types that should be included in the output.
+* (Advanced) A comma-separated list of Work Item states that should be included in the output.
 * (Outputs) Optional: Name of the variable that markdown contents will be copied into for use in other tasks
 
 Using the settings for the output file shown above, the release notes will be created in the specified folder, and will probably need be copied by a task such as 'Publish Artifacts' to your final required location.
