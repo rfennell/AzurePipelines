@@ -141,6 +141,15 @@
       "groupName": "advanced"
     },
     {
+      "name": "appendToFile",
+      "type": "boolean",
+      "label": "Append output file",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "A boolean flag whether to over-write output file or append to it.",
+      "groupName": "advanced"
+    },
+    {
       "name": "showParents",
       "type": "boolean",
       "label": "Show parent workitems",

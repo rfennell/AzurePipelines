@@ -71,7 +71,10 @@ param (
     $wiStateFilter,
 
     [parameter(Mandatory=$false,HelpMessage="A boolean flag whether to added parent work items of those associated with a build.")]
-    $showParents
+    $showParents,
+
+    [parameter(Mandatory=$false,HelpMessage="A boolean flag whether to over-write output file or append to it.")]
+    $appendToFile
 
 )
 
@@ -117,6 +120,7 @@ Write-Verbose "maxChanges = [$maxChanges]"
 Write-Verbose "showParents  =[$showParents]"
 Write-Verbose "wiFilter = [$wiFilter]"
 Write-Verbose "wiStateFilter = [$wiStateFilter]"
+Write-Verbose "appendToFile = [$appendToFile]"
 
 if ( [string]::IsNullOrEmpty($releaseid))
 {
@@ -231,8 +235,15 @@ if ( [string]::IsNullOrEmpty($releaseid))
 $template = Get-Template -templateLocation $templateLocation -templatefile $templatefile -inlinetemplate $inlinetemplate
 $outputmarkdown = Invoke-Template -template $template -builds $builds -releases $releases -stagename $stageName -defname $builddefname -releasedefname $releasedefname
 
-write-Verbose "Writing output file [$outputfile]."
-Set-Content $outputfile $outputmarkdown
+if ($appendToFile -eq $false)
+{
+    write-Verbose "Writing to output file [$outputfile]."
+    Set-Content $outputfile $outputmarkdown 
+} else 
+{
+    write-Verbose "Appending to output file [$outputfile]."
+    Addt-Content $outputfile $outputmarkdown 
+}
 
 if ([string]::IsNullOrEmpty($outputvariablename))
 {
