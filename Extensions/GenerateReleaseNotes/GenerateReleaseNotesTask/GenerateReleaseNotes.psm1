@@ -23,12 +23,17 @@ function Get-BuildWorkItems {
 	 
     try {
         $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/workitems?api-version=2.0&`$top=$($maxItems)"
-        $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| ConvertFrom-Json
-        foreach ($wi in $jsondata.value) {
-			if ($showParents -eq $false)
-			{
+		$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| ConvertFrom-Json
+		Write-Verbose "        Found $($jsondata.value.Count) WI"
+		if ($showParents -eq $false)
+		{
+			Write-Verbose "        Running in directly associated WI only mode"
+			foreach ($wi in $jsondata.value) {
 				$wiList += Get-Detail -uri $wi.url -usedefaultcreds $usedefaultcreds
-			} else {
+			}	
+		} else {
+			Write-Verbose "        Running in directly associated WI and parent mode"
+			foreach ($wi in $jsondata.value) {
 				$wiArray = @{}
 				# Get associated work item
 				$wiuri = $wi.url
@@ -51,6 +56,7 @@ function Get-BuildWorkItems {
 			# Filter the wi's based on types
 			$keys = @($wiArray.Keys)
 			if (([string]::IsNullOrEmpty($wifilter) -eq $false)) {
+				Write-Verbose "        Filtering WI on type - $($wifilter)"
 				foreach ($key in $keys) {
 					$wi = $wiArray.$key
 					$wiType = $wi.fields."System.WorkItemType"
@@ -62,6 +68,7 @@ function Get-BuildWorkItems {
 			# Filter the wi's based on states
 			$keys = @($wiArray.Keys)
 			if (([string]::IsNullOrEmpty($wiStateFilter) -eq $false)) {
+				Write-Verbose "        Filtering WI on state - $($wiStateFilter)"
 				foreach ($key in $keys) {
 					$wi = $wiArray.$key
 					$wiState = $wi.fields."System.State"
