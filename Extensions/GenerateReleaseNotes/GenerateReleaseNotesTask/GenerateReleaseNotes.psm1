@@ -32,9 +32,9 @@ function Get-BuildWorkItems {
 				$wiList += Get-Detail -uri $wi.url -usedefaultcreds $usedefaultcreds
 			}	
 		} else {
+            $wiArray = @{}
 			Write-Verbose "        Running in directly associated WI and parent mode"
 			foreach ($wi in $jsondata.value) {
-				$wiArray = @{}
 				# Get associated work item
 				$wiuri = $wi.url
 				$wiuri = "$($wiuri)?`$expand=relations"
@@ -504,9 +504,9 @@ function Get-BuildDataSet {
     write-verbose "    Getting build details for BuildID [$buildid]"    
     $build = Get-Build -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
 
-    $build = @{'build' = $build;
-							 'workitems' = (Get-BuildWorkItems -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxWi -wifilter $wifilter -wiStateFilter $wiStateFilter -showParents $showParents);
-							 'changesets' = (Get-BuildChangeSets -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxChanges )
+    $build = @{ 'build' = $build;
+				'workitems' = (Get-BuildWorkItems -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxWi -wifilter $wifilter -wiStateFilter $wiStateFilter -showParents $showParents);
+				'changesets' = (Get-BuildChangeSets -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxChanges )
     }
     $build
 }
