@@ -24,7 +24,7 @@ function Get-BuildWorkItems {
     try {
         $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/workitems?api-version=2.0&`$top=$($maxItems)"
 		$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| ConvertFrom-Json
-		Write-Verbose "        Found $($jsondata.value.Count) WI"
+		Write-Verbose "        Found $($jsondata.value.Count) WI directly associated with build"
 		if ($showParents -eq $false)
 		{
 			Write-Verbose "        Running in directly associated WI only mode"
@@ -52,7 +52,9 @@ function Get-BuildWorkItems {
 						}
 					}
 				}
-			}
+            }
+            Write-Verbose "        Found $($wiArray.Count) WI directly associated with build or parents of associated WI before filtering"
+
 			# Filter the wi's based on types
 			$keys = @($wiArray.Keys)
 			if (([string]::IsNullOrEmpty($wifilter) -eq $false)) {
@@ -61,6 +63,7 @@ function Get-BuildWorkItems {
 					$wi = $wiArray.$key
 					$wiType = $wi.fields."System.WorkItemType"
 					if ($wifilter -notlike "*$wiType*") {
+                        Write-Verbose "        Removed WI $($key) as does not match type filter"
 						$wiArray.Remove($key)
 					}
 				}
@@ -73,6 +76,7 @@ function Get-BuildWorkItems {
 					$wi = $wiArray.$key
 					$wiState = $wi.fields."System.State"
 					if ($wiStateFilter -notlike "*$wiState*") {
+                        Write-Verbose "        Removed WI $($key) as does not match state filter"
 						$wiArray.Remove($key)
 					}
 				}
