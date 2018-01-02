@@ -26,7 +26,13 @@
             "outFiles": ["${workspaceRoot}/Extensions/FileUtilities/dist/src/*.js"]
           },
         {
-            "name": "PowerShell - all tests",
+            "name": "PowerShell - GenerateReleaseNotes",
+            "type": "PowerShell",
+            "request": "launch",
+            "program": "${workspaceRoot}/Extensions/GenerateReleaseNotes/test/runtests.ps1"
+        },
+        {
+            "name": "PowerShell - StyleCop",
             "type": "PowerShell",
             "request": "launch",
             "program": "${workspaceRoot}/Extensions/StyleCop/test/runtests.ps1"
