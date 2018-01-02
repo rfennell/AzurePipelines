@@ -28,25 +28,25 @@
       "isExpanded": false
     }
   ],
-   "inputs": [
-      {
-         "name": "outputfile",
-         "type": "string",
-         "label": "Output file",
-         "defaultValue": "",
-         "required": true,
-         "helpMarkDown": "The name of the Markdown file to export e.g. $(Build.ArtifactStagingDirectory)\\releasenotes.md if within a build workflow "
-      },
-      {
-         "name": "outputVariableName",
-         "type": "string",
-         "label": "Output variable",
-         "defaultValue": "",
-         "required": false,
-         "helpMarkDown": "The name of the variable that the markdown output should be assigned to for use later in your workflow.",
-         "groupName":"outputs"
-      },
-      {
+  "inputs": [
+    {
+      "name": "outputfile",
+      "type": "string",
+      "label": "Output file",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The name of the Markdown file to export e.g. $(Build.ArtifactStagingDirectory)\\releasenotes.md if within a build workflow "
+    },
+    {
+      "name": "outputVariableName",
+      "type": "string",
+      "label": "Output variable",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The name of the variable that the markdown output should be assigned to for use later in your workflow.",
+      "groupName": "outputs"
+    },
+    {
       "name": "templateLocation",
       "type": "pickList",
       "label": "Template Location",
@@ -57,28 +57,25 @@
         "InLine": "InLine"
       },
       "helpMarkDown": "Select the template file source, file in source control or in line."
-      },
-      {
-         "name": "templatefile",
-         "type": "filePath",
-         "label": "Template file",
-         "defaultValue": "",
-         "required": true,
-         "helpMarkDown": "The name of the Markdown template.",
-         "visibleRule": "templateLocation = File"
-      }
-      ,
-      {
-         "name": "inlinetemplate",
-         "type": "multiLine",
-         "label": "Template",
-         "defaultValue": "",
-         "required": true,
-         "helpMarkDown": "The Markdown template."
-         ,
-         "visibleRule": "templateLocation = InLine"
-      }
-      ,
+    },
+    {
+      "name": "templatefile",
+      "type": "filePath",
+      "label": "Template file",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The name of the Markdown template.",
+      "visibleRule": "templateLocation = File"
+    },
+    {
+      "name": "inlinetemplate",
+      "type": "multiLine",
+      "label": "Template",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The Markdown template.",
+      "visibleRule": "templateLocation = InLine"
+    },
     {
       "name": "usedefaultcreds",
       "type": "boolean",
@@ -86,9 +83,8 @@
       "defaultValue": "False",
       "required": false,
       "helpMarkDown": "If true will use the credentials of the running agent as opposed to access token provided by build service.",
-      "groupName":"advanced"
-    }
-  ,
+      "groupName": "advanced"
+    },
     {
       "name": "emptySetText",
       "type": "string",
@@ -96,9 +92,8 @@
       "defaultValue": "None",
       "required": false,
       "helpMarkDown": "This is the text that will be placed in the generated release notes if there are no work items or changesets/commits.",
-      "groupName":"advanced"
-    }
-  ,
+      "groupName": "advanced"
+    },
     {
       "name": "generateForOnlyPrimary",
       "type": "boolean",
@@ -106,9 +101,8 @@
       "defaultValue": "False",
       "required": true,
       "helpMarkDown": "If true will generate release notes for the primary build artifact (Release usage only)",
-      "groupName":"advanced"
-    }
-  ,
+      "groupName": "advanced"
+    },
     {
       "name": "generateForCurrentRelease",
       "type": "boolean",
@@ -116,9 +110,8 @@
       "defaultValue": "True",
       "required": false,
       "helpMarkDown": "If true will generate release notes for this release (Release usage only)",
-      "groupName":"advanced"
-    }
-  ,
+      "groupName": "advanced"
+    },
     {
       "name": "overrideStageName",
       "type": "string",
@@ -126,10 +119,9 @@
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "If set uses this stage name to find the last succesful deployment, as opposed to the currently active stage (Release usage only)",
-      "groupName":"advanced",
-       "visibleRule": "generateForCurrentRelease = false"
-    }
-    ,
+      "groupName": "advanced",
+      "visibleRule": "generateForCurrentRelease = false"
+    },
     {
       "name": "maxWi",
       "type": "integer",
@@ -137,9 +129,8 @@
       "defaultValue": "50",
       "required": false,
       "helpMarkDown": "The maximum Work Items to return in the report",
-      "groupName":"advanced"
-    }
-    ,
+      "groupName": "advanced"
+    },
     {
       "name": "maxChanges",
       "type": "integer",
@@ -147,10 +138,48 @@
       "defaultValue": "50",
       "required": false,
       "helpMarkDown": "The maximum Changeset/Commits to return in the report",
-      "groupName":"advanced"
+      "groupName": "advanced"
+    },
+    {
+      "name": "appendToFile",
+      "type": "boolean",
+      "label": "Append output file",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "A boolean flag whether to over-write output file or append to it.",
+      "groupName": "advanced"
+    },
+    {
+      "name": "showParents",
+      "type": "boolean",
+      "label": "Show parent workitems",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "A boolean flag whether to added parent work items of those associated with a build.",
+      "groupName": "advanced"
+    },
+    {
+      "name": "wiFilter",
+      "type": "string",
+      "label": "List of Work Item types to include",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "A comma-separated list of Work Item types to include in the report. Use this to exclude Tasks, for instance.",
+      "groupName": "advanced",
+      "visibleRule": "showParents = true"
+    },
+    {
+      "name": "wiStateFilter",
+      "type": "string",
+      "label": "List of Work Item states to include",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "A comma-separated list of Work Item states to include in the report.",
+      "groupName": "advanced",
+      "visibleRule": "showParents = true"
     }
-    
-   ],
+
+  ],
   "instanceNameFormat": "Generate release notes",
   "execution": {
     "PowerShell": {

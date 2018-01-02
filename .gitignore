@@ -233,3 +233,6 @@ Extensions/stylecop/test/logs
 Extensions/StyleCop/test/TestData/results.xml
 Extensions/StyleCop/test/TestData/StyleCopSample/results.xml
 
+/.vs
+/Extensions/GenerateReleaseNotes/GenerateReleaseNotesTask/ReleaseNotes.md
+/Extensions/GenerateReleaseNotes/GenerateReleaseNotesTask/ReleaseNotes_AllFields.md

@@ -62,14 +62,26 @@ param (
     $maxChanges, 
 
     [parameter(Mandatory=$false,HelpMessage="Overide the default of 50 work items returned")]
-    $maxWi 
+    $maxWi,
+
+    [parameter(Mandatory=$false,HelpMessage="A comma-separated list of Work Item types that should be included in the output.")]
+    $wiFilter,
+
+    [parameter(Mandatory=$false,HelpMessage="A comma-separated list of Work Item states that should be included in the output.")]
+    $wiStateFilter,
+
+    [parameter(Mandatory=$false,HelpMessage="A boolean flag whether to added parent work items of those associated with a build.")]
+    $showParents,
+
+    [parameter(Mandatory=$false,HelpMessage="A boolean flag whether to over-write output file or append to it.")]
+    $appendToFile
 
 )
 
 # Set a flag to force verbose as a default
 $VerbosePreference ='Continue' # equiv to -verbose
 
-Import-Module -Name "$PSScriptRoot\GenerateReleaseNotes.psm1" 
+Import-Module -Name "$PSScriptRoot\GenerateReleaseNotes.psm1" -Force 
 
 # Get the build and release details
 $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
@@ -105,13 +117,16 @@ Write-Verbose "generateForOnlyPrimary = [$generateForOnlyPrimary]"
 Write-Verbose "generateForCurrentRelease = [$generateForCurrentRelease]"
 Write-Verbose "maxWi = [$maxWi]"
 Write-Verbose "maxChanges = [$maxChanges]"
-
+Write-Verbose "showParents  =[$showParents]"
+Write-Verbose "wiFilter = [$wiFilter]"
+Write-Verbose "wiStateFilter = [$wiStateFilter]"
+Write-Verbose "appendToFile = [$appendToFile]"
 
 if ( [string]::IsNullOrEmpty($releaseid))
 {
     
    Write-Verbose "In Build mode"
-   $builds = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges
+   $builds = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges -wiFilter $wiFilter -wiStateFilter $wiStateFilter -showParents $showParents
     
 } else
 {
@@ -207,7 +222,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
             # if build in build number range and completed
             if ($build.id -le $lastBuild.definitionReference.version.id -and ($build.id -gt $firstBuild.definitionReference.version.id -or $build.id -eq $lastBuild.definitionReference.version.id) -and $build.status -eq "completed")
             {
-				$b = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges
+				$b = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges -wiFilter $wiFilter -wiStateFilter $wiStateFilter -showParents $showParents
 				$buildsList.Add($build.id , $b)
             }
         }
@@ -220,8 +235,15 @@ if ( [string]::IsNullOrEmpty($releaseid))
 $template = Get-Template -templateLocation $templateLocation -templatefile $templatefile -inlinetemplate $inlinetemplate
 $outputmarkdown = Invoke-Template -template $template -builds $builds -releases $releases -stagename $stageName -defname $builddefname -releasedefname $releasedefname
 
-write-Verbose "Writing output file [$outputfile]."
-Set-Content $outputfile $outputmarkdown
+if ($appendToFile -eq $false)
+{
+    write-Verbose "Writing to output file [$outputfile]."
+    Set-Content $outputfile $outputmarkdown 
+} else 
+{
+    write-Verbose "Appending to output file [$outputfile]."
+    Addt-Content $outputfile $outputmarkdown 
+}
 
 if ([string]::IsNullOrEmpty($outputvariablename))
 {
