@@ -68,7 +68,7 @@ if (parseInt(versionCode, 10) >= 2100000000) {
 }
 
 if (files.length > 0) {
-    console.log (`Will apply versionName: ${versionName} and versionCode: ${versionCode} $to ${files.length} files.`);
+    console.log (`Will apply versionName: ${versionName} and versionCode: ${versionCode} to ${files.length} files.`);
     files.forEach(file => {
         updateManifestFile(file, versionCode, versionName);
     });

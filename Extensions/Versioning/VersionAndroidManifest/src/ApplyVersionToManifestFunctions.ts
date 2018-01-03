@@ -19,7 +19,7 @@ function extractJoinChar(format) {
 }
 
 function extractDelimitersRegex(format) {
-    const delimiters = format.replace(new RegExp("[\\][d][+]", "g"), "");
+    const delimiters = format.replace(/[\\d+\\]/g, "");
     return (new RegExp("[" + delimiters + "]"));
 }
 
