@@ -1,6 +1,5 @@
 import {
-    getVersionName,
-    getVersionCode,
+    getSplitVersionParts,
     updateManifestFile,
     findFiles
 } from "./ApplyVersionToManifestFunctions";
@@ -57,10 +56,10 @@ switch (versionData.length) {
 const newVersion = versionData[0];
 console.log (`Extracted Version: ${newVersion}`);
 
-const versionName = getVersionName(versionNameFormat, newVersion);
+const versionName = getSplitVersionParts(versionRegex, versionNameFormat, newVersion);
 console.log (`Version Name will be: ${versionName}`);
 
-const versionCode = getVersionCode(versionCodeFormat, newVersion);
+const versionCode = getSplitVersionParts(versionRegex, versionCodeFormat, newVersion);
 if (parseInt(versionCode, 10) >= 2100000000) {
     tl.error(`Version Code of ${versionCode} is too long, must be below 2100000000 for submission to Google Play Store`);
     process.exit(1);
@@ -69,7 +68,7 @@ if (parseInt(versionCode, 10) >= 2100000000) {
 }
 
 if (files.length > 0) {
-    console.log (`Will apply versionName: ${versionName} and versionCode: ${versionCode} $to ${files.length} files.`);
+    console.log (`Will apply versionName: ${versionName} and versionCode: ${versionCode} to ${files.length} files.`);
     files.forEach(file => {
         updateManifestFile(file, versionCode, versionName);
     });

@@ -1,18 +1,26 @@
 import fs = require("fs");
 import path = require("path");
 
-export function getVersionName (format, version) {
-    const versionNumberSplit = version.split(".");
-    const versionNumberMatches = format.match(/\d/g);
-    const versionName = (versionNumberMatches.map((item) => versionNumberSplit[item - 1])).join(".");
+export function getSplitVersionParts (buildNumberFormat, outputFormat, version) {
+    const versionNumberSplitItems = version.split(extractDelimitersRegex(buildNumberFormat));
+    const versionNumberMatches = outputFormat.match(/\d/g);
+    const joinChar =  extractJoinChar(outputFormat);
+    const versionName = (versionNumberMatches.map((item) => versionNumberSplitItems[item - 1])).join(joinChar);
     return versionName;
 }
 
-export function getVersionCode (format, version) {
-    const versionCodeSplit = version.split(".");
-    const versionCodeMatches = format.match(/\d/g);
-    const versionCode = (versionCodeMatches.map((item) => versionCodeSplit[item - 1])).join("");
-    return versionCode;
+function extractJoinChar(format) {
+    const delimiters = format.replace(/{\d}/g, "");
+    if (delimiters) {
+        return delimiters[0];
+    } else {
+        return "";
+    }
+}
+
+function extractDelimitersRegex(format) {
+    const delimiters = format.replace(/[\\d+\\]/g, "");
+    return (new RegExp("[" + delimiters + "]"));
 }
 
 export function updateManifestFile (filename, versionCode, versionName) {

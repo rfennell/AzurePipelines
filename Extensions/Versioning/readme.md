@@ -32,6 +32,7 @@
 - V1.27   - Engineering Issue #202
 - V1.28   - Issue #213 fix for UTF8 File encoding problems 
 - V1.29   - Issue #217 moved the ANdroid versioner to NodeJS
+- V1.30   - Issue #222 allowed more complex delimiters in version number format
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of
