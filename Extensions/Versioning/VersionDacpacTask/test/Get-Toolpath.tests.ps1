@@ -96,6 +96,6 @@ Describe "Cannot use User ToolPath settings" {
 
     It "cannot Find DLLs" {
         Get-Toolpath -ToolPath "C:\dummy"
-        Assert-VerifiableMock
+        Assert-MockCalled write-error
     }
 }
