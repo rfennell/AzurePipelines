@@ -87,6 +87,9 @@
     },
     {
       "path": "VersionAndroidManifest/task"
+    },
+    {
+      "path": "VersionJSONFileTask/task"
     }
   ],
   "contributions": [
@@ -178,6 +181,16 @@
       ],
       "properties": {
         "name": "VersionAndroidManifest/task"
+      }
+    },
+    {
+      "id": "Version-JSONFile-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionJSONFIleTask/task"
       }
     }
 
