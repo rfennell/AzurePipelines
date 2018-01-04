@@ -1,8 +1,8 @@
 {
-  "id": "4578fa22-6039-4d83-90e0-3e12f68d6b26",
-  "name": "VersionDotNetCoreAssemblies",
-  "friendlyName": "Version .NET Core Assemblies",
-  "description": "Applies a version to a .NET Core assembly via the .cspro files based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
+  "id": "3190c289-2a62-49c4-a126-df889a58018d",
+  "name": "VersionJSONFile",
+  "friendlyName": "Version JSON File",
+  "description": "Applies a version to a named field in a JSON File",
      "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Version-Assemblies-and-Packages-Tasks/)",
  "category": "Build",
   "visibility": [
@@ -12,7 +12,7 @@
   "author": "Black Marble",
   "version": {
     "Major": 1,
-    "Minor": 2,
+    "Minor": 0,
     "Patch": 0
   },
   "groups": [
@@ -53,11 +53,20 @@
       "helpMarkDown": "Regular expression filter to get build number from the build name.",
       "groupName":"advanced"
     },
+    {
+      "name": "versionForJSONFileFormat",
+      "type": "string",
+      "label": "Version Format for JSON File",
+      "defaultValue": "{1}.{2}.{3}",
+      "required": true,
+      "helpMarkDown": "Format of version number to apply as Version in the JSON File.",
+      "groupName":"advanced"
+    },
       {
       "name": "FilenamePattern",
       "type": "string",
       "label": "Filename Pattern",
-      "defaultValue": ".csproj",
+      "defaultValue": "*.json",
       "required": true,
       "helpMarkDown": "The filename pattern to update.",
       "groupName":"advanced"
@@ -66,9 +75,9 @@
       "name": "Field",
       "type": "string",
       "label": "The version field to update",
-      "defaultValue": "",
+      "defaultValue": "version",
       "required": false,
-      "helpMarkDown": "The version field to update, if blank all version fields are updated usually <version>1.1.1.1</version>.",
+      "helpMarkDown": "The version field to update, if blank all version fields are updated usually \"version\": \"1.1.1\"",
       "groupName":"advanced"
     },
       {
@@ -83,10 +92,10 @@
       
    ],
   "minimumAgentVersion": "1.82.0",
-   "instanceNameFormat": "Version .NET Core Assemblies",
+   "instanceNameFormat": "Version JSON File",
   "execution": {
      "Node": {
-       "target": "ApplyVersionToAssemblies.js",
+       "target": "ApplyVersionToJSONFile.js",
        "argumentFormat": ""
      }
   }

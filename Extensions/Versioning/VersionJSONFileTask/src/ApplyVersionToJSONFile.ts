@@ -1,5 +1,6 @@
 import { findFiles,
-         ProcessFile
+         ProcessFile,
+         getSplitVersionParts
   } from "./AppyVersionToJSONFileFunctions";
 
 import tl = require("vsts-task-lib/task");
@@ -11,11 +12,14 @@ var versionRegex = tl.getInput("VersionRegex");
 var field = tl.getInput("Field");
 var outputversion = tl.getInput("outputversion");
 var filenamePattern = tl.getInput("FilenamePattern");
+var versionForJSONFileFormat = tl.getInput("versionForJSONFileFormat");
+
 
 console.log (`Source Directory:  ${path}`);
 console.log (`Filename Pattern: ${filenamePattern}`);
 console.log (`Version Number/Build Number: ${versionNumber}`);
 console.log (`Version Filter to extract build number: ${versionRegex}`);
+console.log (`Version Format for JSON File: ${versionForJSONFileFormat}`);
 console.log (`Field to update (all if empty): ${field}`);
 console.log (`Output: Version Number Parameter Name: ${outputversion}`);
 
@@ -46,23 +50,26 @@ switch (versionData.length) {
          break;
 }
 
-var newVersion = versionData[0];
-console.log (`Extracted Version: ${newVersion}`);
+var buildVersion = versionData[0];
+console.log (`Extracted Build Version: ${buildVersion}`);
+
+const jsonVersion = getSplitVersionParts(versionRegex, versionForJSONFileFormat, buildVersion);
+console.log (`JSON Version Name will be: ${jsonVersion}`);
 
 // Apply the version to the assembly property files
 var files = findFiles(`${path}`, filenamePattern, files);
 
 if (files.length > 0) {
 
-    console.log (`Will apply ${newVersion} to ${files.length} files.`);
+    console.log (`Will apply ${jsonVersion} to ${files.length} files.`);
 
     files.forEach(file => {
-        ProcessFile(file, field, newVersion);
+        ProcessFile(file, field, jsonVersion);
     });
 
     if (outputversion && outputversion.length > 0) {
-        console.log (`Set the output variable '${outputversion}' with the value ${newVersion}`);
-        tl.setVariable(outputversion, newVersion );
+        console.log (`Set the output variable '${outputversion}' with the value ${jsonVersion}`);
+        tl.setVariable(outputversion, jsonVersion );
     }
 } else {
     tl.warning("Found no files.");

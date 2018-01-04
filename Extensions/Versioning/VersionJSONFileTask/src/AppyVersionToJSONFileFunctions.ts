@@ -1,6 +1,28 @@
 import fs = require("fs");
 import path = require("path");
 
+export function getSplitVersionParts (buildNumberFormat, outputFormat, version) {
+    const versionNumberSplitItems = version.split(extractDelimitersRegex(buildNumberFormat));
+    const versionNumberMatches = outputFormat.match(/\d/g);
+    const joinChar =  extractJoinChar(outputFormat);
+    const versionName = (versionNumberMatches.map((item) => versionNumberSplitItems[item - 1])).join(joinChar);
+    return versionName;
+}
+
+function extractJoinChar(format) {
+    const delimiters = format.replace(/{\d}/g, "");
+    if (delimiters) {
+        return delimiters[0];
+    } else {
+        return "";
+    }
+}
+
+function extractDelimitersRegex(format) {
+    const delimiters = format.replace(/[\\d+\\]/g, "");
+    return (new RegExp("[" + delimiters + "]"));
+}
+
 // List all files in a directory in Node.js recursively in a synchronous fashion
 export function findFiles (dir, filename , filelist) {
     var path = path || require("path");
@@ -35,7 +57,9 @@ export function ProcessFile(file, field, newVersion) {
         console.log (`The ${tmpField} version is not present in the .json file so adding it`);
         // add the field, trying to avoid having to load library to parse json, adding at the end of the file
         var newVersionField = `,\r\n"${tmpField}": "${newVersion}"\r\n}`;
+        console.log(`Adding Tag: "${tmpField}": "${newVersion}"`);
         fs.writeFileSync(file, filecontent.toString().replace(`\r\n}`, newVersionField));
+        console.log (`${file} - version applied`);
     } else {
         if (field && field.length > 0) {
             console.log (`Updating the field '${field}' version`);
