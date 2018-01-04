@@ -14,7 +14,6 @@ var outputversion = tl.getInput("outputversion");
 var filenamePattern = tl.getInput("FilenamePattern");
 var versionForJSONFileFormat = tl.getInput("versionForJSONFileFormat");
 
-
 console.log (`Source Directory:  ${path}`);
 console.log (`Filename Pattern: ${filenamePattern}`);
 console.log (`Version Number/Build Number: ${versionNumber}`);
