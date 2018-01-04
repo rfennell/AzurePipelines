@@ -214,6 +214,12 @@ Extensions/Versioning/VersionJSONFileTask/task/node_modules
 Extensions/Versioning/VersionJSONFileTask/node_modules
 Extensions/Versioning/VersionJSONFileTask/dist
 
+Extensions/Versioning/VersionAngularFileTask/task/*.VersionJSONFileTaskjs
+Extensions/Versioning/VersionAngularFileTask/task/*.js.map
+Extensions/Versioning/VersionAngularFileTask/task/node_modules
+Extensions/Versioning/VersionAngularFileTask/node_modules
+Extensions/Versioning/VersionAngularFileTask/dist
+
 Extensions/Versioning/VersionEnviromentTsFileTask/task/*.VersionJSONFileTaskjs
 Extensions/Versioning/VersionEnviromentTsFileTask/task/*.js.map
 Extensions/Versioning/VersionEnviromentTsFileTask/task/node_modules

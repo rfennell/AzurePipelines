@@ -13,15 +13,12 @@
   },
   "main": "VersionAssembliesTask.js",
   "dependencies": {
-    "@types/node": "^7.0.46",
-    "@types/q": "^1.0.6",
     "Buffer": "^0.0.0",
     "del": "^3.0.0",
     "fs": "^0.0.1-security",
     "fs-copy-file-sync": "^1.0.1",
     "ncp": "^2.0.0",
     "request": "^2.80.0",
-    "tsd": "^0.6.5",
     "vsts-task-lib": "^1.1.0"
   },
   "devDependencies": {
