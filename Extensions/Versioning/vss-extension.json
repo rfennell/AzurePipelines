@@ -196,7 +196,6 @@
         "name": "VersionPackFileTask/task"
       }
     },
-    ,
     {
       "id": "Version-AngularFile-Task",
       "type": "ms.vss-distributed-task.task",
