@@ -47,7 +47,8 @@ A set of tasks based on the versioning sample script to version tamping assembli
 * VersionSharePoint - sets the version in a SharePoint 2013/2016/O365 Add-In
 * VersionWix - sets the version in a Wix Project
 * VersionAndroidManifest - Sets the versionName and versionCode values in an Android project
-* VersionJSONFile - Sets the version in a named field in a JSON file
+* VersionJSONFile - Sets the version in a named field in a JSON file (tested in NPM package.json file)
+* VersionAngularFile - Sets the version in a named field in an enviroment.ts Angular file
 
 All these tasks take at least two parameters, which are both defaulted
 
