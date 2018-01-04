@@ -193,7 +193,7 @@
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "VersionPackFileTask/task"
+        "name": "VersionJSONFileTask/task"
       }
     },
     {
