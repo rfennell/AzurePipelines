@@ -1,0 +1,42 @@
+{
+  "name": "ApplyVersionToJSONFile",
+  "description": "ApplyVersionToJSONFile",
+  "scripts": {
+    "build": "npm run clean && npm run lint && npm run transpile ",
+    "package": "npm prune -production && npm run copy",
+    "copy": "ncp ./node_modules ./task/node_modules && ncp ./dist/src ./task",
+    "clean": "rimraf ./dist/src && rimraf ./dist/test && rimraf ./task/*.js && rimraf ./task/*.js.map && rimraf ./task/node_modules",
+    "transpile": "tsc -p ./",
+    "lint": "tslint -c tslint.json src/*.ts test/*.ts",
+    "test": "mocha -r ts-node/register ./test/*.ts --reporter mocha-junit-reporter --reporter-options mochaFile=./test-output/test-results.xml ",
+    "test-no-logger": "mocha -r ts-node/register ./test/*.ts "
+  },
+  "main": "ApplyVersionToJSONFile.js",
+  "dependencies": {
+    "@types/node": "^7.0.46",
+    "@types/q": "^1.0.6",
+    "Buffer": "^0.0.0",
+    "del": "^3.0.0",
+    "fs": "^0.0.1-security",
+    "fs-copy-file-sync": "^1.0.1",
+    "ncp": "^2.0.0",
+    "request": "^2.80.0",
+    "tsd": "^0.6.5",
+    "vsts-task-lib": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.44",
+    "@types/node": "^7.0.18",
+    "chai": "^3.5.0",
+    "mocha": "^3.5.3",
+    "mocha-junit-reporter": "^1.15.0",
+    "ts-loader": "^2.0.3",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.2.0",
+    "typescript": "^2.6.1",
+    "typings": "^2.1.1"
+  },
+  "author": "Richard Fennell",
+  "license": "MIT"
+}

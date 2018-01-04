@@ -90,6 +90,9 @@
     },
     {
       "path": "VersionJSONFileTask/task"
+    },
+    {
+      "path": "VersionAngularFileTask/task"
     }
   ],
   "contributions": [
@@ -190,7 +193,18 @@
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "VersionJSONFIleTask/task"
+        "name": "VersionPackFileTask/task"
+      }
+    },
+    ,
+    {
+      "id": "Version-AngularFile-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionAngularFileTask/task"
       }
     }
 
