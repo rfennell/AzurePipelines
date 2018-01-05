@@ -87,6 +87,12 @@
     },
     {
       "path": "VersionAndroidManifest/task"
+    },
+    {
+      "path": "VersionJSONFileTask/task"
+    },
+    {
+      "path": "VersionAngularFileTask/task"
     }
   ],
   "contributions": [
@@ -178,6 +184,26 @@
       ],
       "properties": {
         "name": "VersionAndroidManifest/task"
+      }
+    },
+    {
+      "id": "Version-JSONFile-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionJSONFileTask/task"
+      }
+    },
+    {
+      "id": "Version-AngularFile-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionAngularFileTask/task"
       }
     }
 

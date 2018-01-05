@@ -1,0 +1,102 @@
+{
+  "id": "b667bc49-cad0-48f5-b727-3a6bb418222f",
+  "name": "VersionAngularFile",
+  "friendlyName": "Version Angular Environment.TS File",
+  "description": "Applies a version to a named field in a Angular Environment.TS",
+     "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Version-Assemblies-and-Packages-Tasks/)",
+ "category": "Build",
+  "visibility": [
+                "Build",
+                "Release"
+                ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    },
+    {
+      "name": "output",
+      "displayName": "Output",
+      "isExpanded": false
+    }
+  ],
+   "inputs": [
+      {
+         "name": "Path",
+         "type": "string",
+         "label": "Source folder",
+         "defaultValue": "$(Build.SourcesDirectory)",
+         "required": true,
+         "helpMarkDown": "Source folder for assemblies files, can be root as it will find all files recursively"
+      },
+      {
+         "name": "VersionNumber",
+         "type": "string",
+         "label": "Version Number",
+         "defaultValue": "$(Build.BuildNumber)",
+         "required": true,
+         "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000.0' format"
+      },
+      {
+      "name": "VersionRegex",
+      "type": "string",
+      "label": "Regex Filter to extract build number",
+      "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
+      "required": true,
+      "helpMarkDown": "Regular expression filter to get build number from the build name.",
+      "groupName":"advanced"
+    },
+    {
+      "name": "versionForJSONFileFormat",
+      "type": "string",
+      "label": "Version Format for JSON File",
+      "defaultValue": "{1}.{2}.{3}.{4}",
+      "required": true,
+      "helpMarkDown": "Format of version number to apply as Version in the Angular Enviroment.TS File.",
+      "groupName":"advanced"
+    },
+      {
+      "name": "FilenamePattern",
+      "type": "string",
+      "label": "Filename Pattern",
+      "defaultValue": "environment.ts",
+      "required": true,
+      "helpMarkDown": "The filename pattern to update.",
+      "groupName":"advanced"
+    },
+     {
+      "name": "Field",
+      "type": "string",
+      "label": "The version field to update",
+      "defaultValue": "version",
+      "required": false,
+      "helpMarkDown": "The version field to update, if blank all version fields are updated usually \"version\": \"1.1.1\"",
+      "groupName":"advanced"
+    },
+      {
+      "name": "OutputVersion",
+      "type": "string",
+      "label": "Version number used variable name",
+      "defaultValue": "OutputedVersion",
+      "required": true,
+      "helpMarkDown": "The actual version number extracted and used from the build number.",
+      "groupName":"output"
+    }
+      
+   ],
+  "minimumAgentVersion": "1.82.0",
+   "instanceNameFormat": "Version Angular Environment.TS File",
+  "execution": {
+     "Node": {
+       "target": "ApplyVersionToAngularFile.js",
+       "argumentFormat": ""
+     }
+  }
+}

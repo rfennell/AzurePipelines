@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "commonjs",
+         "watch": false,
+         "outDir": "../VersionJSONFileTask/",
+         "moduleResolution": "node",
+         "rootDirs": [
+           "src/",
+           "test/"
+         ],
+         "outDir": "dist",
+         "sourceMap":  true
+      },
+      "baseUrl": ".",
+      "paths": {
+        "*": [
+            "node_modules/*",
+            "src/types/*"
+        ]
+    },
+       "exclude": [
+        "node_modules"
+    ]
+}
+
