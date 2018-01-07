@@ -179,7 +179,8 @@ Write-Verbose "builddefid = [$env:BUILD_DEFINITIONID]"
 Write-Verbose "buildid = [$env:BUILD_BUILDID]"
 Write-Verbose "usedefaultcreds = $usedefaultcreds"
 Write-Verbose "artifacts = [$artifacts]"
-Write-Verbose "mode = [$buildmode]"
+Write-Verbose "buildmode = [$buildmode]"
+Write-Verbose "mode = [$mode]"
 
 if ( [string]::IsNullOrEmpty($releaseid))
 {
