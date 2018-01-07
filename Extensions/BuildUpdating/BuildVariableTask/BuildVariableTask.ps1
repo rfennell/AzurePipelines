@@ -4,10 +4,9 @@ param
     $variable,
     $mode,
     $value,
-    $usedefaultcreds
-
+    $usedefaultcreds,
+    $artifacts
  )
-
 
 function Set-BuildDefinationVariable
 {
@@ -179,6 +178,8 @@ Write-Verbose "releaseid = [$env:RELEASE_RELEASEID]"
 Write-Verbose "builddefid = [$env:BUILD_DEFINITIONID]"
 Write-Verbose "buildid = [$env:BUILD_BUILDID]"
 Write-Verbose "usedefaultcreds = $usedefaultcreds"
+Write-Verbose "artifacts = [$artifacts]"
+Write-Verbose "mode = [$buildmode]"
 
 if ( [string]::IsNullOrEmpty($releaseid))
 {
@@ -189,21 +190,39 @@ if ( [string]::IsNullOrEmpty($releaseid))
     Write-Verbose "Build has definition id of $builddefid"
 
     Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
-
 } else {
-
     Write-Verbose "Running inside a release so updating asking which build(s) to update"
-    Write-Verbose "Mode is $buildmode"
     if ($buildmode -eq "AllArtifacts")
     {
+        Write-Verbose ("Updating all artifacts")
         $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
-        foreach($id in $builddefs)
+        foreach($build in $builddefs)
         {
-            Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
+            Write-Verbose ("Updating artifact $build.name")
+            Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $build.id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
         }
-    } else
+    } elseif ($buildmode -eq "Prime")
     {
+        Write-Verbose ("Updating only primary artifact")
         Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
+    } else 
+    {
+        Write-Verbose ("Updating only named artifacts")
+        if ([string]::IsNullOrEmpty($artifacts) -eq $true) {
+            Write-Error ("The artifacts list to update is empty")
+        } else {
+            $artifactsArray = $artifacts -split "," | foreach {$_.Trim()}
+            if ($artifactsArray -gt 0) {
+                $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
+                foreach($build in $builds)
+                {
+                    if ($artifactsArray -contains $build.name) {
+                        Write-Verbose ("Updating artifact $build.name")
+                        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $build.id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
+                    }
+                }
+            }
+        }
     }
 }
 

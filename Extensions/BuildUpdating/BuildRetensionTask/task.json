@@ -31,9 +31,19 @@
       "required": true,
       "options": {
         "AllArtifacts": "All build artifacts",
+        "NamedArtifacts": "Named artifacts",
         "Prime": "Only primary build artifact"
       },
       "helpMarkDown": "Select the builds to update."
+      },
+      {
+        "name": "artifacts",
+        "type": "string",
+        "label": "Artifacts",
+        "defaultValue": "",
+        "required": false,
+        "helpMarkDown": "A comma separated list of artifacts",
+        "visibleRule": "mode = NamedArtifacts"
       },
       {
       "name": "usedefaultcreds",
