@@ -24,26 +24,44 @@
     ],
      "inputs": [
       {
-      "name": "mode",
-      "type": "pickList",
-      "label": "Build selection mode",
-      "defaultValue": "Prime",
-      "required": true,
-      "options": {
-        "AllArtifacts": "All build artifacts",
-        "Prime": "Only primary build artifact"
-      },
-      "helpMarkDown": "Select the builds to update."
+        "name": "mode",
+        "type": "pickList",
+        "label": "Build selection mode",
+        "defaultValue": "Prime",
+        "required": true,
+        "options": {
+          "AllArtifacts": "All build artifacts",
+          "NamedArtifacts": "Named artifacts",
+          "Prime": "Only primary build artifact"
+        },
+        "helpMarkDown": "Select the builds to update."
       },
       {
-      "name": "usedefaultcreds",
+        "name": "artifacts",
+        "type": "string",
+        "label": "Artifacts",
+        "defaultValue": "",
+        "required": false,
+        "helpMarkDown": "A comma separated list of artifacts",
+        "visibleRule": "mode = NamedArtifacts"
+      },
+      {
+        "name": "usedefaultcreds",
+        "type": "boolean",
+        "label": "Use default credentials",
+        "defaultValue": "False",
+        "required": false,
+        "helpMarkDown": "If true will use the credentials of the running agent as opposed to access token provided by build service.",
+        "groupName":"advanced"
+    },
+    {
+      "name": "keepForever",
       "type": "boolean",
-      "label": "Use default credentials",
-      "defaultValue": "False",
+      "label": "Set Build Retension",
+      "defaultValue": "True",
       "required": false,
-      "helpMarkDown": "If true will use the credentials of the running agent as opposed to access token provided by build service.",
-      "groupName":"advanced"
-    }
+      "helpMarkDown": "If true will set the build retension on the build"
+   }
    ],
   "instanceNameFormat": "Update Build Retension",
   "execution": {

@@ -1,6 +1,8 @@
 Param(
     $mode,
-    $usedefaultcreds
+    $usedefaultcreds,
+    $artifacts,
+    $keepForever
     )
 
 function Set-BuildRetension
@@ -14,12 +16,14 @@ function Set-BuildRetension
         $usedefaultcreds
     )
 
+    $boolKeepForever = [System.Convert]::ToBoolean($keepForever)
+
     $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
     
-    write-verbose "Setting BuildID $buildID with retension set to $keepForever"
+    write-verbose "Setting BuildID $buildID with retension set to $boolKeepForever"
 
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildID)?api-version=2.0"
-    $data = @{keepForever = $keepForever} | ConvertTo-Json
+    $data = @{keepForever = $boolKeepForever} | ConvertTo-Json
     $response = $webclient.UploadString($uri,"PATCH", $data) 
     
 }
@@ -47,7 +51,8 @@ function Get-BuildsForRelease
 
     $return = @()
     $data.artifacts.Where({$_.type -eq "Build"}).ForEach( {
-        $return += $_.definitionReference.version.id
+        $return +=  @{ 'id' = $_.definitionReference.version.id;
+                       'name' = $_.alias }
     })
 
     $return
@@ -96,15 +101,44 @@ Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
 Write-Verbose "releaseid = [$env:RELEASE_RELEASEID]"
 Write-Verbose "buildid = [$env:BUILD_BUILDID]"
 Write-Verbose "usedefaultcreds =[$usedefaultcreds]"
+Write-Verbose "artifacts = [$artifacts]"
+Write-Verbose "mode = [$mode]"
+Write-Verbose "keepForever = [$keepForever]"
 
 if ($mode -eq "AllArtifacts")
 {
+    Write-Verbose ("Updating all artifacts")
     $builds = Get-BuildsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
-    foreach($id in $builds)
+    foreach($build in $builds)
     {
-        Set-BuildRetension -tfsUri $collectionUrl -teamproject $teamproject -buildid $id -keepForever $true -usedefaultcreds $usedefaultcreds
+        Write-Verbose ("Updating artifact $build.name")
+        Set-BuildRetension -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -keepForever $keepForever -usedefaultcreds $usedefaultcreds
     }
+} elseif ($mode -eq "Prime") 
+{
+    Write-Verbose ("Updating only primary artifact")
+    Set-BuildRetension -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -keepForever $keepForever -usedefaultcreds $usedefaultcreds
 } else 
 {
-    Set-BuildRetension -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -keepForever $true -usedefaultcreds $usedefaultcreds
+    Write-Verbose ("Updating only named artifacts")
+    if ([string]::IsNullOrEmpty($artifacts) -eq $true) {
+        Write-Error ("The artifacts list to update is empty")
+    } else {
+        $artifactsArray = $artifacts -split "," | foreach {$_.Trim()}
+        if ($artifactsArray -gt 0) {
+            $builds = Get-BuildsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
+            Write-Verbose "$($builds.Count) builds found for release"
+            foreach($build in $builds)
+            {
+                if ($artifactsArray -contains $build.name) {
+                    Write-Verbose ("Updating artifact $($build.name)")
+                    Set-BuildRetension -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -keepForever $keepForever -usedefaultcreds $usedefaultcreds
+                } else {
+                    Write-Verbose ("Skipping artifact $($build.name) as not in named list")
+                }
+            }
+        } else {
+            Write-Error ("The artifacts list cannot be split") 
+        }
+    }
 }

@@ -5,7 +5,10 @@
 - 1.3.x - Fixed bug with handling of defaultcreds
 - 1.4.x - Include PR from insanity13 to handle compress
 - 1.5.x - Allow the build variable updater to be used in a build as well as a release
-- 1.6.x - Update to newer api version to support variable groups and more ([issue #168](https://github.com/rfennell/vNextBuild/issues/168))
+- 1.6.x - Update to newer api version to support variable groups and more ([issue #168](https://github.com/rfennell/vNextBuild/issues/168)
+- 1.7.x - [Isse236](https://github.com/rfennell/vNextBuild/issues/236) add option to update named list of artifacts
+          [Isse237](https://github.com/rfennell/vNextBuild/issues/237) allowed reset of retension as well as setting
+)
 
 A set of tasks to manage builds, it is assumed these tasks will usually be called from a release pipeline.
 
@@ -15,6 +18,9 @@ This task sets the 'keep forever' retension flag on a build. It takes one parame
 
 * Select only the primary build associated with the release (default)
 * All the build artifacts associated with the release
+* A comma separated list of build artifacts
+
+There is also an advanced option
 * (Advanced) Use use build agents default credentials as opposed to agent token - usually only every needed for TFS usage
 
 ### Update Build Variable Task
@@ -27,6 +33,7 @@ It uses the following parameters
 * Build selection mode
     * Only the primary build associated with the release (default)
     * All the build artifacts associated with the release
+    * A comma separated list of build artifacts
 * Variable name to update
 * Method to update the variable
     * Auto-increment the variable (default)

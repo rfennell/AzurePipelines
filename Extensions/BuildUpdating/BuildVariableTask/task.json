@@ -24,17 +24,27 @@
     }
   ],
   "inputs": [
-        {
-      "name": "buildmode",
-      "type": "pickList",
-      "label": "Build selection mode",
-      "defaultValue": "Prime",
-      "required": true,
-      "options": {
-        "AllArtifacts": "All build artifacts",
-        "Prime": "Only primary build artifact"
+      {
+        "name": "buildmode",
+        "type": "pickList",
+        "label": "Build selection mode",
+        "defaultValue": "Prime",
+        "required": true,
+        "options": {
+          "AllArtifacts": "All build artifacts",
+          "NamedArtifacts": "Named artifacts",
+          "Prime": "Only primary build artifact"
+        },
+        "helpMarkDown": "Select the builds to update (Used in Releases only)."
       },
-      "helpMarkDown": "Select the builds to update (Used in Releases only)."
+      {
+        "name": "artifacts",
+        "type": "string",
+        "label": "Artifacts",
+        "defaultValue": "",
+        "required": false,
+        "helpMarkDown": "A comma separated list of artifacts",
+        "visibleRule": "buildmode = NamedArtifacts"
       },
       {
          "name": "variable",
@@ -42,19 +52,19 @@
          "label": "Variable to update",
          "defaultValue": "",
          "required": true,
-         "helpMarkDown": "The name of the build variable to update "
+         "helpMarkDown": "The name of the build variable to update"
       },
       {
-      "name": "mode",
-      "type": "pickList",
-      "label": "Update mode",
-      "defaultValue": "Manual",
-      "required": true,
-      "options": {
-        "Manual": "Manual",
-        "Autoincrement": "Autoincrement"
-      },
-      "helpMarkDown": "Select the mode to operate in."
+        "name": "mode",
+        "type": "pickList",
+        "label": "Update mode",
+        "defaultValue": "Manual",
+        "required": true,
+        "options": {
+          "Manual": "Manual",
+          "Autoincrement": "Autoincrement"
+        },
+        "helpMarkDown": "Select the mode to operate in."
       },
       {
          "name": "value",
