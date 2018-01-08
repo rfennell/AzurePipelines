@@ -135,7 +135,8 @@ function Get-BuildsDefsForRelease
 
     $return = @()
     $data.artifacts.Where({$_.type -eq "Build"}).ForEach( {
-        $return +=  @{ 'id' = $_.definitionReference.version.id;
+        Write-Verbose "Getting DefintionID $($_.definitionReference.definition.id) for build instance $($_.definitionReference.version.id)"
+        $return +=  @{ 'id' =  $_.definitionReference.definition.id;
                        'name' = $_.alias }
     })
 
@@ -215,7 +216,8 @@ if ( [string]::IsNullOrEmpty($releaseid))
             $artifactsArray = $artifacts -split "," | foreach {$_.Trim()}
             if ($artifactsArray -gt 0) {
                 $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
-                foreach($build in $builds)
+                Write-Verbose "$($builddefs.Count) builds found for release"
+                foreach($build in $builddefs)
                 {
                     if ($artifactsArray -contains $build.name) {
                         Write-Verbose ("Updating artifact $($build.name)")
@@ -224,6 +226,8 @@ if ( [string]::IsNullOrEmpty($releaseid))
                         Write-Verbose ("Skipping artifact $($build.name) as not in named list")
                     }
                 }
+            } else {
+                Write-Error ("The artifacts list cannot be split") 
             }
         }
     }

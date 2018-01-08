@@ -53,7 +53,15 @@
         "required": false,
         "helpMarkDown": "If true will use the credentials of the running agent as opposed to access token provided by build service.",
         "groupName":"advanced"
-    }
+    },
+    {
+      "name": "keepForever",
+      "type": "boolean",
+      "label": "Set Build Retension",
+      "defaultValue": "True",
+      "required": false,
+      "helpMarkDown": "If true will set the build retension on the build",
+   }
    ],
   "instanceNameFormat": "Update Build Retension",
   "execution": {

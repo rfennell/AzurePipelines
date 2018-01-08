@@ -7,6 +7,7 @@
 - 1.5.x - Allow the build variable updater to be used in a build as well as a release
 - 1.6.x - Update to newer api version to support variable groups and more ([issue #168](https://github.com/rfennell/vNextBuild/issues/168)
 - 1.7.x - [Isse236](https://github.com/rfennell/vNextBuild/issues/236) add option to update named list of artifacts
+          [Isse237](https://github.com/rfennell/vNextBuild/issues/237) allowed reset of retension as well as setting
 )
 
 A set of tasks to manage builds, it is assumed these tasks will usually be called from a release pipeline.
