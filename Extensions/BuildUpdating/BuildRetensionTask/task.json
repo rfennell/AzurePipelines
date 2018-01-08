@@ -60,7 +60,7 @@
       "label": "Set Build Retension",
       "defaultValue": "True",
       "required": false,
-      "helpMarkDown": "If true will set the build retension on the build",
+      "helpMarkDown": "If true will set the build retension on the build"
    }
    ],
   "instanceNameFormat": "Update Build Retension",
