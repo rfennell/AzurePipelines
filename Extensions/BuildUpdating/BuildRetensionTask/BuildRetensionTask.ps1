@@ -126,8 +126,10 @@ if ($mode -eq "AllArtifacts")
             foreach($build in $builds)
             {
                 if ($artifactsArray -contains $build.name) {
-                    Write-Verbose ("Updating artifact $build.name")
+                    Write-Verbose ("Updating artifact $($build.name)")
                     Set-BuildRetension -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -keepForever $true -usedefaultcreds $usedefaultcreds
+                } else {
+                    Write-Verbose ("Skipping artifact $($build.name) as not in named list")
                 }
             }
         }

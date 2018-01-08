@@ -135,8 +135,8 @@ function Get-BuildsDefsForRelease
 
     $return = @()
     $data.artifacts.Where({$_.type -eq "Build"}).ForEach( {
-        Write-Verbose "Getting DefintionID for build instance $($_.definitionReference.version.id)"
-        $return += $_.definitionReference.definition.id
+        $return +=  @{ 'id' = $_.definitionReference.version.id;
+                       'name' = $_.alias }
     })
 
     $return
@@ -218,8 +218,10 @@ if ( [string]::IsNullOrEmpty($releaseid))
                 foreach($build in $builds)
                 {
                     if ($artifactsArray -contains $build.name) {
-                        Write-Verbose ("Updating artifact $build.name")
+                        Write-Verbose ("Updating artifact $($build.name)")
                         Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $build.id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds
+                    } else {
+                        Write-Verbose ("Skipping artifact $($build.name) as not in named list")
                     }
                 }
             }
