@@ -283,6 +283,7 @@ function Render() {
         $output
     }
     Catch {
+        write-verbose "RENDER ERROR: cannot process [$str]"
         write-verbose $output
     }
 		
