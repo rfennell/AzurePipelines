@@ -242,7 +242,7 @@ if ($appendToFile -eq $false)
 } else 
 {
     write-Verbose "Appending to output file [$outputfile]."
-    Addt-Content $outputfile $outputmarkdown 
+    Add-Content $outputfile $outputmarkdown 
 }
 
 if ([string]::IsNullOrEmpty($outputvariablename))
