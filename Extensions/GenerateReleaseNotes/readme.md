@@ -23,6 +23,7 @@
 - 2.12 - PR221 SWarnberg - Show parent work items of those directly associated with build
          Added option to append to output file as opposed to just overwriting
 - 2.13 - Improved the error message when tempalte does not render - now shows failing line
+- 2.14 - Issue244 fix for "Append Output File" option fails with 'The term 'Addt-Content' is not recognized' error
 
 This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's:
 - if used in a build it is the current active build
