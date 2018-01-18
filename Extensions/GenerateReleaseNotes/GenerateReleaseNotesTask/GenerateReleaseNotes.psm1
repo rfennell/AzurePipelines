@@ -23,7 +23,7 @@ function Get-BuildWorkItems {
 	 
     try {
         $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/workitems?api-version=2.0&`$top=$($maxItems)"
-		$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| ConvertFrom-Json
+		$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| Deserialise-Json
 		Write-Verbose "        Found $($jsondata.value.Count) WI directly associated with build"
 		if ($showParents -eq $false)
 		{
@@ -107,7 +107,7 @@ function Get-BuildChangeSets {
 
     try { 
         $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/changes?api-version=2.0&`$top=$($maxItems)"
-        $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
+        $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
         foreach ($cs in $jsondata.value) {
             if (!$cs.message) {continue} # skip commits with no description
             # we can get more detail if the changeset is on VSTS or TFS
@@ -136,7 +136,7 @@ function Get-Detail {
         $usedefaultcreds
     )
 
-    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
+    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
     $jsondata
 }
 
@@ -151,7 +151,7 @@ function Get-Build {
     )
 
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=2.0"
-    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
+    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
     $jsondata 
 }
 
@@ -166,7 +166,7 @@ function Get-BuildsByDefinitionId {
     )
 
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?definitions=$($builddefid)&api-version=2.0"
-    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
+    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
     $jsondata.value
 }
 
@@ -180,7 +180,7 @@ function Get-ReleaseDefinitionByName {
     )
 	
     $uri = "$($tfsUri)/$($teamproject)/_apis/release/definitions?api-version=3.0-preview.1"
-    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
+    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
     $jsondata.value | where { $_.name -eq $releasename  }
 
 }
@@ -201,7 +201,7 @@ function Get-Release {
     $rmtfsUri = $tfsUri -replace ".visualstudio.com", ".vsrm.visualstudio.com/defaultcollection"
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseid)?api-version=3.0-preview"
 
-    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
+    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
     $jsondata
 }
 
@@ -219,6 +219,53 @@ function Get-BuildReleaseArtifacts {
     $artifacts = $release.artifacts
     $artifacts
 }
+
+function Deserialise-Json {
+    param
+    (
+      [Parameter(Mandatory=$True, ValueFromPipeline=$True)]
+      $data,
+      [int]$maxdatasize = 104857600 #100mb as bytes, default is 2mb
+    )
+ 
+    # Work around on
+    # ConvertFrom-Json : Error during serialization or deserialization using the JSON JavaScriptSerializer. The length of the string exceeds the value set on the maxJsonLength property.
+ 
+    $json = New-Object -TypeName System.Web.Script.Serialization.JavaScriptSerializer
+    $json.MaxJsonLength = $maxdatasize
+ 
+    $jsonTree = $json.Deserialize($data, [System.Object])
+    Iterate-Tree $jsonTree $jsondata.count
+ }
+ 
+ function Iterate-Tree($jsonTree) {
+     $result = @()
+ 
+     # Go through each node in the tree
+     foreach ($node in $jsonTree) {
+ 
+         # For each node we need to set up its keys/properties/fields
+         $nodeHash = @{}
+         foreach ($property in $node.Keys) {
+             # If a field is a set (either a dictionary or array - both used by the deserializer) we will need to iterate it
+             if ($node[$property] -is [System.Collections.Generic.Dictionary[String, Object]] -or $node[$property] -is [Object[]]) {
+                 # This assignment is important as it forces single result sets to be wrapped in an array, which is required
+                 $inner = @()
+                 $inner += Iterate-Tree $node[$property]
+ 
+                 $nodeHash.Add($property, $inner)
+             } else {
+                 $nodeHash.Add($property, $node[$property])
+             }
+         }
+ 
+         # Create a custom object from the hash table so it matches the original. It must be a PSCustomObject
+         # because the serializer (later) requires that and not a PSObject or HashTable.
+         $result += [PSCustomObject] $nodeHash
+     }
+ 
+     return $result
+ }
 
 function Add-Space {
     param(
@@ -532,7 +579,7 @@ function Get-ReleaseByDefinitionId {
     $rmtfsUri = $tfsUri -replace ".visualstudio.com", ".vsrm.visualstudio.com/defaultcollection"
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases?definitionId=$($releasedefid)&`$Expand=environments,artifacts&queryOrder=descending&api-version=3.0-preview"
 
-    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-Json
+    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
     $jsondata.value
 }
 
