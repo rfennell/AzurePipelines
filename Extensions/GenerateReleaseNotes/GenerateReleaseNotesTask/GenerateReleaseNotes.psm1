@@ -228,6 +228,7 @@ function Deserialise-Json {
       [int]$maxdatasize = 104857600 #100mb as bytes, default is 2mb
     )
  
+    add-type -assembly system.web.extensions
     # Work around on
     # ConvertFrom-Json : Error during serialization or deserialization using the JSON JavaScriptSerializer. The length of the string exceeds the value set on the maxJsonLength property.
  
