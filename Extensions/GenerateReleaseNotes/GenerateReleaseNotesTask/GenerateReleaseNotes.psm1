@@ -23,7 +23,7 @@ function Get-BuildWorkItems {
 	 
     try {
         $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/workitems?api-version=2.0&`$top=$($maxItems)"
-		$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| Deserialise-Json
+		$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| ConvertFrom-JsonUsingDOTNET
 		Write-Verbose "        Found $($jsondata.value.Count) WI directly associated with build"
 		if ($showParents -eq $false)
 		{
@@ -107,7 +107,7 @@ function Get-BuildChangeSets {
 
     try { 
         $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/changes?api-version=2.0&`$top=$($maxItems)"
-        $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
+        $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
         foreach ($cs in $jsondata.value) {
             if (!$cs.message) {continue} # skip commits with no description
             # we can get more detail if the changeset is on VSTS or TFS
@@ -136,7 +136,7 @@ function Get-Detail {
         $usedefaultcreds
     )
 
-    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
+    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
     $jsondata
 }
 
@@ -151,7 +151,7 @@ function Get-Build {
     )
 
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=2.0"
-    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
+    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
     $jsondata 
 }
 
@@ -166,7 +166,7 @@ function Get-BuildsByDefinitionId {
     )
 
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?definitions=$($builddefid)&api-version=2.0"
-    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
+    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
     $jsondata.value
 }
 
@@ -180,7 +180,7 @@ function Get-ReleaseDefinitionByName {
     )
 	
     $uri = "$($tfsUri)/$($teamproject)/_apis/release/definitions?api-version=3.0-preview.1"
-    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
+    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
     $jsondata.value | where { $_.name -eq $releasename  }
 
 }
@@ -201,7 +201,7 @@ function Get-Release {
     $rmtfsUri = $tfsUri -replace ".visualstudio.com", ".vsrm.visualstudio.com/defaultcollection"
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseid)?api-version=3.0-preview"
 
-    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
+    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
     $jsondata
 }
 
@@ -220,7 +220,7 @@ function Get-BuildReleaseArtifacts {
     $artifacts
 }
 
-function Deserialise-Json {
+function ConvertFrom-JsonUsingDOTNET {
     param
     (
       [Parameter(Mandatory=$True, ValueFromPipeline=$True)]
@@ -236,10 +236,10 @@ function Deserialise-Json {
     $json.MaxJsonLength = $maxdatasize
  
     $jsonTree = $json.Deserialize($data, [System.Object])
-    Iterate-Tree $jsonTree $jsondata.count
+    Expand-Tree $jsonTree $jsondata.count
  }
  
- function Iterate-Tree($jsonTree) {
+ function Expand-Tree($jsonTree) {
      $result = @()
  
      # Go through each node in the tree
@@ -580,7 +580,7 @@ function Get-ReleaseByDefinitionId {
     $rmtfsUri = $tfsUri -replace ".visualstudio.com", ".vsrm.visualstudio.com/defaultcollection"
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases?definitionId=$($releasedefid)&`$Expand=environments,artifacts&queryOrder=descending&api-version=3.0-preview"
 
-    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | Deserialise-Json
+    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
     $jsondata.value
 }
 
