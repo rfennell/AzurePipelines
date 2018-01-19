@@ -1,0 +1,8 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "parameters": {  },
+    "variables": {  },
+    "resources": [  ],
+    "outputs": {  },
+"contentVersion": "1.2.3.4"
+}
