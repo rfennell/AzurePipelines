@@ -252,7 +252,7 @@ function ConvertFrom-JsonUsingDOTNET {
              if ($node[$property] -is [System.Collections.Generic.Dictionary[String, Object]] -or $node[$property] -is [Object[]]) {
                  # This assignment is important as it forces single result sets to be wrapped in an array, which is required
                  $inner = @()
-                 $inner += Iterate-Tree $node[$property]
+                 $inner += Expand-Tree $node[$property]
  
                  $nodeHash.Add($property, $inner)
              } else {
