@@ -34,6 +34,7 @@
 - V1.29   - Issue #217 moved the ANdroid versioner to NodeJS
 - V1.30   - Issue #222 allowed more complex delimiters in version number format
 - V1.31   - Issue #233 added JSON and Angular versioner
+- V1.32   - Issue #254 allow version extraction to be bypassed for JSON Versioner 
 
 A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of

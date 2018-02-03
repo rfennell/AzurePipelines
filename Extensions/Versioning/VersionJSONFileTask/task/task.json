@@ -45,13 +45,24 @@
          "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000.0' format"
       },
       {
-      "name": "VersionRegex",
-      "type": "string",
-      "label": "Regex Filter to extract build number",
-      "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
-      "required": true,
-      "helpMarkDown": "Regular expression filter to get build number from the build name.",
-      "groupName":"advanced"
+        "name": "useBuildNumberDirectly",
+        "type": "boolean",
+        "label": "Use Version Number without processing",
+        "defaultValue": "False",
+        "required": true,
+        "helpMarkDown": "Use the version number parameter without any further processing",
+        "groupName":"advanced"
+      },
+
+      {
+        "name": "VersionRegex",
+        "type": "string",
+        "label": "Regex Filter to extract build number",
+        "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
+        "required": true,
+        "helpMarkDown": "Regular expression filter to get build number from the build name.",
+        "groupName":"advanced",
+        "visibleRule": "useBuildNumberDirectly = false"
     },
     {
       "name": "versionForJSONFileFormat",
@@ -60,7 +71,8 @@
       "defaultValue": "{1}.{2}.{3}",
       "required": true,
       "helpMarkDown": "Format of version number to apply as Version in the JSON File.",
-      "groupName":"advanced"
+      "groupName":"advanced",
+      "visibleRule": "useBuildNumberDirectly = false"
     },
       {
       "name": "FilenamePattern",
@@ -80,7 +92,7 @@
       "helpMarkDown": "The version field to update, if blank all version fields are updated usually \"version\": \"1.1.1\"",
       "groupName":"advanced"
     },
-      {
+    {
       "name": "OutputVersion",
       "type": "string",
       "label": "Version number used variable name",
