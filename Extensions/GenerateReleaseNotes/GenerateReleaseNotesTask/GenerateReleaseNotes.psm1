@@ -293,7 +293,6 @@ function Invoke-GetCommand {
     $debugpat = $env:PAT
 
     $webclient = new-object System.Net.WebClient
-    $webclient.Encoding = [System.Text.Encoding]::UTF8
 	
     if ([System.Convert]::ToBoolean($usedefaultcreds) -eq $true) {
         Write-Verbose "Using default credentials"
