@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003"> 
+    <PropertyGroup> 
+        <IncludeCompositeObjects>True</IncludeCompositeObjects> 
+        <DeployScriptFileName>Database.sql</DeployScriptFileName> 
+        <BlockOnPossibleDataLoss>False</BlockOnPossibleDataLoss> 
+        <AllowIncompatiblePlatform>True</AllowIncompatiblePlatform>   
+        <GenerateSmartDefaults>True</GenerateSmartDefaults>    
+        <ProfileVersionNumber>1</ProfileVersionNumber> 
+         <VerifyDeployment>True</VerifyDeployment> 
+        <IncludeTransactionalScripts>True</IncludeTransactionalScripts> 
+         <!--Perform Db Upgrade if it does exist--> 
+         <CreateNewDatabase>False</CreateNewDatabase>
+ </PropertyGroup>
+ <ItemGroup> 
+        <SqlCmdVariable Include="Environment">
+            <Value>UAT</Value> 
+         </SqlCmdVariable> 
+         <SqlCmdVariable Include="Version"> 
+             <Value>5.0.0.0</Value> 
+         </SqlCmdVariable> 
+</ItemGroup> 
+</Project>

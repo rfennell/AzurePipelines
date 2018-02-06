@@ -16,16 +16,16 @@ function loggingFunction (msg: string) {
 }
 
 describe("FindFiles function", () => {
-  it("should find 3 matching files when using resursion and valid name", () => {
+  it("should find 4 matching files when using resursion and valid name", () => {
     let fileList ;
     fileList = findFiles("test/testdata", "*.xml", true, fileList) ;
-    expect(Object.keys(fileList).length).to.equal(3);
+    expect(Object.keys(fileList).length).to.equal(4);
   });
 
-  it("should find 2 matching files when not using resursion and valid name", () => {
+  it("should find 3 matching files when not using resursion and valid name", () => {
     let fileList ;
     fileList = findFiles("test/testdata", "*.xml", false, fileList) ;
-    expect(Object.keys(fileList).length).to.equal(2);
+    expect(Object.keys(fileList).length).to.equal(3);
   });
 
   it("should find no match with valid path and valid name", () => {
@@ -52,6 +52,19 @@ describe("ProcessFile function", () => {
         "In memory test file",
         rawContent,
         "true",
+        "",
+        loggingFunction);
+        expect(updateDoc.toString()).to.equal(expected.toString());
+    });
+
+    it("should update inner text on a node with namespace", () => {
+      let rawContent = fs.readFileSync("test/testdata/3.xml").toString();
+      let expected = fs.readFileSync("test/testdata/3.updated").toString();
+      let updateDoc = processFile(
+        "/*[local-name()='Project']/*[local-name()='ItemGroup']/*[local-name()='SqlCmdVariable'][@*[local-name()='Include' and .='Version']]/*[local-name()='Value']",
+        "In memory test file",
+        rawContent,
+        "1.2.3.4",
         "",
         loggingFunction);
         expect(updateDoc.toString()).to.equal(expected.toString());
