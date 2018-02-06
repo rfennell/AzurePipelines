@@ -25,6 +25,7 @@
 - 2.13 - Improved the error message when tempalte does not render - now shows failing line
 - 2.14 - Issue244 fix for "Append Output File" option fails with 'The term 'Addt-Content' is not recognized' error
 - 2.15 - Issue242 fix for handling JSON data over 2Mb in size
+- 2.16 - Added debugging to look into Issue257
 
 This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's:
 - if used in a build it is the current active build

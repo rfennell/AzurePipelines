@@ -164,7 +164,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
             if ($r.id -eq $releaseid )
             {
                 # we always add the current release that trigger the task
-                Write-Verbose "   Adding release [$r.id] to list"
+                Write-Verbose "   Adding release [$r.id] to list as it is the current release"
                 $releases += $r
             } else 
             {
@@ -172,10 +172,11 @@ if ( [string]::IsNullOrEmpty($releaseid))
                 $stage = $r.environments | Where-Object { $_.name -eq $stageName -and $_.status -ne "succeeded" }
                 if ($stage -ne $null)
                 {
-                    Write-Verbose "   Adding release [$r.id] to list"
+                    Write-Verbose "   Adding release [$r.id] to list as it is was an unsucessful release"
                     $releases += $r
                 } else {
                     #we have found a successful relase in this stage so quit
+                    Write-Verbose "   Finished adding releases as  [$r.id] successful release"
                     break
                 }
             }       
