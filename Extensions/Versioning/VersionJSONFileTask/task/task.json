@@ -37,6 +37,14 @@
          "helpMarkDown": "Source folder for assemblies files, can be root as it will find all files recursively"
       },
       {
+        "name": "recursion",
+        "type": "boolean",
+        "label": "Enable recursion",
+        "defaultValue": "True",
+        "required": true,
+        "helpMarkDown": "If true will search from specfied path for all matching files"
+      },
+      {
          "name": "VersionNumber",
          "type": "string",
          "label": "Version Number",

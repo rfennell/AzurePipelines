@@ -24,14 +24,14 @@ function extractDelimitersRegex(format) {
 }
 
 // List all files in a directory in Node.js recursively in a synchronous fashion
-export function findFiles (dir, filename , filelist) {
+export function findFiles (dir, filename , filelist, enableRecursion) {
     var path = path || require("path");
     var fs = fs || require("fs"),
         files = fs.readdirSync(dir);
     filelist = filelist || [];
     files.forEach(function(file) {
-      if (fs.statSync(path.join(dir, file)).isDirectory()) {
-        filelist = findFiles(path.join(dir, file), filename, filelist);
+      if ((fs.statSync(path.join(dir, file)).isDirectory()) && (enableRecursion)) {
+        filelist = findFiles(path.join(dir, file), filename, filelist, enableRecursion);
       }
       else {
         if (file.toLowerCase().endsWith(filename.toLowerCase())) {
