@@ -13,8 +13,13 @@ const del = require("del");
 
 describe ("Find files tests", () => {
 
-  it ("should be able to find one file", () => {
-      var filelist = findFiles ("test/testdata", "package.json.initial" , filelist);
-      expect(filelist.length).to.equal(1);
+  it ("should be able to find 4 files with recursion", () => {
+      var filelist = findFiles ("test/testdata", "package.json.initial" , filelist, true);
+      expect(filelist.length).to.equal(4);
   });
+
+  it ("should be able to find 1 file with no recursion", () => {
+    var filelist = findFiles ("test/testdata", "package.json.initial" , filelist, false);
+    expect(filelist.length).to.equal(1);
+});
 });

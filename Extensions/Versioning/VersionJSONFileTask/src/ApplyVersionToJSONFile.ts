@@ -14,9 +14,11 @@ var outputversion = tl.getInput("outputversion");
 var filenamePattern = tl.getInput("FilenamePattern");
 var versionForJSONFileFormat = tl.getInput("versionForJSONFileFormat");
 var useBuildNumberDirectly = tl.getBoolInput("useBuildNumberDirectly");
+var recursion = tl.getBoolInput("recursion");
 
 console.log (`Source Directory:  ${path}`);
 console.log (`Filename Pattern: ${filenamePattern}`);
+console.log (`File search recursion: ${recursion}`);
 console.log (`Version Number/Build Number: ${versionNumber}`);
 console.log (`Use Build Number Directly: ${useBuildNumberDirectly}`);
 console.log (`Version Filter to extract build number: ${versionRegex}`);
@@ -64,7 +66,7 @@ if (useBuildNumberDirectly === false) {
 console.log (`JSON Version Name will be: ${jsonVersion}`);
 
 // Apply the version to the assembly property files
-var files = findFiles(`${path}`, filenamePattern, files);
+var files = findFiles(`${path}`, filenamePattern, files, recursion);
 
 if (files.length > 0) {
 
