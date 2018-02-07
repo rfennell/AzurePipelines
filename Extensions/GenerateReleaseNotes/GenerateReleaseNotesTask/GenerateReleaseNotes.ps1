@@ -172,12 +172,12 @@ if ( [string]::IsNullOrEmpty($releaseid))
                 $stage = $r.environments | Where-Object { $_.name -eq $stageName }
                 if ($stage -ne $null)
                 {
-                    Write-Verbose "   Adding release [$r.id] to list as it is was an unsucessful release"
+                    Write-Verbose "   Adding release [$r.id] to list"
                     $releases += $r
-                    if (stage.status -eq "succeeded")
+                    if ($stage.status -eq "succeeded")
                     {
                         # we have found a successful release in this stage so quit
-                        Write-Verbose "   Finished adding releases as [$r.id] was asuccessful release"
+                        Write-Verbose "   Finished adding releases as [$r.id] was a successful release"
                         break
                     }
                 }
