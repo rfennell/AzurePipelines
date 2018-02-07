@@ -169,15 +169,17 @@ if ( [string]::IsNullOrEmpty($releaseid))
             } else 
             {
                 # add all the past releases where the this stage was not a success
-                $stage = $r.environments | Where-Object { $_.name -eq $stageName -and $_.status -ne "succeeded" }
+                $stage = $r.environments | Where-Object { $_.name -eq $stageName }
                 if ($stage -ne $null)
                 {
                     Write-Verbose "   Adding release [$r.id] to list as it is was an unsucessful release"
                     $releases += $r
-                } else {
-                    #we have found a successful relase in this stage so quit
-                    Write-Verbose "   Finished adding releases as  [$r.id] successful release"
-                    break
+                    if (stage.status -eq "succeeded")
+                    {
+                        # we have found a successful release in this stage so quit
+                        Write-Verbose "   Finished adding releases as [$r.id] was asuccessful release"
+                        break
+                    }
                 }
             }       
         }
