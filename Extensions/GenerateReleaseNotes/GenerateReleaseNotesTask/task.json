@@ -181,7 +181,7 @@
     {
       "name": "unifiedList",
       "type": "boolean",
-      "label": "Unfied WI/Commits",
+      "label": "Unified WI/Commits",
       "defaultValue": "False",
       "required": false,
       "helpMarkDown": "A boolean flag whether when running inside a release the WI/Commit for all builds are returned as a single list",
