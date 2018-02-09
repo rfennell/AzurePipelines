@@ -72,6 +72,7 @@ The task takes three parameters
 * (Advanced) A boolean flag whether to added parent work items of those associated with a build
 * (Advanced) A comma-separated list of Work Item types that should be included in the output.
 * (Advanced) A comma-separated list of Work Item states that should be included in the output.
+* (Advanced) A boolean flag whether when running inside a release the WI/Commit for all builds are returned as a single list.
 * (Outputs) Optional: Name of the variable that markdown contents will be copied into for use in other tasks
 
 Using the settings for the output file shown above, the release notes will be created in the specified folder, and will probably need be copied by a task such as 'Publish Artifacts' to your final required location.
@@ -101,7 +102,8 @@ Using the settings for the output file shown above, the release notes will be cr
 - 2.12 - PR221 SWarnberg - Show parent work items of those directly associated with build
          Added option to append to output file as opposed to just overwriting
 - 2.13 - Improved the error message when tempalte does not render - now shows failing line
-- 2.14 - Issue244 fix for "Append Output File" option fails with 'The term 'Addt-Content' is not recognized' error
+- 2.14 - Issue244 fix for "Append Output File" option fails with 'The term 'Add-Content' is not recognized' error
 - 2.15 - Issue242 fix for handling JSON data over 2Mb in size
 - 2.16 - Added debugging to look into Issue257
 - 2.17 - Issue257 revised release discovery logic
+- 2.18 - Issue257 added ability to collapse list of wi and commits in a release report

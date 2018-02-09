@@ -74,7 +74,10 @@ param (
     $showParents,
 
     [parameter(Mandatory=$false,HelpMessage="A boolean flag whether to over-write output file or append to it.")]
-    $appendToFile
+    $appendToFile,
+
+    [parameter(Mandatory=$false,HelpMessage="A boolean flag whether to provide a unified list of wi and commits for all builds in a release.")]
+    $unifiedList
 
 )
 
@@ -233,6 +236,44 @@ if ( [string]::IsNullOrEmpty($releaseid))
 	
 	# also for backwards compibiluty we swap the hash table for a simple array in build create order (we assume buildID is incrementing)
 	$builds = $($buildsList.GetEnumerator() | Sort-Object { $_.Value.build.id }).Value
+}
+
+if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
+{
+    write-Verbose "In release mode as checking if wi/commits should be returned as unified lists"
+    if ($unifiedList -eq $true)
+    { 
+        write-Verbose "Return a unified set of WI/Commits, hence removing duplicates"
+
+        # reduce the builds
+        $workitems = @{};
+        $changesets = @{};
+
+        foreach ($build in $builds)
+        {
+            foreach($wi in $build.workitems)
+            {
+                if ($workItems.ContainsKey($wi.id) -eq $false)
+                {
+                    $workItems.Add($wi.id,$wi)
+                }
+            }
+            foreach($changesets in $build.changesets)
+            {
+                if ($changesets.ContainsKey($changesets.id) -eq $false)
+                {
+                    $changesets.Add($changesets.id,$changesets)
+                }
+            }
+        }
+        $builds = @{ 'build' = 0; # a dummy build as not interested in build detail
+                     'workitems' = $($workitems.GetEnumerator() | Sort-Object { $_.Value.workitems.id }).Value;
+                     'changesets' = $($changesets.GetEnumerator() | Sort-Object { $_.Value.changesets.id }).Value;
+                    }
+    } else 
+    {
+        write-Verbose "Return a nested set of builds each with their own WI/Commits, hence report can have duplicated workitems and commits"
+    }
 }
 
 $template = Get-Template -templateLocation $templateLocation -templatefile $templatefile -inlinetemplate $inlinetemplate
