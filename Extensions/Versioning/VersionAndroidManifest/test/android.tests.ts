@@ -61,3 +61,26 @@ describe("Test the file processing", () => {
     });
 
   });
+
+  describe("Test the file processing for issue 251", () => {
+    before(function() {
+      // make a copy we can overright with breaking test data
+      copyFileSync("test/testdata/251.xml.initial", "test/testdata/sample.xml");
+    });
+
+    it("should be able to update a version in a file", () => {
+      var file = "test/testdata/sample.xml";
+      updateManifestFile(file, "15117", "1.0.3");
+
+      var editedfilecontent = fs.readFileSync(file);
+      var expectedfilecontent = fs.readFileSync(`test/testdata/251.xml.expected`);
+
+      expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
+    });
+
+    after(function() {
+      // remove the file if created
+      del.sync("test/testdata/sample.xml");
+    });
+
+  });

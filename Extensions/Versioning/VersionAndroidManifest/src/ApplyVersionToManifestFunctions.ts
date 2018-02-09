@@ -26,8 +26,8 @@ function extractDelimitersRegex(format) {
 export function updateManifestFile (filename, versionCode, versionName) {
     var filecontent = fs.readFileSync(filename).toString();
     fs.chmodSync(filename, "600");
-    filecontent = filecontent.replace(/versionCode=\"\d+/g, `versionCode=\"${versionCode}`);
-    filecontent = filecontent.replace(/versionName=\"(\d+\.\d+){1,}/g, `versionName=\"${versionName}`);
+    filecontent = filecontent.replace(/versionCode=\"([^"]*)\"/g, `versionCode=\"${versionCode}\"`);
+    filecontent = filecontent.replace(/versionName=\"([^"]*)\"/g, `versionName=\"${versionName}\"`);
     fs.writeFileSync(filename, filecontent);
 }
 
