@@ -243,7 +243,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
     write-Verbose "In release mode as checking if wi/commits should be returned as unified lists"
     if ($unifiedList -eq $true)
     { 
-        write-Verbose "Return a unified set of WI/Commits, hence removing duplicates"
+        write-Verbose "Processing a unified set of WI/Commits, hence removing duplicates"
 
         # reduce the builds
         $workitems = @{};
@@ -251,21 +251,29 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
 
         foreach ($build in $builds)
         {
+            Write-Verbose "Processing Build $($build.id) "
             foreach($wi in $build.workitems)
             {
+                Write-Verbose "  Found WI $($wi.id) "
                 if ($workItems.ContainsKey($wi.id) -eq $false)
                 {
+                    Write-Verbose "  Adding WI $($wi.id) to set"
                     $workItems.Add($wi.id,$wi)
                 }
             }
             foreach($changesets in $build.changesets)
             {
+                Write-Verbose "  Found Changeset/Commit $($changeset.id) "
                 if ($changesets.ContainsKey($changesets.id) -eq $false)
                 {
+                    Write-Verbose "  Adding Changeset/Commit $($changeset.id) to set"
                     $changesets.Add($changesets.id,$changesets)
                 }
             }
         }
+
+        write-Verbose "Return a unified set of WI/Commits"
+
         $builds = @{ 'build' = 0; # a dummy build as not interested in build detail
                      'workitems' = $($workitems.GetEnumerator() | Sort-Object { $_.Value.workitems.id }).Value;
                      'changesets' = $($changesets.GetEnumerator() | Sort-Object { $_.Value.changesets.id }).Value;
