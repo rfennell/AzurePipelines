@@ -78,3 +78,4 @@ The Android manifest versioner takes the following extra parameters:
 - V1.31   - Issue #233 added JSON and Angular versioner
 - V1.32   - Issue #254 allow version extraction to be bypassed for JSON Versioner 
 - V1.33   - Issue #261 add option to enable/disable recursion in file search for JSON Versioner 
+- V1.34   - Issue #251 fixed regex issue with Android versioner
