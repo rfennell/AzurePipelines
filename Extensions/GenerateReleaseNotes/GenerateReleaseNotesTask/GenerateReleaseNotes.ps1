@@ -235,15 +235,15 @@ if ( [string]::IsNullOrEmpty($releaseid))
     }
 	
 	# also for backwards compibiluty we swap the hash table for a simple array in build create order (we assume buildID is incrementing)
-	$builds = $($buildsList.GetEnumerator() | Sort-Object { $_.Value.build.id }).Value
+    $builds = $($buildsList.GetEnumerator() | Sort-Object { $_.Value.build.id }).Value
 }
 
 if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
 {
-    write-Verbose "In release mode as checking if wi/commits should be returned as unified lists"
+    write-Verbose "In release mode so checking if wi/commits should be returned as unified lists"
     if ($unifiedList -eq $true)
     { 
-        write-Verbose "Processing a unified set of WI/Commits, hence removing duplicates"
+        write-Verbose "Processing a unified set of WI/Commits, removing duplicates from $($builds.count) builds"
 
         # reduce the builds
         $workitems = @{};
@@ -252,6 +252,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
         foreach ($build in $builds)
         {
             Write-Verbose "Processing Build $($build.id) "
+            Write-Verbose  $build
             foreach($wi in $build.workitems)
             {
                 Write-Verbose "  Found WI $($wi.id) "
