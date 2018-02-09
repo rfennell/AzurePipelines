@@ -251,9 +251,9 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
 
         foreach ($build in $builds)
         {
-            Write-Verbose "Processing Build $($build.build) "
-            write-verbose $build.workitems
-            write-verbose $build.changesets
+            Write-Verbose "Processing Build $($build.build.id)"
+
+            write-verbose "WI $($build.workitems)"
             
             foreach($wi in $build.workitems)
             {
@@ -264,6 +264,9 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
                     $workItems.Add($wi.id, $wi)
                 }
             }
+
+            write-verbose "CS $($build.changesets)"
+
             foreach($changesets in $build.changesets)
             {
                 Write-Verbose "  Found Changeset/Commit $($changeset.id) "
