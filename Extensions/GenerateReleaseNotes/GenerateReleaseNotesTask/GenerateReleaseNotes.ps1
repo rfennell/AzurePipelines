@@ -256,7 +256,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             Write-Verbose "  Checking workitems"
             foreach($wi in $build.workitems)
             {
-                if (($unifiedWorkItems.Count -eq 0) -or ($unifiedWorkItems.ContainsKey($wi.id) -eq $false))
+                if ($unifiedWorkItems.ContainsKey($wi.id) -eq $false)
                 {
                     Write-Verbose "     Adding WI $($wi.id) to unified set"
                     $unifiedWorkItems.Add($wi.id, $wi)
@@ -269,11 +269,18 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             Write-Verbose "  Checking Changesets/Commits"
             foreach($changeset in $build.changesets)
             {
-                Write-Verbose $changeset
-                if (($unifiedChangesets.Count -eq 0) -or ($unifiedChangesets.ContainsKey($changeset.id) -eq $false))
+                $id = 0
+                # need a check as tfvc and git formats differ
+                try {
+                    $id = $changeset.commitid
+                }
+                catch {
+                    $id = $csdetail.changesetid
+                }
+                if ($unifiedChangesets.ContainsKey($id) -eq $false)
                 {
-                    Write-Verbose "     Adding Changeset/Commit $($changeset.id) to unified set"
-                    $unifiedChangesets.Add($changeset.id, $changeset)
+                    Write-Verbose "     Adding Changeset/Commit $id to unified set"
+                    $unifiedChangesets.Add($id, $changeset)
                 } else 
                 {
                     Write-Verbose "     Skipping Changeset/Commit $($changeset.id) as already in unified set"
