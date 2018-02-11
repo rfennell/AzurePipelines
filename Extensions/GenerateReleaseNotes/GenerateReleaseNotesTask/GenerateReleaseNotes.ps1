@@ -268,11 +268,10 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             {
                 write-verbose "  CS $($changeset)"
                 Write-Verbose "  Found Changeset/Commit $($changeset.id) "
-                $id = $changesets.id
-                if ($changesets.ContainsKey($id) -eq $false)
+                if ($changesets.Contains($changeset.id) -eq $false)
                 {
                     Write-Verbose "  Adding Changeset/Commit $($changeset.id) to set"
-                    $changesets.Add($id, $changesets)
+                    $changesets.Add($changeset.id, $changesets)
                 }
             }
         }
