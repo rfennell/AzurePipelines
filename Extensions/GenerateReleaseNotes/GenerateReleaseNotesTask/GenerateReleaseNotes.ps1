@@ -278,13 +278,17 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
                     $id = $changeset.changesetid
                 }
 
+                Write-Verbose $id
+                $changeset
+
+
                 if ($unifiedChangesets.ContainsKey($id) -eq $false)
                 {
                     Write-Verbose "     Adding Changeset/Commit $id to unified set"
                     $unifiedChangesets.Add($id, $changeset)
                 } else 
                 {
-                    Write-Verbose "     Skipping Changeset/Commit $($changeset.id) as already in unified set"
+                    Write-Verbose "     Skipping Changeset/Commit $id as already in unified set"
                 }
             }
         }
