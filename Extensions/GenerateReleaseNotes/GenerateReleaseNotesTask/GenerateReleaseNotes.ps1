@@ -256,7 +256,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             Write-Verbose "  Checking workitems"
             foreach($wi in $build.workitems)
             {
-                if ($unifiedWorkItems.ContainsKey($wi.id) -eq $false)
+                if (($unifiedWorkItems.Count -eq 0) -or ($unifiedWorkItems.ContainsKey($wi.id) -eq $false))
                 {
                     Write-Verbose "     Adding WI $($wi.id) to unified set"
                     $unifiedWorkItems.Add($wi.id, $wi)
@@ -269,11 +269,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             Write-Verbose "  Checking Changesets/Commits"
             foreach($changeset in $build.changesets)
             {
-                $unifiedChangesets
-                Write-Verbose "1 $($unifiedChangesets.Count)"
-                Write-Verbose "2 $($unifiedChangesets.Keys)"
-                Write-Verbose "3 $($changeset.id)"
-                if ($unifiedChangesets.ContainsKey($changeset.id) -eq $false)
+                if (($unifiedChangesets.Count -eq 0) -or ($unifiedChangesets.ContainsKey($changeset.id) -eq $false))
                 {
                     Write-Verbose "     Adding Changeset/Commit $($changeset.id) to unified set"
                     $unifiedChangesets.Add($changeset.id, $changeset)
