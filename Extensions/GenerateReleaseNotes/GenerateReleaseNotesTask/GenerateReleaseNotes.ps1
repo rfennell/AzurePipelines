@@ -253,12 +253,8 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
         {
             Write-Verbose "Processing Build $($build.build.id)"
 
-            write-verbose "WI $($build.workitems)"
-            
             foreach($wi in $build.workitems)
             {
-                write-verbose "  WI $($wi)"
-                Write-Verbose "  Found WI $($wi.id) "
                 if ($workItems.ContainsKey($wi.id) -eq $false)
                 {
                     Write-Verbose "  Adding WI $($wi.id) to set"
@@ -272,10 +268,11 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             {
                 write-verbose "  CS $($changeset)"
                 Write-Verbose "  Found Changeset/Commit $($changeset.id) "
-                if ($changesets.ContainsKey($changesets.id) -eq $false)
+                $id = $changesets.id
+                if ($changesets.ContainsKey($id) -eq $false)
                 {
                     Write-Verbose "  Adding Changeset/Commit $($changeset.id) to set"
-                    $changesets.Add($changesets.id, $changesets)
+                    $changesets.Add($id, $changesets)
                 }
             }
         }
