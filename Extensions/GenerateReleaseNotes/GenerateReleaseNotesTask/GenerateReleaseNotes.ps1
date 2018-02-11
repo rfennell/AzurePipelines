@@ -271,15 +271,13 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             {
                 $id = 0
                 # need a check as tfvc and git formats differ
-                try {
+                if ($changeset.commitid)
+                {
                     $id = $changeset.commitid
                 }
-                catch {
+                else {
                     $id = $changeset.changesetid
                 }
-
-                $changeset
-                Write-Verbose $id
 
                 if ($unifiedChangesets.ContainsKey($id) -eq $false)
                 {
