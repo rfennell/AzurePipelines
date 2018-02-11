@@ -267,6 +267,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             }
 
             Write-Verbose "  Checking Changesets/Commits"
+            $build
             foreach($changeset in $build.changesets)
             {
                 $changeset
