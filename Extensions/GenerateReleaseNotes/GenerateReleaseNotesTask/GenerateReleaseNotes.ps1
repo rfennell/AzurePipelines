@@ -278,9 +278,8 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
                     $id = $changeset.changesetid
                 }
 
-                Write-Verbose $id
                 $changeset
-
+                Write-Verbose $id
 
                 if ($unifiedChangesets.ContainsKey($id) -eq $false)
                 {
