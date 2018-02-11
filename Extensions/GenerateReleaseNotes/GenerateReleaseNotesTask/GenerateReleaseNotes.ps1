@@ -275,8 +275,9 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
                     $id = $changeset.commitid
                 }
                 catch {
-                    $id = $csdetail.changesetid
+                    $id = $changeset.changesetid
                 }
+
                 if ($unifiedChangesets.ContainsKey($id) -eq $false)
                 {
                     Write-Verbose "     Adding Changeset/Commit $id to unified set"
@@ -288,7 +289,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             }
         }
 
-        write-Verbose "Returning a unified set of $($workitems.count) Workitems and $($changesets.count) Changesets/Commits"
+        write-Verbose "Returning a unified set of $($unifiedWorkItems.count) Workitems and $($unifiedChangesets.count) Changesets/Commits"
 
         $builds = @{ 'build' = 0; # a dummy build as not interested in build detail
                      'workitems' = $($unifiedWorkitems.GetEnumerator() | Sort-Object { $_.Value.workitems.id }).Value;
