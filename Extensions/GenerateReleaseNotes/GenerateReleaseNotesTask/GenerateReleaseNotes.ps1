@@ -257,21 +257,23 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             {
                 if ($workItems.ContainsKey($wi.id) -eq $false)
                 {
-                    Write-Verbose "  Adding WI $($wi.id) to set"
+                    Write-Verbose "  Adding WI $($wi.id) to unified set"
                     $workItems.Add($wi.id, $wi)
+                } else 
+                {
+                    Write-Verbose "  Skipping WI $($wi.id) as already in unified set"
                 }
             }
 
-            write-verbose "CS $($build.changesets)"
-
             foreach($changeset in $build.changesets)
             {
-                write-verbose "  CS $($changeset)"
-                Write-Verbose "  Found Changeset/Commit $($changeset.id) "
                 if ($changesets.Contains($changeset.id) -eq $false)
                 {
-                    Write-Verbose "  Adding Changeset/Commit $($changeset.id) to set"
-                    $changesets.Add($changeset.id, $changesets)
+                    Write-Verbose "  Adding Changeset/Commit $($changeset.id) to unified set"
+                    $changesets.Add($changeset.id, $changeset)
+                } else 
+                {
+                    Write-Verbose "  Skipping Changeset/Commit $($changeset.id) as already in unified set"
                 }
             }
         }
