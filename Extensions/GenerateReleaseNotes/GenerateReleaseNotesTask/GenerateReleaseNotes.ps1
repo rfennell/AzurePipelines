@@ -253,32 +253,34 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
         {
             Write-Verbose "Processing Build $($build.build.id)"
 
+            Write-Verbose "  Checking workitems"
             foreach($wi in $build.workitems)
             {
                 if ($workItems.ContainsKey($wi.id) -eq $false)
                 {
-                    Write-Verbose "  Adding WI $($wi.id) to unified set"
+                    Write-Verbose "     Adding WI $($wi.id) to unified set"
                     $workItems.Add($wi.id, $wi)
                 } else 
                 {
-                    Write-Verbose "  Skipping WI $($wi.id) as already in unified set"
+                    Write-Verbose "     Skipping WI $($wi.id) as already in unified set"
                 }
             }
 
             foreach($changeset in $build.changesets)
             {
+                Write-Verbose "  Checking Changesets/Commits"
                 if ($changesets.Contains($changeset.id) -eq $false)
                 {
-                    Write-Verbose "  Adding Changeset/Commit $($changeset.id) to unified set"
+                    Write-Verbose "     Adding Changeset/Commit $($changeset.id) to unified set"
                     $changesets.Add($changeset.id, $changeset)
                 } else 
                 {
-                    Write-Verbose "  Skipping Changeset/Commit $($changeset.id) as already in unified set"
+                    Write-Verbose "     Skipping Changeset/Commit $($changeset.id) as already in unified set"
                 }
             }
         }
 
-        write-Verbose "Return a unified set of WI/Commits"
+        write-Verbose "Returning a unified set of $($workitems.count) Workitems and $($changesets.count) Changesets/Commits"
 
         $builds = @{ 'build' = 0; # a dummy build as not interested in build detail
                      'workitems' = $($workitems.GetEnumerator() | Sort-Object { $_.Value.workitems.id }).Value;
