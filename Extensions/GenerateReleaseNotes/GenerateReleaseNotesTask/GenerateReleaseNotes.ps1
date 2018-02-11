@@ -246,8 +246,8 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
         write-Verbose "Processing a unified set of WI/Commits, removing duplicates from $($builds.count) builds"
 
         # reduce the builds
-        $workitems = @{};
-        $changesets = @{};
+        $unifiedWorkitems = @{};
+        $unifiedChangesets = @{};
 
         foreach ($build in $builds)
         {
@@ -256,10 +256,10 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             Write-Verbose "  Checking workitems"
             foreach($wi in $build.workitems)
             {
-                if ($workItems.ContainsKey($wi.id) -eq $false)
+                if ($unifiedWorkItems.ContainsKey($wi.id) -eq $false)
                 {
                     Write-Verbose "     Adding WI $($wi.id) to unified set"
-                    $workItems.Add($wi.id, $wi)
+                    $unifiedWorkItems.Add($wi.id, $wi)
                 } else 
                 {
                     Write-Verbose "     Skipping WI $($wi.id) as already in unified set"
@@ -269,10 +269,10 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             foreach($changeset in $build.changesets)
             {
                 Write-Verbose "  Checking Changesets/Commits"
-                if ($changesets.Contains($changeset.id) -eq $false)
+                if ($unifiedChangesets.ContainsKey($changeset.id) -eq $false)
                 {
                     Write-Verbose "     Adding Changeset/Commit $($changeset.id) to unified set"
-                    $changesets.Add($changeset.id, $changeset)
+                    $unifiedChangesets.Add($changeset.id, $changeset)
                 } else 
                 {
                     Write-Verbose "     Skipping Changeset/Commit $($changeset.id) as already in unified set"
@@ -283,8 +283,8 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
         write-Verbose "Returning a unified set of $($workitems.count) Workitems and $($changesets.count) Changesets/Commits"
 
         $builds = @{ 'build' = 0; # a dummy build as not interested in build detail
-                     'workitems' = $($workitems.GetEnumerator() | Sort-Object { $_.Value.workitems.id }).Value;
-                     'changesets' = $($changesets.GetEnumerator() | Sort-Object { $_.Value.changesets.id }).Value;
+                     'workitems' = $($unifiedWorkitems.GetEnumerator() | Sort-Object { $_.Value.workitems.id }).Value;
+                     'changesets' = $($unifiedCangesets.GetEnumerator() | Sort-Object { $_.Value.changesets.id }).Value;
                     }
     } else 
     {
