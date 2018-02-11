@@ -257,6 +257,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             
             foreach($wi in $build.workitems)
             {
+                write-verbose "  WI $($wi)"
                 Write-Verbose "  Found WI $($wi.id) "
                 if ($workItems.ContainsKey($wi.id) -eq $false)
                 {
@@ -267,8 +268,9 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
 
             write-verbose "CS $($build.changesets)"
 
-            foreach($changesets in $build.changesets)
+            foreach($changeset in $build.changesets)
             {
+                write-verbose "  CS $($changeset)"
                 Write-Verbose "  Found Changeset/Commit $($changeset.id) "
                 if ($changesets.ContainsKey($changesets.id) -eq $false)
                 {
