@@ -269,6 +269,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             Write-Verbose "  Checking Changesets/Commits"
             foreach($changeset in $build.changesets)
             {
+                $changeset
                 $id = 0
                 # need a check as tfvc and git formats differ
                 if ($changeset.commitid)
@@ -278,6 +279,8 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
                 else {
                     $id = $changeset.changesetid
                 }
+
+                Write-Verbose ("ID $id")
 
                 if ($unifiedChangesets.ContainsKey($id) -eq $false)
                 {
