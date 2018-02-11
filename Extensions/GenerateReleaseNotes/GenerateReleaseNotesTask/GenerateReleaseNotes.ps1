@@ -269,6 +269,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             Write-Verbose "  Checking Changesets/Commits"
             foreach($changeset in $build.changesets)
             {
+                Write-Verbose $changeset
                 if (($unifiedChangesets.Count -eq 0) -or ($unifiedChangesets.ContainsKey($changeset.id) -eq $false))
                 {
                     Write-Verbose "     Adding Changeset/Commit $($changeset.id) to unified set"
