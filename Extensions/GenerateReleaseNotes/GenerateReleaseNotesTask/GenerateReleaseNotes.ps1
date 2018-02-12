@@ -269,14 +269,17 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             Write-Verbose "  Checking Changesets/Commits"
             foreach($changeset in $build.changesets)
             {
+                $changeset
+                foreach ($key in $changeset.Keys){"The key name is $key"}
+                $changeset.id
                 # we use hash as the ID changes between GIT and TFVC 
-                if ($unifiedChangesets.ContainsKey($changeset.hash) -eq $false)
+                if ($unifiedChangesets.ContainsKey($changeset.id) -eq $false)
                 {
-                    Write-Verbose "     Adding Changeset/Commit with hash $($changeset.hash) to unified set"
+                    Write-Verbose "     Adding Changeset/Commit with hash $($changeset.id) to unified set"
                     $unifiedChangesets.Add($changeset.hash, $changeset)
                 } else 
                 {
-                    Write-Verbose "     Skipping Changeset/Commit $($changeset.hash) as already in unified set"
+                    Write-Verbose "     Skipping Changeset/Commit $($changeset.id) as already in unified set"
                 }
             }
         }
