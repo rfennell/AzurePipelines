@@ -267,11 +267,25 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             }
 
             Write-Verbose "  Checking Changesets/Commits"
+            Write-verbose "size $($build.changesets.count)"
             foreach($changeset in $build.changesets)
             {
-                $changeset
-                foreach ($key in $changeset.Keys){"The key name is $key"}
-                $changeset.id
+                try {
+                    Write-Verbose "whole list"
+                    $changeset
+                }
+                catch {
+                    
+                }
+                try {
+                    Write-Verbose "List all"
+                    foreach ($key in $changeset.Keys){"The key name is $key"}
+                }
+                catch {
+                    
+                }
+                Write-Verbose "ID $($changeset.id)"
+                
                 # we use hash as the ID changes between GIT and TFVC 
                 if ($unifiedChangesets.ContainsKey($changeset.id) -eq $false)
                 {
