@@ -74,7 +74,10 @@ param (
     $showParents,
 
     [parameter(Mandatory=$false,HelpMessage="A boolean flag whether to over-write output file or append to it.")]
-    $appendToFile
+    $appendToFile,
+
+    [parameter(Mandatory=$false,HelpMessage="A boolean flag whether to provide a unified list of wi and commits for all builds in a release.")]
+    $unifiedList
 
 )
 
@@ -164,19 +167,22 @@ if ( [string]::IsNullOrEmpty($releaseid))
             if ($r.id -eq $releaseid )
             {
                 # we always add the current release that trigger the task
-                Write-Verbose "   Adding release [$r.id] to list"
+                Write-Verbose "   Adding release [$r.id] to list as it is the current release"
                 $releases += $r
             } else 
             {
                 # add all the past releases where the this stage was not a success
-                $stage = $r.environments | Where-Object { $_.name -eq $stageName -and $_.status -ne "succeeded" }
+                $stage = $r.environments | Where-Object { $_.name -eq $stageName }
                 if ($stage -ne $null)
                 {
                     Write-Verbose "   Adding release [$r.id] to list"
                     $releases += $r
-                } else {
-                    #we have found a successful relase in this stage so quit
-                    break
+                    if ($stage.status -eq "succeeded")
+                    {
+                        # we have found a successful release in this stage so quit
+                        Write-Verbose "   Finished adding releases as [$r.id] was a successful release"
+                        break
+                    }
                 }
             }       
         }
@@ -229,7 +235,79 @@ if ( [string]::IsNullOrEmpty($releaseid))
     }
 	
 	# also for backwards compibiluty we swap the hash table for a simple array in build create order (we assume buildID is incrementing)
-	$builds = $($buildsList.GetEnumerator() | Sort-Object { $_.Value.build.id }).Value
+    $builds = $($buildsList.GetEnumerator() | Sort-Object { $_.Value.build.id }).Value
+}
+
+if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
+{
+    write-Verbose "In release mode so checking if wi/commits should be returned as unified lists"
+    if ($unifiedList -eq $true)
+    { 
+        write-Verbose "Processing a unified set of WI/Commits, removing duplicates from $($builds.count) builds"
+
+        # reduce the builds
+        $unifiedWorkitems = @{};
+        $unifiedChangesets = @{};
+
+        foreach ($build in $builds)
+        {
+            Write-Verbose "Processing Build $($build.build.id)"
+
+            Write-Verbose "  Checking workitems"
+            foreach($wi in $build.workitems)
+            {
+                if ($unifiedWorkItems.ContainsKey($wi.id) -eq $false)
+                {
+                    Write-Verbose "     Adding WI $($wi.id) to unified set"
+                    $unifiedWorkItems.Add($wi.id, $wi)
+                } else 
+                {
+                    Write-Verbose "     Skipping WI $($wi.id) as already in unified set"
+                }
+            }
+
+            Write-Verbose "  Checking Changesets/Commits"
+           
+            foreach($changeset in $build.changesets)
+            {
+                # the ID field differs from GIT to TFVC
+                $id = $changeset.commitId # local git
+                if ($id -eq $null)
+                {
+                    $id = $changeset.id  #github
+                }
+                if ($id -eq $null)
+                {
+                    $id = $changeset.changesetid #tgvc
+                }
+                if ($id -eq $null)
+                {
+                    write-error "Cannot find the commit/changeset ID"
+                } else 
+                {
+                    # we use hash as the ID changes between GIT and TFVC 
+                    if ($unifiedChangesets.ContainsKey($id) -eq $false)
+                    {
+                        Write-Verbose "     Adding Changeset/Commit with hash $id to unified set"
+                        $unifiedChangesets.Add($id, $changeset)
+                    } else 
+                    {
+                        Write-Verbose "     Skipping Changeset/Commit $id as already in unified set"
+                    }
+                }
+            }
+        }
+
+        write-Verbose "Returning a unified set of $($unifiedWorkItems.count) Workitems and $($unifiedChangesets.count) Changesets/Commits"
+
+        $builds = @{ 'build' = 0; # a dummy build as not interested in build detail
+                     'workitems' = $($unifiedWorkitems.GetEnumerator() | Sort-Object { $_.Value.workitems.id }).Value;
+                     'changesets' = $($unifiedChangesets.GetEnumerator() | Sort-Object { $_.Value.changesets.id }).Value;
+                    }
+    } else 
+    {
+        write-Verbose "Return a nested set of builds each with their own WI/Commits, hence report can have duplicated workitems and commits"
+    }
 }
 
 $template = Get-Template -templateLocation $templateLocation -templatefile $templatefile -inlinetemplate $inlinetemplate

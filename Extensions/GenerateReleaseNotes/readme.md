@@ -1,31 +1,3 @@
-## Changes
-- 1.0 - Initial release
-- 1.1 - Bug fix, issue with REST call made to return build details
-- 1.2 - Bug fix, UTF8 encoding issue
-- 1.3 - Added support for Release Management
-        Added support for inline definition of template 
-- 1.4 - Add advanced option to choose if PAT or defaultcreds are used
-- 1.5 - Put in logic to skip any non VSTS release artifacts
-- 1.6 - Added parameter to limit release notes generation in a release to only primary artifact 
-- 2.0 - Added support to look back to through prior releases to last successful deployment
-- 2.1 - Made the text that is shown when there is no WI or Changeset/Commit
-- 2.2 - PR from @gregpakes - Made generate markdown available as output variablefrom 
-- 2.3 - PR from @yermax - Fixed bug that defaultcreds not being passed to all functions
-        Fixed bug that only first line of generate markdown available in output variable
-- 2.4 - Added extra error traps to handle lookups on deleted builds
-- 2.5 - Improved error tapping on render method
-- 2.6 - Altered logging to remove items that should not be warning
-- 2.7 - Included PR from @Beej126 hide changeset with no comment and @gregpakes added newlines to output variable string
-- 2.8 - Fixed for Issues #109, fixed build detection logic
-- 2.9 - PR from @paulxb Fixed a bug with $defname and $stagename not populating 
-- 2.10 - PR from @uioporqwerty #134 to fix issue with TFS2015.2 adn releases
-- 2.11 - Issue195 Added override in advanced settings to more than 50 wi or changesets/commits can be returned
-- 2.12 - PR221 SWarnberg - Show parent work items of those directly associated with build
-         Added option to append to output file as opposed to just overwriting
-- 2.13 - Improved the error message when tempalte does not render - now shows failing line
-- 2.14 - Issue244 fix for "Append Output File" option fails with 'The term 'Addt-Content' is not recognized' error
-- 2.15 - Issue242 fix for handling JSON data over 2Mb in size
-
 This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's:
 - if used in a build it is the current active build
 - if it is used in a release, then all the release artifacts are scanned back to the last successful release to the current environment and work items and commits/changesets retrieved for all these build artifcats. This is different mechanisim to that used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task may not generate the same list of items as the VSTS UI. 
@@ -100,6 +72,38 @@ The task takes three parameters
 * (Advanced) A boolean flag whether to added parent work items of those associated with a build
 * (Advanced) A comma-separated list of Work Item types that should be included in the output.
 * (Advanced) A comma-separated list of Work Item states that should be included in the output.
+* (Advanced) A boolean flag whether when running inside a release the WI/Commit for all builds are returned as a single list.
 * (Outputs) Optional: Name of the variable that markdown contents will be copied into for use in other tasks
 
 Using the settings for the output file shown above, the release notes will be created in the specified folder, and will probably need be copied by a task such as 'Publish Artifacts' to your final required location.
+
+## Changes
+- 1.0 - Initial release
+- 1.1 - Bug fix, issue with REST call made to return build details
+- 1.2 - Bug fix, UTF8 encoding issue
+- 1.3 - Added support for Release Management
+        Added support for inline definition of template 
+- 1.4 - Add advanced option to choose if PAT or defaultcreds are used
+- 1.5 - Put in logic to skip any non VSTS release artifacts
+- 1.6 - Added parameter to limit release notes generation in a release to only primary artifact 
+- 2.0 - Added support to look back to through prior releases to last successful deployment
+- 2.1 - Made the text that is shown when there is no WI or Changeset/Commit
+- 2.2 - PR from @gregpakes - Made generate markdown available as output variablefrom 
+- 2.3 - PR from @yermax - Fixed bug that defaultcreds not being passed to all functions
+        Fixed bug that only first line of generate markdown available in output variable
+- 2.4 - Added extra error traps to handle lookups on deleted builds
+- 2.5 - Improved error tapping on render method
+- 2.6 - Altered logging to remove items that should not be warning
+- 2.7 - Included PR from @Beej126 hide changeset with no comment and @gregpakes added newlines to output variable string
+- 2.8 - Fixed for Issues #109, fixed build detection logic
+- 2.9 - PR from @paulxb Fixed a bug with $defname and $stagename not populating 
+- 2.10 - PR from @uioporqwerty #134 to fix issue with TFS2015.2 adn releases
+- 2.11 - Issue195 Added override in advanced settings to more than 50 wi or changesets/commits can be returned
+- 2.12 - PR221 SWarnberg - Show parent work items of those directly associated with build
+         Added option to append to output file as opposed to just overwriting
+- 2.13 - Improved the error message when tempalte does not render - now shows failing line
+- 2.14 - Issue244 fix for "Append Output File" option fails with 'The term 'Add-Content' is not recognized' error
+- 2.15 - Issue242 fix for handling JSON data over 2Mb in size
+- 2.16 - Added debugging to look into Issue257
+- 2.17 - Issue257 revised release discovery logic
+- 2.18 - Issue257 added ability to collapse list of wi and commits in a release report
