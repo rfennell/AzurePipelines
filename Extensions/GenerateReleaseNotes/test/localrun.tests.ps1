@@ -5,20 +5,18 @@ Describe "Template Processing Tests" {
     It "can generate a build based report with parents" {
         
         $templateLocation="File"
-        $templatefile="..\..\..\SampleTemplates\GenerateReleaseNotes (Original Powershell based)\build-basic-template.md"
+        $templatefile="..\..\..\SampleTemplates\GenerateReleaseNotes (Original Powershell based)\release-basic-unfied-template.md"
         $inlinetemplate=""
-        $stageName = ""
-        $buildid = 1762
-        $builddefname ="Validate-ReleaseNotesTask.Master"
-        $releasedefname = ""
-        $collectionUrl = "https://richardfennell.visualstudio.com/"
-        $teamproject ="GitHub"
-        $releaseid = ""
-        $releasedefid = ""
+        $env:RELEASE_ENVIRONMENTNAME = "Public"
+        $env:BUILD_BUILDID = ""
+        $env:BUILD_DEFINITIONNAME ="Validate-ReleaseNotesTask.Master"
+        $env:RELEASE_DEFINITIONNAME = ""
+        $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI = "https://richardfennell.visualstudio.com/"
+        $env:SYSTEM_TEAMPROJECT ="GitHub"
+        $env:RELEASE_RELEASEID = "796"
+        $env:RELEASE_DEFINITIONID = "3"
         $usedefaultcreds="false"
-
-        $env:PAT = "<VALID PAT>"
-        $DebugPreference = "Inquire"
+        $unifiedList = "true"
 
         $maxWi=50
         $maxChanges=50
@@ -26,11 +24,30 @@ Describe "Template Processing Tests" {
         $showParents=$true
         $wiFilter="Product Backlog Item, Bug"
         $wiStateFilter="Done, To Do, New"
+        $generateForCurrentRelease = $false
+        $generateForOnlyPrimary = $false
 
-    
-        $builds = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges -wiFilter $wiFilter -wiStateFilter $wiStateFilter -showParents $showParents
+        $env:PAT = "" # to debug locally enter a valid PAT here
+        $DebugPreference = "Inquire"
 
-        $template = Get-Template -templateLocation $templateLocation -templatefile $templatefile -inlinetemplate $inlinetemplate
-        $outputmarkdown = Invoke-Template -template $template -builds $builds -releases $releases -stagename $stageName -defname $builddefname -releasedefname $releasedefname
+        & "$PSScriptRoot\..\GenerateReleaseNotesTask\GenerateReleaseNotes.ps1" `
+        -outputfile $outputfile `
+        -outputvariablename $outputvariablename `
+        -templatefile $templatefile `
+        -inlinetemplate $inlinetemplate `
+        -templateLocation $templateLocation `
+        -usedefaultcreds $usedefaultcreds `
+        -generateForOnlyPrimary $generateForOnlyPrimary `
+        -generateForCurrentRelease $generateForCurrentRelease `
+        -overrideStageName $overrideStageName `
+        -emptySetText $emptySetText `
+        -maxChanges $maxChanges `
+        -maxWi $maxWi `
+        -wiFilter $wiFilter `
+        -wiStateFilter $wiStateFilter `
+        -showParents $showParents `
+        -appendToFile $appendToFile `
+        -unifiedList $unifiedList
+
     }
 }

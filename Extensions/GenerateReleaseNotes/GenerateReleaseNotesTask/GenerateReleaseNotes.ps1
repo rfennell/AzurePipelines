@@ -267,33 +267,33 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             }
 
             Write-Verbose "  Checking Changesets/Commits"
-            Write-verbose "size $($build.changesets.count)"
+           
             foreach($changeset in $build.changesets)
             {
-                try {
-                    Write-Verbose "whole list"
-                    $changeset
-                }
-                catch {
-                    
-                }
-                try {
-                    Write-Verbose "List all"
-                    foreach ($key in $changeset.Keys){"The key name is $key"}
-                }
-                catch {
-                    
-                }
-                Write-Verbose "ID $($changeset.id)"
-                
-                # we use hash as the ID changes between GIT and TFVC 
-                if ($unifiedChangesets.ContainsKey($changeset.id) -eq $false)
+                # the ID field differs from GIT to TFVC
+                $id = $changeset.commitId # local git
+                if ($id -eq $null)
                 {
-                    Write-Verbose "     Adding Changeset/Commit with hash $($changeset.id) to unified set"
-                    $unifiedChangesets.Add($changeset.id, $changeset)
+                    $id = $changeset.id  #github
+                }
+                if ($id -eq $null)
+                {
+                    $id = $changeset.changesetid #tgvc
+                }
+                if ($id -eq $null)
+                {
+                    write-error "Cannot find the commit/changeset ID"
                 } else 
                 {
-                    Write-Verbose "     Skipping Changeset/Commit $($changeset.id) as already in unified set"
+                    # we use hash as the ID changes between GIT and TFVC 
+                    if ($unifiedChangesets.ContainsKey($id) -eq $false)
+                    {
+                        Write-Verbose "     Adding Changeset/Commit with hash $id to unified set"
+                        $unifiedChangesets.Add($id, $changeset)
+                    } else 
+                    {
+                        Write-Verbose "     Skipping Changeset/Commit $id as already in unified set"
+                    }
                 }
             }
         }
@@ -302,7 +302,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
 
         $builds = @{ 'build' = 0; # a dummy build as not interested in build detail
                      'workitems' = $($unifiedWorkitems.GetEnumerator() | Sort-Object { $_.Value.workitems.id }).Value;
-                     'changesets' = $($unifiedCangesets.GetEnumerator() | Sort-Object { $_.Value.changesets.id }).Value;
+                     'changesets' = $($unifiedChangesets.GetEnumerator() | Sort-Object { $_.Value.changesets.id }).Value;
                     }
     } else 
     {

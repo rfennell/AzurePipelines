@@ -299,7 +299,7 @@ function Invoke-GetCommand {
         Write-Verbose "Using default credentials"
         $webclient.UseDefaultCredentials = $true
     } 
-    elseif (([string]::IsNullOrEmpty($debugpat) -eq $false) -and ($DebugPreference -eq "Inquire")) {
+    elseif ([string]::IsNullOrEmpty($debugpat) -eq $false) {
         $encodedPat = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(":$debugpat"))
         $webclient.Headers.Add("Authorization", "Basic $encodedPat")
     }
