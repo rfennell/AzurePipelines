@@ -1,20 +1,9 @@
-Releases
-- 1.0.x - initial public release (targets Pester 3.3.5)
-- 4.0.x - changed versioning to fit with new release pipeline (still targets Pester 3.4.0)
-- 4.1.x - now targets 3.4.3, but allows the path to the module to be overriden
-- 4.2.x.- removed non-required demand
-- 4.3.x.- Added support for Tag and ExcludeTag parameters
-- 4.4.x - Added support for multiple comma separated tags
-- 5.0.x - Added optional support for Pester 4.0.3
-- 5.1.x - Fixes issue with running tests using the 32Bit process switch (#150)
-- 6.0.x - Add support for JaCoCo code coverage as provided by Pester 4.0.8 ([issue #152](https://github.com/rfennell/vNextBuild/issues/152))
-
 A task to install and run PowerShell Pester based tests
 The task takes five parameters
 
 The main ones are
 
-- The root folder to look for test scripts with the naming convention  *.tests.ps1. Defaults to $(Build.SourcesDirectory)\*
+- Folder to run scripts from e.g $(Build.SourcesDirectory)\\* or a script hashtable @{Path='$(Build.SourcesDirectory)'; Parameters=@{param1='111'; param2='222'}}"
 - The results file name, defaults to $(Build.SourcesDirectory)\Test-Pester.XML.
 - The code coverage file name, this outputs a JaCoCo XML file that the code coverage task can read. *Note: Requires Pester 4.0.4+*
 - Tagged test cases to run.
@@ -36,3 +25,16 @@ So you also need to add the test results upload and set the following parameters
 IMPORTANT: As the Pester task will stop the build on an error you need to set the ‘Always run’ to make sure the results are published.
 
 Once all this is added to your build you can see your Pester test results in the build summary
+
+Releases
+- 1.0.x - initial public release (targets Pester 3.3.5)
+- 4.0.x - changed versioning to fit with new release pipeline (still targets Pester 3.4.0)
+- 4.1.x - now targets 3.4.3, but allows the path to the module to be overriden
+- 4.2.x.- removed non-required demand
+- 4.3.x.- Added support for Tag and ExcludeTag parameters
+- 4.4.x - Added support for multiple comma separated tags
+- 5.0.x - Added optional support for Pester 4.0.3
+- 5.1.x - Fixes issue with running tests using the 32Bit process switch (#150)
+- 6.0.x - Add support for JaCoCo code coverage as provided by Pester 4.0.8 ([issue #152](https://github.com/rfennell/vNextBuild/issues/152))
+- 6.1.x - Engineering updates, no functional change
+- 6.2.x - Issue265 documentation change to show how other scripts can be used
