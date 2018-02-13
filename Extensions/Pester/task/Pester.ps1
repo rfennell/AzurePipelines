@@ -2,9 +2,6 @@
 param
 (
     [Parameter(Mandatory)]
-    [ValidateScript( {
-            Test-Path $_
-        })]
     [string]$scriptFolder,
 
     [Parameter(Mandatory)]
