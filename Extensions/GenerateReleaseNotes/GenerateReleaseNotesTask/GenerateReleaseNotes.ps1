@@ -86,6 +86,8 @@ $VerbosePreference ='Continue' # equiv to -verbose
 
 Import-Module -Name "$PSScriptRoot\GenerateReleaseNotes.psm1" -Force 
 
+Use-SystemWebProxy
+
 # Get the build and release details
 $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
 $teamproject = $env:SYSTEM_TEAMPROJECT

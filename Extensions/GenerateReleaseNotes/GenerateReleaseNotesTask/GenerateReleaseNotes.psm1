@@ -5,6 +5,18 @@
 #
 Import-Module -Name "$PSScriptRoot\Get-CallerPreference.ps1" -Force 
 
+function Use-SystemWebProxy {
+    <#
+    .SYNOPSIS
+        Make the subsequent web connections use the system web proxy.
+    #>
+
+    Write-Verbose "Using system web proxy."
+    $proxy = [System.Net.WebRequest]::GetSystemWebProxy()
+    $proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
+    [System.Net.WebRequest]::DefaultWebProxy = $proxy
+}
+
 function Get-BuildWorkItems {
     param
     (
