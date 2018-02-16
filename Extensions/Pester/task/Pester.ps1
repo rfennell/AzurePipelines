@@ -180,7 +180,7 @@ if (test-path -path $scriptFolder)
 {
     $Parameters.Add("Script", $scriptFolder)
 } else {
-    $Parameters.Add("Script", Get-HashtableFromString -line $scriptFolder)
+    $Parameters.Add("Script", (Get-HashtableFromString -line $scriptFolder))
 }
 
 if ($Tag) {
