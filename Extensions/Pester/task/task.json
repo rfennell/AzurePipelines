@@ -33,10 +33,10 @@
     {
       "name": "scriptFolder",
       "type": "string",
-      "label": "Scripts Folder",
+      "label": "Scripts Folder or Script",
       "defaultValue": "$(Build.SourcesDirectory)\\*",
       "required": true,
-      "helpMarkDown": "Folder to run scripts from"
+      "helpMarkDown": "Folder to run scripts from e.g $(Build.SourcesDirectory)\\* or a script hashtable @{Path='$(Build.SourcesDirectory)'; Parameters=@{param1='111'; param2='222'}}"
     },
     {
       "name": "resultsFile",

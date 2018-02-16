@@ -5,9 +5,6 @@ Describe "Testing Pester Task" {
 
     Context "Testing Task Input" {
 
-        it "Throws Exception when passed an invalid path for ScriptFolder" {
-            {&$sut -ScriptFolder TestDrive:\RandomFolder} | Should -Throw
-        }
         it "ScriptFolder is Mandatory" {
             (Get-Command $sut).Parameters['ScriptFolder'].Attributes.Mandatory | Should -Be $True
         }

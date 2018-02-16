@@ -2,9 +2,6 @@
 param
 (
     [Parameter(Mandatory)]
-    [ValidateScript( {
-            Test-Path $_
-        })]
     [string]$scriptFolder,
 
     [Parameter(Mandatory)]
@@ -59,6 +56,7 @@ param
     [string]$ForceUseOfPesterInTasks
 )
 
+Import-Module -Name "$PSScriptRoot\HelperModule.psm1" -Force 
 
 if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
     # Get the command parameters
@@ -104,12 +102,19 @@ else {
     Import-Module Pester
 }
 
-Write-Verbose "Running Pester from [$scriptFolder] output sent to [$resultsFile]" -verbose
 $Parameters = @{
     PassThru = $True
     OutputFile = $resultsFile
     OutputFormat = 'NUnitXml'
-    Script = $scriptFolder
+}
+
+if (test-path -path $scriptFolder)
+{
+    Write-Verbose "Running Pester from the folder [$scriptFolder] output sent to [$resultsFile]" -verbose
+    $Parameters.Add("Script", $scriptFolder)
+} else {
+    Write-Verbose "Running Pester from using the script parameter [$scriptFolder] output sent to [$resultsFile]" -verbose
+    $Parameters.Add("Script", (Get-HashtableFromString -line $scriptFolder))
 }
 
 if ($Tag) {
