@@ -169,7 +169,6 @@ else {
     Import-Module Pester
 }
 
-Write-Verbose "Running Pester from [$scriptFolder] output sent to [$resultsFile]" -verbose
 $Parameters = @{
     PassThru = $True
     OutputFile = $resultsFile
@@ -178,8 +177,10 @@ $Parameters = @{
 
 if (test-path -path $scriptFolder)
 {
+    Write-Verbose "Running Pester from the folder [$scriptFolder] output sent to [$resultsFile]" -verbose
     $Parameters.Add("Script", $scriptFolder)
 } else {
+    Write-Verbose "Running Pester from using the script parameter [$scriptFolder] output sent to [$resultsFile]" -verbose
     $Parameters.Add("Script", (Get-HashtableFromString -line $scriptFolder))
 }
 
