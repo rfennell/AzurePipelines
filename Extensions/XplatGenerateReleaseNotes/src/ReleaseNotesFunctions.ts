@@ -227,7 +227,7 @@ export function getCommitsBetweenCommitIds (
                 }
                 resolve(body.value);
             });
-        } else if (repositoryType === " TfsVersionControl") {
+        } else if (repositoryType === "TfsVersionControl") {
             // for TfVC it is more complex
             // first we need to get the build definition
             getBuildDefinition (vstsinstance, teamproject, encodedPat, buildDefId, function(details) {
