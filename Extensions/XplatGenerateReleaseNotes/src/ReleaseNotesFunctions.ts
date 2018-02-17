@@ -281,7 +281,8 @@ function getTfvcDetails(vstsinstance: string,
                         callback) {
     // the call parameters use inclusive bounds, we need to exclude the lower one
     var fixedLowerBound = parseInt(compareSourceVersion);
-    logInfo(`Excluding the lower Changeset as includes bounds required ${compareSourceVersion} replaced by ${fixedLowerBound}`);
+    fixedLowerBound ++;
+    logInfo(`Excluding the lower Changeset as inclusives bounds required ${compareSourceVersion} replaced by ${fixedLowerBound}`);
 
     var options = {
         method: "GET",
