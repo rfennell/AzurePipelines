@@ -1,12 +1,3 @@
-## Changes
-- 1.0 - Initial release
-- 1.1 - Reduced the API version requirement to allow support for TFS 2017 as well as VSTS (still using preview API)
-- 1.2 - Includes PR130 @gregpakes that added multiple artifact support, moved to async/await model
-- 1.3 - Includes PR141 @gregpakes that address issues with errors being swallowed and no work items being listed
-- 1.4 - Includes PR157 @gregpakes that address issues with redeployments
-- 1.5 - Issue200 Engineering fixes for build process, also fixes an issue if empty work item list is returned when checking between releases
-- 1.6 - Issue215 Fixed error when release references build that that is not VSTS repo based
-
 This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's comparison calls that are also used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the VSTS UI.
 
 Note: That this comparison is only done against the primary build artifact linked to the Release
@@ -77,3 +68,13 @@ The task takes three parameters
 * (Outputs) Optional: Name of the variable that markdown contents will be copied into for use in other tasks
 
 Using the settings for the output file shown above, the release notes will be created in the specified folder, and will probably need be copied by a task such as 'Publish Artifacts' to your final required location.
+
+## Changes
+- 1.0 - Initial release
+- 1.1 - Reduced the API version requirement to allow support for TFS 2017 as well as VSTS (still using preview API)
+- 1.2 - Includes PR130 @gregpakes that added multiple artifact support, moved to async/await model
+- 1.3 - Includes PR141 @gregpakes that address issues with errors being swallowed and no work items being listed
+- 1.4 - Includes PR157 @gregpakes that address issues with redeployments
+- 1.5 - Issue200 Engineering fixes for build process, also fixes an issue if empty work item list is returned when checking between releases
+- 1.6 - Issue215 Fixed error when release references build that that is not VSTS repo based
+- 1.7 - Issue270 Fixed problem getting work item detail on TFVC repos
