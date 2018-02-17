@@ -280,16 +280,14 @@ function getTfvcDetails(vstsinstance: string,
                         mappings: string,
                         callback) {
     // the call parameters use inclusive bounds, we need to exclude the lower one
-    // The changesets are prefixed with C - needs to be removed.
-    var fixedStartId = compareSourceVersion.substring(1); // parseInt(compareSourceVersion)+1;
-    var currentChangesetId = currentSourceVersion.substring(1);
+    // The changesets used to be prefixed with C - but does not appear to be needed any more
     var options = {
         method: "GET",
         headers: { "cache-control": "no-cache", "authorization": `Basic ${encodedPat}`, "Content-Type": "application/json"},
-        url: `${vstsinstance}/${teamproject}/_apis/tfvc/changesets?searchCriteria.fromId=${fixedStartId}&searchCriteria.toId=${currentChangesetId}&searchCriteria.itemPath=${mappings}&maxCommentLength=1000&$top=1000`,
+        url: `${vstsinstance}/${teamproject}/_apis/tfvc/changesets?searchCriteria.fromId=${compareSourceVersion}&searchCriteria.toId=${currentSourceVersion}&searchCriteria.itemPath=${mappings}&maxCommentLength=1000&$top=1000`,
         qs: { "api-version": "1.0" },
     };
-    logInfo(`Getting the differences between changeset with an ID greater than ${compareSourceVersion} up to and including ${currentChangesetId} from repo ${repositoryId} for mapping ${mappings}`);
+    logInfo(`Getting the differences between changeset with an ID greater than ${compareSourceVersion} up to and including ${currentSourceVersion} from repo ${repositoryId} for mapping ${mappings}`);
     request(options, function (error, response, body) {
         if (error) {
             throw new Error(error);
