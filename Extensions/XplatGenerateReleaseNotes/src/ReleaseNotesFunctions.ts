@@ -267,6 +267,8 @@ export function getCommitsBetweenCommitIds (
             }); // get build def
         } else {
             logInfo(`Cannot get any commit/changeset details as build based on none VSTS repository`);
+            resolve([]);
+            return;
         } // if Git/Tfvc
     });
 }

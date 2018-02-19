@@ -78,3 +78,4 @@ Using the settings for the output file shown above, the release notes will be cr
 - 1.5 - Issue200 Engineering fixes for build process, also fixes an issue if empty work item list is returned when checking between releases
 - 1.6 - Issue215 Fixed error when release references build that that is not VSTS repo based
 - 1.7 - Issue270 Fixed problem getting work item detail on TFVC repos
+- 1.8 - Issue272 Fixed problem with no output if the artifact source is not a VSTS hosted repository
