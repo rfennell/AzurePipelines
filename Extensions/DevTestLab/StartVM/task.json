@@ -6,6 +6,7 @@
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/DevTestLabs/)",
   "category": "Utility",
   "visibility": [
+                "Build",
                 "Release"
                 ],
   "demands": [

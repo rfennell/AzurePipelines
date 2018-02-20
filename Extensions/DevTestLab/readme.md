@@ -1,6 +1,3 @@
-### Releases
-- 1.0.x - Initial release
-
 ### Background
 
 This extension contains tasks that act as a supplement to the ones contained in the [Microsoft provided Azure DevTest Lab Extension](https://marketplace.visualstudio.com/items?itemName=ms-azuredevtestlabs.tasks). 
@@ -20,3 +17,6 @@ All tasks requires the following inputs:
 - **Azure RM Subscription** - Azure Resource Manager subscription to configure before running.
 - **Source Lab VM ID** - Resource ID of the source lab VM. The source lab VM must be in the selected lab, as the custom image will be created using its VHD file. You can use any variable such as *$(labVMId)*, the output of calling Create Azure DevTest Labs VM, that contains a value in the form */subscriptions/{subId}/resourceGroups/{rgName}/providers/Microsoft.DevTestLab/labs/{labName}/virtualMachines/{vmName}*.
 
+### Releases
+- 1.0 - Initial release
+- 1.1 - Issue274 fixed visiblity for Start task to support builds and releases 
