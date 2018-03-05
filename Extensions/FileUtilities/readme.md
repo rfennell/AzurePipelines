@@ -1,14 +1,3 @@
-Releases
-
-- 1.0 Initial internal release
-- 2.0 Public release
-- 2.1 Added replacing InnerText of XML nodes as well as attributes in XML task
-    - Added support for multi-files on XML task
-- 2.2 Made the location of the local copy of the artifact configurable
-- 2.3 Issue147 fixed filter for successful builds on UNC copy task
-- 3.0 Converted the XML Task to Node.JS from PowerShell to make it cross platform Issue74
-
-
 This set of tasks perform file copy related actions
 
 ## File Copy with Filters
@@ -77,3 +66,14 @@ The prime use for this is to set environment specific value in web.config or app
 - Attribute e.g. value [optional: if left blank the InnerText on the selected node will be updated]
 - Value e.g. 'the new value'
 - Recurse e.g. True (whether any wildcards in the filename should be searched for recursivally)
+
+Releases
+
+- 1.0 Initial internal release
+- 2.0 Public release
+- 2.1 Added replacing InnerText of XML nodes as well as attributes in XML task
+    - Added support for multi-files on XML task
+- 2.2 Made the location of the local copy of the artifact configurable
+- 2.3 Issue147 fixed filter for successful builds on UNC copy task
+- 3.0 Converted the XML Task to Node.JS from PowerShell to make it cross platform Issue74
+- 3.1 Issue277 fixed vulnerability in Moment 2.19.1 NPM package, no functional change
