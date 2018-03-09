@@ -7,11 +7,19 @@ function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
-export function processFiles (filename: string, recurse: boolean, xpathQuery: string , value, attribute, logInfo, logDebug ) {
+function stringToBoolean (value: string) {
+  switch (value.toLowerCase().trim()) {
+      case "true": case "yes": case "1": return true;
+      case "false": case "no": case "0": case null: return false;
+      default: return Boolean(value);
+  }
+}
+
+export function processFiles (filename: string, recurse: string, xpathQuery: string , value, attribute, logInfo, logDebug ) {
   let files;
   logDebug (`Looking in folder [${path.dirname(filename)}] for files that match pattern [${path.basename(filename)}] using recursion [${recurse}]`);
 
-  files = findFiles(path.dirname(filename), path.basename(filename), recurse, files);
+  files = findFiles(path.dirname(filename), path.basename(filename), stringToBoolean(recurse), files);
 
   files.forEach(file => {
       let rawContent = fs.readFileSync(file).toString();
