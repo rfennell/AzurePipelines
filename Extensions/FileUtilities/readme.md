@@ -77,3 +77,4 @@ Releases
 - 2.3 Issue147 fixed filter for successful builds on UNC copy task
 - 3.0 Converted the XML Task to Node.JS from PowerShell to make it cross platform Issue74
 - 3.1 Issue277 fixed vulnerability in Moment 2.19.1 NPM package, no functional change
+- 3.2 Issue279 recursion problem with XMLUpdater
