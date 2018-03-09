@@ -12,7 +12,7 @@ const filename = getVariable("filename");
 const xpathQuery = getVariable("xpath");
 const attribute = getVariable("attribute");
 const value = getVariable("value");
-const recurse = stringToBoolean(getVariable("recurse")); // this must be converted to a boolean for function calls
+const recurse = getVariable("recurse");
 
 logInfo (`Param: filename - ${filename}`);
 logInfo (`Param: recurse - ${recurse}`);
