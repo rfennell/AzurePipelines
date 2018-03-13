@@ -4,18 +4,15 @@ import path = require("path");
 export function getSplitVersionParts (buildNumberFormat, outputFormat, version) {
     const versionNumberSplitItems = version.split(extractDelimitersRegex(buildNumberFormat));
     const versionNumberMatches = outputFormat.match(/\d/g);
-    const joinChar =  extractJoinChar(outputFormat);
-    const versionName = (versionNumberMatches.map((item) => versionNumberSplitItems[item - 1])).join(joinChar);
-    return versionName;
-}
-
-function extractJoinChar(format) {
-    const delimiters = format.replace(/{\d}/g, "");
-    if (delimiters) {
-        return delimiters[0];
-    } else {
-        return "";
+    const joinCharMatches = outputFormat.match(/[^{0-9}]+/g);
+    let newVersion = "";
+    for (let index = 0; index < versionNumberMatches.length; index++) {
+        newVersion += versionNumberSplitItems[index];
+        if (joinCharMatches[index]) {
+            newVersion += joinCharMatches[index];
+        }
     }
+    return newVersion;
 }
 
 function extractDelimitersRegex(format) {
