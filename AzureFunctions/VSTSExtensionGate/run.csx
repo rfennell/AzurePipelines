@@ -41,8 +41,17 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
         string resultContent = await result.Content.ReadAsStringAsync();
 
         var o= JObject.Parse(resultContent);
-        var isDeployed = new { Deployed = version.Equals(o.SelectToken("value")[0].SelectToken("contributionVersion").ToString()) };
-        
+        var count = (int) o.SelectToken("count");
+
+        log.Info($"There are {count} versions of the task present");
+
+        var isDeployed = false;
+        for (int i =0; i < count; i++)
+        {
+            log.Info($"Checking {o.SelectToken("value")[i].SelectToken("contributionVersion").ToString()}");
+            isDeployed = isDeployed || version.Equals(o.SelectToken("value")[i].SelectToken("contributionVersion").ToString());  ;
+        }
+
         log.Info($"The response payload is {isDeployed}");
 
         return req.CreateResponse(
