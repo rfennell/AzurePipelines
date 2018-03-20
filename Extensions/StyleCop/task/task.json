@@ -29,7 +29,7 @@
     {
       "name": "treatStyleCopViolationsErrorsAsWarnings",
       "type": "boolean",
-      "label": "Test Errors as Warnings",
+      "label": "Treat Errors as Warnings",
       "defaultValue": "False",
       "required": true,
       "helpMarkDown": "Treat StyleCop violations errors as warnings."
