@@ -1,8 +1,8 @@
 ### What problem does this PR address?
-<add description>
+--add description--
   
 ### Is there a related Issue?
-<add Issue number>
+--add Issue number--
   
 ### Have you...
 - Added a new release line entry in to the extensions readme.md file (the list is usually found at the end of the file) that 
