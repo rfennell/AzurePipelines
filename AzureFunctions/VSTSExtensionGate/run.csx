@@ -52,11 +52,12 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
             isDeployed = isDeployed || version.Equals(o.SelectToken("value")[i].SelectToken("contributionVersion").ToString());  ;
         }
 
-        log.Info($"The response payload is {isDeployed}");
+        var returnValue = new { Deployed = isDeployed};
+        log.Info($"The response payload is {returnValue}");
 
         return req.CreateResponse(
             HttpStatusCode.OK,
-            isDeployed,
+            returnValue,
             JsonMediaTypeFormatter.DefaultMediaType);
     } catch (Exception ex)
     {
