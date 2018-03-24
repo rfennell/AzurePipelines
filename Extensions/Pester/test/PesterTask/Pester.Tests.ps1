@@ -20,6 +20,9 @@ Describe "Testing Pester Task" {
         it "Run32Bit is not Mandatory" {
             (Get-Command $sut).Parameters['Run32Bit'].Attributes.Mandatory | Should -Be $False
         }
+        it "additionalModulePath is not Mandatory" {
+            (Get-Command $sut).Parameters['additionalModulePath'].Attributes.Mandatory | Should -Be $False
+        }
         it "Throws Exception when passed an invalid path for ModuleFolder" {
             {&$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder TestDrive:\RandomFolder} | Should -Throw
         }

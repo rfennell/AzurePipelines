@@ -12,6 +12,8 @@ param
 
     [string]$run32Bit,
 
+    [string]$additionalModulePath,
+
     [string]$pesterVersion,
 
     [validateScript( {
@@ -77,6 +79,10 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
     exit
 }
 write-verbose "Running in $($env:Processor_Architecture) PowerShell" -verbose
+
+if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
+    $env:PSModulePath = $additionalModulePath + ';' + $env:PSModulePath
+}
 
 if (([bool]::Parse($ForceUseOfPesterInTasks) -eq $true) -and $(-not([string]::IsNullOrEmpty($pesterVersion)))) {
     # we have no module path specified and Pester is not installed on the PC
