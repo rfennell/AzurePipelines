@@ -1,4 +1,4 @@
-![Build Status - Build Utils Extension](https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/28/badge) Build Utils Extension 
+![Release Status - Build Utils Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/9/16) Build Utils Extension 
 
 ![Build Status - DevTest Labs Extension](https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/51/badge) DevTest Labs Extension 
 
