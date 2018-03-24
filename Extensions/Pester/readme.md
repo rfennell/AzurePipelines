@@ -12,8 +12,8 @@ The main ones are
 The advanced ones are
 
 - Should the instance of PowerShell used to run the test be forced to run in 32bit, defaults to false.
-- (New in 5.x) You can pick if the Pester 3.4.3 or 4.0.8 modules (both are included in the task) are used
-- If neither 3.4.3 or 4.0.8 is suitable then a custom module path pointing to where the required Pester.psd1 and related files are stored can be entered. This will be used in preference to the embedded versions
+- (New in 5.x) You can pick if the Pester 3.4.3 or 4.3.1 modules (both are included in the task) are used
+- If neither 3.4.3 or 4.3.1 is suitable then a custom module path pointing to where the required Pester.psd1 and related files are stored can be entered. This will be used in preference to the embedded versions
 
 The Pester task does not in itself upload the test results, it just throws an error if tests fails. It relies on the standard test results upload task.
 
