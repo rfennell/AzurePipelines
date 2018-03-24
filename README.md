@@ -1,26 +1,14 @@
-![Release Status - Build Utils Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/9/16) Build Utils Extension 
-
-![Build Status - DevTest Labs Extension](https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/51/badge) DevTest Labs Extension 
-
-![Build Status - FileCopiers Extension](https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/21/badge) FileCopier Extension 
-
-![Build Status - GenerateReleaseNotes Extension (PowerShell)](
-https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/23/badge) GenerateReleaseNotes Extension (PowerShell)
-
-![Build Status - GenerateReleaseNotes Extension (XPlat)](
-https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/40/badge) GenerateReleaseNotes Extension (XPlat)
-
-![Build Status - Manifest Versioning Extension](
-https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/25/badge) Manifest Versioning Extension 
-
-![Build Status - Pester Extension](
-https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/27/badge) Pester Extension 
-
-![Build Status - StyleCop Extension](
-https://richardfennell.visualstudio.com/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/26/badge) StyleCop Extension 
-
-![Build Status - Typemock Runner Extension](
-https://richardfennell.visualstudio.com/DefaultCollection/_apis/public/build/definitions/670b3a60-2021-47ab-a88b-d76ebd888a2f/24/badge) Typemock Runner Extension **(deprecated)**
+Extension | Public Deployment Status
+----------|------------------
+Build Utils | ![Release Status - Build Utils Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/9/16) 
+DevTest Labs | ![Release Status - DevTest Labs Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/20/51)
+FileCopier | ![Release Status - FileCopiers Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/2/3) 
+GenerateReleaseNotes (PowerShell) | ![Release Status - GenerateReleaseNotes Extension (PowerShell)](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/3/5) 
+GenerateReleaseNotes (XPlat) | ![Release Status - GenerateReleaseNotes Extension (XPlat)](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/13/24) 
+Manifest Versioning | ![Release Status - Manifest Versioning Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/6/10) 
+Pester | ![Release Status - Pester Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/8/14)  
+StyleCop | ![Release Status - StyleCop Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/7/12) 
+Typemock Runner **(deprecated)** | ![Release Status - Typemock Runner Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/5/8) 
 
 # vNextBuild Extensions Repo
 
