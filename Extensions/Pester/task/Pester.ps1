@@ -140,7 +140,7 @@ if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge '4.0.4') {
         $Parameters.Add('CodeCoverageOutputFile', $CodeCoverageOutputFile)
     }
     else {
-        Write-Warning -Message "No PowerShell files found under $ScripFolder to analyse for code coverage."
+        Write-Warning -Message "No PowerShell files found under [$ScriptFolder] to analyse for code coverage."
     }
 }
 elseif ($CodeCoverageOutputFile -and (Get-Module Pester).Version -lt '4.0.4') {

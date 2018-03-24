@@ -231,7 +231,7 @@ Describe "Testing Pester Task" {
 
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ForceUseOfPesterInTasks "False"
             Assert-MockCalled  Import-Module
-            # can't check the presvious assert for empty parameters, so check the message
+            # can't check the previous assert for empty parameters, so check the message
             Assert-MockCalled Write-Verbose -ParameterFilter { $Message -eq "No Pester module location parameters passed, and not forcing use of Pester in task, so using Powershell default module location" }
             Assert-MockCalled Invoke-Pester
         }
