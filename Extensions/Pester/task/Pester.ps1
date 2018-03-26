@@ -54,6 +54,8 @@ param
             }
         })]
     [string]$CodeCoverageOutputFile,
+    
+    [string]$CodeCoverageFolder,
 
     [string]$ForceUseOfPesterInTasks
 )
@@ -81,6 +83,7 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
 write-verbose "Running in $($env:Processor_Architecture) PowerShell" -verbose
 
 if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
+    Write-Verbose "Adding additional module path [$additionalModulePath] to `$env:PSModulePath" -verbose
     $env:PSModulePath = $additionalModulePath + ';' + $env:PSModulePath
 }
 
@@ -132,7 +135,10 @@ if ($ExcludeTag) {
     $Parameters.Add('ExcludeTag', $ExcludeTag)
 }
 if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge '4.0.4') {
-    $Files = Get-ChildItem -Path $scriptFolder -include *.ps1, *.psm1 -Exclude *.Tests.ps1 -Recurse |
+    if (-not $PSBoundParameters.ContainsKey('CodeCoverageFiles')) {
+        $CodeCoverageFolder = $scriptFolder
+    }
+    $Files = Get-ChildItem -Path $CodeCoverageFolder -include *.ps1, *.psm1 -Exclude *.Tests.ps1 -Recurse |
         Select-object -ExpandProperty Fullname
 
     if ($Files) {
@@ -140,7 +146,7 @@ if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge '4.0.4') {
         $Parameters.Add('CodeCoverageOutputFile', $CodeCoverageOutputFile)
     }
     else {
-        Write-Warning -Message "No PowerShell files found under [$ScriptFolder] to analyse for code coverage."
+        Write-Warning -Message "No PowerShell files found under [$CodeCoverageFolder] to analyse for code coverage."
     }
 }
 elseif ($CodeCoverageOutputFile -and (Get-Module Pester).Version -lt '4.0.4') {

@@ -95,6 +95,15 @@
       "groupName": "advanced"
     },
     {
+      "name": "CodeCoverageFolder",
+      "type": "string",
+      "label": "Code Coverage Folder",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Path to the folder or file to run coverage against. Requires CodeCoverageOutputFile.",
+      "groupName": "advanced"
+    },
+    {
       "name": "run32Bit",
       "type": "boolean",
       "label": "Run in 32bit",
