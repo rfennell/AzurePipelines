@@ -38,4 +38,4 @@ Releases
 - 6.0.x - Add support for JaCoCo code coverage as provided by Pester 4.0.8 ([issue #152](https://github.com/rfennell/vNextBuild/issues/152))
 - 6.1.x - Engineering updates, no functional change
 - 6.2.x - Issue265 documentation change to show how other scripts can be used
-- 6.3.x - Added additionalModulePath and CodeCoverageFolder, to support testing compiled modules
+- 6.3.x - Added additionalModulePath and CodeCoverageFolder, to support testing compiled modules ([PR#285](https://github.com/rfennell/vNextBuild/pull/285))
