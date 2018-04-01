@@ -45,7 +45,7 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
 
-            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure,Integration' -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
+            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure,Integration' -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
             $Tag.Length | Should Be 2
             Write-Output -NoEnumerate $Tag | Should -BeOfType [System.Array]
             Write-Output -NoEnumerate $Tag | Should -BeOfType [String[]]
@@ -60,7 +60,7 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
 
-            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example,Demo' -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
+            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example,Demo' -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
             $ExcludeTag.Length | Should be 2
             Write-Output -NoEnumerate $ExcludeTag | Should -BeOfType [System.Array]
             Write-Output -NoEnumerate $ExcludeTag | Should -BeOfType [String[]]
@@ -73,7 +73,7 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
 
-            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile $null -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
+            . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile $null -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
             Assert-MockCalled Invoke-Pester
         }
 
@@ -92,15 +92,15 @@ Describe "Testing Pester Task" {
         Mock Write-Error { }
 
         it "Calls Invoke-Pester correctly with ScriptFolder and ResultsFile specified" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
             Assert-MockCalled Invoke-Pester
         }
         it "Calls Invoke-Pester with Tag specified" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure' -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure' -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
             Assert-MockCalled Invoke-Pester -ParameterFilter {$Tag -and $Tag -eq 'Infrastructure'}
         }
         it "Calls Invoke-Pester with ExcludeTag specified" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example' -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example' -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
             Assert-MockCalled Invoke-Pester -ParameterFilter {$ExcludeTag -and $ExcludeTag -eq 'Example'}
         }
         it "Calls Invoke-Pester with the CodeCoverageOutputFile specified" {
@@ -108,7 +108,7 @@ Describe "Testing Pester Task" {
             New-Item -Path TestDrive:\ -Name TestFile2.ps1 | Out-Null
             New-Item -Path TestDrive:\ -Name TestFile3.ps1 | Out-Null
 
-            &$Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml' -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
+            &$Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml' -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
             Assert-MockCalled Invoke-Pester -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage.xml'}
         }
 
@@ -131,11 +131,11 @@ Describe "Testing Pester Task" {
         mock Invoke-Pester {}
 
         it "Creates the output xml file correctly" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
             Test-Path -Path TestDrive:\Output.xml | Should -Be $True
         }
         it "Throws an error when pester tests fail" {
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output2.xml -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output2.xml -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
             Assert-MockCalled -CommandName Write-Error
         }
 
@@ -144,7 +144,7 @@ Describe "Testing Pester Task" {
             New-Item -Path TestDrive:\ -Name TestFile2.ps1 | Out-Null
             New-Item -Path TestDrive:\ -Name TestFile3.ps1 | Out-Null
 
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml' -ForceUseOfPesterInTasks "True" -PesterVersion '4.0.8'
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml' -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
             Test-Path -Path TestDrive:\codecoverage.xml | Should -Be $True
         }
 
@@ -158,12 +158,12 @@ Describe "Testing Pester Task" {
             Mock Write-Verbose { }
             Mock Write-Warning { }
             Mock Write-Error { }
-            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.0.8") }
+            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
             Mock Get-ChildItem  { return $true }
 
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder $null -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "True"
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder $null -PesterVersion 4.3.1 -ForceUseOfPesterInTasks "True"
 
-            Assert-MockCalled  Import-Module -ParameterFilter { $Name.EndsWith("\4.0.8\Pester.psd1") }
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name.EndsWith("\4.3.1\Pester.psd1") }
             Assert-MockCalled Invoke-Pester
         }
 
@@ -173,12 +173,12 @@ Describe "Testing Pester Task" {
             Mock Write-Verbose { }
             Mock Write-Warning { }
             Mock Write-Error { }
-            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.0.8") }
+            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
             Mock Get-ChildItem  { return $true }
 
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder $null -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "False"
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder $null -PesterVersion 4.3.1 -ForceUseOfPesterInTasks "False"
 
-            Assert-MockCalled  Import-Module -ParameterFilter { $Name.EndsWith("\4.0.8\Pester.psd1") }
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name.EndsWith("\4.3.1\Pester.psd1") }
             Assert-MockCalled Invoke-Pester
         }
 
@@ -192,9 +192,9 @@ Describe "Testing Pester Task" {
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("$pwd\3.4.3") }
             Mock Get-ChildItem  { return $true }
 
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "$pwd\3.4.3" -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "True"
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "$pwd\3.4.3" -PesterVersion 4.3.1 -ForceUseOfPesterInTasks "True"
 
-            Assert-MockCalled  Import-Module -ParameterFilter { $Name.EndsWith("\4.0.8\Pester.psd1") }
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name.EndsWith("\4.3.1\Pester.psd1") }
             Assert-MockCalled Invoke-Pester
         }
 
@@ -204,12 +204,12 @@ Describe "Testing Pester Task" {
             Mock Write-Verbose { }
             Mock Write-Warning { }
             Mock Write-Error { }
-            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.0.8") }
+            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
             Mock Get-ChildItem  { return $true }
 
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "   " -PesterVersion 4.0.8 -ForceUseOfPesterInTasks "False"
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder "   " -PesterVersion 4.3.1 -ForceUseOfPesterInTasks "False"
 
-            Assert-MockCalled  Import-Module -ParameterFilter { $Name.EndsWith("\4.0.8\Pester.psd1") }
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name.EndsWith("\4.3.1\Pester.psd1") }
             Assert-MockCalled Invoke-Pester
         }
 
