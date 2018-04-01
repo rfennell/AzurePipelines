@@ -38,4 +38,5 @@ Releases
 - 6.0.x - Add support for JaCoCo code coverage as provided by Pester 4.0.8 ([issue #152](https://github.com/rfennell/vNextBuild/issues/152))
 - 6.1.x - Engineering updates, no functional change
 - 6.2.x - Issue265 documentation change to show how other scripts can be used
-- 6.3.x - PR287 changed included version of 4x Pester from 4.0.8 to 4.3.1
+- 6.3.x - Engineering test same as 7.0.x
+- 7.0.x - PR287 changed included version of 4x Pester from 4.0.8 to 4.3.1, incremented major version as change of advanced options blocks auto update.
