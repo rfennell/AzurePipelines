@@ -26,32 +26,27 @@ export function ProcessFile(file, field, newVersion) {
     fs.chmodSync(file, "600");
 
     // Check that the field to update is present
-    var tmpField = "<Version>";
     if (field && field.length > 0) {
-        tmpField = `<${field}>`;
-    }
-
-    if (filecontent.toString().toLowerCase().indexOf(tmpField.toLowerCase()) === -1) {
-        console.log (`The ${tmpField} version is not present in the .csproj file so adding it`);
-        // add the field, trying to avoid having to load library to parse xml
-        // Check for TargetFramework when only using a single framework
-        regexp = new RegExp("</TargetFramework>", "g");
-        tmpField = tmpField.replace("<", "").replace(">", "");
-        if (regexp.exec(filecontent.toString())) {
-            console.log (`The ${file} .csproj file only targets 1 framework`);
-            var newVersionField = `</TargetFramework><${tmpField}>${newVersion}<\/${tmpField}>`;
-            fs.writeFileSync(file, filecontent.toString().replace(`</TargetFramework>`, newVersionField));
-        }
-        // Check for TargetFrameworks when using multiple frameworks
-        regexp = new RegExp("</TargetFrameworks>", "g");
-        if (regexp.exec(filecontent.toString())) {
-            console.log (`The ${file} .csproj file targets multiple frameworks`);
-            var newVersionField1 = `</TargetFrameworks><${tmpField}>${newVersion}<\/${tmpField}>`;
-            fs.writeFileSync(file, filecontent.toString().replace(`</TargetFrameworks>`, newVersionField1));
-        }
-
-    } else {
-        if (field && field.length > 0) {
+        var tmpField = `<${field}>`;
+        if (filecontent.toString().toLowerCase().indexOf(tmpField.toLowerCase()) === -1) {
+            console.log (`The ${tmpField} version is not present in the .csproj file so adding it`);
+            // add the field, trying to avoid having to load library to parse xml
+            // Check for TargetFramework when only using a single framework
+            regexp = new RegExp("</TargetFramework>", "g");
+            tmpField = tmpField.replace("<", "").replace(">", "");
+            if (regexp.exec(filecontent.toString())) {
+                console.log (`The ${file} .csproj file only targets 1 framework`);
+                var newVersionField = `</TargetFramework><${tmpField}>${newVersion}<\/${tmpField}>`;
+                fs.writeFileSync(file, filecontent.toString().replace(`</TargetFramework>`, newVersionField));
+            }
+            // Check for TargetFrameworks when using multiple frameworks
+            regexp = new RegExp("</TargetFrameworks>", "g");
+            if (regexp.exec(filecontent.toString())) {
+                console.log (`The ${file} .csproj file targets multiple frameworks`);
+                var newVersionField1 = `</TargetFrameworks><${tmpField}>${newVersion}<\/${tmpField}>`;
+                fs.writeFileSync(file, filecontent.toString().replace(`</TargetFrameworks>`, newVersionField1));
+            }
+        } else {
             console.log (`Updating only the ${field} version`);
             const csprojVersionRegex = `(<${field}>)(.*)(<\/${field}>)`;
             var regexp = new RegExp(csprojVersionRegex, "gmi");
@@ -65,21 +60,20 @@ export function ProcessFile(file, field, newVersion) {
                 content = content.replace(existingTag1, replacementTag1);
             }
             fs.writeFileSync(file, content);
-
-        } else {
-            console.log(`Updating all version fields with ${newVersion}`);
-            const csprojVersionRegex = /(<\w+Version>)(.*)(<\/\w+Version>)/gmi;
-            let content: string = filecontent.toString();
-            let matches;
-            while ((matches = csprojVersionRegex.exec(content)) !== null) {
-                var existingTag: string = matches[0];
-                console.log(`Existing Tag: ${existingTag}`);
-                var replacementTag: string = `${matches[1]}${newVersion}${matches[3]}`;
-                console.log(`Replacement Tag: ${replacementTag}`);
-                content = content.replace(existingTag, replacementTag);
-            }
-            fs.writeFileSync(file, content);
         }
-        console.log (`${file} - version applied`);
+    } else {
+        console.log(`Updating all version fields with ${newVersion}`);
+        const csprojVersionRegex = /(<\w+Version>)(.*)(<\/\w+Version>)/gmi;
+        let content: string = filecontent.toString();
+        let matches;
+        while ((matches = csprojVersionRegex.exec(content)) !== null) {
+            var existingTag: string = matches[0];
+            console.log(`Existing Tag: ${existingTag}`);
+            var replacementTag: string = `${matches[1]}${newVersion}${matches[3]}`;
+            console.log(`Replacement Tag: ${replacementTag}`);
+            content = content.replace(existingTag, replacementTag);
+        }
+        fs.writeFileSync(file, content);
     }
+    console.log (`${file} - version applied`);
 }

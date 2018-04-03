@@ -14,8 +14,8 @@
             "type": "node",
             "request": "launch",
             "name": "Node - VersionDotNetCoreAssembliesTask",
-            "program": "${workspaceRoot}/Extensions/Versioning/VersionDotNetCoreAssembliesTask/ApplyVersionToAssemblies.js",
-            "outFiles": ["${workspaceRoot}/Extensions/Versioning/VersionDotNetCoreAssembliesTask/*.js"],
+            "program": "${workspaceRoot}/Extensions/Versioning/VersionDotNetCoreAssembliesTask/src/ApplyVersionToAssemblies.ts",
+            "outFiles": ["${workspaceRoot}/Extensions/Versioning/VersionDotNetCoreAssembliesTask/dist/src/*.js"],
               "cwd": "${workspaceRoot}"
         },
          {
