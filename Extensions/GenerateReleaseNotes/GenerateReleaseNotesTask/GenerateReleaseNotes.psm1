@@ -405,7 +405,7 @@ function Add-StackItem {
             'Index' = $index
         })
 }
-
+c
 function Invoke-Template {
     Param(
         $template,
@@ -413,7 +413,8 @@ function Invoke-Template {
         $builds,
         $stagename,
         $defname,
-        $releasedefname
+        $releasedefname,
+        $emptySetText
     )
 	
     if ($template.count -gt 0) {
