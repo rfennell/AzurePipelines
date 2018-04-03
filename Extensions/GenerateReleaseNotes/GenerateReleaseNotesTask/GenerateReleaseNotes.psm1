@@ -405,7 +405,6 @@ function Add-StackItem {
             'Index' = $index
         })
 }
-c
 function Invoke-Template {
     Param(
         $template,
