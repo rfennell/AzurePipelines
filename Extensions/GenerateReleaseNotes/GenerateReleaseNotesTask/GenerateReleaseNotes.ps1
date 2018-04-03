@@ -318,11 +318,11 @@ $outputmarkdown = Invoke-Template -template $template -builds $builds -releases 
 if ($appendToFile -eq $false)
 {
     write-Verbose "Writing to output file [$outputfile]."
-    Set-Content $outputfile $outputmarkdown 
+    Set-Content -Path $outputfile -Value $outputmarkdown -Encoding UTF8   
 } else 
 {
     write-Verbose "Appending to output file [$outputfile]."
-    Add-Content $outputfile $outputmarkdown 
+    Add-Content -Path $outputfile -Value $outputmarkdown -Encoding UTF8  
 }
 
 if ([string]::IsNullOrEmpty($outputvariablename))
