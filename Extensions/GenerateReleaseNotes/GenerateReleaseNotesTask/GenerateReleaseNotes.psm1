@@ -533,6 +533,7 @@ function Invoke-Template {
                     (($modeStack.Peek().mode -eq [Mode]::CS) -and ($csdetail -eq $null))) {
                     # there is no data to expand
                     $out += $emptySetText
+                    $out += "`n"
                 }
                 else {
                     # nothing to expand just process the line
