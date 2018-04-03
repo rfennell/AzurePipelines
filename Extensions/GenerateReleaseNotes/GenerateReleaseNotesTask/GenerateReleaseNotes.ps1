@@ -313,7 +313,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
 }
 
 $template = Get-Template -templateLocation $templateLocation -templatefile $templatefile -inlinetemplate $inlinetemplate
-$outputmarkdown = Invoke-Template -template $template -builds $builds -releases $releases -stagename $stageName -defname $builddefname -releasedefname $releasedefname
+$outputmarkdown = Invoke-Template -template $template -builds $builds -releases $releases -stagename $stageName -defname $builddefname -releasedefname $releasedefname -emptySetText $emptySetText
 
 if ($appendToFile -eq $false)
 {

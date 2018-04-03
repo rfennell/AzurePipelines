@@ -405,7 +405,6 @@ function Add-StackItem {
             'Index' = $index
         })
 }
-
 function Invoke-Template {
     Param(
         $template,
@@ -413,7 +412,8 @@ function Invoke-Template {
         $builds,
         $stagename,
         $defname,
-        $releasedefname
+        $releasedefname,
+        $emptySetText
     )
 	
     if ($template.count -gt 0) {
@@ -533,6 +533,7 @@ function Invoke-Template {
                     (($modeStack.Peek().mode -eq [Mode]::CS) -and ($csdetail -eq $null))) {
                     # there is no data to expand
                     $out += $emptySetText
+                    $out += "`n"
                 }
                 else {
                     # nothing to expand just process the line
