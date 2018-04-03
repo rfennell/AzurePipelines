@@ -108,3 +108,4 @@ Using the settings for the output file shown above, the release notes will be cr
 - 2.17 - Issue257 revised release discovery logic
 - 2.18 - Issue257 added ability to collapse list of wi and commits in a release report
 - 2.19 - PR267 Added support for transparent proxy by @aldodfm
+- 2.20 - Issue290 Changed the output file encoding from the ASCII default UTF8
