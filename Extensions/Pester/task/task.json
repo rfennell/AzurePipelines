@@ -89,7 +89,7 @@
       "name": "additionalModulePath",
       "type": "string",
       "label": "Path to additional PowerShell modules",
-      "defaultValue": "False",
+      "defaultValue": "",
       "required": false,
       "helpMarkDown": "Adds a path to PSModulePath before running the tests, for dependencies or generated modules",
       "groupName": "advanced"
