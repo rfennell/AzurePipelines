@@ -243,12 +243,14 @@ Extensions/FileUtilities/XmlFileUpdateTask/dist
 Extensions/FileUtilities/XmlFileUpdateTask/test-output
 Extensions/FileUtilities/XmlFileUpdateTask/test/testdata/writeable.xml
 
-Extensions/XplatGenerateReleaseNotes/task/*.js
-Extensions/XplatGenerateReleaseNotes/task/*.js.map
-Extensions/XplatGenerateReleaseNotes/task/node_modules
+Extensions/XplatGenerateReleaseNotes/V*/*.js
+Extensions/XplatGenerateReleaseNotes/V*/*.js.map
+Extensions/XplatGenerateReleaseNotes/V*/test/*.js
+Extensions/XplatGenerateReleaseNotes/V*/test/*.js.map
+Extensions/XplatGenerateReleaseNotes/V*/node_modules
 Extensions/XplatGenerateReleaseNotes/node_modules
 Extensions/XplatGenerateReleaseNotes/dist
-Extensions/XplatGenerateReleaseNotes/test-output
+Extensions/XplatGenerateReleaseNotes/V*/test-output
 
 Extensions/stylecop/test/logs
 Extensions/StyleCop/test/TestData/results.xml

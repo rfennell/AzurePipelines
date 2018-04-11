@@ -1,0 +1,35 @@
+{
+  "name": "XPlatGenerateReleaseNotesTask",
+  "scripts": {
+    "test": "mocha -r ts-node/register ./test/*.ts --reporter mocha-junit-reporter --reporter-options mochaFile=./test-output/test-results.xml ",
+    "test-no-logger": "mocha -r ts-node/register ./test/*.ts "
+  },
+  "description": "XPlatGenerateReleaseNotesTask",
+  "main": "GenerateReleaseNotes.js",
+  "dependencies": {
+    "Buffer": "^0.0.0",
+    "fs": "^0.0.1-security",
+    "request": "^2.80.0",
+    "tsd": "^0.6.5",
+    "vsts-task-lib": "^1.1.0",
+    "@types/node": "^7.0.46",
+    "@types/q": "^1.0.6",
+    "ncp": "^2.0.0",
+    "@types/xmldom": "^0.1.29"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.44",
+    "@types/node": "^7.0.18",
+    "chai": "^3.5.0",
+    "mocha": "^3.5.3",
+    "mocha-junit-reporter": "^1.15.0",
+    "ts-loader": "^2.0.3",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.2.0",
+    "typescript": "^2.6.1",
+    "typings": "^2.1.1"
+  },
+  "author": "Richard Fennell",
+  "license": "MIT"
+}

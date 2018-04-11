@@ -19,6 +19,9 @@ If the template file is markdown the output report being something like the foll
 ```
 
 ## The Template
+
+> There are differences in the template syntax between Version 1 and Version 2 of this task.  These differences are due to Rest API changes between VSTS and TFS.
+
 The use of a template allows the user to define the format, layout and fields shown in the release notes document. It is basically a file in the format required with tags to denote the fields to be replaced when the tool generates the report file.
 
 - Most samples are in Markdown, but samples are available for HTML
@@ -27,6 +30,7 @@ The use of a template allows the user to define the format, layout and fields sh
 
 The only real change from standard markdown is the use of the @@TAG@@ blocks to denote areas that should be looped over i.e: the points where we get the details of all the work items and commits associated with the build.
 
+**Version 1.x**
 ```
 # Release notes
 ## Notes for release  ${releaseDetails.releaseDefinition.name}
@@ -45,6 +49,33 @@ The only real change from standard markdown is the use of the @@TAG@@ blocks to 
 @@CSLOOP@@
 ```
 
+**Version 2.x**
+
+```
+# Release notes
+## Notes for release  ${releaseDetails.releaseDefinition.name}
+**Release Number**  : ${releaseDetails.name}
+**Release completed** : ${releaseDetails.modifiedOn}
+**Compared Release Number**  : ${compareReleaseDetails.name}
+
+### Associated work items
+@@WILOOP@@
+* ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}
+@@WILOOP@@
+
+### Associated commits
+@@CSLOOP@@
+* **ID ${csdetail.id} ** ${csdetail.message}
+@@CSLOOP@@
+```
+
+You can see the full contracts of what you can access by looking here:
+
+- [WorkItems](https://docs.microsoft.com/en-gb/rest/api/vsts/wit/work%20items/get%20work%20item#workitem)
+- [Commits](https://docs.microsoft.com/en-gb/rest/api/vsts/build/builds/get%20build%20changes#change)
+
+> Please note that git commits are automatically expanded by the task (TFS/VSTS will truncate to 100 chars).
+
 What is done behind the scenes is that each line of the template is evaluated as a line of Node.JS in turn, the in memory versions of the objects are used to provide the runtime values. The available objects to get data from at runtime are
 
 * releaseDetails – the release details returned by the REST call Get Release Details of the release that the task was triggered for.
@@ -52,7 +83,10 @@ What is done behind the scenes is that each line of the template is evaluated as
 * widetail – the details of a given work item inside the loop returned by the REST call Get Work Item (within the @@WILOOP@@@ block)
 * csdetail – the details of a given changeset/commit inside the loop by the REST call to Changes or Commit depending on whether it is a GIT or TFVC based build (within the @@CSLOOP@@@ block)
 
-There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes and dumps out all the available fields (to help you find all the available options) for both builds and releases
+There are sample templates that just produce basic releases notes and dumps out all the available fields (to help you find all the available options) for both builds and releases
+
+- [Sample templates for version 1](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates/Version_1) 
+- [Sample templates for version 2](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates/Version_2) 
 
 ## Usage
 Once the extension is added to your TFS or VSTS server, the task should be available in the utilities section of 'add tasks'

@@ -5,10 +5,24 @@
         {
              "type": "node",
             "request": "launch",
-            "name": "Node - XPlatGenerateReleaseNotes",
-            "program": "${workspaceRoot}/Extensions/XplatGenerateReleaseNotes/XPlatGenerateReleaseNotesTask/GenerateReleaseNotes.js",
-            "outFiles": ["${workspaceRoot}/Extensions/XplatGenerateReleaseNotes/XPlatGenerateReleaseNotesTask/*.js"],
-            "cwd": "${workspaceRoot}"
+            "name": "Node - XPlatGenerateReleaseNotes V2",
+            "program": "${workspaceRoot}/Extensions/XplatGenerateReleaseNotes/V2/GenerateReleaseNotes.ts",
+            "outFiles": ["${workspaceRoot}/Extensions/XplatGenerateReleaseNotes/V2/*.js"],
+            "cwd": "${workspaceRoot}",
+            "env": {                
+                "System_TeamFoundationCollectionUri": "https://xxxx.visualstudio.com",
+                "System_TeamProject": "xxxx",
+                "System_HostType": "Release",
+                "Release_ReleaseId": "xx",
+                "System_AccessToken": "xxxxx",
+                "Release_DefinitionId": "1",
+                "Release_DefinitionEnvironmentId" : "2",
+                "Release_EnvironmentName": "xxxx",
+                "INPUT_OVERRIDESTAGE": "xxxx",
+                "INPUT_TEMPLATELOCATION": "Inline",
+                "INPUT_INLINETEMPLATE": "#Release notes for release ${releaseDetails.releaseDefinition.name}\n**Release Number**  : ${releaseDetails.name}\n**Release completed** ${releaseDetails.modifiedOn}\n---\n\n\n@@CSLOOP@@\n${csdetail.message}\n@@CSLOOP@@",
+                "INPUT_OUTPUTFILE": "./test.md"               
+            }    
         },
          {
             "type": "node",
