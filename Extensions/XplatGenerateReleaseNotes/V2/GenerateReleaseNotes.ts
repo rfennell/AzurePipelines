@@ -114,9 +114,6 @@ async function run(): Promise<void>  {
                 agentApi.logInfo(``);
             }
 
-            agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
-            agentApi.logInfo(`Total workitems: [${globalWorkItems.length}]`);
-
             // remove duplicates
             globalCommits = globalCommits.filter((thing, index, self) =>
                 index === self.findIndex((t) => (

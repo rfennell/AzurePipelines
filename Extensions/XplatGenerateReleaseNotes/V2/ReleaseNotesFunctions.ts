@@ -78,21 +78,23 @@ export async function getMostRecentSuccessfulDeployment(releaseApi: IReleaseApi,
 export async function expandTruncatedCommitMessages(restClient: restm.RestClient, globalCommits: Change[]): Promise<Change[]> {
     return new Promise<Change[]>(async (resolve, reject) => {
         try {
+            var expanded: number = 0;
             agentApi.logInfo(`Expanding the truncated commit messages...`);
             for (var change of globalCommits) {
                 if (change.messageTruncated) {
-                    agentApi.logInfo(`Expanding commit [${change.id}]`);
+                    agentApi.logDebug(`Expanding commit [${change.id}]`);
                     let res: restm.IRestResponse<GitCommit> = await restClient.get<GitCommit>(change.location);
 
                     if (res.statusCode === 200) {
                         change.message = res.result.comment;
                         change.messageTruncated = false;
+                        expanded++;
                     } else {
                         agentApi.logDebug(`Failed to get the full commit message for ${change.id}`);
                     }
                 }
             }
-            agentApi.logInfo(`Finished expanding.`);
+            agentApi.logInfo(`Finished expanding [${expanded}] commits.`);
             resolve(globalCommits);
         } catch (err) {
             reject(err);
@@ -140,14 +142,14 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
     var output = "";
 
     if (template.length > 0) {
-        agentApi.logInfo("Processing template");
+        agentApi.logDebug("Processing template");
         // create our work stack and initialise
         var modeStack = [];
         modeStack.push(Mode.BODY);
 
       // process each line
       for (var index = 0; index < template.length; index++) {
-        agentApi.logInfo("Processing Line: " + (index + 1));
+        agentApi.logDebug("Processing Line: " + (index + 1));
           var line = template[index];
 
           // get the line change mode if any
@@ -224,7 +226,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                     } // end switch
                 }
             } else {
-                agentApi.logInfo("Mode != BODY");
+                agentApi.logDebug("Mode != BODY");
                 if (line.trim().length === 0) {
                     // we have a blank line, we can't eval this
                     output += "\n";
@@ -234,7 +236,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                     // # there is no data to expand
                     output += emptySetText;
                 } else {
-                    agentApi.logInfo("Nothing to expand, just process the line");
+                    agentApi.logDebug("Nothing to expand, just process the line");
                     // nothing to expand just process the line
                     var fixedline = fixline (line);
                     var processedLine = eval(fixedline);
