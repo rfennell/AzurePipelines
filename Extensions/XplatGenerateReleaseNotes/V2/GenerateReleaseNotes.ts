@@ -156,12 +156,12 @@ async function run(): Promise<void>  {
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
             var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentRelease, emptyDataset);
             util.writeFile(outputfile, outputString);
-            console.log("finished writefile");
+
             agentApi.writeVariable(outputVariableName, outputString.toString());
-            console.log("finished");
+
             resolve();
         } catch (err) {
-            console.log("caught error");
+
             agentApi.logError(err);
             reject(err);
         }
@@ -171,11 +171,9 @@ async function run(): Promise<void>  {
 
 run()
     .then((result) => {
-        console.log("Finished task");
         tl.setResult(tl.TaskResult.Succeeded, "");
     })
     .catch((err) => {
-        console.log("Caught error here");
         agentApi.publishEvent("reliability", { issueType: "error", errorMessage: JSON.stringify(err, Object.getOwnPropertyNames(err)) });
         tl.setResult(tl.TaskResult.Failed, err);
     });
