@@ -40,3 +40,4 @@ Releases
 - 6.2.x - Issue265 documentation change to show how other scripts can be used
 - 6.3.x - Engineering test same as 7.0.x
 - 7.0.x - PR287 changed included version of 4x Pester from 4.0.8 to 4.3.1, incremented major version as change of advanced options blocks auto update.
+- 7.1.x - Added additionalModulePath and CodeCoverageFolder, to support testing compiled modules ([PR#285](https://github.com/rfennell/vNextBuild/pull/285))

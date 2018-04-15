@@ -20,6 +20,12 @@ Describe "Testing Pester Task" {
         it "Run32Bit is not Mandatory" {
             (Get-Command $sut).Parameters['Run32Bit'].Attributes.Mandatory | Should -Be $False
         }
+        it "additionalModulePath is not Mandatory" {
+            (Get-Command $sut).Parameters['additionalModulePath'].Attributes.Mandatory | Should -Be $False
+        }
+        it "CodeCoverageFolder is not Mandatory" {
+            (Get-Command $sut).Parameters['CodeCoverageFolder'].Attributes.Mandatory | Should -Be $False
+        }
         it "Throws Exception when passed an invalid path for ModuleFolder" {
             {&$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ModuleFolder TestDrive:\RandomFolder} | Should -Throw
         }
@@ -228,7 +234,7 @@ Describe "Testing Pester Task" {
 
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ForceUseOfPesterInTasks "False"
             Assert-MockCalled  Import-Module
-            # can't check the presvious assert for empty parameters, so check the message
+            # can't check the previous assert for empty parameters, so check the message
             Assert-MockCalled Write-Verbose -ParameterFilter { $Message -eq "No Pester module location parameters passed, and not forcing use of Pester in task, so using Powershell default module location" }
             Assert-MockCalled Invoke-Pester
         }
