@@ -120,7 +120,7 @@ Describe "Testing Pester Task" {
         it "Should update the `$Env:PSModulePath correctly when additionalModulePath is supplied" {
             &$Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -additionalModulePath TestDrive:\TestFolder -ForceUseOfPesterInTasks "True"
 
-            $Env:PSModulePath | Should -Match ';TestDrive:\\TestFolder'
+            $Env:PSModulePath | Should -Match ';{0,1}TestDrive:\\TestFolder;{0,1}'
         }
     }
 
