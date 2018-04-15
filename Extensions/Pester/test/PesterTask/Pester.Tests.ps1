@@ -38,6 +38,12 @@ Describe "Testing Pester Task" {
         it "Tag is not Mandatory" {
             (Get-Command $sut).Parameters['Tag'].Attributes.Mandatory | Should -Be $False
         }
+        it "additionalModulePath is not Mandatory" {
+            (Get-Command $sut).Parameters['additionalModulePath'].Attributes.Mandatory | Should -Be $False
+        }
+        it "CodeCoverageFolder is not Mandatory" {
+            (Get-Command $sut).Parameters['CodeCoverageFolder'].Attributes.Mandatory | Should -Be $False
+        }
         it "Calls Invoke-Pester with multiple Tags specified" {
             mock Invoke-Pester { }
             mock Import-Module { }
@@ -111,7 +117,11 @@ Describe "Testing Pester Task" {
             &$Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml' -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
             Assert-MockCalled Invoke-Pester -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage.xml'}
         }
+        it "Should update the `$Env:PSModulePath correctly when additionalModulePath is supplied" {
+            &$Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -additionalModulePath TestDrive:\TestFolder -ForceUseOfPesterInTasks "True"
 
+            $Env:PSModulePath | Should -Match ';TestDrive:\\TestFolder'
+        }
     }
 
     Context "Testing Task Output" {
