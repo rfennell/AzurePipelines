@@ -114,3 +114,4 @@ Using the settings for the output file shown above, the release notes will be cr
 - 1.7 - Issue270 Fixed problem getting work item detail on TFVC repos
 - 1.8 - Issue272 Fixed problem with no output if the artifact source is not a VSTS hosted repository
 - 1.9 - Issue277 fixed vulnerability in Moment 2.19.1 NPM package, no functional change
+- 2.0 - Major refactor PR305 by @gregpakes to move to newer API, does contain breaking changes to template. Hence from this point both V1 and V2 will be shipped in the same extension
