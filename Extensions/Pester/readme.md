@@ -12,8 +12,6 @@ The main ones are
 The advanced ones are
 
 - Should the instance of PowerShell used to run the test be forced to run in 32bit, defaults to false.
-- (New in 5.x) You can pick if the Pester 3.4.3 or 4.3.1 modules (both are included in the task) are used
-- If neither 3.4.3 or 4.3.1 is suitable then a custom module path pointing to where the required Pester.psd1 and related files are stored can be entered. This will be used in preference to the embedded versions
 
 The Pester task does not in itself upload the test results, it just throws an error if tests fails. It relies on the standard test results upload task.
 
@@ -45,3 +43,4 @@ Releases
     - Fix check for code coverage folder being specified to ensure code coverage is generated from the correct files rather than files under $ScriptFolder. ([Fixes #330](https://github.com/rfennell/vNextBuild/issues/330))
     - Swap logging to use Write-Host to ensure it logs out by default. ([Fixes #320](https://github.com/rfennell/vNextBuild/issues/320))
     - Change Hashtable parsing function to use language parser to handle more cases. ([Fixes #321](https://github.com/rfennell/vNextBuild/issues/321))
+- 8.0.x - Removed complicated version loading logic and replaced with installing the latest version from the gallery if you're on PSv5+ or have PowerShellGet available. If neither of those are options then it will load the 4.3.1 version of Pester that ships with the task. ([PR#314](https://github.com/rfennell/vNextBuild/pull/314))
