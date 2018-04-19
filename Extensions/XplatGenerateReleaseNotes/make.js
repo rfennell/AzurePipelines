@@ -165,8 +165,11 @@ target.package = function(){
         cp(path.join(versionPath, "icon.png "), versionOutDir);
     });
 
-    console.log('Copying manifest files')
-    cp('vss-extension.json', outDir);
-    cp('readme.md', outDir);
-    cp('icon.png', outDir);
+    // not needed as these files are pulled from their default locations, assumig tfx is run from this folder. Only the .TS files are in the _build folders
+    // console.log('Copying manifest files')
+    // cp('vss-extension.json', outDir);
+    // cp('readme.md', outDir);
+    // cp('license.md', outDir);
+    // cp('icon.png', outDir);
+    // cp('-r','images', outDir);
 };
