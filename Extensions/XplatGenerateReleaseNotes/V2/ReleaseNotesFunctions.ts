@@ -134,7 +134,8 @@ export function getTemplate(
         return template;
 }
 
-export function processTemplate(template, workItems: WorkItem[], commits: Change[], releaseDetails: Release, emptySetText): string {
+// The Argument compareReleaseDetails is used in the template processing.  Renaming or removing will break the templates
+export function processTemplate(template, workItems: WorkItem[], commits: Change[], compareReleaseDetails: Release, emptySetText): string {
 
     var widetail = undefined;
     var csdetail = undefined;
