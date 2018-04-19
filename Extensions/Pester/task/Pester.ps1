@@ -14,30 +14,6 @@ param
 
     [string]$additionalModulePath,
 
-    [string]$pesterVersion,
-
-    [validateScript( {
-            If ([String]::IsNullOrWhiteSpace($_)) {
-                # optional value not passed
-                $true
-            }
-            else {
-                if (Test-Path $_) {
-                    if (Get-ChildItem -Path $_ -Filter Pester.psd1) {
-                        $true
-                    }
-                    else {
-                        Throw "Pester.psd1 not found at path specified"
-                    }
-                }
-                else {
-                    Throw "Invalid path for ModuleFolder: $_"
-                }
-            }
-
-        })]
-    [string]$moduleFolder,
-
     [string[]]$Tag,
 
     [String[]]$ExcludeTag,
@@ -55,9 +31,7 @@ param
         })]
     [string]$CodeCoverageOutputFile,
 
-    [string]$CodeCoverageFolder,
-
-    [string]$ForceUseOfPesterInTasks
+    [string]$CodeCoverageFolder
 )
 
 Import-Module -Name "$PSScriptRoot\HelperModule.psm1" -Force
@@ -87,28 +61,11 @@ if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
     $env:PSModulePath = $additionalModulePath + ';' + $env:PSModulePath
 }
 
-if (([bool]::Parse($ForceUseOfPesterInTasks) -eq $true) -and $(-not([string]::IsNullOrEmpty($pesterVersion)))) {
-    # we have no module path specified and Pester is not installed on the PC
-    # have to use a version in this task
-    $moduleFolder = "$PSScriptRoot\$pesterVersion"
-    Write-Host "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension"
-    Import-Module -Name $moduleFolder\Pester.psd1 4>$null
-}
-elseif ([string]::IsNullOrEmpty($moduleFolder) -and
-    (-not(Get-Module -ListAvailable Pester))) {
-    # we have no module path specified and Pester is not installed on the PC
-    # have to use a version in this task
-    $moduleFolder = "$PSScriptRoot\$pesterVersion"
-    Write-Host "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension, as not installed on PC"
-    Import-Module $moduleFolder\Pester.psd1 4>$null
-}
-elseif ($moduleFolder) {
-    Write-Host "Loading Pester module from [$moduleFolder] using user specificed overrided location"
-    Import-Module $moduleFolder\Pester.psd1 4>$null
+if ($PSVersionTable.PSVersion.Major -ge 5 -or (Get-Module -Name PowerShellGet -ListAvailable)) {
+    Install-Module -Name Pester -Scope CurrentUser -Force -SkipPublisherCheck -Confirm:$false -Repository (Get-PSRepository)[0].Name
 }
 else {
-    Write-Host "No Pester module location parameters passed, and not forcing use of Pester in task, so using Powershell default module location"
-    Import-Module Pester 4>$null
+    Import-Module "$PSScriptRoot\4.3.1\Pester.psd1" -force
 }
 
 $Parameters = @{
