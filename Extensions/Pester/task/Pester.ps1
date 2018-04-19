@@ -62,7 +62,8 @@ if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
 }
 
 if ($PSVersionTable.PSVersion.Major -ge 5 -or (Get-Module -Name PowerShellGet -ListAvailable)) {
-    Install-Module -Name Pester -Scope CurrentUser -Force -Confirm:$false -Repository (Get-PSRepository)[0].Name
+    Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false
+    Install-Module -Name Pester -Scope CurrentUser -Force -Repository (Get-PSRepository)[0].Name
 }
 else {
     Import-Module "$PSScriptRoot\4.3.1\Pester.psd1" -force
