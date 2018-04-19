@@ -1,7 +1,7 @@
 {
     "name": "XPlatGenerateReleaseNotesTask",
     "scripts": {
-        "install": "node make.js install",
+        "installTasks": "node make.js install",
         "build": "node make.js build",
         "clean": "node make.js clean",
         "package": "node make.js package"

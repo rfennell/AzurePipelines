@@ -65,7 +65,7 @@ target.clean = function () {
     });
 };
 
-target.install = function(){
+target.installTasks = function(){
 
     versionList.forEach(function (version){
         banner(`Installing [${version}]`);
@@ -130,7 +130,7 @@ target.build = function() {
 
 target.package = function(){
     target.clean();
-    target.install();
+    target.installTasks();
     target.build();
 
     var outDir = path.join(buildPath, 'dist');
