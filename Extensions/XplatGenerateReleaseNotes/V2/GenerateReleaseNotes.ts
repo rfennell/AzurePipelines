@@ -4,7 +4,7 @@ import { IReleaseApi } from "vso-node-api/ReleaseApi";
 import * as vstsInterfaces from "vso-node-api/interfaces/common/VsoBaseInterfaces";
 
 import { IAgentSpecificApi, AgentSpecificApi } from "./agentSpecific";
-import { ReleaseEnvironment, DeploymentStatus, Deployment } from "vso-node-api/interfaces/ReleaseInterfaces";
+import { ReleaseEnvironment, DeploymentStatus, Deployment, Release } from "vso-node-api/interfaces/ReleaseInterfaces";
 import * as util from "./ReleaseNotesFunctions";
 import { release } from "os";
 import { IBuildApi } from "vso-node-api/BuildApi";
@@ -52,6 +52,7 @@ async function run(): Promise<void>  {
             var environmentId = util.getReleaseDefinitionId(currentRelease.environments, environmentName);
 
             let mostRecentSuccessfulDeployment = await util.getMostRecentSuccessfulDeployment(releaseApi, teamProject, releaseDefinitionId, environmentId);
+            let mostRecentSuccessfulDeploymentRelease: Release;
 
             agentApi.logInfo(`Getting all artifacts in the current release...`);
             var arifactsInThisRelease = util.getSimpleArtifactArray(currentRelease.artifacts);
@@ -60,6 +61,8 @@ async function run(): Promise<void>  {
             let arifactsInMostRecentRelease: util.SimpleArtifact[] = [];
             var mostRecentSuccessfulDeploymentName: string = "";
             if (mostRecentSuccessfulDeployment) {
+                // Get the release that the deployment was a part of - This is required for the templating.
+                mostRecentSuccessfulDeploymentRelease = await releaseApi.getRelease(teamProject, mostRecentSuccessfulDeployment.release.id);
                 agentApi.logInfo(`Getting all artifacts in the most recent successful release [${mostRecentSuccessfulDeployment.release.name}]...`);
                 arifactsInMostRecentRelease = util.getSimpleArtifactArray(mostRecentSuccessfulDeployment.release.artifacts);
                 mostRecentSuccessfulDeploymentName = mostRecentSuccessfulDeployment.release.name;
@@ -151,7 +154,7 @@ async function run(): Promise<void>  {
             agentApi.logInfo(`Total workitems: [${globalWorkItems.length}]`);
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
-            var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentRelease, emptyDataset);
+            var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset);
             util.writeFile(outputfile, outputString);
 
             agentApi.writeVariable(outputVariableName, outputString.toString());
