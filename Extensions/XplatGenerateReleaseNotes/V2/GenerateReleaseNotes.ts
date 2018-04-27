@@ -28,7 +28,7 @@ async function run(): Promise<void>  {
             let releaseDefinitionId: number = parseInt(tl.getVariable("Release.DefinitionId"));
 
             // Inputs
-            let environmentName: string = (tl.getInput("overrideStage") || tl.getVariable("Release_EnvironmentName")).toLowerCase();
+            let environmentName: string = (tl.getInput("overrideStageName") || tl.getVariable("Release_EnvironmentName")).toLowerCase();
             var templateLocation = tl.getInput("templateLocation", true);
             var templateFile = tl.getInput("templatefile");
             var inlineTemplate = tl.getInput("inlinetemplate");
