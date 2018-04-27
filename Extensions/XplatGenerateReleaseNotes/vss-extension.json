@@ -1,7 +1,7 @@
 {
  "manifestVersion": 1,
  "id": "BM-VSTS-XplatGenerateReleaseNotes",
- "version": "1.0.0",
+ "version": "2.0.0",
  "name": "Generate Release Notes (Crossplatform)",
  "publisher": "richardfennellBM",
   "description": "Generates a Markdown Release notes file.",
@@ -51,7 +51,8 @@
   },
   "files": [
     {
-      "path": "task"
+      "path": "_build/dist",
+      "packagePath": "/task"
     }
   ],
   "contributions": [

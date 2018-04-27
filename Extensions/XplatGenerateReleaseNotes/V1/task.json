@@ -1,0 +1,108 @@
+{
+  "id": "7b0a5887-75c4-4ade-a915-f92a93c934cb",
+  "name": "XplatGenerateReleaseNotes",
+  "friendlyName": "Generate Release Notes XPlatform",
+  "description": "Generates a release notes file in a format of your choice from the release history",
+    "helpMarkDown": "Version: 1.9.1. [More Information](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task/)",
+
+  "category": "Utility",
+  "visibility": ["Release"],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 9,
+    "Patch": 1
+  },
+  "minimumAgentVersion": "1.82.0",
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    },
+     {
+      "name": "outputs",
+      "displayName": "Outputs",
+      "isExpanded": false
+    }
+  ],
+   "inputs": [
+      {
+         "name": "outputfile",
+         "type": "string",
+         "label": "Output file",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The name of the Markdown file to export e.g. $(Build.ArtifactStagingDirectory)\\releasenotes.md if within a build workflow "
+      },
+      {
+         "name": "outputVariableName",
+         "type": "string",
+         "label": "Output variable",
+         "defaultValue": "",
+         "required": false,
+         "helpMarkDown": "The name of the variable that the markdown output should be assigned to for use later in your workflow.",
+         "groupName":"outputs"
+      },
+      {
+      "name": "templateLocation",
+      "type": "pickList",
+      "label": "Template Location",
+      "defaultValue": "File",
+      "required": true,
+      "options": {
+        "File": "File",
+        "InLine": "InLine"
+      },
+      "helpMarkDown": "Select the template file source, file in source control or in line."
+      },
+      {
+         "name": "templatefile",
+         "type": "filePath",
+         "label": "Template file",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The name of the Markdown template.",
+         "visibleRule": "templateLocation = File"
+      }
+      ,
+      {
+         "name": "inlinetemplate",
+         "type": "multiLine",
+         "label": "Template",
+         "defaultValue": "",
+         "required": true,
+         "helpMarkDown": "The Markdown template."
+         ,
+         "visibleRule": "templateLocation = InLine"
+      }
+      ,
+    {
+      "name": "emptySetText",
+      "type": "string",
+      "label": "Text for empty sets",
+      "defaultValue": "None",
+      "required": false,
+      "helpMarkDown": "This is the text that will be placed in the generated release notes if there are no work items or changesets/commits.",
+      "groupName":"advanced"
+    }
+  ,
+    {
+      "name": "overrideStageName",
+      "type": "string",
+      "label": "Name of stage (override)",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "If set uses this stage name to find the last succesful deployment, as opposed to the currently active stage (Release usage only)",
+      "groupName":"advanced"
+     }
+    
+   ],
+  "instanceNameFormat": "Generate Release Notes based on Release Comparision API",
+  "execution": {
+    "Node": {
+            "target": "GenerateReleaseNotes.js",
+            "argumentFormat": ""
+     }
+  }
+}
