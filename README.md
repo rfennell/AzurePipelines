@@ -1,6 +1,6 @@
 Extension | Public Deployment Status
 ----------|------------------
-Build Utils | ![Release Status - Build Utils Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/9/16) 
+Build Utils | [![Release Status - Build Utils Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/9/16)](https://richardfennell.visualstudio.com/GitHub/GitHub%20Team/_releases2?definitionId=9&view=mine&_a=releases) 
 DevTest Labs | ![Release Status - DevTest Labs Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/20/51)
 FileCopier | ![Release Status - FileCopiers Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/2/3) 
 GenerateReleaseNotes (PowerShell) | ![Release Status - GenerateReleaseNotes Extension (PowerShell)](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/3/5) 
