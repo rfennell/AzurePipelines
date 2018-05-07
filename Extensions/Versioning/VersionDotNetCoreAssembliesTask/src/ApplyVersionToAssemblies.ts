@@ -1,5 +1,6 @@
 import { findFiles,
-         ProcessFile
+         ProcessFile,
+         stringToBoolean
   } from "./AppyVersionToAssembliesFunctions";
 
 import tl = require("vsts-task-lib/task");
@@ -11,12 +12,14 @@ var versionRegex = tl.getInput("VersionRegex");
 var field = tl.getInput("Field");
 var outputversion = tl.getInput("outputversion");
 var filenamePattern = tl.getInput("FilenamePattern");
+var addDefault = tl.getInput("AddDefault");
 
 console.log (`Source Directory:  ${path}`);
 console.log (`Filename Pattern: ${filenamePattern}`);
 console.log (`Version Number/Build Number: ${versionNumber}`);
 console.log (`Version Filter to extract build number: ${versionRegex}`);
 console.log (`Field to update (all if empty): ${field}`);
+console.log (`Add default field (all if empty): ${addDefault}`);
 console.log (`Output: Version Number Parameter Name: ${outputversion}`);
 
 // Make sure path to source code directory is available
@@ -57,7 +60,7 @@ if (files.length > 0) {
     console.log (`Will apply ${newVersion} to ${files.length} files.`);
 
     files.forEach(file => {
-        ProcessFile(file, field, newVersion);
+        ProcessFile(file, field, newVersion, stringToBoolean(addDefault));
     });
 
     if (outputversion && outputversion.length > 0) {

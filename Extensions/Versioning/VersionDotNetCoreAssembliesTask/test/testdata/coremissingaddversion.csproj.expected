@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework><Version>9.9.9.9</Version>
+    <AssemblyName>VersionedLibrary</AssemblyName>
+    <Description>A description</Description>
+  </PropertyGroup>
+
+</Project>

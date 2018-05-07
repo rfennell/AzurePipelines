@@ -81,3 +81,5 @@ The Android manifest versioner takes the following extra parameters:
 - V1.34   - Issue #251 fixed regex issue with Android versioner
 - V1.35   - Issue #281 fixed JSON versioner to handle SEMVER format
 - V1.36   - Issue #288 fixed .NETCore versioner handler for updating all fields
+- V1.37   - Issue #302 enhancement .NETCore versioner to add VERSION tag of no other version feilds present (defaults off)
+
