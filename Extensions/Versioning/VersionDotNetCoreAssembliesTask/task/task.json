@@ -71,6 +71,15 @@
       "helpMarkDown": "The version field to update, if blank all version fields are updated usually <version>1.1.1.1</version>.",
       "groupName":"advanced"
     },
+    {
+      "name": "AddDefault",
+      "type": "boolean",
+      "label": "Add a Version field if missing",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "Adds the version field if no version field is found, and no other field name specified e.g. <version>1.1.1.1</version>.",
+      "groupName":"advanced"
+    },
       {
       "name": "OutputVersion",
       "type": "string",

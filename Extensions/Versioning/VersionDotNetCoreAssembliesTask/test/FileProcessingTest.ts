@@ -89,3 +89,26 @@ describe("Test the basic file processing", () => {
     });
 
   });
+
+  describe("Test the empty field file processing", () => {
+    before(function() {
+      // make a copy we can overwrite without breaking test data
+      copyFileSync("test/testdata/coremissing.csproj.initial", "test/testdata/core.csproj");
+    });
+
+    it("should be able to add a detail version field in a file", () => {
+      var file = "test/testdata/core.csproj";
+      ProcessFile(file, "", "9.9.9.9", true);
+
+      var editedfilecontent = fs.readFileSync(file);
+      var expectedfilecontent = fs.readFileSync(`test/testdata/coremissingaddversion.csproj.expected`);
+
+      expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
+    });
+
+    after(function() {
+      // remove the file if created
+      del.sync("test/testdata/*.csproj");
+    });
+
+  });

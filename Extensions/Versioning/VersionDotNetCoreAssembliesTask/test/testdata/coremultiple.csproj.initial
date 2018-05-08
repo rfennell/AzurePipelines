@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <AssemblyName>VersionedLibrary</AssemblyName>
+    <Version>1.2.3.4</Version>
     <AssemblyVersion>1.2.3.4</AssemblyVersion>
     <AssemblyInfoVersion>1.2.3.4</AssemblyInfoVersion>
     <Description>A description</Description>
