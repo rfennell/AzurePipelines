@@ -77,14 +77,21 @@ export function ProcessFile(file, field, newVersion, addDefault = false) {
         console.log(`Checking if any version fields to update`);
         var filecontent = fs.readFileSync(file);
         fs.chmodSync(file, "600");
-        const csprojVersionRegex = /(<\w+Version>)(.*)(<\/\w+Version>)/gmi;
+        const csprojVersionRegex = /(<(\w+)?Version>)(.*)(<\/(\w+)?Version>)/gmi;
         let content: string = filecontent.toString();
         let match = csprojVersionRegex.exec(content); // remember each time you call exec it get the next block
         if ( match !== null) {
            do {
+                // A match block contains 5 parts (for this regex)
+                // 0 - Full match  <Version>1.2.3.4</Version>
+                // 1 - Match  <Version>
+                // 2 - Match  Version
+                // 3 - Match  1.2.3.4
+                // 4 - Match  </Version>
+                // 5 - Match  Version
                 var existingTag: string = match[0];
                 console.log(`Existing Tag: ${existingTag}`);
-                var replacementTag: string = `${match[1]}${newVersion}${match[3]}`;
+                var replacementTag: string = `${match[1]}${newVersion}${match[4]}`;
                 console.log(`Replacement Tag: ${replacementTag}`);
                 content = content.replace(existingTag, replacementTag);
             } while ((match = csprojVersionRegex.exec(content)) !== null);
