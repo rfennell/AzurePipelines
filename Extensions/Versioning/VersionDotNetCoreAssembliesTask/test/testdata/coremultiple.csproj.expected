@@ -5,7 +5,8 @@
     <AssemblyName>VersionedLibrary</AssemblyName>
     <Version>9.9.9.9</Version>
     <AssemblyVersion>9.9.9.9</AssemblyVersion>
-    <AssemblyInfoVersion>9.9.9.9</AssemblyInfoVersion>
+    <VersionPrefix>9.9.9.9</VersionPrefix>
+    <AssemblyInfoVersion>1.2.3.4</AssemblyInfoVersion>
     <Description>A description</Description>
   </PropertyGroup>
 
