@@ -13,7 +13,13 @@ export function findFiles (dir, filename , filelist) {
       }
       else {
         if (file.toLowerCase().endsWith(filename.toLowerCase())) {
-          filelist.push(path.join(dir, file));
+            var filecontent = fs.readFileSync(path.join(dir, file));
+            if (filecontent.toString().toLowerCase().indexOf("<project sdk=\"microsoft.net.sdk") === -1) {
+                console.log(`Skipping file ${file} as is not a .NETCore Project`);
+            } else {
+                console.log(`Adding file ${file} as is a .NETCore Project`);
+                filelist.push(path.join(dir, file));
+            }
         }
       }
     });
@@ -77,28 +83,29 @@ export function ProcessFile(file, field, newVersion, addDefault = false) {
         console.log(`Checking if any version fields to update`);
         var filecontent = fs.readFileSync(file);
         fs.chmodSync(file, "600");
-        const csprojVersionRegex = /(<(\w+)?Version>)(.*)(<\/(\w+)?Version>)/gmi;
+        // We only need to consider the following fields
+        let versionFields = ["Version", "VersionPrefix", "AssemblyVersion"];
         let content: string = filecontent.toString();
-        let match = csprojVersionRegex.exec(content); // remember each time you call exec it get the next block
-        if ( match !== null) {
-           do {
-                // A match block contains 5 parts (for this regex)
-                // 0 - Full match  <Version>1.2.3.4</Version>
-                // 1 - Match  <Version>
-                // 2 - Match  Version
-                // 3 - Match  1.2.3.4
-                // 4 - Match  </Version>
-                // 5 - Match  Version
-                var existingTag: string = match[0];
-                console.log(`Existing Tag: ${existingTag}`);
-                var replacementTag: string = `${match[1]}${newVersion}${match[4]}`;
-                console.log(`Replacement Tag: ${replacementTag}`);
-                content = content.replace(existingTag, replacementTag);
-            } while ((match = csprojVersionRegex.exec(content)) !== null);
+        var hasUpdateFields: any = false;
+        versionFields.forEach(element => {
+            console.log(`Processing Field ${element}`);
+            const csprojVersionRegex = `(<${element}>)(.*)(<\/${element}>)`;
+            var regexp = new RegExp(csprojVersionRegex, "gmi");
+            let matches;
+            while ((matches = regexp.exec(content)) !== null) {
+                var existingTag1: string = matches[0];
+                console.log(`Existing Tag: ${existingTag1}`);
+                var replacementTag1: string = `${matches[1]}${newVersion}${matches[3]}`;
+                console.log(`Replacement Tag: ${replacementTag1}`);
+                content = content.replace(existingTag1, replacementTag1);
+                hasUpdateFields = true;
+            }
+        });
+        if (hasUpdateFields === true) {
             fs.writeFileSync(file, content);
         } else {
             if (addDefault === true) {
-                console.log(`No version field Updating all version fields with ${newVersion}`);
+                console.log(`No version fields present, so add a version field`);
                 UpdateSingleField(file, "Version", newVersion);
             }
         }

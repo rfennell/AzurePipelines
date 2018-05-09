@@ -83,4 +83,5 @@ The Android manifest versioner takes the following extra parameters:
 - V1.36   - Issue #288 fixed .NETCore versioner handler for updating all fields
 - V1.37   - More for Issue #293 fixed .NETCore versioner handler for updating all fields
 - V1.38   - Issue #302 enhancement .NETCore versioner to add VERSION tag of no other version fields present (defaults off)
+- V1.39   - V1.38 introductions some nasty regressions, based around not checking project type, this fixes those 
 

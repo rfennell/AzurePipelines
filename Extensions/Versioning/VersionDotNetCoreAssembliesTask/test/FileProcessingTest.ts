@@ -73,7 +73,7 @@ describe("Test the basic file processing", () => {
       copyFileSync("test/testdata/coremultiple.csproj.initial", "test/testdata/core.csproj");
     });
 
-    it("should be able to update a generic version field in a file", () => {
+    it("should be able to update all version fields in a file", () => {
       var file = "test/testdata/core.csproj";
       ProcessFile(file, "", "9.9.9.9");
 
