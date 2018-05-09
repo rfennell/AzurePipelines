@@ -69,6 +69,8 @@ async function run(): Promise<void>  {
                 agentApi.logInfo(`Found ${arifactsInMostRecentRelease.length}`);
             } else {
                 agentApi.logInfo(`Skipping fetching artifact in the most recent successful release as there isn't one.`);
+                // we need to set the last successful as the current release to templates can get some data
+                mostRecentSuccessfulDeploymentRelease = currentRelease;
             }
 
             var globalCommits: Change[] = [];
