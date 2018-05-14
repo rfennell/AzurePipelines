@@ -122,6 +122,14 @@ Describe "Testing Pester Task" {
 
             $Env:PSModulePath | Should -Match ';{0,1}TestDrive:\\TestFolder;{0,1}'
         }
+        it "Should write-verbose the contents of Script parameters as a string version of a hashtable when a hashtable is provided" {
+            $Parameters = "@{Path = '$PSScriptRoot\parameters.tests.ps1';Parameters=@{TestValue='SomeValue'}}"
+            &$Sut -ScriptFolder $Parameters -ResultsFile TestDrive:\Output.xml -ForceUseOfPesterInTasks 'True'
+
+            Assert-MockCalled -CommandName Write-Verbose -ParameterFilter {
+                $Message -eq "Running Pester from using the script parameter [$Parameters] output sent to [TestDrive:\Output.xml]"
+            }
+        }
     }
 
     Context "Testing Task Output" {
