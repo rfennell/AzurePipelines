@@ -54,13 +54,13 @@ param
             }
         })]
     [string]$CodeCoverageOutputFile,
-    
+
     [string]$CodeCoverageFolder,
 
     [string]$ForceUseOfPesterInTasks
 )
 
-Import-Module -Name "$PSScriptRoot\HelperModule.psm1" -Force 
+Import-Module -Name "$PSScriptRoot\HelperModule.psm1" -Force
 
 if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
     # Get the command parameters
@@ -92,7 +92,7 @@ if (([bool]::Parse($ForceUseOfPesterInTasks) -eq $true) -and $(-not([string]::Is
     # have to use a version in this task
     $moduleFolder = "$PSScriptRoot\$pesterVersion"
     Write-Verbose "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension" -verbose
-    Import-Module -Name $moduleFolder\Pester.psd1
+    Import-Module -Name $moduleFolder\Pester.psd1 -Verbose:$False
 }
 elseif ([string]::IsNullOrEmpty($moduleFolder) -and
     (-not(Get-Module -ListAvailable Pester))) {
@@ -100,15 +100,15 @@ elseif ([string]::IsNullOrEmpty($moduleFolder) -and
     # have to use a version in this task
     $moduleFolder = "$PSScriptRoot\$pesterVersion"
     Write-Verbose "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension, as not installed on PC" -verbose
-    Import-Module $moduleFolder\Pester.psd1
+    Import-Module $moduleFolder\Pester.psd1 -Verbose:$False
 }
 elseif ($moduleFolder) {
     Write-Verbose "Loading Pester module from [$moduleFolder] using user specificed overrided location" -verbose
-    Import-Module $moduleFolder\Pester.psd1
+    Import-Module $moduleFolder\Pester.psd1 -Verbose:$False
 }
 else {
     Write-Verbose "No Pester module location parameters passed, and not forcing use of Pester in task, so using Powershell default module location"
-    Import-Module Pester
+    Import-Module Pester -Verbose:$False
 }
 
 $Parameters = @{
