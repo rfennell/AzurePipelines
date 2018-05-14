@@ -61,7 +61,7 @@ if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
     $env:PSModulePath = $additionalModulePath + ';' + $env:PSModulePath
 }
 
-if ($PSVersionTable.PSVersion.Major -ge 5 -or (Get-Module -Name PowerShellGet -ListAvailable)) {
+if (Get-Module -Name PowerShellGet -ListAvailable) {
     Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false
     Install-Module -Name Pester -Scope CurrentUser -Force -Repository (Get-PSRepository)[0].Name
 }
