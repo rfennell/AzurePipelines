@@ -92,7 +92,7 @@ if (([bool]::Parse($ForceUseOfPesterInTasks) -eq $true) -and $(-not([string]::Is
     # have to use a version in this task
     $moduleFolder = "$PSScriptRoot\$pesterVersion"
     Write-Host "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension"
-    Import-Module -Name $moduleFolder\Pester.psd1 -Verbose:$False
+    Import-Module -Name $moduleFolder\Pester.psd1 4>$null
 }
 elseif ([string]::IsNullOrEmpty($moduleFolder) -and
     (-not(Get-Module -ListAvailable Pester))) {
@@ -100,15 +100,15 @@ elseif ([string]::IsNullOrEmpty($moduleFolder) -and
     # have to use a version in this task
     $moduleFolder = "$PSScriptRoot\$pesterVersion"
     Write-Host "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension, as not installed on PC"
-    Import-Module $moduleFolder\Pester.psd1 -Verbose:$False
+    Import-Module $moduleFolder\Pester.psd1 4>$null
 }
 elseif ($moduleFolder) {
     Write-Host "Loading Pester module from [$moduleFolder] using user specificed overrided location"
-    Import-Module $moduleFolder\Pester.psd1 -Verbose:$False
+    Import-Module $moduleFolder\Pester.psd1 4>$null
 }
 else {
     Write-Host "No Pester module location parameters passed, and not forcing use of Pester in task, so using Powershell default module location"
-    Import-Module Pester -Verbose:$False
+    Import-Module Pester 4>$null
 }
 
 $Parameters = @{
