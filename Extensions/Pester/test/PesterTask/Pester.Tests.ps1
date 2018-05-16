@@ -12,6 +12,7 @@ Describe "Testing Pester Task" {
             {&$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\RandomFolder } | Should -Throw
         }
         it "Throws Exception when passed an invalid file type for ResultsFile" {
+            Mock -CommandName Write-Host -MockWith {}
             {&$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml} | Should -Throw
         }
         it "ResultsFile is Mandatory" {
@@ -47,7 +48,7 @@ Describe "Testing Pester Task" {
         it "Calls Invoke-Pester with multiple Tags specified" {
             mock Invoke-Pester { }
             mock Import-Module { }
-            Mock Write-Verbose { }
+            Mock Write-Host { }
             Mock Write-Warning { }
             Mock Write-Error { }
 
@@ -62,7 +63,7 @@ Describe "Testing Pester Task" {
         it "Calls Invoke-Pester with multiple ExcludeTags specified" {
             mock Invoke-Pester { }
             mock Import-Module { }
-            Mock Write-Verbose { }
+            Mock Write-Host { }
             Mock Write-Warning { }
             Mock Write-Error { }
 
@@ -75,7 +76,7 @@ Describe "Testing Pester Task" {
         it "Handles CodeCoverageOutputFile being null from VSTS" {
             mock Invoke-Pester { }
             mock Import-Module { }
-            Mock Write-Verbose { }
+            Mock Write-Host { }
             Mock Write-Warning { }
             Mock Write-Error { }
 
@@ -93,7 +94,7 @@ Describe "Testing Pester Task" {
         mock Invoke-Pester { "ExcludeTag" } -ParameterFilter {$ExcludeTag -and $ExcludeTag -eq 'Example'}
         mock Invoke-Pester { "AllTests" }
         mock Import-Module { }
-        Mock Write-Verbose { }
+        Mock Write-Host { }
         Mock Write-Warning { }
         Mock Write-Error { }
 
@@ -122,18 +123,18 @@ Describe "Testing Pester Task" {
 
             $Env:PSModulePath | Should -Match ';{0,1}TestDrive:\\TestFolder;{0,1}'
         }
-        it "Should write-verbose the contents of Script parameters as a string version of a hashtable when a hashtable is provided" {
+        it "Should Write-Host the contents of Script parameters as a string version of a hashtable when a hashtable is provided" {
             $Parameters = "@{Path = '$PSScriptRoot\parameters.tests.ps1';Parameters=@{TestValue='SomeValue'}}"
             &$Sut -ScriptFolder $Parameters -ResultsFile TestDrive:\Output.xml -ForceUseOfPesterInTasks 'True'
 
-            Assert-MockCalled -CommandName Write-Verbose -ParameterFilter {
-                $Message -eq "Running Pester from using the script parameter [$Parameters] output sent to [TestDrive:\Output.xml]"
+            Assert-MockCalled -CommandName Write-Host -ParameterFilter {
+                $Object -eq "Running Pester from using the script parameter [$Parameters] output sent to [TestDrive:\Output.xml]"
             }
         }
     }
 
     Context "Testing Task Output" {
-        Mock Write-Verbose { }
+        Mock Write-Host { }
         Mock Write-Warning { }
         Mock Import-Module { }
         Mock Write-Error { }
@@ -173,7 +174,7 @@ Describe "Testing Pester Task" {
         it "Loads Pester version contained in task when ForceUse is set to true " {
             mock Invoke-Pester { }
             mock Import-Module { }
-            Mock Write-Verbose { }
+            Mock Write-Host { }
             Mock Write-Warning { }
             Mock Write-Error { }
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
@@ -188,7 +189,7 @@ Describe "Testing Pester Task" {
         it "Loads Pester version contained in task as Pester not installed on agent and ModuleFolder is Null " {
             mock Invoke-Pester { }
             mock Import-Module { }
-            Mock Write-Verbose { }
+            Mock Write-Host { }
             Mock Write-Warning { }
             Mock Write-Error { }
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
@@ -203,7 +204,7 @@ Describe "Testing Pester Task" {
         it "Loads Pester version contained in task when ForceUse is set to true even when ModuleFolder is set " {
             mock Invoke-Pester { }
             mock Import-Module { }
-            Mock Write-Verbose { }
+            Mock Write-Host { }
             Mock Write-Warning { }
             Mock Write-Error { }
 
@@ -219,7 +220,7 @@ Describe "Testing Pester Task" {
         it "Loads Pester version contained in task as Pester not installed on agent and ModuleFolder contains whitespace " {
             mock Invoke-Pester { }
             mock Import-Module { }
-            Mock Write-Verbose { }
+            Mock Write-Host { }
             Mock Write-Warning { }
             Mock Write-Error { }
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
@@ -234,7 +235,7 @@ Describe "Testing Pester Task" {
         it "Loads Pester version specified by ModuleFolder " {
             mock Invoke-Pester { }
             mock Import-Module { }
-            Mock Write-Verbose { }
+            Mock Write-Host { }
             Mock Write-Warning { }
             Mock Write-Error { }
 
@@ -246,14 +247,14 @@ Describe "Testing Pester Task" {
         it "Loads default Pester version if ModuleFolder and Force use of task contained version not set" {
             mock Invoke-Pester { }
             mock Import-Module { }
-            Mock Write-Verbose { }
+            Mock Write-Host { }
             Mock Write-Warning { }
             Mock Write-Error { }
 
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ForceUseOfPesterInTasks "False"
             Assert-MockCalled  Import-Module
             # can't check the previous assert for empty parameters, so check the message
-            Assert-MockCalled Write-Verbose -ParameterFilter { $Message -eq "No Pester module location parameters passed, and not forcing use of Pester in task, so using Powershell default module location" }
+            Assert-MockCalled Write-Host -ParameterFilter { $Object -eq "No Pester module location parameters passed, and not forcing use of Pester in task, so using Powershell default module location" }
             Assert-MockCalled Invoke-Pester
         }
 
