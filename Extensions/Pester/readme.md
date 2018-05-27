@@ -43,3 +43,4 @@ Releases
 - 7.1.x - Added additionalModulePath and CodeCoverageFolder, to support testing compiled modules ([PR#285](https://github.com/rfennell/vNextBuild/pull/285))
 - 7.2.x - Multiple fixes:
     - Swap logging to use Write-Host to ensure it logs out by default. ([Fixes #320](https://github.com/rfennell/vNextBuild/issues/320))
+    - Change Hashtable parsing function to use language parser to handle more cases. ([Fixes #321](https://github.com/rfennell/vNextBuild/issues/321))
