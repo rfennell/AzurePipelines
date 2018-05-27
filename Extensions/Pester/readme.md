@@ -41,3 +41,5 @@ Releases
 - 6.3.x - Engineering test same as 7.0.x
 - 7.0.x - PR287 changed included version of 4x Pester from 4.0.8 to 4.3.1, incremented major version as change of advanced options blocks auto update.
 - 7.1.x - Added additionalModulePath and CodeCoverageFolder, to support testing compiled modules ([PR#285](https://github.com/rfennell/vNextBuild/pull/285))
+- 7.2.x - Multiple fixes:
+    - Swap logging to use Write-Host to ensure it logs out by default. ([Fixes #320](https://github.com/rfennell/vNextBuild/issues/320))
