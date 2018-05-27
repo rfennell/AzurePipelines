@@ -80,10 +80,10 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
     &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
     exit
 }
-write-verbose "Running in $($env:Processor_Architecture) PowerShell" -verbose
+Write-Host "Running in $($env:Processor_Architecture) PowerShell"
 
 if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
-    Write-Verbose "Adding additional module path [$additionalModulePath] to `$env:PSModulePath" -verbose
+    Write-Host "Adding additional module path [$additionalModulePath] to `$env:PSModulePath"
     $env:PSModulePath = $additionalModulePath + ';' + $env:PSModulePath
 }
 
@@ -91,24 +91,24 @@ if (([bool]::Parse($ForceUseOfPesterInTasks) -eq $true) -and $(-not([string]::Is
     # we have no module path specified and Pester is not installed on the PC
     # have to use a version in this task
     $moduleFolder = "$PSScriptRoot\$pesterVersion"
-    Write-Verbose "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension" -verbose
-    Import-Module -Name $moduleFolder\Pester.psd1
+    Write-Host "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension"
+    Import-Module -Name $moduleFolder\Pester.psd1 4>$null
 }
 elseif ([string]::IsNullOrEmpty($moduleFolder) -and
     (-not(Get-Module -ListAvailable Pester))) {
     # we have no module path specified and Pester is not installed on the PC
     # have to use a version in this task
     $moduleFolder = "$PSScriptRoot\$pesterVersion"
-    Write-Verbose "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension, as not installed on PC" -verbose
-    Import-Module $moduleFolder\Pester.psd1
+    Write-Host "Loading Pester module from [$moduleFolder] using module PSM shipped in VSTS extension, as not installed on PC"
+    Import-Module $moduleFolder\Pester.psd1 4>$null
 }
 elseif ($moduleFolder) {
-    Write-Verbose "Loading Pester module from [$moduleFolder] using user specificed overrided location" -verbose
-    Import-Module $moduleFolder\Pester.psd1
+    Write-Host "Loading Pester module from [$moduleFolder] using user specificed overrided location"
+    Import-Module $moduleFolder\Pester.psd1 4>$null
 }
 else {
-    Write-Verbose "No Pester module location parameters passed, and not forcing use of Pester in task, so using Powershell default module location"
-    Import-Module Pester
+    Write-Host "No Pester module location parameters passed, and not forcing use of Pester in task, so using Powershell default module location"
+    Import-Module Pester 4>$null
 }
 
 $Parameters = @{
@@ -119,10 +119,10 @@ $Parameters = @{
 
 if (test-path -path $scriptFolder)
 {
-    Write-Verbose "Running Pester from the folder [$scriptFolder] output sent to [$resultsFile]" -verbose
+    Write-Host "Running Pester from the folder [$scriptFolder] output sent to [$resultsFile]"
     $Parameters.Add("Script", $scriptFolder)
 } else {
-    Write-Verbose "Running Pester from using the script parameter [$scriptFolder] output sent to [$resultsFile]" -verbose
+    Write-Host "Running Pester from using the script parameter [$scriptFolder] output sent to [$resultsFile]"
     $Parameters.Add("Script", (Get-HashtableFromString -line $scriptFolder))
 }
 
