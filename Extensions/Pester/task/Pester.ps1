@@ -54,13 +54,13 @@ param
             }
         })]
     [string]$CodeCoverageOutputFile,
-    
+
     [string]$CodeCoverageFolder,
 
     [string]$ForceUseOfPesterInTasks
 )
 
-Import-Module -Name "$PSScriptRoot\HelperModule.psm1" -Force 
+Import-Module -Name "$PSScriptRoot\HelperModule.psm1" -Force
 
 if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
     # Get the command parameters
@@ -135,7 +135,7 @@ if ($ExcludeTag) {
     $Parameters.Add('ExcludeTag', $ExcludeTag)
 }
 if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge '4.0.4') {
-    if (-not $PSBoundParameters.ContainsKey('CodeCoverageFiles')) {
+    if (-not $PSBoundParameters.ContainsKey('CodeCoverageFolder')) {
         $CodeCoverageFolder = $scriptFolder
     }
     $Files = Get-ChildItem -Path $CodeCoverageFolder -include *.ps1, *.psm1 -Exclude *.Tests.ps1 -Recurse |

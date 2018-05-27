@@ -138,6 +138,10 @@ Describe "Testing Pester Task" {
             New-Item -Path $CodeCoverageOutputFile -ItemType File
         } -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage.xml'}
 
+        mock Invoke-Pester {
+            New-Item -Path $CodeCoverageOutputFile -ItemType File
+        } -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage2.xml' -and $CodeCoverageFolder}
+
         mock Invoke-Pester {}
 
         it "Creates the output xml file correctly" {
@@ -156,6 +160,20 @@ Describe "Testing Pester Task" {
 
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage.xml' -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
             Test-Path -Path TestDrive:\codecoverage.xml | Should -Be $True
+        }
+
+        it "Creates the CodeCoverage output file when code coverage folder is not specified" {
+            New-Item -Path TestDrive:\ -Name Tests -ItemType Directory | Out-Null
+            New-Item -Path TestDrive:\Tests -Name TestFile1.ps1 | Out-Null
+            New-Item -Path TestDrive:\Tests -Name TestFile2.ps1 | Out-Null
+            New-Item -Path TestDrive:\Tests -Name TestFile3.ps1 | Out-Null
+            New-Item -Path TestDrive:\ -Name Source -ItemType Directory | Out-Null
+            New-Item -Path TestDrive:\Source -Name Code.ps1 | Out-Null
+
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output2.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage2.xml' -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
+            Test-Path -Path TestDrive:\codecoverage.xml | Should -Be $True
+
+            Assert-MockCalled -CommandName Invoke-Pester -ParameterFilter {$CodeCoverage -and $CodeCoverage -contains "$((Get-Item 'TestDrive:\').FullName)Source\Code.ps1"}
         }
 
     }
