@@ -120,7 +120,7 @@ Describe "Testing Pester Task" {
         }
         it "Should Write-Host the contents of Script parameters as a string version of a hashtable when a hashtable is provided" {
             $Parameters = "@{Path = '$PSScriptRoot\parameters.tests.ps1';Parameters=@{TestValue='SomeValue'}}"
-            &$Sut -ScriptFolder $Parameters -ResultsFile TestDrive:\Output.xml -ForceUseOfPesterInTasks 'True'
+            &$Sut -ScriptFolder $Parameters -ResultsFile TestDrive:\Output.xml
 
             Assert-MockCalled -CommandName Write-Host -ParameterFilter {
                 $Object -eq "Running Pester from using the script parameter [$Parameters] output sent to [TestDrive:\Output.xml]"
@@ -179,7 +179,7 @@ Describe "Testing Pester Task" {
             New-Item -Path TestDrive:\ -Name Source -ItemType Directory | Out-Null
             New-Item -Path TestDrive:\Source -Name Code.ps1 | Out-Null
 
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output2.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage2.xml' -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output2.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage2.xml'
             Test-Path -Path TestDrive:\codecoverage.xml | Should -Be $True
 
             Assert-MockCalled -CommandName Invoke-Pester -ParameterFilter {$CodeCoverage -and $CodeCoverage -contains "$((Get-Item 'TestDrive:\').FullName)Source\Code.ps1"}
@@ -193,7 +193,7 @@ Describe "Testing Pester Task" {
             New-Item -Path TestDrive:\ -Name Source -ItemType Directory -Force | Out-Null
             New-Item -Path TestDrive:\Source -Name Code.ps1 -Force | Out-Null
 
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output2.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage3.xml' -CodeCoverageFolder 'TestDrive:\Source' -ForceUseOfPesterInTasks "True" -PesterVersion '4.3.1'
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output2.xml -CodeCoverageOutputFile 'TestDrive:\codecoverage3.xml' -CodeCoverageFolder 'TestDrive:\Source'
             Test-Path -Path TestDrive:\codecoverage.xml | Should -Be $True
 
             Assert-MockCalled -CommandName Invoke-Pester -ParameterFilter {$CodeCoverage -and $CodeCoverage -eq "$((Get-Item 'TestDrive:\').FullName)Source\Code.ps1" -and $CodeCoverage -notlike "$((Get-Item 'TestDrive:\').FullName)Tests\*.ps1"}
@@ -207,7 +207,7 @@ Describe "Testing Pester Task" {
             mock Invoke-Pester { }
             mock Import-Module { }
             Mock Install-Module { $true }
-            Mock Write-hpst { }
+            Mock Write-host { }
             Mock Write-Warning { }
             Mock Write-Error { }
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
