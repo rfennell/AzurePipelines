@@ -213,13 +213,14 @@ Describe "Testing Pester Task" {
 
     Context "Testing Pester Module Version Loading" {
 
+        mock Invoke-Pester { }
+        mock Import-Module { }
+        Mock Install-Module { $true }
+        Mock Write-host { }
+        Mock Write-Warning { }
+        Mock Write-Error { }
+
         it "Installs the latest version of Pester when on PS5+ and PowerShellGet is available" {
-            mock Invoke-Pester { }
-            mock Import-Module { }
-            Mock Install-Module { $true }
-            Mock Write-host { }
-            Mock Write-Warning { }
-            Mock Write-Error { }
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
             Mock Get-ChildItem  { return $true }
             Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9)}}
@@ -231,12 +232,6 @@ Describe "Testing Pester Task" {
             Assert-MockCalled Invoke-Pester
         }
         it "Installs the required version of NuGet provider when PowerShellGet is available and NuGet isn't already installed" {
-            mock Invoke-Pester { }
-            mock Import-Module { }
-            Mock Install-Module { $true }
-            Mock Write-host { }
-            Mock Write-Warning { }
-            Mock Write-Error { }
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
             Mock Get-ChildItem  { return $true }
             Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9)}}
@@ -247,6 +242,18 @@ Describe "Testing Pester Task" {
 
             Assert-MockCalled Install-PackageProvider
             Assert-MockCalled Install-Module
+            Assert-MockCalled Invoke-Pester
+        }
+
+        it "Should not install a new version of Pester when the latest is already installed" {
+            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
+            Mock Get-ChildItem  { return $true }
+            Mock Find-Module { [PsCustomObject]@{Version=(Get-Module Pester).Version}}
+            Mock Get-PackageProvider { $True }
+
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
+
+            Assert-MockCalled Install-Module -Times 0 -Scope It
             Assert-MockCalled Invoke-Pester
         }
 
