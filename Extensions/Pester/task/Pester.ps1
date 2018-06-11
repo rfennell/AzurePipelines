@@ -70,7 +70,7 @@ if (Get-Module -Name PowerShellGet -ListAvailable) {
     }
     $NewestPester = Find-Module -Name Pester
     If ((Get-Module Pester -ListAvailable)[0].Version -lt $NewestPester.Version) {
-        Install-Module -Name Pester -Scope CurrentUser -Force -Repository PSGallery
+        Install-Module -Name Pester -Scope CurrentUser -Force -Repository PSGallery -SkipPublisherCheck
     }
 }
 else {
