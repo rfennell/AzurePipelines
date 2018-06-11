@@ -62,7 +62,10 @@ if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
 }
 
 if (Get-Module -Name PowerShellGet -ListAvailable) {
-    if (-not(Get-PackageProvider -Name NuGet)) {
+    try {
+        $null = Get-PackageProvider -Name NuGet -ErrorAction Stop
+    }
+    catch {
         Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false
     }
     $NewestPester = Find-Module -Name Pester

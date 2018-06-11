@@ -235,7 +235,7 @@ Describe "Testing Pester Task" {
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
             Mock Get-ChildItem  { return $true }
             Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9)}}
-            Mock Get-PackageProvider { $false }
+            Mock Get-PackageProvider { throw }
             Mock Install-PackageProvider {}
 
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
