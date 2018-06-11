@@ -43,6 +43,8 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
             Mock Install-Module { }
+            Mock Find-Module { }
+            Mock Get-PackageProvider { $True }
 
             . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure,Integration'
             $Tag.Length | Should Be 2
@@ -59,6 +61,8 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
             Mock Install-Module { }
+            Mock Find-Module { }
+            Mock Get-PackageProvider { $True }
 
             . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example,Demo'
             $ExcludeTag.Length | Should be 2
@@ -73,6 +77,8 @@ Describe "Testing Pester Task" {
             Mock Write-Warning { }
             Mock Write-Error { }
             Mock Install-Module { }
+            Mock Find-Module { }
+            Mock Get-PackageProvider { $True }
 
             . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile $null
             Assert-MockCalled Invoke-Pester
@@ -92,6 +98,8 @@ Describe "Testing Pester Task" {
         Mock Write-Warning { }
         Mock Write-Error { }
         Mock Install-Module { }
+        Mock Find-Module { }
+        Mock Get-PackageProvider { $True }
 
         it "Calls Invoke-Pester correctly with ScriptFolder and ResultsFile specified" {
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
@@ -152,6 +160,8 @@ Describe "Testing Pester Task" {
         } -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage3.xml' -and $CodeCoverageFolder}
 
         mock Invoke-Pester {}
+        Mock Find-Module { }
+        Mock Get-PackageProvider { $True }
 
         it "Creates the output xml file correctly" {
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
@@ -212,10 +222,31 @@ Describe "Testing Pester Task" {
             Mock Write-Error { }
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
             Mock Get-ChildItem  { return $true }
+            Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9)}}
+            Mock Get-PackageProvider { $True }
 
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
 
             Assert-MockCalled  Install-Module
+            Assert-MockCalled Invoke-Pester
+        }
+        it "Installs the required version of NuGet provider when PowerShellGet is available and NuGet isn't already installed" {
+            mock Invoke-Pester { }
+            mock Import-Module { }
+            Mock Install-Module { $true }
+            Mock Write-host { }
+            Mock Write-Warning { }
+            Mock Write-Error { }
+            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
+            Mock Get-ChildItem  { return $true }
+            Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9)}}
+            Mock Get-PackageProvider { $false }
+            Mock Install-PackageProvider {}
+
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
+
+            Assert-MockCalled Install-PackageProvider
+            Assert-MockCalled Install-Module
             Assert-MockCalled Invoke-Pester
         }
 
