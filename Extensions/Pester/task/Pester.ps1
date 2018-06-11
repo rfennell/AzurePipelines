@@ -61,7 +61,7 @@ if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
     $env:PSModulePath = $additionalModulePath + ';' + $env:PSModulePath
 }
 
-if (Get-Module -Name PowerShellGet -ListAvailable) {
+if ((Get-Module -Name PowerShellGet -ListAvailable) -and (Get-Command Install-Module).Parameters.ContainsKey('SkipPublisherCheck')) {
     try {
         $null = Get-PackageProvider -Name NuGet -ErrorAction Stop
     }

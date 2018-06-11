@@ -219,6 +219,7 @@ Describe "Testing Pester Task" {
         Mock Write-host { }
         Mock Write-Warning { }
         Mock Write-Error { }
+        Mock Get-Command { [PsCustomObject]@{Parameters=@{SkipPublisherCheck='SomeValue'}}}
 
         it "Installs the latest version of Pester when on PS5+ and PowerShellGet is available" {
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
@@ -257,6 +258,18 @@ Describe "Testing Pester Task" {
             Assert-MockCalled Invoke-Pester
         }
 
+        it "Should not Install the latest version of Pester when on PowerShellGet is available but SkipPublisherCheck is not available" {
+            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
+            Mock Get-ChildItem  { return $true }
+            Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9)}}
+            Mock Get-PackageProvider { $True }
+            Mock Get-Command { [PsCustomObject]@{Parameters=@{OtherProperty='SomeValue'}} }
+
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
+
+            Assert-MockCalled Install-Module -Times 0 -Scope It
+            Assert-MockCalled Invoke-Pester
+        }
         <#it "Loads Pester version that ships with task when not on PS5+ or PowerShellGet is unavailable" {
             mock Invoke-Pester { }
             mock Import-Module { }
