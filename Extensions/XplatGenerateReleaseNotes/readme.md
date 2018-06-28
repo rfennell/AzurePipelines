@@ -117,3 +117,4 @@ Using the settings for the output file shown above, the release notes will be cr
 - 2.0 - Major refactor PR305 by @gregpakes to move to newer API, does contain breaking changes to template. Hence from this point both V1 and V2 will be shipped in the same extension
 - 2.1 - Issue315 with PR316 by @marco-gallinari to fix incorrect mapping of stage override parameter
 - 2.2 - Issue319 fixed problem that cannot generate release notes for the first release of a pipeline
+- 2.3 - Issue337 fixed paths in readme
