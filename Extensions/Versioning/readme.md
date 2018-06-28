@@ -1,5 +1,5 @@
 
-A set of tasks based on the versioning sample script to version tamping assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
+A set of tasks based on the versioning sample script to version stamp assemblies shown in the [VSTS documentation](https://msdn.microsoft.com/Library/vs/alm/Build/scripts/index
 ). These allow versioning of
 
 * VersionAssemblies - sets the version in the assemblyinfo.cs or .vb (used pre build)
@@ -13,6 +13,7 @@ A set of tasks based on the versioning sample script to version tamping assembli
 * VersionAndroidManifest - Sets the versionName and versionCode values in an Android project
 * VersionJSONFile - Sets the version in a named field in a JSON file (tested in NPM package.json file)
 * VersionAngularFile - Sets the version in a named field in an enviroment.ts Angular file
+* VersionPowerShellModule - Sets the ModuleVersion property in any module psd1 files.
 
 All these tasks take at least two parameters, which are both defaulted
 
@@ -72,16 +73,16 @@ The Android manifest versioner takes the following extra parameters:
           - Fixed Issue 177 where the task wouldn't find assembly info files if they weren't in specific folders.
 - V1.26   - Fixed Issue 197 where the task wouldn't correctly run on Hosted agents due to changes in the DacFx install location.
 - V1.27   - Engineering Issue #202
-- V1.28   - Issue #213 fix for UTF8 File encoding problems 
+- V1.28   - Issue #213 fix for UTF8 File encoding problems
 - V1.29   - Issue #217 moved the ANdroid versioner to NodeJS
 - V1.30   - Issue #222 allowed more complex delimiters in version number format
 - V1.31   - Issue #233 added JSON and Angular versioner
-- V1.32   - Issue #254 allow version extraction to be bypassed for JSON Versioner 
-- V1.33   - Issue #261 add option to enable/disable recursion in file search for JSON Versioner 
+- V1.32   - Issue #254 allow version extraction to be bypassed for JSON Versioner
+- V1.33   - Issue #261 add option to enable/disable recursion in file search for JSON Versioner
 - V1.34   - Issue #251 fixed regex issue with Android versioner
 - V1.35   - Issue #281 fixed JSON versioner to handle SEMVER format
 - V1.36   - Issue #288 fixed .NETCore versioner handler for updating all fields
 - V1.37   - More for Issue #293 fixed .NETCore versioner handler for updating all fields
 - V1.38   - Issue #302 enhancement .NETCore versioner to add VERSION tag of no other version fields present (defaults off)
-- V1.39   - V1.38 introductions some nasty regressions, based around not checking project type, this fixes those 
-
+- V1.39   - V1.38 introductions some nasty regressions, based around not checking project type, this fixes those
+- V1.40   - Added the PowerShell Module versioning task
