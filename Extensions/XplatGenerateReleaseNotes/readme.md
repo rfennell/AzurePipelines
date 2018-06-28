@@ -85,8 +85,8 @@ What is done behind the scenes is that each line of the template is evaluated as
 
 There are sample templates that just produce basic releases notes and dumps out all the available fields (to help you find all the available options) for both builds and releases
 
-- [Sample templates for version 1](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates/Version_1) 
-- [Sample templates for version 2](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates/Version_2) 
+- [Sample templates for version 1](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%201) 
+- [Sample templates for version 2](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%202) 
 
 ## Usage
 Once the extension is added to your TFS or VSTS server, the task should be available in the utilities section of 'add tasks'
