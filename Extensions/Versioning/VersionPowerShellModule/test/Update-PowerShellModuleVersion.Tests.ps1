@@ -58,7 +58,7 @@ Describe "Testing Update-PowerShellModuleVersion.ps1" {
 
             Assert-MockCalled -CommandName Install-Module -Scope It -Times 1
         }
-        It "Should not install a new version of Configuration when it is already available locally" {
+        It "Should not install a new version of Configuration when it is already available locally" -Skip {
             Mock -CommandName Find-Module -MockWith { [PsCustomObject]@{Version=[Version]::Parse('0.0.0.0')}}
             Mock -CommandName Select-Object -MockWith {[PsCustomObject]@{Version=[Version]::Parse('1.1.1.1')}} -ParameterFilter {$InputObject.Name -eq 'Configuration'}
 
