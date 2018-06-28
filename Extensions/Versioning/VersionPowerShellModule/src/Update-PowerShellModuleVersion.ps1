@@ -55,20 +55,22 @@ if (Get-Module -Name PowerShellGet -ListAvailable) {
     If ((Get-Module Configuration -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
         Write-Verbose -Message "Newer version of the module is available online, installing as current user"
         Install-Module -Name Configuration -Scope CurrentUser -Force -Repository PSGallery
-        Import-Module Configuration
+        Import-Module Configuration -force
+        $Null = Get-Command -Module Configuration
     }
 }
 else {
     Write-Verbose -Message "PowerShellGet is unavailable, using Configuration module shipped with task instead"
     Import-Module "$PSScriptRoot\1.3.0\Configuration.psd1" -force
+    $Null = Get-Command -Module Configuration
 }
 
 Write-Verbose -Message "Finding all the module psd1 files in the specified path"
 $ModuleFiles = Get-ChildItem -Path $Path -Filter *.psd1 -Recurse |
     Select-String -Pattern 'RootModule' |
-    Select-Object -ExpandProperty Path
+    Select-Object -ExpandProperty Path -Unique
 
-Write-Verbose "Found $($ModuleFiles.Count) dacpacs. Beginning to apply updated version number $VersionNumber."
+Write-Verbose "Found $($ModuleFiles.Count) modules. Beginning to apply updated version number $VersionNumber."
 
 Foreach ($Module in $ModuleFiles)
 {
