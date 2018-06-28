@@ -86,4 +86,5 @@ The Android manifest versioner takes the following extra parameters:
 - V1.38   - Issue #302 enhancement .NETCore versioner to add VERSION tag of no other version fields present (defaults off)
 - V1.39   - V1.38 introductions some nasty regressions, based around not checking project type, this fixes those
 - V1.40   - Added the PowerShell Module versioning task
-- V1.41   - PR340 @philmh-isams added more logging to VersionDotNetCoreAssembliesTask 
+- V1.41   - PR340 @philmh-isams added more logging to VersionDotNetCoreAssembliesTask
+  - Fix a bug with PowerShell versioning not loading Configuration module correctly.
