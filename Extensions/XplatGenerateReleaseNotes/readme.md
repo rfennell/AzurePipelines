@@ -85,8 +85,8 @@ What is done behind the scenes is that each line of the template is evaluated as
 
 There are sample templates that just produce basic releases notes and dumps out all the available fields (to help you find all the available options) for both builds and releases
 
-- [Sample templates for version 1](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates/Version_1) 
-- [Sample templates for version 2](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates/Version_2) 
+- [Sample templates for version 1](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%201) 
+- [Sample templates for version 2](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%202) 
 
 ## Usage
 Once the extension is added to your TFS or VSTS server, the task should be available in the utilities section of 'add tasks'
@@ -117,3 +117,4 @@ Using the settings for the output file shown above, the release notes will be cr
 - 2.0 - Major refactor PR305 by @gregpakes to move to newer API, does contain breaking changes to template. Hence from this point both V1 and V2 will be shipped in the same extension
 - 2.1 - Issue315 with PR316 by @marco-gallinari to fix incorrect mapping of stage override parameter
 - 2.2 - Issue319 fixed problem that cannot generate release notes for the first release of a pipeline
+- 2.3 - Issue337 fixed paths in readme
