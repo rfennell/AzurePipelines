@@ -15,6 +15,7 @@ Describe "Testing Update-PowerShellModuleVersion.ps1" {
     }
 
     Context "Testing Processing" {
+        Function Update-MetaData {}
         Mock -CommandName Write-Verbose -MockWith {}
         Mock -CommandName Write-Error -MockWith {}
         Mock -CommandName Get-PackageProvider -MockWith {}
