@@ -66,6 +66,9 @@
       "path": "VersionDacpacTask/src"
     },
     {
+      "path": "VersionPowerShellModule/src"
+    },
+    {
       "path": "VersionVSIXTask"
     },
     {
@@ -73,15 +76,13 @@
     },
     {
       "path": "VersionNuspecTask"
-    }
-    ,
+    },
     {
       "path": "VersionSharepointAppManifestTask"
-    } ,
+    },
     {
       "path": "VersionDotNetCoreAssembliesTask/task"
-    }
-    ,
+    },
     {
       "path": "VersionWixTask"
     },
@@ -123,6 +124,16 @@
       ],
       "properties": {
         "name": "VersionDacpacTask/src"
+      }
+    },
+    {
+      "id": "Version-PowerShellModule-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionPowerShellModule/src"
       }
     },
      {
