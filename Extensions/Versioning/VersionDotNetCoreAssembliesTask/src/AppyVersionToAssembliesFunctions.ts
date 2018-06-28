@@ -75,10 +75,11 @@ function UpdateSingleField(file, field, newVersion) {
 }
 
 export function ProcessFile(file, field, newVersion, addDefault = false) {
-
+	var isVersionApplied: any = false;
     // Check that the field to update is present
     if (field && field.length > 0) {
         UpdateSingleField(file, field, newVersion);
+		isVersionApplied = true;
     } else {
         console.log(`Checking if any version fields to update`);
         var filecontent = fs.readFileSync(file);
@@ -103,12 +104,20 @@ export function ProcessFile(file, field, newVersion, addDefault = false) {
         });
         if (hasUpdateFields === true) {
             fs.writeFileSync(file, content);
+			isVersionApplied = true;
         } else {
             if (addDefault === true) {
-                console.log(`No version fields present, so add a version field`);
+                console.log(`No version fields present, so add a Version field`);
                 UpdateSingleField(file, "Version", newVersion);
-            }
+				isVersionApplied = true;
+            } else {
+                console.log(`No version fields present, version field ignored because 'addDefault' is false`);
+			}
         }
     }
-    console.log (`${file} - version applied`);
+	if (isVersionApplied) {
+		console.log (`${file} - version applied`);
+	} else {
+		console.log (`${file} - version not applied`);
+	}
 }
