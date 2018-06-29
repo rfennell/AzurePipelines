@@ -52,7 +52,7 @@ if (Get-Module -Name PowerShellGet -ListAvailable) {
 
     Write-Verbose -Message "Finding the latest version of the Configuration module on the PSGallery"
     $NewestPester = Find-Module -Name Configuration -Repository PSGallery
-    If ((Get-Module Configuration -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
+    If (-not(Get-Module Configuration) -or (Get-Module Configuration -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
         Write-Verbose -Message "Newer version of the module is available online, installing as current user"
         Install-Module -Name Configuration -Scope CurrentUser -Force -Repository PSGallery
         Import-Module Configuration -force
