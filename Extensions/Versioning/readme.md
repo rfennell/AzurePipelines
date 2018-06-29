@@ -88,3 +88,4 @@ The Android manifest versioner takes the following extra parameters:
 - V1.40   - Added the PowerShell Module versioning task
 - V1.41   - PR340 @philmh-isams added more logging to VersionDotNetCoreAssembliesTask
   - Fix a bug with PowerShell versioning not loading Configuration module correctly.
+- V1.42   - Fix a logic issue with the PowerShell versioning task not installing the Configuration module.
