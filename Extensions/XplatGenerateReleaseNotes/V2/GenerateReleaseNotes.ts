@@ -3,16 +3,15 @@ import * as webApi from "vso-node-api/WebApi";
 import { IReleaseApi } from "vso-node-api/ReleaseApi";
 import * as vstsInterfaces from "vso-node-api/interfaces/common/VsoBaseInterfaces";
 
-import { IAgentSpecificApi, AgentSpecificApi } from "./agentSpecific";
-import { ReleaseEnvironment, DeploymentStatus, Deployment, Release } from "vso-node-api/interfaces/ReleaseInterfaces";
+import { AgentSpecificApi } from "./agentSpecific";
+import { Release } from "vso-node-api/interfaces/ReleaseInterfaces";
 import * as util from "./ReleaseNotesFunctions";
-import { release } from "os";
 import { IBuildApi } from "vso-node-api/BuildApi";
 import { IWorkItemTrackingApi } from "vso-node-api/WorkItemTrackingApi";
 import { Change } from "vso-node-api/interfaces/BuildInterfaces";
 import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
-import { IGitApi } from "vso-node-api/GitApi";
-import { WorkItemExpand, WorkItem } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
+import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
+import * as issue349 from "./Issue349Workaround";
 
 let agentApi = new AgentSpecificApi();
 
@@ -80,8 +79,6 @@ async function run(): Promise<void>  {
                 agentApi.logInfo(`Looking at artifact [${artifactInThisRelease.artifactAlias}]`);
                 agentApi.logInfo(`Build Number: [${artifactInThisRelease.buildNumber}]`);
 
-                var buildNumberFromMostRecentBuild = null;
-
                 if (arifactsInMostRecentRelease.length > 0) {
                     agentApi.logInfo(`Looking for the [${artifactInThisRelease.artifactAlias}] in the most recent successful release [${mostRecentSuccessfulDeploymentName}]`);
                     for (var artifactInMostRecentRelease of arifactsInMostRecentRelease) {
@@ -92,9 +89,28 @@ async function run(): Promise<void>  {
                             if (artifactInMostRecentRelease.buildNumber.toLowerCase() !== artifactInThisRelease.buildNumber.toLowerCase()) {
                                 agentApi.logInfo(`Checking what commits and workitems have changed from [${artifactInMostRecentRelease.buildNumber}] => [${artifactInThisRelease.buildNumber}]`);
 
+                                // Issue #349: This API is not affected by the build API limitation
                                 var commits = await buildApi.getChangesBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                var workitems: ResourceRef[];
 
-                                var workitems = await buildApi.getWorkItemsBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                // Check if workaround for issue #349 should be used
+                                let activateFix = tl.getVariable("ReleaseNotes.Fix349");
+                                if (activateFix && activateFix.toLowerCase() === "true") {
+                                    agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
+                                    let baseBuild = await buildApi.getBuild(parseInt(artifactInMostRecentRelease.buildId));
+                                    if (baseBuild.repository.type === "TfsGit") {
+                                        let currentBuild = await buildApi.getBuild(parseInt(artifactInThisRelease.buildId));
+                                        workitems = await issue349.getWorkItemsForGitRepo(vsts, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
+                                    } else if (baseBuild.repository.type === "TfsVersionControl") {
+                                        workitems = await issue349.getWorkItemsForTfvcRepo(vsts, commits);
+                                    } else {
+                                        // Fall back to original behavior
+                                        workitems = await buildApi.getWorkItemsBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                    }
+                                } else {
+                                    // Issue #349: This API IS affected by the build API limitation and only returns work items associated to the latest 200 changes
+                                    workitems = await buildApi.getWorkItemsBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                }
 
                                 var commitCount: number = 0;
                                 var workItemCount: number = 0;

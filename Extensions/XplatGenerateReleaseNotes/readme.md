@@ -118,3 +118,4 @@ Using the settings for the output file shown above, the release notes will be cr
 - 2.1 - Issue315 with PR316 by @marco-gallinari to fix incorrect mapping of stage override parameter
 - 2.2 - Issue319 fixed problem that cannot generate release notes for the first release of a pipeline
 - 2.3 - Issue337 fixed paths in readme
+- 2.4 - Issue349 fixed missing work items due to VSTS API limitation - set variable ReleaseNotes.Fix349 to true to enable the workaround code
