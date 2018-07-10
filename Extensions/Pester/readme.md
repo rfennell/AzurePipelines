@@ -44,3 +44,4 @@ Releases
     - Swap logging to use Write-Host to ensure it logs out by default. ([Fixes #320](https://github.com/rfennell/vNextBuild/issues/320))
     - Change Hashtable parsing function to use language parser to handle more cases. ([Fixes #321](https://github.com/rfennell/vNextBuild/issues/321))
 - 8.0.x - Removed complicated version loading logic and replaced with installing the latest version from the gallery if you're on PSv5+ or have PowerShellGet available. If neither of those are options then it will load the 4.3.1 version of Pester that ships with the task. ([PR#314](https://github.com/rfennell/vNextBuild/pull/314))
+- 8.1.x - Fixed the default working folder to System.DefaultWorkingDirectory as this is a variable available in both build and release. ([Fixes #350](https://github.com/rfennell/vNextBuild/issues/350))
