@@ -10,7 +10,7 @@ param
                 $true
             }
             else {
-                Throw 'Path is invalid or results file does not end in .xml'
+                Throw "Path is invalid or results file does not end in .xml ($_)"
             }
         })]
     [string]$resultsFile,
