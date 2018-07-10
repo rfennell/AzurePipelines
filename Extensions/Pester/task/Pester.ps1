@@ -6,7 +6,12 @@ param
 
     [Parameter(Mandatory)]
     [ValidateScript( {
-            (Test-Path (Split-Path $_ -Parent)) -and ($_.split('.')[-1] -eq 'xml')
+            if ((Test-Path (Split-Path $_ -Parent)) -and ($_.split('.')[-1] -eq 'xml')) {
+                $true
+            }
+            else {
+                Throw 'Path is invalid or results file does not end in .xml'
+            }
         })]
     [string]$resultsFile,
 
