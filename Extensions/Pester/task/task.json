@@ -34,15 +34,15 @@
       "name": "scriptFolder",
       "type": "string",
       "label": "Scripts Folder or Script",
-      "defaultValue": "$(Build.SourcesDirectory)\\*",
+      "defaultValue": "$(System.DefaultWorkingDirectory)\\*",
       "required": true,
-      "helpMarkDown": "Folder to run scripts from e.g $(Build.SourcesDirectory)\\* or a script hashtable @{Path='$(Build.SourcesDirectory)'; Parameters=@{param1='111'; param2='222'}}"
+      "helpMarkDown": "Folder to run scripts from e.g $(System.DefaultWorkingDirectory)\\* or a script hashtable @{Path='$(System.DefaultWorkingDirectory)'; Parameters=@{param1='111'; param2='222'}}"
     },
     {
       "name": "resultsFile",
       "type": "string",
       "label": "Results File",
-      "defaultValue": "$(Build.SourcesDirectory)\\Test-Pester.XML",
+      "defaultValue": "$(System.DefaultWorkingDirectory)\\Test-Pester.XML",
       "required": true,
       "helpMarkDown": "Results File (nUnit format)"
     },
