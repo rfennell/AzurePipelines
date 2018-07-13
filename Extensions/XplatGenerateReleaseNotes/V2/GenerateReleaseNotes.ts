@@ -83,7 +83,7 @@ async function run(): Promise<void>  {
                     agentApi.logInfo(`Looking for the [${artifactInThisRelease.artifactAlias}] in the most recent successful release [${mostRecentSuccessfulDeploymentName}]`);
                     for (var artifactInMostRecentRelease of arifactsInMostRecentRelease) {
                         if (artifactInThisRelease.artifactAlias.toLowerCase() === artifactInMostRecentRelease.artifactAlias.toLowerCase()) {
-                            agentApi.logInfo(`Found artifact [${artifactInThisRelease.artifactAlias}] with build number [${artifactInThisRelease.buildNumber}] in release [${mostRecentSuccessfulDeploymentName}]`);
+                            agentApi.logInfo(`Found artifact [${artifactInMostRecentRelease.artifactAlias}] with build number [${artifactInMostRecentRelease.buildNumber}] in release [${mostRecentSuccessfulDeploymentName}]`);
 
                             // Only get the commits and workitems if the builds are different
                             if (artifactInMostRecentRelease.buildNumber.toLowerCase() !== artifactInThisRelease.buildNumber.toLowerCase()) {
