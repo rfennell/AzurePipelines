@@ -1,4 +1,4 @@
-import * as tl from 'vsts-task-lib'
+import * as tl from "vsts-task-lib";
 import { WebApi } from "vso-node-api/WebApi";
 import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
 import { GitQueryCommitsCriteria, GitVersionType } from "vso-node-api/interfaces/GitInterfaces";
@@ -49,6 +49,6 @@ export async function getCommitsAndWorkItemsForGitRepo(vsts: WebApi, baseSourceV
 }
 
 export interface CommitInfo {
-    commits: Change[],
-    workItems: ResourceRef[]
+    commits: Change[];
+    workItems: ResourceRef[];
 }
