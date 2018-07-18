@@ -89,8 +89,7 @@ async function run(): Promise<void>  {
                             if (artifactInMostRecentRelease.buildNumber.toLowerCase() !== artifactInThisRelease.buildNumber.toLowerCase()) {
                                 agentApi.logInfo(`Checking what commits and workitems have changed from [${artifactInMostRecentRelease.buildNumber}] => [${artifactInThisRelease.buildNumber}]`);
 
-                                // Issue #349: This API is not affected by the build API limitation
-                                var commits = await buildApi.getChangesBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                var commits: Change[];
                                 var workitems: ResourceRef[];
 
                                 // Check if workaround for issue #349 should be used
@@ -98,17 +97,20 @@ async function run(): Promise<void>  {
                                 if (activateFix && activateFix.toLowerCase() === "true") {
                                     agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
                                     let baseBuild = await buildApi.getBuild(parseInt(artifactInMostRecentRelease.buildId));
+                                    // There is only a workaround for Git but not for TFVC :(
                                     if (baseBuild.repository.type === "TfsGit") {
                                         let currentBuild = await buildApi.getBuild(parseInt(artifactInThisRelease.buildId));
-                                        workitems = await issue349.getWorkItemsForGitRepo(vsts, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
-                                    } else if (baseBuild.repository.type === "TfsVersionControl") {
-                                        workitems = await issue349.getWorkItemsForTfvcRepo(vsts, commits);
+                                        let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(vsts, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
+                                        commits = commitInfo.commits;
+                                        workitems = commitInfo.workItems;
                                     } else {
                                         // Fall back to original behavior
+                                        commits = await buildApi.getChangesBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                         workitems = await buildApi.getWorkItemsBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                     }
                                 } else {
-                                    // Issue #349: This API IS affected by the build API limitation and only returns work items associated to the latest 200 changes
+                                    // Issue #349: These APIs are affected by the build API limitation and only return the latest 200 changes and work items associated to those changes
+                                    commits = await buildApi.getChangesBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                     workitems = await buildApi.getWorkItemsBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                 }
 

@@ -35,40 +35,65 @@ function Get-WorkItemDataFromBuild {
     $jsondata
 }
 
-function Get-WorkItemDataFromRepo {
+function Get-CommitInfoFromGitRepo {
     param
     (
         $tfsUri,
-        $projectId,
+        $teamproject,
+        $build,
         $usedefaultcreds,
-        $maxWi,
-        $changes,
-        $repoType,
-        $repoId
+        $maxCommits,
+        $maxWi
     )
 
-    Write-Verbose "        Getting up to $($maxWi) associated work items from commits/changesets"
+    Write-Verbose "        Getting previous successful build"
 
-    $artifactUris = @()
-    if ($repoType -eq "TfsGit") {
-        foreach ($changeset in $changesets) {
-            $artifactUris += "vstfs:///Git/Commit/$projectId%2f$repoId%2f$($changeset.id)"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?definitions=$($build.definition.id)&maxTime=$($build.queueTime)&queryOrder=finishTimeDescending&statusFilter=completed&resultFilter=succeeded&branchName=$($build.sourceBranch)&maxBuildsPerDefinition=1&api-version=4.1"
+    $previousBuild = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
+
+    if ($previousBuild.count -eq 0) {
+        # This is the first build for this branch
+        # Simply take $maxCommits commits from Git history
+        $uri = "$($tfsUri)/$($teamproject)/_apis/git/repositories/$($build.repository.id)/commits?searchCriteria.includeWorkItems=true&searchCriteria.`$top=$maxCommits&searchCriteria.compareVersion.version=$($build.sourceVersion)&searchCriteria.compareVersion.versionType=commit&`$top=$maxCommits&api-version=4.1"
+        $commits = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
+    }
+    else {
+        Write-Verbose "        Getting up to $($maxWi) associated work items from commits"
+
+        $commitSearchCriteria = @{
+            "$skip" = 0;
+            "$top" = 5000;
+            "includeWorkItems" = $true;
+            "itemVersion" = @{ "version" = $previousBuild.value[0].sourceVersion; "versionType" = 2 };
+            "compareVersion" = @{ "version" = $build.sourceVersion; "versionType" = 2 }
+        };
+        $uri = "$($tfsUri)/$($teamproject)/_apis/git/repositories/$($build.repository.id)/commitsbatch?api-version=4.1"
+        $commits = Invoke-PostCommand -uri $uri -Body $commitSearchCriteria -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
+    }
+
+    $commitData = @()
+    foreach ($c in $commits.value) {
+        if (!$c.message -and !$c.comment) {continue} # skip commits with no description
+        try {
+            # we can get more detail if the changeset is on VSTS or TFS
+            if ($c.location) {
+                $commitData += Get-Detail -uri $c.location -usedefaultcreds $usedefaultcreds
+            } else {
+                $commitData += Get-Detail -uri $c.url -usedefaultcreds $usedefaultcreds
+            }
         }
-    } else {
-        foreach ($changeset in $changesets) {
-            $artifactUris += "vstfs:///VersionControl/Changeset/$($changeset.id)"
+        catch {
+            Write-warning "        Unable to get details of changeset/commit as it is not stored in TFS/VSTS"
+            Write-warning "        For [$($c.id)]"
+            Write-warning "        Just using the details we have"
+            $commitData += $c
         }
     }
-    $body = @{
-        "artifactUris" = $artifactUris
-    }
-    $uri = "$($tfsUri)/_apis/wit/artifacturiquery?api-version=4.1-preview.1"
-    $artifactData = Invoke-PostCommand -uri $uri -body $body -usedefaultcreds $usedefaultcreds
 
     $wiCount = 0
     $workItemData = @()
-    for ($uriIndex = 0; ($uriIndex -lt $artifactUris.Length) -and ($wiCount -lt $maxWi); ++$uriIndex) {
-        $workItems = $artifactData.artifactUrisQueryResult[$artifactUris[$uriIndex]]
+    for ($commitIndex = 0; ($commitIndex -lt $commits.count) -and ($wiCount -lt $maxWi); ++$commitIndex) {
+        $workItems = $commits.value[$commitIndex].workItems
         for ($workItemIndex = 0; ($workItemIndex -lt $workItems.Length) -and ($wiCount -lt $maxWi); ++$workItemIndex) {
             $workItemData += $workItems[$workItemIndex]
             $wiCount += 1
@@ -76,8 +101,11 @@ function Get-WorkItemDataFromRepo {
     }
 
     $result = @{
-        "count" = $wiCount;
-        "value" = $workItemData
+        "commits" = $commitData;
+        "workItems" = @{
+            "count" = $wiCount;
+            "value" = $workItemData
+        }
     }
     $result
 }
@@ -179,15 +207,10 @@ function Get-BuildChangeSets {
         $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/changes?api-version=2.0&`$top=$($maxItems)"
         $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
         foreach ($cs in $jsondata.value) {
-            # Workaround issue #469: we need all changes later so we add all changes and filter out those without a message later
-            #if (!$cs.message) {continue} # skip commits with no description
+            if (!$cs.message) {continue} # skip commits with no description
             # we can get more detail if the changeset is on VSTS or TFS
             try {
-                if (cs.message) {
-                    $csList += Get-Detail -uri $cs.location -usedefaultcreds $usedefaultcreds
-                } else {
-                    $csList += $cs
-                }
+                $csList += Get-Detail -uri $cs.location -usedefaultcreds $usedefaultcreds
             }
             catch {
                 Write-warning "        Unable to get details of changeset/commit as it is not stored in TFS/VSTS"
@@ -664,38 +687,29 @@ function Get-BuildDataSet {
     # Get the callers preference variables. See https://blogs.technet.microsoft.com/heyscriptingguy/2014/04/26/weekend-scripter-access-powershell-preference-variables/
     Get-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
 
-    write-verbose "    Getting build details for BuildID [$buildid]"    
+    write-verbose "    Getting build details for BuildID [$buildid]"
     $build = Get-Build -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
 
-    $changesets = Get-BuildChangeSets -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxChanges
+    $changesets = $null
     $workItemData = $null
 
     # Check if workaround for issue #349 should be used
+    # There is only a workaround for Git but not for TFVC :(
     [string] $activateFix = $Env:RELEASENOTES_FIX349
-    if ([System.Convert]::ToBoolean($activateFix) -eq $true) {
-        if (($build.repository.type -eq "TfsGit") -or ($build.repository.type -eq "TfsVersionControl")) {
-            $workItemData = Get-WorkItemDataFromRepo -tfsUri $tfsUri -projectId $build.project.id -usedefaultcreds $usedefaultcreds -maxWi $maxWi -changes $changesets -repoType $build.repository.type -repoId $build.repository.id
-        }
-        else {
-            # Fall back to original behavior
-            $workItemData = Get-WorkItemDataFromBuild -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxWi
-        }
+    if (($build.repository.type -eq "TfsGit") -and ![string]::IsNullOrEmpty($activateFix) -and ($activateFix.ToLower() -eq $true)) {
+        $commitInfo = Get-CommitInfoFromGitRepo -tfsUri $tfsUri -teamproject $teamproject -build $build -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxCommits $maxChanges
+        $changesets = $commitInfo.commits
+        $workItemData = $commitInfo.workItems
     }
     else {
+        $changesets = Get-BuildChangeSets -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxChanges
         $workItemData = Get-WorkItemDataFromBuild -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxWi
     }
     $workItems = Expand-WorkItemData -workItemData $workItemData -usedefaultcreds $usedefaultcreds -wifilter $wiFilter -wiStateFilter $wiStateFilter -showParents $showParents
 
-    # Filter out changesets without messages
-    $csWithMessage = @()
-    foreach ($cs in $changesets) {
-        if ($cs.message) {
-            $csWithMessage += $cs
-        }
-    }
     $build = @{ 'build' = $build;
 				'workitems' = $workItems;
-				'changesets' = $csWithMessage
+				'changesets' = $changesets
     }
     $build
 }

@@ -1,37 +1,54 @@
+import * as tl from 'vsts-task-lib'
 import { WebApi } from "vso-node-api/WebApi";
 import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
 import { GitQueryCommitsCriteria, GitVersionType } from "vso-node-api/interfaces/GitInterfaces";
 import { Change } from "vso-node-api/interfaces/BuildInterfaces";
 import { ArtifactUriQuery } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
 
-export async function getWorkItemsForGitRepo(vsts: WebApi, baseSourceVersion: string, currentSourceVersion: string, repositoryId: string): Promise<ResourceRef[]> {
+export async function getCommitsAndWorkItemsForGitRepo(vsts: WebApi, baseSourceVersion: string, currentSourceVersion: string, repositoryId: string): Promise<CommitInfo> {
+    let maxCommits = tl.getVariable("ReleaseNotes.Fix349.MaxCommits") ? Number(tl.getVariable("ReleaseNotes.Fix349.MaxCommits")) : 5000;
+    let maxWorkItems = tl.getVariable("ReleaseNotes.Fix349.MaxWorkItems") ? Number(tl.getVariable("ReleaseNotes.Fix349.MaxWorkItems")) : 5000;
+
     let commitSearchCriteria = <GitQueryCommitsCriteria> {
         $skip: 0,
-        $top: 5000,
+        $top: maxCommits,
         includeWorkItems: true,
         itemVersion: { version: baseSourceVersion, versionType: GitVersionType.Commit },
         compareVersion: { version: currentSourceVersion, versionType: GitVersionType.Commit }
     };
 
     let gitClient = await vsts.getGitApi();
-    let commitsBetweenBuilds = await gitClient.getCommitsBatch(commitSearchCriteria, repositoryId);
-    let workItems: ResourceRef[] = [];
-    commitsBetweenBuilds.forEach(c => workItems.concat(c.workItems));
+    let commitsBetweenBuilds = await gitClient.getCommitsBatch(commitSearchCriteria, repositoryId, null, 0, maxCommits);
 
-    return workItems;
+    let workItems: ResourceRef[] = [];
+    let commits: Change[] = [];
+    commitsBetweenBuilds.forEach(c => {
+        commits.push(<Change>{
+            id: c.commitId,
+            message: c.comment,
+            type: "TfsGit",
+            author: {
+                displayName: c.author.name,
+                id: null,
+                uniqueName: c.committer.email
+            },
+            timestamp: c.author.date,
+            location: c.url
+            // pusher is missing from the result - do we need that?
+        });
+        let index = 0;
+        while (index < c.workItems.length && workItems.length < maxWorkItems) {
+            workItems.push(c.workItems[index++]);
+        }
+    });
+
+    return {
+        commits: commits,
+        workItems: workItems
+    };
 }
 
-export async function getWorkItemsForTfvcRepo(vsts: WebApi, changesets: Change[]): Promise<ResourceRef[]> {
-    let artifactUris = changesets.map(c => "vstfs:///VersionControl/Changeset/" + c.id);
-    let query = <ArtifactUriQuery> {
-        artifactUris: artifactUris
-    };
-
-    let witClient = await vsts.getWorkItemTrackingApi();
-    let artifactWorkItems = await witClient.queryWorkItemsForArtifactUris(query);
-    let workItems: ResourceRef[] = [];
-    artifactUris.forEach(uri => artifactWorkItems.artifactUrisQueryResult[uri]
-        .forEach(ref => workItems.push({id: ref.id.toString(), url: ref.url})));
-
-    return workItems;
+export interface CommitInfo {
+    commits: Change[],
+    workItems: ResourceRef[]
 }
