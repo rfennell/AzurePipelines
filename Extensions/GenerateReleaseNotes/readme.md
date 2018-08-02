@@ -110,3 +110,4 @@ Using the settings for the output file shown above, the release notes will be cr
 - 2.19 - PR267 Added support for transparent proxy by @aldodfm
 - 2.20 - Issue290 Changed the output file encoding from the ASCII default UTF8
 - 2.21 - Issue291 fixed bug that empty text parameter was not being used 
+- 2.22 - Issue349 fixed missing work items due to VSTS API limitation - set variable ReleaseNotes.Fix349 to true to enable the workaround code

@@ -17,36 +17,122 @@ function Use-SystemWebProxy {
     [System.Net.WebRequest]::DefaultWebProxy = $proxy
 }
 
-function Get-BuildWorkItems {
+function Get-WorkItemDataFromBuild {
     param
     (
         $tfsUri,
         $teamproject,
         $buildid,
         $usedefaultcreds,
-        $maxItems,
+        $maxItems
+    )
+
+    Write-Verbose "        Getting up to $($maxItems) associated work items for build [$($buildid)]"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/workitems?api-version=2.0&`$top=$($maxItems)"
+    $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| ConvertFrom-JsonUsingDOTNET
+    Write-Verbose "        Found $($jsondata.value.Count) WI directly associated with build"
+
+    $jsondata
+}
+
+function Get-CommitInfoFromGitRepo {
+    param
+    (
+        $tfsUri,
+        $teamproject,
+        $build,
+        $usedefaultcreds,
+        $maxCommits,
+        $maxWi
+    )
+
+    Write-Verbose "        Getting previous successful build"
+
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?definitions=$($build.definition.id)&maxTime=$($build.queueTime)&queryOrder=finishTimeDescending&statusFilter=completed&resultFilter=succeeded&branchName=$($build.sourceBranch)&maxBuildsPerDefinition=1&api-version=4.1"
+    $previousBuild = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
+
+    if ($previousBuild.count -eq 0) {
+        # This is the first build for this branch
+        # Simply take $maxCommits commits from Git history
+        $uri = "$($tfsUri)/$($teamproject)/_apis/git/repositories/$($build.repository.id)/commits?searchCriteria.includeWorkItems=true&searchCriteria.`$top=$maxCommits&searchCriteria.compareVersion.version=$($build.sourceVersion)&searchCriteria.compareVersion.versionType=commit&`$top=$maxCommits&api-version=4.1"
+        $commits = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
+    }
+    else {
+        Write-Verbose "        Getting up to $($maxWi) associated work items from commits"
+
+        $commitSearchCriteria = @{
+            "$skip" = 0;
+            "$top" = 5000;
+            "includeWorkItems" = $true;
+            "itemVersion" = @{ "version" = $previousBuild.value[0].sourceVersion; "versionType" = 2 };
+            "compareVersion" = @{ "version" = $build.sourceVersion; "versionType" = 2 }
+        };
+        $uri = "$($tfsUri)/$($teamproject)/_apis/git/repositories/$($build.repository.id)/commitsbatch?api-version=4.1"
+        $commits = Invoke-PostCommand -uri $uri -Body $commitSearchCriteria -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
+    }
+
+    $commitData = @()
+    foreach ($c in $commits.value) {
+        if (!$c.message -and !$c.comment) {continue} # skip commits with no description
+        try {
+            # we can get more detail if the changeset is on VSTS or TFS
+            if ($c.location) {
+                $commitData += Get-Detail -uri $c.location -usedefaultcreds $usedefaultcreds
+            } else {
+                $commitData += Get-Detail -uri $c.url -usedefaultcreds $usedefaultcreds
+            }
+        }
+        catch {
+            Write-warning "        Unable to get details of changeset/commit as it is not stored in TFS/VSTS"
+            Write-warning "        For [$($c.id)]"
+            Write-warning "        Just using the details we have"
+            $commitData += $c
+        }
+    }
+
+    $wiCount = 0
+    $workItemData = @()
+    for ($commitIndex = 0; ($commitIndex -lt $commits.count) -and ($wiCount -lt $maxWi); ++$commitIndex) {
+        $workItems = $commits.value[$commitIndex].workItems
+        for ($workItemIndex = 0; ($workItemIndex -lt $workItems.Length) -and ($wiCount -lt $maxWi); ++$workItemIndex) {
+            $workItemData += $workItems[$workItemIndex]
+            $wiCount += 1
+        }
+    }
+
+    $result = @{
+        "commits" = $commitData;
+        "workItems" = @{
+            "count" = $wiCount;
+            "value" = $workItemData
+        }
+    }
+    $result
+}
+
+function Expand-WorkItemData {
+    param
+    (
+        $workItemData,
+        $usedefaultcreds,
         $wifilter,
 		$wiStateFilter,
 		$showParents
     )
 
-    Write-Verbose "        Getting up to $($maxItems) associated work items for build [$($buildid)]"
     $wiList = @();
 	 
     try {
-        $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/workitems?api-version=2.0&`$top=$($maxItems)"
-		$jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds| ConvertFrom-JsonUsingDOTNET
-		Write-Verbose "        Found $($jsondata.value.Count) WI directly associated with build"
 		if ($showParents -eq $false)
 		{
 			Write-Verbose "        Running in directly associated WI only mode"
-			foreach ($wi in $jsondata.value) {
+			foreach ($wi in $workItemData.value) {
 				$wiList += Get-Detail -uri $wi.url -usedefaultcreds $usedefaultcreds
 			}	
 		} else {
             $wiArray = @{}
 			Write-Verbose "        Running in directly associated WI and parent mode"
-			foreach ($wi in $jsondata.value) {
+			foreach ($wi in $workItemData.value) {
 				# Get associated work item
 				$wiuri = $wi.url
 				$wiuri = "$($wiuri)?`$expand=relations"
@@ -326,7 +412,41 @@ function Invoke-GetCommand {
     $webclient.DownloadString($uri)
 }
 
+function Invoke-PostCommand() {
+    [CmdletBinding()]
+    param
+    (
+        $uri,
+        $body,
+        $usedefaultcreds
+    )
 
+    # When debugging locally, this variable can be set to use personal access token.
+    $debugpat = $env:PAT
+
+    $jsonBody = ConvertTo-Json $body -Depth 100 -Compress
+    $jsonBody = $jsonBody.Replace("\u0026", "&")
+    $headers = @{ Accept="application/json" }
+    $headers["Accept-Charset"] = "utf-8"
+
+    if ([System.Convert]::ToBoolean($usedefaultcreds) -eq $true) {
+        Write-Verbose "Using default credentials"
+        Invoke-RestMethod $uri -Method "POST" -Headers $headers -ContentType "application/json" -Body ([System.Text.Encoding]::UTF8.GetBytes($jsonBody)) -UseDefaultCredentials
+    } 
+    else {
+        if ([string]::IsNullOrEmpty($debugpat) -eq $false) {
+            $encodedPat = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(":$debugpat"))
+            $headers["Authorization"] = "Basic $encodedPat"
+        }
+        else {
+            # Write-Verbose "Using SystemVssConnection personal access token"
+            $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
+            $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
+            $headers["Authorization"] = "Bearer $personalAccessToken"
+        }
+        Invoke-RestMethod $uri -Method "POST" -Headers $headers -ContentType "application/json" -Body ([System.Text.Encoding]::UTF8.GetBytes($jsonBody))
+    }
+}
 
 function Render() {
     [CmdletBinding()]
@@ -567,12 +687,29 @@ function Get-BuildDataSet {
     # Get the callers preference variables. See https://blogs.technet.microsoft.com/heyscriptingguy/2014/04/26/weekend-scripter-access-powershell-preference-variables/
     Get-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
 
-    write-verbose "    Getting build details for BuildID [$buildid]"    
+    write-verbose "    Getting build details for BuildID [$buildid]"
     $build = Get-Build -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
 
+    $changesets = $null
+    $workItemData = $null
+
+    # Check if workaround for issue #349 should be used
+    # There is only a workaround for Git but not for TFVC :(
+    [string] $activateFix = $Env:RELEASENOTES_FIX349
+    if (($build.repository.type -eq "TfsGit") -and ![string]::IsNullOrEmpty($activateFix) -and ($activateFix.ToLower() -eq $true)) {
+        $commitInfo = Get-CommitInfoFromGitRepo -tfsUri $tfsUri -teamproject $teamproject -build $build -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxCommits $maxChanges
+        $changesets = $commitInfo.commits
+        $workItemData = $commitInfo.workItems
+    }
+    else {
+        $changesets = Get-BuildChangeSets -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxChanges
+        $workItemData = Get-WorkItemDataFromBuild -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxWi
+    }
+    $workItems = Expand-WorkItemData -workItemData $workItemData -usedefaultcreds $usedefaultcreds -wifilter $wiFilter -wiStateFilter $wiStateFilter -showParents $showParents
+
     $build = @{ 'build' = $build;
-				'workitems' = (Get-BuildWorkItems -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxWi -wifilter $wifilter -wiStateFilter $wiStateFilter -showParents $showParents);
-				'changesets' = (Get-BuildChangeSets -tfsUri $tfsUri -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxItems $maxChanges )
+				'workitems' = $workItems;
+				'changesets' = $changesets
     }
     $build
 }
