@@ -120,7 +120,7 @@ if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge [Version]::Pars
         Write-Warning -Message "No PowerShell files found under [$CodeCoverageFolder] to analyse for code coverage."
     }
 }
-elseif ($CodeCoverageOutputFile -and (Get-Module Pester).Version -lt '4.0.4') {
+elseif ($CodeCoverageOutputFile -and (Get-Module Pester).Version -lt [Version]::Parse('4.0.4')) {
     Write-Warning -Message "Code coverage output not supported on Pester versions before 4.0.4."
 }
 
