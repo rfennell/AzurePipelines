@@ -105,7 +105,7 @@ if ($ExcludeTag) {
     $ExcludeTag = $ExcludeTag.Split(',').Replace('"', '').Replace("'", "")
     $Parameters.Add('ExcludeTag', $ExcludeTag)
 }
-if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge '4.0.4') {
+if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge [Version]::Parse('4.0.4')) {
     if (-not $PSBoundParameters.ContainsKey('CodeCoverageFolder')) {
         $CodeCoverageFolder = $scriptFolder
     }
