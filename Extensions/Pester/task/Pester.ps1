@@ -77,6 +77,7 @@ if ((Get-Module -Name PowerShellGet -ListAvailable) -and (Get-Command Install-Mo
     If ((Get-Module Pester -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
         Install-Module -Name Pester -Scope CurrentUser -Force -Repository PSGallery -SkipPublisherCheck
     }
+    Import-Module -Name Pester
 }
 else {
     Import-Module "$PSScriptRoot\4.3.1\Pester.psd1" -force
