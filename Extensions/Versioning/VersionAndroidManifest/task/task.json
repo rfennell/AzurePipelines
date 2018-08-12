@@ -79,6 +79,15 @@
         "groupName":"advanced"
       },
       {
+        "name": "Injectversion",
+        "type": "boolean",
+        "label": "Inject Version",
+        "defaultValue": "False",
+        "required": true,
+        "helpMarkDown": "If True no regex processing will be done to the build number.",
+        "groupName":"advanced"
+      },
+      {
         "name": "OutputVersion",
         "type": "string",
         "label": "Version number used variable name",
