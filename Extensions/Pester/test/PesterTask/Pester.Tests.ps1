@@ -13,7 +13,7 @@ Describe "Testing Pester Task" {
         }
         it "Throws Exception when passed an invalid file type for ResultsFile" {
             Mock -CommandName Write-Host -MockWith {}
-            {&$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml} | Should -Throw
+            {&$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.invalid} | Should -Throw
         }
         it "ResultsFile is Mandatory" {
             (Get-Command $sut).Parameters['ResultsFile'].Attributes.Mandatory | Should -Be $True
@@ -268,7 +268,9 @@ Describe "Testing Pester Task" {
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
 
             Assert-MockCalled Install-Module -Times 0 -Scope It
+            Assert-MockCalled Import-Module -Times 1 -ParameterFilter {$Name -like '*\4.3.1\Pester.psd1'}
             Assert-MockCalled Invoke-Pester
+            Assert-MockCalled Write-Warning -Times 0 -ParameterFilter {$Message -eq "Code coverage output not supported on Pester versions before 4.0.4."}
         }
         <#it "Loads Pester version that ships with task when not on PS5+ or PowerShellGet is unavailable" {
             mock Invoke-Pester { }

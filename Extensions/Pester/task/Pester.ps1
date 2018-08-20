@@ -77,6 +77,7 @@ if ((Get-Module -Name PowerShellGet -ListAvailable) -and (Get-Command Install-Mo
     If ((Get-Module Pester -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
         Install-Module -Name Pester -Scope CurrentUser -Force -Repository PSGallery -SkipPublisherCheck
     }
+    Import-Module -Name Pester
 }
 else {
     Import-Module "$PSScriptRoot\4.3.1\Pester.psd1" -force
@@ -105,7 +106,7 @@ if ($ExcludeTag) {
     $ExcludeTag = $ExcludeTag.Split(',').Replace('"', '').Replace("'", "")
     $Parameters.Add('ExcludeTag', $ExcludeTag)
 }
-if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge '4.0.4') {
+if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge [Version]::Parse('4.0.4')) {
     if (-not $PSBoundParameters.ContainsKey('CodeCoverageFolder')) {
         $CodeCoverageFolder = $scriptFolder
     }
@@ -120,7 +121,7 @@ if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge '4.0.4') {
         Write-Warning -Message "No PowerShell files found under [$CodeCoverageFolder] to analyse for code coverage."
     }
 }
-elseif ($CodeCoverageOutputFile -and (Get-Module Pester).Version -lt '4.0.4') {
+elseif ($CodeCoverageOutputFile -and (Get-Module Pester).Version -lt [Version]::Parse('4.0.4')) {
     Write-Warning -Message "Code coverage output not supported on Pester versions before 4.0.4."
 }
 
