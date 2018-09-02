@@ -47,3 +47,4 @@ Releases
 - 8.1.x - Fixed the default working folder to System.DefaultWorkingDirectory as this is a variable available in both build and release. ([Fixes #350](https://github.com/rfennell/vNextBuild/issues/350))
 - 8.3.x - Fixed the version number comparison for Code Coverage so it should no longer incorrectly warn when a version is newer than 4.0.4 [Fixes #356](https://github.com/rfennell/vNextBuild/issues/356)
 - 8.4.x - Fixed the hashtable conversion for lower versions of PowerShell. Sadly this makes use of Invoke-Expression but there is a warning that it is an unsafe operation and the build agent should be upgraded to v5 when possible. [Fixes #358](https://github.com/rfennell/vNextBuild/issues/358)
+- 8.6.x - Fixed the installation of Pester from the PSGallery to use the first available PS Repository so it handles situations where only a private repository is available. [Fixes #366](https://github.com/rfennell/vNextBuild/issues/366)
