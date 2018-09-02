@@ -73,9 +73,10 @@ if ((Get-Module -Name PowerShellGet -ListAvailable) -and (Get-Command Install-Mo
     catch {
         Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false
     }
-    $NewestPester = Find-Module -Name Pester -Repository PSGallery
+    $Respository = Get-PSRepository | Select-Object -First 1
+    $NewestPester = Find-Module -Name Pester -Repository $Respository.Name
     If ((Get-Module Pester -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
-        Install-Module -Name Pester -Scope CurrentUser -Force -Repository PSGallery -SkipPublisherCheck
+        Install-Module -Name Pester -Scope CurrentUser -Force -Repository $Respository.Name -SkipPublisherCheck
     }
     Import-Module -Name Pester
 }
