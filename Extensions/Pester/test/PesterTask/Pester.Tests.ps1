@@ -45,6 +45,7 @@ Describe "Testing Pester Task" {
             Mock Install-Module { }
             Mock Find-Module { }
             Mock Get-PackageProvider { $True }
+            Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
 
             . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure,Integration'
             $Tag.Length | Should Be 2
@@ -63,6 +64,7 @@ Describe "Testing Pester Task" {
             Mock Install-Module { }
             Mock Find-Module { }
             Mock Get-PackageProvider { $True }
+            Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
 
             . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example,Demo'
             $ExcludeTag.Length | Should be 2
@@ -79,6 +81,7 @@ Describe "Testing Pester Task" {
             Mock Install-Module { }
             Mock Find-Module { }
             Mock Get-PackageProvider { $True }
+            Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
 
             . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile $null
             Assert-MockCalled Invoke-Pester
@@ -100,6 +103,7 @@ Describe "Testing Pester Task" {
         Mock Install-Module { }
         Mock Find-Module { }
         Mock Get-PackageProvider { $True }
+        Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
 
         it "Calls Invoke-Pester correctly with ScriptFolder and ResultsFile specified" {
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
@@ -142,6 +146,7 @@ Describe "Testing Pester Task" {
         Mock Import-Module { }
         Mock Install-Module { }
         Mock Write-Error { }
+        Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
         mock Invoke-Pester {
             param ($OutputFile)
             New-Item -Path $OutputFile -ItemType File
@@ -218,6 +223,7 @@ Describe "Testing Pester Task" {
         Mock Install-Module { $true }
         Mock Write-host { }
         Mock Write-Warning { }
+        Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
         Mock Write-Error { }
         Mock Get-Command { [PsCustomObject]@{Parameters=@{SkipPublisherCheck='SomeValue'}}}
 
