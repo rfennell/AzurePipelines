@@ -475,8 +475,9 @@ export function writeFile(filename: string, data: string) {
 }
 
 // The release management API has a different URL
-function fixRmUrl(url: string ): string {
-     return url.replace(".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection");
+export function fixRmUrl(url: string ): string {
+     var fixedUrl = url.replace(".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection")
+     return fixedUrl.replace("dev.azure.com",  "vsrm.dev.azure.com");
 }
 
 const Mode = {
