@@ -7,15 +7,15 @@
   "description": "XPlatGenerateReleaseNotesTask",
   "main": "GenerateReleaseNotes.js",
   "dependencies": {
-    "@types/node": "^7.0.59",
-    "@types/q": "^1.5.0",
+    "@types/node": "^7.0.70",
+    "@types/q": "^1.5.1",
     "@types/xmldom": "^0.1.29",
     "fs": "^0.0.1-security",
     "ncp": "^2.0.0",
-    "request": "^2.85.0",
+    "request": "^2.88.0",
     "tsd": "^0.6.5",
     "vso-node-api": "^6.5.0",
-    "vsts-task-lib": "^2.0.5"
+    "vsts-task-lib": "^2.6.1"
   },
   "devDependencies": {
     "@types/chai": "^4.0.4",
