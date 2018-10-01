@@ -36,7 +36,9 @@ param
         })]
     [string]$CodeCoverageOutputFile,
 
-    [string]$CodeCoverageFolder
+    [string]$CodeCoverageFolder,
+
+    [string]$ScriptBlock
 )
 
 Import-Module -Name "$PSScriptRoot\HelperModule.psm1" -Force
@@ -123,6 +125,12 @@ if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge [Version]::Pars
 }
 elseif ($CodeCoverageOutputFile -and (Get-Module Pester).Version -lt [Version]::Parse('4.0.4')) {
     Write-Warning -Message "Code coverage output not supported on Pester versions before 4.0.4."
+}
+
+if ($ScriptBlock) {
+    $ScriptBlockObject = [ScriptBlock]::Create($ScriptBlock)
+
+    $ScriptBlockObject.Invoke()
 }
 
 $result = Invoke-Pester @Parameters
