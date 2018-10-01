@@ -127,7 +127,7 @@ elseif ($CodeCoverageOutputFile -and (Get-Module Pester).Version -lt [Version]::
     Write-Warning -Message "Code coverage output not supported on Pester versions before 4.0.4."
 }
 
-if ($ScriptBlock) {
+if (-not([String]::IsNullOrWhiteSpace($ScriptBlock))) {
     $ScriptBlockObject = [ScriptBlock]::Create($ScriptBlock)
 
     $ScriptBlockObject.Invoke()
