@@ -61,9 +61,9 @@ async function run() {
 
     console.log(`Found ${currentReleaseDetails.artifacts.length + 1} artifacts in this release`);
     for (let artifact of currentReleaseDetails.artifacts) {
-        console.log(`Looking at artifact [${artifact.alias}] of type [${artifact.artifactType}]`);
+        console.log(`Looking at artifact [${artifact.alias}] of type [${artifact.type}]`);
 
-        if (artifact.artifactType === "Build") {
+        if (artifact.type === "Build") {
             console.log(`Getting build associated with artifact. Build Id [${artifact.definitionReference.version.id}]`);
 
             var currentReleaseBuild = await getBuild(instance, teamproject, encodedPat, artifact.definitionReference.version.id);
