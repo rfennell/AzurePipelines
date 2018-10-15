@@ -63,6 +63,9 @@ const versionCode = getSplitVersionParts(versionRegex, versionCodeFormat, newVer
 if (parseInt(versionCode, 10) >= 2100000000) {
     tl.error(`Version Code of ${versionCode} is too long, must be below 2100000000 for submission to Google Play Store`);
     process.exit(1);
+} else if (parseInt(versionCode, 0) === 0) {
+    tl.error(`Version Code cannot be 0. Please ensure the value is greater than 0 and increments to unique numbers.`);
+
 } else {
     console.log (`Version Code will be ${versionCode}`);
 }
