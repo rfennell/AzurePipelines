@@ -48,6 +48,24 @@ function GetTask($path)
     }
 }
 
+function DumpField($field) 
+{
+    $line = New-Object System.Collections.Generic.List[System.Object]
+    $line.Add("- **Argument:** " + $field.name)
+    $line.Add("    - **Description:** " + $field.helpMarkDown)
+    $line.Add("    - **Type:** " + $field.type )
+    if ($field.type -eq "picklist")
+    {
+       foreach ($option in $field.options.psobject.Members |? {$_.Membertype -eq "noteproperty"} |  %{ $_.Name }) 
+       {
+            $line.Add("        - " + $option )
+       }
+    }
+    $line.Add("    - **Required:** " + $field.required )
+    $line.Add("    - **Default (if defined):** " + $field.defaultValue )
+    return $line
+}
+
 if (-not (Test-Path $outdir))
 {
     Write-Host "Creating folder '$outdir'"
@@ -70,35 +88,59 @@ foreach ($jsonfile in Get-ChildItem -Path $path -Filter "task.json" -Recurse)
     # Make sure only create a file ones
     if (-not (Test-Path $filepath))
     {
-
+       Write-Host "       Creating .MD file"
        "# $extension " | Out-File -FilePath $filepath -Append 
        "The $extension package contains the following tasks. The table show the possible variables that can be used in YAML Azure DevOps Pipeline configurations " | Out-File -FilePath $filepath -Append 
     }    
-        
+
+    Write-Host "       Adding YAML sample"
+    # have tried simple PS dump and a markdown table, neither looks good, so some manual formatting
     $json = Get-Content $jsonfile.FullName | ConvertFrom-Json
     "## $task " | Out-File -FilePath $filepath -Append 
     $json.description | Out-File -FilePath $filepath -Append 
-    "### Variables " | Out-File -FilePath $filepath -Append 
-    # have tried simple PS dump and a markdown table, neither looks good, so some manual formatting
+    "### YAML snippet " | Out-File -FilePath $filepath -Append 
+    "``````" | Out-File -FilePath $filepath -Append 
+    "# " + $json.friendlyName  | Out-File -FilePath $filepath -Append 
+    "# Description - " + $json.description | Out-File -FilePath $filepath -Append 
+    "- task: " + $json.name | Out-File -FilePath $filepath -Append 
+    "  inputs: " | Out-File -FilePath $filepath -Append 
+    "     # Required arguments" | Out-File -FilePath $filepath -Append 
     foreach ($field in $json.inputs)
     {
-        "#### Name: " + $field.name | Out-File -FilePath $filepath -Append
-        "- **Description:** " + $field.helpMarkDown | Out-File -FilePath $filepath -Append
-        "- **Type:** " + $field.type | Out-File -FilePath $filepath -Append
-        if ($field.type -eq "picklist")
+        if ($field.required -eq "True")
         {
-         #  "    " + $field.options 
-         #  $field.options.psobject.Members | %{ $_.Name } 
-           foreach ($option in $field.options.psobject.Members |? {$_.Membertype -eq "noteproperty"} |  %{ $_.Name }) 
-           {
-           "    - " + $option | Out-File -FilePath $filepath -Append
-           }
+            "     " + $field.name + ": " + $field.defaultValue | Out-File -FilePath $filepath -Append 
         }
-        "- **Required:** " + $field.required | Out-File -FilePath $filepath -Append
-        "- **Default:** " + $field.defaultValue | Out-File -FilePath $filepath -Append
-       
+    }
+    "``````" | Out-File -FilePath $filepath -Append 
+
+    Write-Host "       Adding standard arguments"
+    "### Arguments " | Out-File -FilePath $filepath -Append 
+
+    # build the list of groups
+    $groups = New-Object System.Collections.Generic.List[System.Object]
+    foreach ($group in $json.groups )
+    {
+        $groups.Add($group)
+    }
+   
+    Write-Host "       Default arguments"
+    foreach ($field in $json.inputs | Where-Object {$_.groupName -eq $null})
+    {
+        DumpField -field $field | Out-File -FilePath $filepath -Append
     } 
 
+    # other groups
+    foreach( $group in $groups)
+    {
+        Write-Host "       Argument Group " $group.displayName
+        "#### " + $group.displayName| Out-File -FilePath $filepath -Append 
+        foreach ($field in $json.inputs | Where-Object {$_.groupName -eq $group.name})
+        {
+            DumpField -field $field | Out-File -FilePath $filepath -Append
+        } 
+    }
  }
 
 
+#| Select-Object {$_.displayName} 
