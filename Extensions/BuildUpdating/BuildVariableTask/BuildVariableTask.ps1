@@ -100,15 +100,31 @@ function Update-Build
     if ($mode -eq "Manual")
     {
         Write-Verbose "Manually updating variable"
-        $def.variables.$variable.value = "$value"
+        try {
+            $def.variables.$variable.value = "$value"
+        }
+        catch {
+            Write-Error "Cannot set variable [$variable] a variable could not be found"
+            return
+        }
     } else
     {
         Write-Verbose "Autoincrementing variable"
-        $def.variables.$variable.value = "$([convert]::ToInt32($def.variables.$variable.value) +1)"
+        try {
+            $def.variables.$variable.value = "$([convert]::ToInt32($def.variables.$variable.value) +1)"
+        } catch {
+            Write-Error "Cannot increment variable [$variable] either the variable could not be found or the value is not numberic"
+            return
+        }
     }
+
     Write-Verbose "Setting variable [$variable] to value [$($def.variables.$variable.value)]"
-    # write it back
-    $response = Set-BuildDefinationVariable -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -data $def -usedefaultcreds $usedefaultcreds
+    try {
+        # write it back
+        $response = Set-BuildDefinationVariable -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -data $def -usedefaultcreds $usedefaultcreds
+    } catch {
+        Write-Error "Cannot update the build, probably a rights issues see https://github.com/rfennell/AzurePipelines/wiki/BuildTasks-Task (foot of page) to see notes on granting rights"
+    }
 
 }
 

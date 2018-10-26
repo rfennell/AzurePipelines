@@ -53,3 +53,4 @@ To address this problem
 - 1.7.x - Issue #236 add option to update named list of artifacts
           Issue #237 allowed reset of retension as well as setting
 - 1.8.x - Issue #380 fix to allow support for dev.azure.com URL format 
+- 1.9.x - Issue #374 add better logging of update issues
