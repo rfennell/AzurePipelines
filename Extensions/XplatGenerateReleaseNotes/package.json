@@ -4,10 +4,13 @@
         "installTasks": "node make.js installTasks",
         "build": "node make.js build",
         "clean": "node make.js clean",
-        "package": "node make.js package"
+        "package": "node make.js package",
+        "test": "node make.js test"
     },
     "devDependencies": {
+        "chai": "^4.2.0",
         "minimist": "^1.2.0",
+        "mocha": "^5.2.0",
         "ncp": "^2.0.0",
         "path": "^0.12.7",
         "rimraf": "^2.6.2",
@@ -15,7 +18,8 @@
         "shelljs": "^0.8.1",
         "tslint": "^5.9.1",
         "typescript": "^2.8.1",
-        "validator": "^9.4.1"
+        "validator": "^9.4.1",
+        "ts-node": "^3.3.0"
     },
     "dependencies": {
         "child_process": "^1.0.2"

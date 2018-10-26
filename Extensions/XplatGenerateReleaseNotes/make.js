@@ -128,6 +128,33 @@ target.build = function() {
     });
 };
 
+target.test = function() {
+    versionList.forEach(function (version){
+        banner(`Testing [${version}]`);
+
+        var versionPath = path.join(__dirname, version);
+        ensureExists(versionPath)
+
+        // load the task.json
+        var outDir;
+        // Determine OS and set command accordingly
+        const cmd = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
+
+        // Test
+        if (test('-f', path.join(versionPath, "task.json"))){
+            try{
+                console.log(`Starting testst`);
+                util.run(`mocha -r ts-node/register ./test/*.ts`,  { env: process.env, cwd: versionPath, stdio: 'inherit' })
+            }catch(error){
+                fail(error);
+            }
+        }else{
+            console.log(`Skipping lint because tsling.json does not exist.`)
+        }
+
+    });
+};
+
 target.package = function(){
     target.clean();
     target.installTasks();

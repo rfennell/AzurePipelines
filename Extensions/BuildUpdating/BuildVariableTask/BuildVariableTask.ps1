@@ -113,7 +113,7 @@ function Update-Build
         try {
             $def.variables.$variable.value = "$([convert]::ToInt32($def.variables.$variable.value) +1)"
         } catch {
-            Write-Error "Cannot increment variable [$variable] either the variable could not be found or the value is not numberic"
+            Write-Error "Cannot increment variable [$variable] either the variable could not be found or the value is not numeric"
             return
         }
     }
