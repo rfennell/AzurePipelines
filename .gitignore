@@ -256,6 +256,14 @@ Extensions/stylecop/test/logs
 Extensions/StyleCop/test/TestData/results.xml
 Extensions/StyleCop/test/TestData/StyleCopSample/results.xml
 
+Extensions/WikiUpdater/WikiUpdaterTask/*.js
+Extensions/WikiUpdater/WikiUpdaterTask/*.js.map
+Extensions/WikiUpdater/WikiUpdaterTask/test/*.js
+Extensions/WikiUpdater/WikiUpdaterTask/test/*.js.map
+Extensions/WikiUpdater/WikiUpdaterTask/node_modules
+Extensions/WikiUpdater/WikiUpdaterTask/dist
+Extensions/WikiUpdater/WikiUpdaterTask/repo
+
 /.vs
 /Extensions/GenerateReleaseNotes/GenerateReleaseNotesTask/ReleaseNotes.md
 /Extensions/GenerateReleaseNotes/GenerateReleaseNotesTask/ReleaseNotes_AllFields.md

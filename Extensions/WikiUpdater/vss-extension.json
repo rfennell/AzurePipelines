@@ -1,0 +1,68 @@
+{
+ "manifestVersion": 1,
+ "id": "BM-VSTS-WikiUpdater-Tasks",
+ "version": "1.0.0",
+ "name": "WIKI Updater Tasks",
+ "publisher": "richardfennellBM",
+  "description": "Set of tasks update Git based WIKIs.",
+  "CustomerQnASupport": {
+    "enableqna":"true",
+    "url": "https://github.com/rfennell/AzurePipelines/issues"
+  }, 
+  "categories": [
+    "Build and release"
+  ],
+  "targets": [
+         {
+             "id": "Microsoft.VisualStudio.Services"
+         }
+     ],
+  "tags": [
+    "WIKI"
+  ],   
+  "branding": {
+        "color": "#f97923",
+        "theme": "dark"
+  },
+  "icons": {
+      "default": "images/logo.png"
+  },
+   "links": {
+    "getstarted": {
+      "uri": "https://github.com/rfennell/AzurePipelines/wiki/WIKI-Updater-Tasks"
+    },
+    "support": {
+      "uri": "https://github.com/rfennell/AzurePipelines/issues"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot1.png"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "files": [
+    {
+      "path": "WikiUpdaterTask"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "WikiUpdaterTask",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "WikiUpdaterTask"
+      }
+    }
+  ]
+}
