@@ -6,8 +6,7 @@
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-Updater-Task/)",
   "category": "Test",
   "visibility": [
-    "Build",
-    "Release"
+    "Utility"
   ],
   "author": "Richard Fennell",
   "version": {
@@ -87,7 +86,7 @@
       "label": "Password/PAT",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The password/PAT for authentication (recommended stored as secret variable"
+      "helpMarkDown": "The password/PAT for authentication (recommended stored as secret variable)"
     },
     {
       "name": "localpath",
