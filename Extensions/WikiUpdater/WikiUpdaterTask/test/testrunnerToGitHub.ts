@@ -2,12 +2,13 @@ import {
     UpdateGitWikiFile
     } from "../src/GitWikiFuntions";
 
-import {
-    logDebug,
-    logWarning,
-    logInfo,
-    logError
-    }  from "../src/agentSpecific";
+function logInfo (msg: string) {
+    console.log(msg);
+}
+
+function logError (msg: string) {
+    console.log("\x1b[31m", msg);
+}
 
 // GitHub always needs the user ID
 const user = "rfennell";
@@ -22,4 +23,4 @@ const message = "A message";
 const gitname = "BuildProcess";
 const gitemail = "Build@Process";
 
-UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo);
+UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError);

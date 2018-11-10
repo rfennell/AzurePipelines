@@ -31,4 +31,4 @@ console.log(`Variable: Username [${user}]`);
 console.log(`Variable: Password [${password}]`);
 console.log(`Variable: Localpath [${localpath}]`);
 
-UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo);
+UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError);

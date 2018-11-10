@@ -13,34 +13,38 @@ function rimrafPromise (localpath)  {
     });
 }
 
-export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo) {
+export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError) {
     const git = simplegit();
 
     const remote = `https://${user}:${password}@${repo}`;
 
-    if (fs.existsSync(localpath)) {
-        await rimrafPromise(localpath);
+    try {
+        if (fs.existsSync(localpath)) {
+            await rimrafPromise(localpath);
+        }
+        logInfo(`Cleaned ${localpath}`);
+
+        await git.silent(true).clone(remote, localpath);
+        logInfo(`Cloned ${repo} to ${localpath}`);
+
+        await git.cwd(localpath);
+        await git.addConfig("user.name", name);
+        await git.addConfig("user.email", email);
+        logInfo(`Set GIT values in ${localpath}`);
+
+        process.chdir(localpath);
+        fs.writeFileSync(filename, contents);
+        logInfo(`Created the ${filename} in ${localpath}`);
+
+        await git.add(filename);
+        logInfo(`Added ${filename} to repo ${localpath}`);
+
+        await git.commit(message, filename);
+        logInfo(`Committed to ${localpath}`);
+
+        await git.push();
+        logInfo(`Pushed to ${repo}`);
+    } catch (error) {
+        logError(error);
     }
-    logInfo(`Cleaned ${localpath}`);
-
-    await git.silent(true).clone(remote, localpath);
-    logInfo(`Cloned ${repo} to ${localpath}`);
-
-    await git.cwd(localpath);
-    await git.addConfig("user.name", name);
-    await git.addConfig("user.email", email);
-    logInfo(`Set GIT values in ${localpath}`);
-
-    process.chdir(localpath);
-    fs.writeFileSync(filename, contents);
-    logInfo(`Created the ${filename} in ${localpath}`);
-
-    await git.add(filename);
-    logInfo(`Added ${filename} to repo ${localpath}`);
-
-    await git.commit(message, filename);
-    logInfo(`Committed to ${localpath}`);
-
-    await git.push();
-    logInfo(`Pushed to ${repo}`);
 }
