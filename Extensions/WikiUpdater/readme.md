@@ -17,7 +17,7 @@ Add the task to a build or release
 - Message - The Git commit message
 - GitName - The name for the .gitatrributes file
 - GitEmail - The email for the .gitatrributes file
-- User - The username to autneticate with the repo (see below)
+- Username - The username to autneticate with the repo (see below)
 - Passsword - The password or PAT to autneticate with the repo (see below) _Recommended stored as secret variable_
 
 #### Advanced

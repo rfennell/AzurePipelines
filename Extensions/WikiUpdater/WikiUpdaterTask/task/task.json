@@ -4,9 +4,10 @@
   "friendlyName": "Git based WIKI Updater from Black Marble",
   "description": "A tools to update or create a WIKI based in a Git repo",
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-Updater-Task/)",
-  "category": "Test",
+  "category": "Utility",
   "visibility": [
-    "Utility"
+    "Build",
+    "Release"
   ],
   "author": "Richard Fennell",
   "version": {
