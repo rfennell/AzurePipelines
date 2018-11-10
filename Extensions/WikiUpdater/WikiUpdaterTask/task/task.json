@@ -101,10 +101,9 @@
   ],
   "instanceNameFormat": "Git based WIKI Updater",
   "execution": {
-    "PowerShell": {
-      "target": "$(currentDirectory)\\Pester.ps1",
-      "argumentFormat": "",
-      "workingDirectory": "$(currentDirectory)"
+    "Node": {
+      "target": "GitWikiTask.js",
+      "argumentFormat": ""
     }
   }
 }
