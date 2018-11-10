@@ -17,6 +17,7 @@ export function logInfo (msg: string) {
 
 export function logError (msg: string) {
     tl.error(msg);
+    tl.setResult(tl.TaskResult.Failed, msg);
 }
 
 export function writeVariable (variableName: string, value: string) {
