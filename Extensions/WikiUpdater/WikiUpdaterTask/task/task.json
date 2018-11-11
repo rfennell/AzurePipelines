@@ -19,6 +19,11 @@
   "minimumAgentVersion": "1.82.0",
   "groups": [
     {
+      "name": "authentication",
+      "displayName": "Authentication",
+      "isExpanded": true
+    },
+    {
       "name": "advanced",
       "displayName": "Advanced",
       "isExpanded": false
@@ -74,12 +79,23 @@
       "helpMarkDown": "The Git attributes email"
     },
     {
+      "name": "useAgentToken",
+      "type": "boolean",
+      "label": "Use Agent Token",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true use the built in agent token, if not provide username & password/PAT",
+      "groupName": "authentication"
+    },
+    {
       "name": "user",
       "type": "string",
       "label": "Username",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The username for authentication"
+      "helpMarkDown": "The username for authentication",
+      "groupName": "authentication",
+      "visibleRule": "useAgentToken = False"
     },
     {
       "name": "password",
@@ -87,7 +103,9 @@
       "label": "Password/PAT",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The password/PAT for authentication (recommended stored as secret variable)"
+      "helpMarkDown": "The password/PAT for authentication (recommended stored as secret variable)",
+      "groupName": "authentication",
+      "visibleRule": "useAgentToken = False"
     },
     {
       "name": "localpath",

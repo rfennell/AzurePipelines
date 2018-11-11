@@ -16,7 +16,12 @@ function rimrafPromise (localpath)  {
 export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError) {
     const git = simplegit();
 
-    const remote = `https://${user}:${password}@${repo}`;
+    let remote = "";
+    if (user === "") {
+        remote = `https://${password}@${repo}`;
+    } else {
+        remote = `https://${user}:${password}@${repo}`;
+    }
 
     try {
         if (fs.existsSync(localpath)) {

@@ -6,7 +6,7 @@ The WIKI Updater task allows the updating of a Git based WIKI using an inputted 
 
 This can be used with both Azure DevOps and GitHub WIKIs
 
-###Usage
+### Usage
 
 Add the task to a build or release
 
@@ -17,27 +17,28 @@ Add the task to a build or release
 - Message - The Git commit message
 - GitName - The name for the .gitatrributes file
 - GitEmail - The email for the .gitatrributes file
+
+### Authentication
+
+- UseAgentTo - If true use the built in agent token, if not provide username & password/PAT"
 - Username - The username to autneticate with the repo (see below)
 - Passsword - The password or PAT to autneticate with the repo (see below) _Recommended stored as secret variable_
 
-#### Advanced
-- LocalPath - The path used to clone the repo to for updating. Defaults to $(System.DefaultWorkingDirectory)\\repo
-
-## Authentication
-
-The URL used for conenction to the repo is in the form
+The URL used for conenctkenion to the repo is in the form
 
 ```
 const remote = `https://${user}:${password}@${repo}`;
 ```
 
-### GitHub
+**GitHub**
 For GitHub if using 2FA then the **${user}** is you Git account name and the **${password}** is your [PAT](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
 
-### Azure DevOps
+**Azure DevOps**
 For Azure DevOps then the **${user}** is you organisation account name and the **${password}** is your [PAT](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=vsts)
 
-**Note**: Enhanced feature will used the built in task token in a later build
+
+#### Advanced
+- LocalPath - The path used to clone the repo to for updating. Defaults to $(System.DefaultWorkingDirectory)\\repo
 
 ## Releases
 
