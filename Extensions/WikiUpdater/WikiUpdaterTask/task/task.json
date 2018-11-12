@@ -81,7 +81,7 @@
     {
       "name": "useAgentToken",
       "type": "boolean",
-      "label": "Use Agent Token",
+      "label": "Run with Build Agent Credentials",
       "defaultValue": "False",
       "required": false,
       "helpMarkDown": "If true use the built in agent token, if not provide username & password/PAT",
