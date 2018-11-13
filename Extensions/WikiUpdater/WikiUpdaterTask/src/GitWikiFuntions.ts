@@ -17,11 +17,15 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
     const git = simplegit();
 
     let remote = "";
-    if (user === "") {
+    if (password === "")
+    {
+        remote = `https://${repo}`;
+    } else if (user === "") {
         remote = `https://${password}@${repo}`;
     } else {
         remote = `https://${user}:${password}@${repo}`;
     }
+    logInfo(`URL used ${remote}`);
 
     try {
         if (fs.existsSync(localpath)) {

@@ -92,7 +92,7 @@
       "type": "string",
       "label": "Username",
       "defaultValue": "",
-      "required": true,
+      "required": false,
       "helpMarkDown": "The username for authentication",
       "groupName": "authentication",
       "visibleRule": "useAgentToken = False"
@@ -102,7 +102,7 @@
       "type": "string",
       "label": "Password/PAT",
       "defaultValue": "",
-      "required": true,
+      "required": false,
       "helpMarkDown": "The password/PAT for authentication (recommended stored as secret variable)",
       "groupName": "authentication",
       "visibleRule": "useAgentToken = False"
