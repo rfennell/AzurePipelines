@@ -17,8 +17,7 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
     const git = simplegit();
 
     let remote = "";
-    if (password === "")
-    {
+    if (password === "") {
         remote = `https://${repo}`;
     } else if (user === "") {
         remote = `https://${password}@${repo}`;
