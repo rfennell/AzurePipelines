@@ -12,17 +12,15 @@ import {
     }  from "./agentSpecific";
 
 function getSystemAccessToken(): string {
-    tl.debug("Getting credentials for local feeds");
-    /*
+    tl.debug("Getting credentials the agent is running as");
     var auth = tl.getEndpointAuthorization("SYSTEMVSSCONNECTION", false);
     if (auth.scheme === "OAuth") {
-        tl.debug("Got auth token");
+        tl.debug("Found an OAUTH token");
+        tl.debug(auth.parameters["AccessToken"]);
         return auth.parameters["AccessToken"];
     } else {
         tl.warning(tl.loc("BuildCredentialsWarn"));
     }
-    */
-    return tl.getVariable("SYSTEM_ACCESSTOKEN");
 }
 
 var repo = tl.getInput("repo");
