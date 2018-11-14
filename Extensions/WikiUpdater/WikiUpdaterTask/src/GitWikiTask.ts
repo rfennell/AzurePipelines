@@ -13,6 +13,7 @@ import {
 
 function getSystemAccessToken(): string {
     tl.debug("Getting credentials for local feeds");
+    /*
     var auth = tl.getEndpointAuthorization("SYSTEMVSSCONNECTION", false);
     if (auth.scheme === "OAuth") {
         tl.debug("Got auth token");
@@ -20,6 +21,8 @@ function getSystemAccessToken(): string {
     } else {
         tl.warning(tl.loc("BuildCredentialsWarn"));
     }
+    */
+    return tl.getVariable("SYSTEM_ACCESSTOKEN");
 }
 
 var repo = tl.getInput("repo");
