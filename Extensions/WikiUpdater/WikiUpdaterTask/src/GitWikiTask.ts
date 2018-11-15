@@ -16,7 +16,6 @@ function getSystemAccessToken(): string {
     var auth = tl.getEndpointAuthorization("SYSTEMVSSCONNECTION", false);
     if (auth.scheme === "OAuth") {
         tl.debug("Found an OAUTH token");
-        tl.debug(auth.parameters["AccessToken"]);
         return auth.parameters["AccessToken"];
     } else {
         tl.warning(tl.loc("BuildCredentialsWarn"));
@@ -47,7 +46,7 @@ console.log(`Variable: Localpath [${localpath}]`);
 
 if (useAgentToken === true) {
     console.log(`Using Agent Token`);
-    user = "";
+    user = "buildagent";
     password = getSystemAccessToken();
 }
 
