@@ -84,7 +84,7 @@
       "label": "Run with Build Agent Credentials",
       "defaultValue": "False",
       "required": false,
-      "helpMarkDown": "If true use the built in agent token, if not provide username & password/PAT",
+      "helpMarkDown": "If true use the built in agent OAUTH token. OAUTH script access must be enabled for the agent",
       "groupName": "authentication"
     },
     {

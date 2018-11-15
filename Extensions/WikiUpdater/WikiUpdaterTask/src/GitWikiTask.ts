@@ -45,7 +45,7 @@ console.log(`Variable: Password [${password}]`);
 console.log(`Variable: Localpath [${localpath}]`);
 
 if (useAgentToken === true) {
-    console.log(`Using Agent Token`);
+    console.log(`Using OAUTH Agent Token, overriding username and password`);
     user = "buildagent";
     password = getSystemAccessToken();
 }
