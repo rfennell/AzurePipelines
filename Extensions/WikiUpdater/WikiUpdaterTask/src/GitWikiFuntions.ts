@@ -42,7 +42,7 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
 
         process.chdir(localpath);
         // we need to change any encoded
-        fs.writeFileSync(filename, contents.replace(/`n/g, "\n"));
+        fs.writeFileSync(filename, contents.replace(/`n/g, "\r\n"));
         logInfo(`Created the ${filename} in ${localpath}`);
 
         await git.add(filename);
