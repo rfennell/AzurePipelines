@@ -29,3 +29,14 @@ export function writeVariable (variableName: string, value: string) {
         tl.setVariable(variableName, newlineRemoved );
     }
 }
+
+export function getSystemAccessToken(): string {
+    tl.debug("Getting credentials the agent is running as");
+    var auth = tl.getEndpointAuthorization("SYSTEMVSSCONNECTION", false);
+    if (auth.scheme === "OAuth") {
+        tl.debug("Found an OAUTH token");
+        return auth.parameters["AccessToken"];
+    } else {
+        tl.warning(tl.loc("BuildCredentialsWarn"));
+    }
+}

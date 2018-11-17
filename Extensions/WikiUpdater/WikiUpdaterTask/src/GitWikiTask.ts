@@ -5,22 +5,10 @@ import {
     } from "./GitWikiFuntions";
 
 import {
-    logDebug,
-    logWarning,
     logInfo,
-    logError
+    logError,
+    getSystemAccessToken
     }  from "./agentSpecific";
-
-function getSystemAccessToken(): string {
-    tl.debug("Getting credentials the agent is running as");
-    var auth = tl.getEndpointAuthorization("SYSTEMVSSCONNECTION", false);
-    if (auth.scheme === "OAuth") {
-        tl.debug("Found an OAUTH token");
-        return auth.parameters["AccessToken"];
-    } else {
-        tl.warning(tl.loc("BuildCredentialsWarn"));
-    }
-}
 
 var repo = tl.getInput("repo");
 var filename = tl.getInput("filename");
