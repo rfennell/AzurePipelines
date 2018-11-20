@@ -1,0 +1,127 @@
+{
+  "id": "e59c5ae6-3afd-479d-bc40-81cd6c541840",
+  "name": "WikiUpdaterTask",
+  "friendlyName": "Git based WIKI Updater from Black Marble",
+  "description": "A tools to update or create a WIKI based in a Git repo",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-Updater-Task/)",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "Richard Fennell",
+  "version": {
+    "Major": 1,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "demands": [],
+  "minimumAgentVersion": "1.82.0",
+  "groups": [
+    {
+      "name": "authentication",
+      "displayName": "Authentication",
+      "isExpanded": true
+    },
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "repo",
+      "type": "string",
+      "label": "Repo",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The repo URL to clone e.g dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki"
+    },
+    {
+      "name": "filename",
+      "type": "string",
+      "label": "Name of the file/page",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The name of the file (page) that will be updated or created e.g. page.md"
+    },
+    {
+      "name": "contents",
+      "type": "multiLine",
+      "label": "Contents",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The contents to write to the file"
+    },
+    {
+      "name": "message",
+      "type": "string",
+      "label": "Commit Message",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The commit message"
+    },
+    {
+      "name": "gitname",
+      "type": "string",
+      "label": "Git Name",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The Git attributes name"
+    },
+    {
+      "name": "gitemail",
+      "type": "string",
+      "label": "Git Email",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The Git attributes email"
+    },
+    {
+      "name": "useAgentToken",
+      "type": "boolean",
+      "label": "Run with Build Agent Credentials",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true use the built in agent OAUTH token. OAUTH script access must be enabled for the agent",
+      "groupName": "authentication"
+    },
+    {
+      "name": "user",
+      "type": "string",
+      "label": "Username",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The username for authentication",
+      "groupName": "authentication",
+      "visibleRule": "useAgentToken = False"
+    },
+    {
+      "name": "password",
+      "type": "string",
+      "label": "Password/PAT",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The password/PAT for authentication (recommended stored as secret variable)",
+      "groupName": "authentication",
+      "visibleRule": "useAgentToken = False"
+    },
+    {
+      "name": "localpath",
+      "type": "string",
+      "label": "The local folder to clone into",
+      "defaultValue": "$(System.DefaultWorkingDirectory)\\repo",
+      "required": true,
+      "helpMarkDown": "Path to clone into",
+      "groupName": "advanced"
+    }
+  ],
+  "instanceNameFormat": "Git based WIKI Updater",
+  "execution": {
+    "Node": {
+      "target": "GitWikiTask.js",
+      "argumentFormat": ""
+    }
+  }
+}
