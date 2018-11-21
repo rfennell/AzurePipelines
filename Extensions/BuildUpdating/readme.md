@@ -1,15 +1,3 @@
-### Releases
-- 1.0.x - Initial release
-- 1.1.x - Logic fixed for updating
-- 1.2.x - Added boolean to allow use of default build agent creditials
-- 1.3.x - Fixed bug with handling of defaultcreds
-- 1.4.x - Include PR from insanity13 to handle compress
-- 1.5.x - Allow the build variable updater to be used in a build as well as a release
-- 1.6.x - Update to newer api version to support variable groups and more ([issue #168](https://github.com/rfennell/vNextBuild/issues/168)
-- 1.7.x - [Isse236](https://github.com/rfennell/vNextBuild/issues/236) add option to update named list of artifacts
-          [Isse237](https://github.com/rfennell/vNextBuild/issues/237) allowed reset of retension as well as setting
-)
-
 A set of tasks to manage builds, it is assumed these tasks will usually be called from a release pipeline.
 
 ## Included Tasks
@@ -52,3 +40,17 @@ To address this problem
 1. In a browser select the Build tab
 2. Select 'All build definitions', right click and select security
 3. Pick the user 'Project Collection Build Service (<a name>)' and make sure they have the 'Edit build definitions right set'
+
+
+### Releases
+- 1.0.x - Initial release
+- 1.1.x - Logic fixed for updating
+- 1.2.x - Added boolean to allow use of default build agent creditials
+- 1.3.x - Fixed bug with handling of defaultcreds
+- 1.4.x - Include PR from insanity13 to handle compress
+- 1.5.x - Allow the build variable updater to be used in a build as well as a release
+- 1.6.x - Issue #168 Update to newer api version to support variable groups and more
+- 1.7.x - Issue #236 add option to update named list of artifacts
+          Issue #237 allowed reset of retension as well as setting
+- 1.8.x - Issue #380 fix to allow support for dev.azure.com URL format 
+- 1.9.x - Issue #374 add better logging of update issues

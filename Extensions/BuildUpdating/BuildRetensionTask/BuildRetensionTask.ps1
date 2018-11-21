@@ -22,10 +22,14 @@ function Set-BuildRetension
     
     write-verbose "Setting BuildID $buildID with retension set to $boolKeepForever"
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildID)?api-version=2.0"
-    $data = @{keepForever = $boolKeepForever} | ConvertTo-Json
-    $response = $webclient.UploadString($uri,"PATCH", $data) 
-    
+    try {
+        $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildID)?api-version=2.0"
+        $data = @{keepForever = $boolKeepForever} | ConvertTo-Json
+        $response = $webclient.UploadString($uri,"PATCH", $data) 
+    } catch 
+    {
+        Write-Error "Cannot update the build, probably a rights issues see https://github.com/rfennell/AzurePipelines/wiki/BuildTasks-Task (foot of page) to see notes on granting rights"
+    }
 }
 
 function Get-BuildsForRelease
@@ -43,7 +47,11 @@ function Get-BuildsForRelease
     write-verbose "Getting Builds for Release releaseID"
 
     # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up   
-	$rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
+    $rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
+    
+    # at september 2018 this API is also available at vsrm.dev.azure.com
+    $rmtfsUri = $rmtfsUri -replace "dev.azure.com", "vsrm.dev.azure.com"
+
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseId)?api-version=3.0-preview"
     $response = $webclient.DownloadString($uri)
 

@@ -13,7 +13,7 @@ Describe "Testing Pester Task" {
         }
         it "Throws Exception when passed an invalid file type for ResultsFile" {
             Mock -CommandName Write-Host -MockWith {}
-            {&$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml} | Should -Throw
+            {&$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.invalid} | Should -Throw
         }
         it "ResultsFile is Mandatory" {
             (Get-Command $sut).Parameters['ResultsFile'].Attributes.Mandatory | Should -Be $True
@@ -45,6 +45,7 @@ Describe "Testing Pester Task" {
             Mock Install-Module { }
             Mock Find-Module { }
             Mock Get-PackageProvider { $True }
+            Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
 
             . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure,Integration'
             $Tag.Length | Should Be 2
@@ -63,6 +64,7 @@ Describe "Testing Pester Task" {
             Mock Install-Module { }
             Mock Find-Module { }
             Mock Get-PackageProvider { $True }
+            Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
 
             . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example,Demo'
             $ExcludeTag.Length | Should be 2
@@ -79,6 +81,7 @@ Describe "Testing Pester Task" {
             Mock Install-Module { }
             Mock Find-Module { }
             Mock Get-PackageProvider { $True }
+            Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
 
             . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile $null
             Assert-MockCalled Invoke-Pester
@@ -86,6 +89,10 @@ Describe "Testing Pester Task" {
 
         it "Throw an error if CodeCoverageOutputFile is not an xml file" {
             {. $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile TestDrive:\codecoverage.csv} | Should Throw
+        }
+
+        it "Should have a ScriptBlock parameter which is not mandatory" {
+            (Get-Command $sut).Parameters['ScriptBlock'].Attributes.Mandatory | Should -Be $False
         }
     }
 
@@ -100,6 +107,7 @@ Describe "Testing Pester Task" {
         Mock Install-Module { }
         Mock Find-Module { }
         Mock Get-PackageProvider { $True }
+        Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
 
         it "Calls Invoke-Pester correctly with ScriptFolder and ResultsFile specified" {
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
@@ -142,6 +150,7 @@ Describe "Testing Pester Task" {
         Mock Import-Module { }
         Mock Install-Module { }
         Mock Write-Error { }
+        Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
         mock Invoke-Pester {
             param ($OutputFile)
             New-Item -Path $OutputFile -ItemType File
@@ -218,13 +227,14 @@ Describe "Testing Pester Task" {
         Mock Install-Module { $true }
         Mock Write-host { }
         Mock Write-Warning { }
+        Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
         Mock Write-Error { }
         Mock Get-Command { [PsCustomObject]@{Parameters=@{SkipPublisherCheck='SomeValue'}}}
 
         it "Installs the latest version of Pester when on PS5+ and PowerShellGet is available" {
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
             Mock Get-ChildItem  { return $true }
-            Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9)}}
+            Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9);Repository='PSGallery'}}
             Mock Get-PackageProvider { $True }
 
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
@@ -232,10 +242,25 @@ Describe "Testing Pester Task" {
             Assert-MockCalled  Install-Module
             Assert-MockCalled Invoke-Pester
         }
+        it "Installs the latest version of Pester from PSGallery when multiple repositories are available" {
+            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
+            Mock Get-ChildItem  { return $true }
+            Mock Find-Module { @(
+                    [PsCustomObject]@{Version=[version]::new(4,3,0);Repository='OtherRepository'}
+                    [PsCustomObject]@{Version=[version]::new(9,9,9);Repository='PSGallery'}
+                )
+            }
+            Mock Get-PackageProvider { $True }
+
+            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
+
+            Assert-MockCalled Install-Module -Scope It -ParameterFilter {$Repository -eq 'PSGallery'}
+            Assert-MockCalled Invoke-Pester
+        }
         it "Installs the required version of NuGet provider when PowerShellGet is available and NuGet isn't already installed" {
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
             Mock Get-ChildItem  { return $true }
-            Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9)}}
+            Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9);Repository='PSGallery'}}
             Mock Get-PackageProvider { throw }
             Mock Install-PackageProvider {}
 
@@ -249,7 +274,7 @@ Describe "Testing Pester Task" {
         it "Should not install a new version of Pester when the latest is already installed" {
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
             Mock Get-ChildItem  { return $true }
-            Mock Find-Module { [PsCustomObject]@{Version=(Get-Module Pester).Version}}
+            Mock Find-Module { [PsCustomObject]@{Version=(Get-Module Pester).Version;Repository='PSGallery'}}
             Mock Get-PackageProvider { $True }
 
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
@@ -261,14 +286,16 @@ Describe "Testing Pester Task" {
         it "Should not Install the latest version of Pester when on PowerShellGet is available but SkipPublisherCheck is not available" {
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
             Mock Get-ChildItem  { return $true }
-            Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9)}}
+            Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9);Repository='PSGallery'}}
             Mock Get-PackageProvider { $True }
             Mock Get-Command { [PsCustomObject]@{Parameters=@{OtherProperty='SomeValue'}} }
 
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
 
             Assert-MockCalled Install-Module -Times 0 -Scope It
+            Assert-MockCalled Import-Module -Times 1 -ParameterFilter {$Name -like '*\4.3.1\Pester.psd1'}
             Assert-MockCalled Invoke-Pester
+            Assert-MockCalled Write-Warning -Times 0 -ParameterFilter {$Message -eq "Code coverage output not supported on Pester versions before 4.0.4."}
         }
         <#it "Loads Pester version that ships with task when not on PS5+ or PowerShellGet is unavailable" {
             mock Invoke-Pester { }
