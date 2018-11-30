@@ -32,6 +32,32 @@ function Set-BuildDefinationVariable
 
 }
 
+function Set-BuildVariableGroupVariable
+{
+    param
+    (
+        $tfsuri,
+        $teamproject,
+        $data,
+        $usedefaultcreds
+
+    )
+
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
+
+    write-verbose "Updating VariableGroup $variablegroupid for $($tfsUri)/$($teamproject)"
+
+
+    $uri = "$($tfsUri)/$($teamproject)/_apis/distributedtask/variablegroups/$($data.id)?api-version=4.1-preview.1"
+
+    $jsondata = $data | ConvertTo-Json -Compress -Depth 10 #else we don't get lower level items
+
+    $response = $webclient.UploadString($uri,"PUT", $jsondata)
+    $response
+
+}
+
+
 function Get-WebClient
 {
     param
@@ -95,37 +121,69 @@ function Update-Build
       )
     # get the old definition
     $def = Get-BuildDefination -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -usedefaultcreds $usedefaultcreds
-    Write-Verbose "Current value of variable [$variable] is [$($def.variables.$variable.value)]"
-    # make the change
-    if ($mode -eq "Manual")
-    {
-        Write-Verbose "Manually updating variable"
-        try {
-            $def.variables.$variable.value = "$value"
-        }
-        catch {
-            Write-Error "Cannot set variable [$variable] a variable could not be found"
-            return
-        }
-    } else
-    {
-        Write-Verbose "Autoincrementing variable"
-        try {
-            $def.variables.$variable.value = "$([convert]::ToInt32($def.variables.$variable.value) +1)"
-        } catch {
-            Write-Error "Cannot increment variable [$variable] either the variable could not be found or the value is not numeric"
-            return
-        }
-    }
 
-    Write-Verbose "Setting variable [$variable] to value [$($def.variables.$variable.value)]"
-    try {
-        # write it back
-        $response = Set-BuildDefinationVariable -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -data $def -usedefaultcreds $usedefaultcreds
-    } catch {
-        Write-Error "Cannot update the build, probably a rights issues see https://github.com/rfennell/AzurePipelines/wiki/BuildTasks-Task (foot of page) to see notes on granting rights"
-    }
+    $foundGroup = $null
+    $item = $null
+    if ($variable -in $def.variables.PSobject.Properties.Name)
+    {
+        Write-Verbose "Current value of the pipeline variable [$variable] is [$($def.variables.$variable.value)]"
+        $item =$def.variables.$variable
+    } else {
+        Write-verbose "Variable is not found as a pipeline variable"
+        # check if there is a variable group
+        foreach ($group in $def.variableGroups)
+        {
+            Write-verbose "Checking for variable in '$($group.name)'"
+            if ($variable -in $group.variables.PSobject.Properties.Name)
+            {
+                write-verbose "group details $group"
+                Write-Verbose "Current value of the variable [$variable] is [$($group.variables.$variable.value)] in [$($group.name)] with ID [$($group.id)]"
+                $item =$group.variables.$variable
+                $foundGroup = $group
+                break
+            }  
+        }
+    } 
 
+    if ($item -ne $null)
+    {
+        if ($mode -eq "Manual")
+        {
+            Write-Verbose "Manually updating variable"
+            $newValue = $value
+        } else {
+            Write-Verbose "Autoincrementing variable"
+            try {
+                $newValue = "$([convert]::ToInt32($item.value) +1)"
+            } catch {
+                Write-Error "Cannot increment variable [$variable] either the variable could not be found or the value is not numeric"
+                return
+            }
+        }
+
+       # make the change
+       if ($foundGroup -eq $null) {
+            Write-Verbose "Setting pipeline variable [$variable] to value [$newValue]"
+            $item.value = $newValue
+            try {
+                # write it back
+                $response = Set-BuildDefinationVariable -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -data $def -usedefaultcreds $usedefaultcreds
+            } catch {
+                Write-Error "Cannot update the build, probably a rights issues see https://github.com/rfennell/AzurePipelines/wiki/BuildTasks-Task (foot of page) to see notes on granting rights to the build user to edit build defintions"
+            }
+        } else {
+            Write-Verbose "Setting [$($group.name)] variable [$variable] to value [$newValue]"
+            $item.value = $newValue
+            try {
+                # write it back
+                $response = Set-BuildVariableGroupVariable -tfsuri $tfsuri -teamproject $teamproject -data $group -usedefaultcreds $usedefaultcreds
+            } catch {
+                Write-Error "Cannot update the variable group, probably a rights issues see https://github.com/rfennell/AzurePipelines/wiki/BuildTasks-Task (foot of page) to see notes on making the build user an adminsitrator for the variable group"
+            }
+        }
+    } else {
+         Write-Error "Cannot set variable [$variable] as variable could not be found in the a pipeline or associated variablegroups"
+    }
 }
 
 function Get-BuildsDefsForRelease

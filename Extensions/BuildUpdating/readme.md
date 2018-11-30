@@ -54,3 +54,4 @@ To address this problem
           Issue #237 allowed reset of retension as well as setting
 - 1.8.x - Issue #380 fix to allow support for dev.azure.com URL format 
 - 1.9.x - Issue #374 add better logging of update issues
+- 1.10.x - Issue #400 added support to variable update task for variablegroups 
