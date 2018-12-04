@@ -101,7 +101,7 @@
    "instanceNameFormat": "Version Android Manifest",
   "execution": {
      "Node": {
-       "target": "$(currentDirectory)\\ApplyVersionToManifest.js",
+       "target": "ApplyVersionToManifest.js",
        "argumentFormat": ""
      }
   }
