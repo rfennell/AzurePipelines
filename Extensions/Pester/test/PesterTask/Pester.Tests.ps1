@@ -90,6 +90,10 @@ Describe "Testing Pester Task" {
         it "Throw an error if CodeCoverageOutputFile is not an xml file" {
             {. $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile TestDrive:\codecoverage.csv} | Should Throw
         }
+
+        it "Should have a ScriptBlock parameter which is not mandatory" {
+            (Get-Command $sut).Parameters['ScriptBlock'].Attributes.Mandatory | Should -Be $False
+        }
     }
 
     Context "Testing Task Processing" {

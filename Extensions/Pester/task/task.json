@@ -98,6 +98,14 @@
       "required": true,
       "helpMarkDown": "Run in 32bit",
       "groupName": "advanced"
+    },
+    {
+      "name": "ScriptBlock",
+      "type": "string",
+      "label": "Pre-Test Scriptblock",
+      "required": false,
+      "helpMarkDown": "A scriptblock to run before tests are executed. This will be run in the scope of the task where Invoke-Pester is run.",
+      "groupName": "advanced"
     }
   ],
   "instanceNameFormat": "Pester Test Runner",
