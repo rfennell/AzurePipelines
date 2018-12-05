@@ -3,6 +3,7 @@ export interface SimpleArtifact {
     buildDefinitionId: string;
     buildNumber: string;
     buildId: string;
+    artifactType: string;
 }
 
 import * as restm from "typed-rest-client/RestClient";
@@ -45,7 +46,8 @@ export function getSimpleArtifactArray(artifacts: Artifact[]): SimpleArtifact[] 
                 "artifactAlias": artifact.alias,
                 "buildDefinitionId": artifact.definitionReference.definition.id,
                 "buildNumber": artifact.definitionReference.version.name,
-                "buildId": artifact.definitionReference.version.id
+                "buildId": artifact.definitionReference.version.id,
+                "artifactType": artifact.type
             }
         );
     }

@@ -61,54 +61,58 @@ async function run() {
 
     console.log(`Found ${currentReleaseDetails.artifacts.length + 1} artifacts in this release`);
     for (let artifact of currentReleaseDetails.artifacts) {
-        console.log(`Looking at artifact [${artifact.alias}]`);
-        console.log(`Getting build associated with artifact. Build Id [${artifact.definitionReference.version.id}]`);
+        console.log(`Looking at artifact [${artifact.alias}] of type [${artifact.type}]`);
 
-        var currentReleaseBuild = await getBuild(instance, teamproject, encodedPat, artifact.definitionReference.version.id);
+        if (artifact.type === "Build") {
+            console.log(`Getting build associated with artifact. Build Id [${artifact.definitionReference.version.id}]`);
 
-        console.log(`Looking for a matching artifact in the last successful release to ${overrideStage}`);
-        // Get the build from the past successful release
-        var pastSuccessfulMatchingArtifact = pastSuccessfulRelease.artifacts.find(item => item.definitionReference.definition.id === artifact.definitionReference.definition.id);
+            var currentReleaseBuild = await getBuild(instance, teamproject, encodedPat, artifact.definitionReference.version.id);
 
-        if (pastSuccessfulMatchingArtifact != null) {
-            console.log(`Located matching artifact. Alias: ${pastSuccessfulMatchingArtifact.alias}.`);
+            console.log(`Looking for a matching artifact in the last successful release to ${overrideStage}`);
+            // Get the build from the past successful release
+            var pastSuccessfulMatchingArtifact = pastSuccessfulRelease.artifacts.find(item => item.definitionReference.definition.id === artifact.definitionReference.definition.id);
 
-            // We have a matching build
-            var pastSuccessfulMatchingBuild = await getBuild(instance, teamproject, encodedPat, pastSuccessfulMatchingArtifact.definitionReference.version.id);
+            if (pastSuccessfulMatchingArtifact != null) {
+                console.log(`Located matching artifact. Alias: ${pastSuccessfulMatchingArtifact.alias}.`);
 
-            console.log(`Getting work items between release [${currentReleaseId}] and [${pastSuccessfulRelease.id}]`);
+                // We have a matching build
+                var pastSuccessfulMatchingBuild = await getBuild(instance, teamproject, encodedPat, pastSuccessfulMatchingArtifact.definitionReference.version.id);
 
-            var workItems = await getWorkItemBetweenReleases(instance, teamproject, encodedPat, currentReleaseId, pastSuccessfulRelease.id);
-            var ids = [];
-                if (workItems) {
-                // get list of work item ids
-                ids = workItems.map(w => w.id);
+                console.log(`Getting work items between release [${currentReleaseId}] and [${pastSuccessfulRelease.id}]`);
+
+                var workItems = await getWorkItemBetweenReleases(instance, teamproject, encodedPat, currentReleaseId, pastSuccessfulRelease.id);
+                var ids = [];
+                    if (workItems) {
+                    // get list of work item ids
+                    ids = workItems.map(w => w.id);
+                }
+
+                console.log(`Work items found: ${ids.length}`);
+
+                // and expand the details
+                var workItemDetails = await getWorkItems(instance, encodedPat, ids.join());
+                // using the promise model we end up returns a null, this gets added to array, so we check for null here
+                if (workItemDetails !== null) {
+                    globalWorkitems = globalWorkitems.concat(workItemDetails);
+                }
+
+                console.log(`Getting commits between [${currentReleaseBuild.sourceVersion}] and [${pastSuccessfulMatchingBuild.sourceVersion}].`);
+                var commits: Array<any> = await getCommitsBetweenCommitIds (
+                    instance,
+                    teamproject,
+                    encodedPat,
+                    currentReleaseBuild.repository.type,
+                    currentReleaseBuild.definition.id,
+                    currentReleaseBuild.repository.id,
+                    currentReleaseBuild.sourceVersion,
+                    pastSuccessfulMatchingBuild.sourceVersion);
+
+                console.log(`Commits found: ${commits.length}`);
+
+                globalCommits = globalCommits.concat(commits);
             }
-
-            console.log(`Work items found: ${ids.length}`);
-
-            // and expand the details
-            var workItemDetails = await getWorkItems(instance, encodedPat, ids.join());
-            // using the promise model we end up returns a null, this gets added to array, so we check for null here
-            if (workItemDetails !== null) {
-                globalWorkitems = globalWorkitems.concat(workItemDetails);
-            }
-
-            console.log(`Getting commits between [${currentReleaseBuild.sourceVersion}] and [${pastSuccessfulMatchingBuild.sourceVersion}].`);
-            var commits: Array<any> = await getCommitsBetweenCommitIds (
-                instance,
-                teamproject,
-                encodedPat,
-                currentReleaseBuild.repository.type,
-                currentReleaseBuild.definition.id,
-                currentReleaseBuild.repository.id,
-                currentReleaseBuild.sourceVersion,
-                pastSuccessfulMatchingBuild.sourceVersion);
-
-            console.log(`Commits found: ${commits.length}`);
-
-            globalCommits = globalCommits.concat(commits);
-
+        } else {
+            console.log("Could not get details as not a Azure DevOps/TFS build artifict");
         }
 
     }
