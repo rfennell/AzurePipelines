@@ -3,7 +3,7 @@
   "name": "XplatGenerateReleaseNotes",
   "friendlyName": "Generate Release Notes XPlatform",
   "description": "Generates a release notes file in a format of your choice from the release history",
-    "helpMarkDown": "Version: 1.9.1. [More Information](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task/)",
+    "helpMarkDown": "Version: 1.9.4. [More Information](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task/)",
 
   "category": "Utility",
   "visibility": ["Release"],
@@ -11,7 +11,7 @@
   "version": {
     "Major": 1,
     "Minor": 9,
-    "Patch": 3
+    "Patch": 4
   },
   "minimumAgentVersion": "1.82.0",
   "groups": [

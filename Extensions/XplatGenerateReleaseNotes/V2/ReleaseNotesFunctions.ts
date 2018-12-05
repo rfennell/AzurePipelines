@@ -41,15 +41,13 @@ export function getReleaseDefinitionId(environments: ReleaseEnvironment[], envir
 export function getSimpleArtifactArray(artifacts: Artifact[]): SimpleArtifact[] {
     var result: SimpleArtifact[] = [];
     for (let artifact of artifacts) {
-        
         result.push(
             {
                 "artifactAlias": artifact.alias,
                 "buildDefinitionId": artifact.definitionReference.definition.id,
                 "buildNumber": artifact.definitionReference.version.name,
                 "buildId": artifact.definitionReference.version.id,
-                "artifactType": artifact.artifactType
-
+                "artifactType": artifact.type
             }
         );
     }
