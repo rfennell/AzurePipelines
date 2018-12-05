@@ -77,6 +77,7 @@ async function run(): Promise<void>  {
 
             for (var artifactInThisRelease of arifactsInThisRelease) {
                 agentApi.logInfo(`Looking at artifact [${artifactInThisRelease.artifactAlias}]`);
+                agentApi.logInfo(`Artifact type [${artifactInThisRelease.artifactType}]`);
                 agentApi.logInfo(`Build Definition ID [${artifactInThisRelease.buildDefinitionId}]`);
                 agentApi.logInfo(`Build Number: [${artifactInThisRelease.buildNumber}]`);
 
