@@ -4,7 +4,8 @@ import "mocha";
 
 import { findFiles,
   ProcessFile,
-  getSplitVersionParts
+  getSplitVersionParts,
+  extractVersion
 } from "../src/AppyVersionToAngularFileFunctions";
 
 import fs = require("fs");
@@ -78,3 +79,17 @@ describe("Test the add tag file processing", () => {
   });
 }
 );
+
+describe("Test the version extraction", () => {
+
+  it("should be able to extract just a version for a build number", () => {
+    var actual = extractVersion(false, "\\d+\\.\\d+\\.\\d+", "ABC-1.2.3.4-XYZ");
+    expect(actual).equals("1.2.3");
+  });
+
+  it("should be able to skip extracting a version for a build number", () => {
+    var actual = extractVersion(true, "\\d+\\.\\d+\\.\\d+", "ABC-1.2.3.4-XYZ");
+    expect(actual).equals("ABC-1.2.3.4-XYZ");
+  });
+
+});
