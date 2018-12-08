@@ -43,6 +43,15 @@
          "defaultValue": "$(Build.BuildNumber)",
          "required": true,
          "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000.0' format"
+      }, 
+      {
+        "name": "InjectVersion",
+        "type": "boolean",
+        "label": "Inject Version",
+        "defaultValue": "False",
+        "required": true,
+        "helpMarkDown": "If True no regex processing will be done to the build number.",
+        "groupName":"advanced"
       },
       {
       "name": "VersionRegex",
@@ -51,7 +60,8 @@
       "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
       "required": true,
       "helpMarkDown": "Regular expression filter to get build number from the build name.",
-      "groupName":"advanced"
+      "groupName":"advanced",
+      "visibleRule": "Injectversion = false"
     },
       {
       "name": "FilenamePattern",

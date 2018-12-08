@@ -24,6 +24,8 @@ param (
 
     $Field,
 
+    [string]$InjectVersion,
+
     $outputversion,
 
     $FilenamePattern
@@ -43,6 +45,7 @@ Write-Verbose "Filename Pattern: $FilenamePattern"
 Write-Verbose "Version Number/Build Number: $VersionNumber"
 Write-Verbose "Version Filter to extract build number: $VersionRegex"
 Write-Verbose "Field to update (all if empty): $Field"
+Write-Verbose "Inject Version: $InjectVersion"
 Write-verbose "Output: Version Number Parameter Name: $outputversion"
 
 
@@ -50,23 +53,28 @@ Write-verbose "Output: Version Number Parameter Name: $outputversion"
 #dot source function for getting the file encoding.
 . .\Get-FileEncoding.ps1
 
-# Get and validate the version data
-$VersionData = [regex]::matches($VersionNumber,$VersionRegex)
-switch($VersionData.Count)
-{
-   0
-      {
-         Write-Error "Could not find version number data in $VersionNumber."
-         exit 1
-      }
-   1 {}
-   default
-      {
-         Write-Warning "Found more than instance of version data in $VersionNumber."
-         Write-Warning "Will assume first instance is version."
-      }
+if ($InjectVersion) {
+    Write-Verbose "Using the version number directly"
+    $NewVersion = $VersionNumber
+} else {
+    Write-Verbose "Extracting version number from build number"
+    $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
+    switch($VersionData.Count)
+    {
+    0
+        {
+            Write-Error "Could not find version number data in $VersionNumber."
+            exit 1
+        }
+    1 {}
+    default
+        {
+            Write-Warning "Found more than instance of version data in $VersionNumber."
+            Write-Warning "Will assume first instance is version."
+        }
+    }
+    $NewVersion = $VersionData[0]
 }
-$NewVersion = $VersionData[0]
 Write-Verbose "Extracted Version: $NewVersion"
 
 # Apply the version to the assembly property files
