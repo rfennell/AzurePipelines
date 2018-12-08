@@ -62,7 +62,7 @@
       "required": true,
       "helpMarkDown": "Regular expression filter build number from name.",
       "groupName":"advanced",
-      "visibleRule": "Injectversion = false"
+      "visibleRule": "InjectVersion = false"
     },
       {
       "name": "OutputVersion",
