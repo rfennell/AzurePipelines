@@ -5,6 +5,7 @@ import tl = require("vsts-task-lib/task");
 export function extractVersion(injectversion, versionRegex, versionNumber ) {
     var newVersion = versionNumber;
     if (injectversion === false) {
+        console.log(`Extracting version number from build number`);
         var regexp = new RegExp(versionRegex);
         var versionData = regexp.exec(versionNumber);
         if (!versionData) {
@@ -24,8 +25,9 @@ export function extractVersion(injectversion, versionRegex, versionNumber ) {
                 tl.warning(`Will assume first instance is version.`);
                 break;
         }
-
         newVersion = versionData[0];
+    } else {
+        console.log(`Using provided version number directly`);
     }
     return newVersion;
 }

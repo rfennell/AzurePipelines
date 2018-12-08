@@ -61,13 +61,23 @@
         "helpMarkDown": "Part(s) of the version number to use for the version code. This will concatenate these parts together to a single integer."
       },
       {
+        "name": "Injectversion",
+        "type": "boolean",
+        "label": "Inject Version",
+        "defaultValue": "false",
+        "required": true,
+        "helpMarkDown": "If True no regex processing will be done to the build number. The build number must format must match the requirements of the 'Version Name Pattern' and 'Version Code Pattern'",
+        "groupName":"advanced"
+      },
+      {
         "name": "VersionRegex",
         "type": "string",
         "label": "Regex Filter to extract build number",
         "defaultValue": "\\d+\\.\\d+\\.\\d+",
         "required": true,
         "helpMarkDown": "Regular expression filter to get build number from the build name.",
-        "groupName":"advanced"
+        "groupName":"advanced",
+        "visibleRule": "Injectversion = false"
       },
       {
         "name": "FilenamePattern",
@@ -76,15 +86,6 @@
         "defaultValue": "AndroidManifest.xml",
         "required": true,
         "helpMarkDown": "The filename pattern to update.",
-        "groupName":"advanced"
-      },
-      {
-        "name": "Injectversion",
-        "type": "boolean",
-        "label": "Inject Version",
-        "defaultValue": "False",
-        "required": true,
-        "helpMarkDown": "If True no regex processing will be done to the build number.",
         "groupName":"advanced"
       },
       {
