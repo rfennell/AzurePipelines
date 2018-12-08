@@ -91,3 +91,4 @@ The Android manifest versioner takes the following extra parameters:
 - V1.42   - Fix a logic issue with the PowerShell versioning task not installing the Configuration module.
 - V2.1.x  - Fix Android Versioning task from assigning a 0 to VersionCode, build will now fail if it is.
 - V2.2.x  - Issue398 fix for non Windows Platforms for tasks that run cross platform 
+- V2.3.x  - Issue306 added ability to inject a version number directly (no regex processing) to all tasks
