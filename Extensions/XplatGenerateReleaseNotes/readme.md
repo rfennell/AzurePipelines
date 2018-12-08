@@ -120,3 +120,4 @@ Using the settings for the output file shown above, the release notes will be cr
 - 2.3 - Issue337 fixed paths in readme
 - 2.4 - PR353 @gregpakes minor logging changes
 - 2.5 - Issue349 fixed missing work items due to VSTS API limitation - set variable ReleaseNotes.Fix349 to true to enable the workaround code
+- 2.6 - Issue380 fixed issue with new Azure DevOps urls, updated npm packages
