@@ -26,9 +26,37 @@ param (
     [Parameter(Mandatory)]
     [string]$VersionNumber,
 
+    [string]$InjectVersion,
+
+    $VersionRegex,
+
     [string]$OutputVersion
 
 )
+
+# Get and validate the version data
+if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
+    Write-Verbose "Using the version number directly"
+} else {
+    Write-Verbose "Extracting version number from build number"
+
+    $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
+    switch($VersionData.Count)
+    {
+    0
+        {
+            Write-Error "Could not find version number data in $VersionNumber."
+            exit 1
+        }
+    1 {}
+    default
+        {
+            Write-Warning "Found more than instance of version data in $VersionNumber."
+            Write-Warning "Will assume first instance is version."
+        }
+    }
+    $VersionNumber = $VersionData[0]
+}
 
 try {
     Write-Verbose -Message "Validating version number - $VersionNumber"
