@@ -19,6 +19,7 @@ All these tasks take at least two parameters, which are both defaulted
 
 * Path to files to version: Defaults to $(Build.SourcesDirectory)
 * Version number: Defaults to $(Build.BuildNumber)
+* [Advanced] Inject Version: If true then the build number will be used without regex processing
 * [Advanced] Version Regex: The filter used to extract the version number from the build. Default to '\d+\.\d+\.\d+\.\d+'
 * [Output] OutputVersion: Outputs the actual version number extracted from build number.
 
