@@ -44,7 +44,7 @@ Write-Verbose "Inject Version: $InjectVersion"
 Write-verbose "Output: Version Number Parameter Name: $outputversion"
 
 # Get and validate the version data
-if ($InjectVersion) {
+if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
     Write-Verbose "Using the version number directly"
     $NewVersion = $VersionNumber
 } else {

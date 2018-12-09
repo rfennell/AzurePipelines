@@ -53,7 +53,7 @@ Write-verbose "Output: Version Number Parameter Name: $outputversion"
 #dot source function for getting the file encoding.
 . .\Get-FileEncoding.ps1
 
-if ($InjectVersion) {
+if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
     Write-Verbose "Using the version number directly"
     $NewVersion = $VersionNumber
 } else {
