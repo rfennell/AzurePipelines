@@ -53,14 +53,24 @@
          "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000.0' format"
       }
         ,
+        {
+          "name": "InjectVersion",
+          "type": "boolean",
+          "label": "Inject Version",
+          "defaultValue": "False",
+          "required": true,
+          "helpMarkDown": "If True no regex processing will be done to the build number.",
+          "groupName":"advanced"
+        },
     {
       "name": "VersionRegex",
       "type": "string",
       "label": "Regex Filter",
-      "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
+      "defaultValue": "(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])(\\.(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])){3}",
       "required": true,
       "helpMarkDown": "Regular expression filter build number from name.",
-      "groupName":"advanced"
+      "groupName":"advanced",
+      "visibleRule": "InjectVersion = false"
     },
       {
       "name": "OutputVersion",
