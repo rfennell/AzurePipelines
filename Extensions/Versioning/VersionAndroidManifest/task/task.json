@@ -53,15 +53,6 @@
         "helpMarkDown": "Format of version number to apply as Version Name. Assumes starting from the beginning of the version number."
       },
       {
-        "name": "VersionCodeFormat",
-        "type": "string",
-        "label": "Version Code Pattern",
-        "defaultValue": "{3}",
-        "required": true,
-        "helpMarkDown": "This is the part(s) of the version number to use for the version code. This will concatenate these parts together to a single integer.",
-        "visibleRule": "Injectversioncode = false"
-      },
-      {
         "name": "Injectversioncode",
         "type": "boolean",
         "label": "Inject Version Code",
@@ -71,13 +62,22 @@
         "groupName":"advanced"
       },
       {
+        "name": "VersionCodeFormat",
+        "type": "string",
+        "label": "Version Code Pattern",
+        "defaultValue": "{3}",
+        "required": true,
+        "helpMarkDown": "This is the part(s) of the version number to use for the version code. This will concatenate these parts together to a single integer.",
+        "visibleRule": "Injectversioncode = false"
+      },
+      {
         "name": "VersionCode",
         "type": "string",
         "label": "Version Code",
         "defaultValue": "",
         "required": false,
         "helpMarkDown": "An externally generated version code in range 1-2100000000 as required by Google Play Store.",
-        "visibleRule": "Injectversioncode = false"
+        "visibleRule": "Injectversioncode = true"
       },
       {
         "name": "Injectversion",
