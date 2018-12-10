@@ -1,5 +1,36 @@
 import fs = require("fs");
 import path = require("path");
+import tl = require("vsts-task-lib/task");
+
+export function extractVersion(injectversion, versionRegex, versionNumber ) {
+    var newVersion = versionNumber;
+    if (injectversion === false) {
+        console.log(`Extracting version number from build number`);
+        var regexp = new RegExp(versionRegex);
+        var versionData = regexp.exec(versionNumber);
+        if (!versionData) {
+            // extra check as we don't get zero size array but a null
+            tl.error(`Could not find version number data in ${versionNumber} that matches ${versionRegex}.`);
+            process.exit(1);
+        }
+        switch (versionData.length) {
+        case 0:
+                // this is trapped by the null check above
+                tl.error(`Could not find version number data in ${versionNumber} that matches ${versionRegex}.`);
+                process.exit(1);
+        case 1:
+                break;
+        default:
+                tl.warning(`Found more than instance of version data in ${versionNumber}  that matches ${versionRegex}.`);
+                tl.warning(`Will assume first instance is version.`);
+                break;
+        }
+        newVersion = versionData[0];
+    } else {
+        console.log(`Using provided version number directly`);
+    }
+    return newVersion;
+}
 
 // List all files in a directory in Node.js recursively in a synchronous fashion
 export function findFiles (dir, filename , filelist) {

@@ -18,7 +18,7 @@
     "fs": "^0.0.1-security",
     "fs-copy-file-sync": "^1.0.1",
     "ncp": "^2.0.0",
-    "request": "^2.80.0",
+    "request": "^2.88.0",
     "vsts-task-lib": "^1.1.0"
   },
   "devDependencies": {
@@ -26,7 +26,7 @@
     "@types/mocha": "^2.2.44",
     "@types/node": "^7.0.18",
     "chai": "^3.5.0",
-    "mocha": "^3.5.3",
+    "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.15.0",
     "ts-loader": "^2.0.3",
     "ts-node": "^3.3.0",
