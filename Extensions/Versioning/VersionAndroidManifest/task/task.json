@@ -58,8 +58,7 @@
         "label": "Inject Version Code",
         "defaultValue": "false",
         "required": true,
-        "helpMarkDown": "If True use the version code as it directly entered, do not generate it",
-        "groupName":"advanced"
+        "helpMarkDown": "If True use the version code as it directly entered, do not generate it"
       },
       {
         "name": "VersionCodeFormat",
