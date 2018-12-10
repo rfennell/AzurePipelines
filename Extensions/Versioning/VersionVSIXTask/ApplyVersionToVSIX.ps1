@@ -47,7 +47,7 @@ Write-Verbose "Version Number/Build Number: $VersionNumber"
 Write-Verbose "Version Filter: $VersionRegex"
 Write-verbose "Output: Version Number Parameter Name: $outputversion"
 
-if ($UseRegex -eq $true)
+if ([System.Convert]::ToBoolean($UseRegex) -eq $true) {
 {
     Write-Verbose "Processing provided version number with regex"
     # Get and validate the version data
