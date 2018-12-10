@@ -20,6 +20,8 @@ param (
     [Parameter(Mandatory)]
     [string]$VersionNumber,
 
+    $InjectVersion
+    
     [string]$VersionRegex,
 
     $outputversion
@@ -38,28 +40,34 @@ if (-not (Test-Path $Path))
 Write-Verbose "Source Directory: $Path"
 Write-Verbose "Version Number/Build Number: $VersionNumber"
 Write-Verbose "Version Filter: $VersionRegex"
+Write-Verbose "Inject Version: $InjectVersion"
 Write-verbose "Output: Version Number Parameter Name: $outputversion"
 
 # Get and validate the version data
-$VersionData = [regex]::matches($VersionNumber,$VersionRegex)
-switch($VersionData.Count)
-{
-   0        
-      { 
-         Write-Error "Could not find version number data in $VersionNumber."
-         exit 1
-      }
-   1 {}
-   default 
-      { 
-         Write-Warning "Found more than instance of version data in $VersionNumber." 
-         Write-Warning "Will assume first instance is version."
-      }
+if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
+    Write-Verbose "Using the version number directly"
+    $NewVersion = $VersionNumber
+} else {
+    $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
+    switch($VersionData.Count)
+    {
+    0        
+        { 
+            Write-Error "Could not find version number data in $VersionNumber."
+            exit 1
+        }
+    1 {}
+    default 
+        { 
+            Write-Warning "Found more than instance of version data in $VersionNumber." 
+            Write-Warning "Will assume first instance is version."
+        }
+    }
+    # AppX will not allow leading zeros, so we strip them out
+    $extracted = [string]$VersionData[0]
+    $parts = $extracted.Split(".")
+    $NewVersion =  [string]::Format("{0}.{1}.{2}.{3}" ,[int]$parts[0],[int]$parts[1],[int]$parts[2],[int]$parts[3])
 }
-# AppX will not allow leading zeros, so we strip them out
-$extracted = [string]$VersionData[0]
-$parts = $extracted.Split(".")
-$NewVersion =  [string]::Format("{0}.{1}.{2}.{3}" ,[int]$parts[0],[int]$parts[1],[int]$parts[2],[int]$parts[3])
 
 Write-Verbose "Version: $NewVersion"
 
