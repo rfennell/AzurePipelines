@@ -26,9 +26,11 @@ param (
     [Parameter(Mandatory)]
     [string]$VersionNumber,
 
+    [Parameter(Mandatory)]
     [string]$InjectVersion,
 
-    $VersionRegex,
+    [Parameter(Mandatory)]
+    [string]$VersionRegex,
 
     [string]$OutputVersion
 
@@ -36,11 +38,20 @@ param (
 
 # Get and validate the version data
 if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
-    Write-Verbose "Using the version number directly"
+    Write-Verbose "Using the version number directly" 
+    # First the old check 
+    try {
+        Write-Verbose -Message "Validating version number - $VersionNumber"
+        $null = [Version]::Parse($VersionNumber)
+    }
+    catch {
+        Write-Error -Message "Invalid version number format. Please check the supplied number and try again"
+        exit 1
+    }
 } else {
-    Write-Verbose "Extracting version number from build number"
-
+    Write-Verbose "Extracting version number from build number" 
     $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
+    
     switch($VersionData.Count)
     {
     0
@@ -56,15 +67,6 @@ if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
         }
     }
     $VersionNumber = $VersionData[0]
-}
-
-try {
-    Write-Verbose -Message "Validating version number - $VersionNumber"
-    $null = [Version]::Parse($VersionNumber)
-}
-catch {
-    Write-Error -Message "Invalid version number format. Please check the supplied number and try again"
-    exit 1
 }
 
 Write-Verbose -Message "Loading Configuration module for applying the version number"
