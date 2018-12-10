@@ -62,6 +62,15 @@
         "visibleRule": "Injectversioncode = false"
       },
       {
+        "name": "Injectversioncode",
+        "type": "boolean",
+        "label": "Inject Version Code",
+        "defaultValue": "false",
+        "required": true,
+        "helpMarkDown": "If True use the version code as it directly entered, do not generate it",
+        "groupName":"advanced"
+      },
+      {
         "name": "VersionCode",
         "type": "string",
         "label": "Version Code",
@@ -77,15 +86,6 @@
         "defaultValue": "false",
         "required": true,
         "helpMarkDown": "If True no regex processing will be done to the build number. The build number must format must match the requirements of the 'Version Name Pattern' and 'Version Code Pattern'",
-        "groupName":"advanced"
-      },
-      {
-        "name": "Injectversioncode",
-        "type": "boolean",
-        "label": "Inject Version Code",
-        "defaultValue": "false",
-        "required": true,
-        "helpMarkDown": "If True use the version code as it directly entered, do not generate it",
         "groupName":"advanced"
       },
       {

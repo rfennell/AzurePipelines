@@ -38,6 +38,8 @@ The VSIX versioner also takes the following parameters
 
 The Android manifest versioner takes the following extra parameters:
 
+* [Advanced] Inject Version Code: If true then the provided version code will be used as opposed genrating from the build number will regex processing
+* Version Code - A number between 1 and 2100000000 as required by the Google Play Store
 * Version Name Pattern - This is the pattern you'd like the publicly visible version name to take in. This should be in the format {1}.{2} or similar but will also work with 1.2.3 etc.
 * Version Code Pattern - This is the elements that you'd like to use to store the internal version number that Google uses for detecting if a version of the app is newer than an existing version, both in the play store and on the device. This will concatenate any specifies parts together into a single integer. It Accepts single values like {3} or multiple like {1}{2}{3}, delmiting with `{x}` is optional and should work with 123.
 
