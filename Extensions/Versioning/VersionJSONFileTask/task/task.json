@@ -55,7 +55,7 @@
       {
         "name": "useBuildNumberDirectly",
         "type": "boolean",
-        "label": "Use Version Number without processing",
+        "label": "Inject Version",
         "defaultValue": "False",
         "required": true,
         "helpMarkDown": "Use the version number parameter without any further processing",
