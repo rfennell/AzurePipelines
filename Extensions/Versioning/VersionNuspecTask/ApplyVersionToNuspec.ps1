@@ -20,6 +20,8 @@ param (
     [Parameter(Mandatory)]
     [string]$VersionNumber,
 
+    [string]$InjectVersion,
+
     $VersionRegex,
 
     $outputversion
@@ -37,25 +39,32 @@ if (-not (Test-Path $Path))
 Write-Verbose "Source Directory: $Path"
 Write-Verbose "Version Number/Build Number: $VersionNumber"
 Write-Verbose "Version Filter: $VersionRegex"
+Write-Verbose "Inject Version: $InjectVersion"
+
 Write-verbose "Output: Version Number Parameter Name: $outputversion"
 
 # Get and validate the version data
-$VersionData = [regex]::matches($VersionNumber,$VersionRegex)
-switch($VersionData.Count)
-{
-   0        
-      { 
-         Write-Error "Could not find version number data in $VersionNumber."
-         exit 1
-      }
-   1 {}
-   default 
-      { 
-         Write-Warning "Found more than instance of version data in $VersionNumber." 
-         Write-Warning "Will assume first instance is version."
-      }
+if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
+    Write-Verbose "Using the version number directly"
+    $NewVersion = $VersionNumber
+} else {
+    $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
+    switch($VersionData.Count)
+    {
+    0        
+        { 
+            Write-Error "Could not find version number data in $VersionNumber."
+            exit 1
+        }
+    1 {}
+    default 
+        { 
+            Write-Warning "Found more than instance of version data in $VersionNumber." 
+            Write-Warning "Will assume first instance is version."
+        }
+    }
+    $NewVersion = $VersionData[0]
 }
-$NewVersion = $VersionData[0]
 Write-Verbose "Version: $NewVersion"
 
 # Apply the version to the assembly property files

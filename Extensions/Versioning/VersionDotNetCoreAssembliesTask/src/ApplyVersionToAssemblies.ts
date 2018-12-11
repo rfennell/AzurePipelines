@@ -1,6 +1,7 @@
 import { findFiles,
          ProcessFile,
-         stringToBoolean
+         stringToBoolean,
+         extractVersion
   } from "./AppyVersionToAssembliesFunctions";
 
 import tl = require("vsts-task-lib/task");
@@ -13,6 +14,7 @@ var field = tl.getInput("Field");
 var outputversion = tl.getInput("outputversion");
 var filenamePattern = tl.getInput("FilenamePattern");
 var addDefault = tl.getInput("AddDefault");
+var injectversion = tl.getBoolInput("Injectversion");
 
 console.log (`Source Directory:  ${path}`);
 console.log (`Filename Pattern: ${filenamePattern}`);
@@ -21,6 +23,7 @@ console.log (`Version Filter to extract build number: ${versionRegex}`);
 console.log (`Field to update (all if empty): ${field}`);
 console.log (`Add default field (all if empty): ${addDefault}`);
 console.log (`Output: Version Number Parameter Name: ${outputversion}`);
+console.log (`Inject Version: ${injectversion}`);
 
 // Make sure path to source code directory is available
 if (!fs.existsSync(path)) {
@@ -29,27 +32,7 @@ if (!fs.existsSync(path)) {
 }
 
 // Get and validate the version data
-var regexp = new RegExp(versionRegex);
-var versionData = regexp.exec(versionNumber);
-if (!versionData) {
-    // extra check as we don't get zero size array but a null
-    tl.error(`Could not find version number data in ${versionNumber} that matches ${versionRegex}.`);
-    process.exit(1);
-}
-switch (versionData.length) {
-   case 0:
-         // this is trapped by the null check above
-         tl.error(`Could not find version number data in ${versionNumber} that matches ${versionRegex}.`);
-         process.exit(1);
-   case 1:
-        break;
-   default:
-         tl.warning(`Found more than instance of version data in ${versionNumber}  that matches ${versionRegex}.`);
-         tl.warning(`Will assume first instance is version.`);
-         break;
-}
-
-var newVersion = versionData[0];
+var newVersion = extractVersion(injectversion, versionRegex, versionNumber);
 console.log (`Extracted Version: ${newVersion}`);
 
 // Apply the version to the assembly property files

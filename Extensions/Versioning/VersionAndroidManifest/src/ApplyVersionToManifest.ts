@@ -1,7 +1,8 @@
 import {
     getSplitVersionParts,
     updateManifestFile,
-    findFiles
+    findFiles,
+    extractVersion
 } from "./ApplyVersionToManifestFunctions";
 
 import tl = require("vsts-task-lib/task");
@@ -14,6 +15,9 @@ var versionNameFormat = tl.getInput("VersionNameFormat");
 var versionCodeFormat = tl.getInput("VersionCodeFormat");
 var outputversion = tl.getInput("outputversion");
 var filenamePattern = tl.getInput("FilenamePattern");
+var injectversion = tl.getBoolInput("Injectversion");
+var injectversioncode = tl.getBoolInput("Injectversioncode");
+var versionCode = tl.getInput("VersionCode");
 
 console.log (`Source Directory:  ${path}`);
 console.log (`Filename Pattern: ${filenamePattern}`);
@@ -21,6 +25,9 @@ console.log (`Version Number/Build Number: ${versionNumber}`);
 console.log (`Version Filter to extract build number: ${versionRegex}`);
 console.log (`Version Number Format: ${versionNameFormat}`);
 console.log (`Version Code Format: ${versionCodeFormat}`);
+console.log (`Version Code: ${versionCode}`);
+console.log (`Inject Version: ${injectversion}`);
+console.log (`Inject Version Code: ${injectversioncode}`);
 console.log (`Output: Version Number Parameter Name: ${outputversion}`);
 
 // Make sure path to source code directory is available
@@ -33,33 +40,19 @@ if (!fs.existsSync(path)) {
 var files = findFiles(path, filenamePattern, files);
 console.log (`Found ${files.length} files to update.`);
 
-var regexp = new RegExp(versionRegex);
-var versionData = regexp.exec(versionNumber);
-if (!versionData) {
-    // extra check as we don't get zero size array but a null
-    tl.error(`Could not find version number data in ${versionNumber} that matches ${versionRegex}.`);
-    process.exit(1);
-}
-switch (versionData.length) {
-   case 0:
-         // this is trapped by the null check above
-         tl.error(`Could not find version number data in ${versionNumber} that matches ${versionRegex}.`);
-         process.exit(1);
-   case 1:
-        break;
-   default:
-         tl.warning(`Found more than instance of version data in ${versionNumber}  that matches ${versionRegex}.`);
-         tl.warning(`Will assume first instance is version.`);
-         break;
-}
-
-const newVersion = versionData[0];
+const newVersion = extractVersion(injectversion, versionRegex, versionNumber);
 console.log (`Extracted Version: ${newVersion}`);
 
 const versionName = getSplitVersionParts(versionRegex, versionNameFormat, newVersion);
 console.log (`Version Name will be: ${versionName}`);
 
-const versionCode = getSplitVersionParts(versionRegex, versionCodeFormat, newVersion);
+if (injectversioncode === false) {
+    console.log(`Building the version code from the build number`);
+    versionCode = getSplitVersionParts(versionRegex, versionCodeFormat, newVersion);
+} else {
+    console.log(`Using the injected version code`);
+}
+
 if (parseInt(versionCode, 10) >= 2100000000) {
     tl.error(`Version Code of ${versionCode} is too long, must be below 2100000000 for submission to Google Play Store`);
     process.exit(1);

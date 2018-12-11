@@ -16,6 +16,7 @@ param (
    [String]$Path,
    [String]$File,
    [string]$VersionNumber,
+   $InjectVersion,
    [string]$VersionRegex,
    $outputversion
 )
@@ -53,37 +54,42 @@ if (-not (Test-Path $Path))
 Write-Verbose "Source Directory: $Path"
 Write-Verbose "Target File $file"
 Write-Verbose "Version Number/Build Number: $VersionNumber"
+Write-Verbose "Inject Version: $InjectVersion"
 Write-Verbose "Version Filter: $VersionRegex"
 Write-verbose "Output: Version Number Parameter Name: $outputversion"
 
 # Get and validate the version data
-$VersionData = [regex]::matches($VersionNumber,$VersionRegex)
-switch($VersionData.Count)
-{
-   0        
-      { 
-         Write-Error "Could not find version number data in $VersionNumber."
-         exit 1
-      }
-   1 {}
-   default 
-      { 
-         Write-Warning "Found more than instance of version data in $VersionNumber." 
-         Write-Warning "Will assume first instance is version."
-      }
+if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
+    Write-Verbose "Using the version number directly"
+    $NewVersion = $VersionNumber
+} else {
+    $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
+    switch($VersionData.Count)
+    {
+    0        
+        { 
+            Write-Error "Could not find version number data in $VersionNumber."
+            exit 1
+        }
+    1 {}
+    default 
+        { 
+            Write-Warning "Found more than instance of version data in $VersionNumber." 
+            Write-Warning "Will assume first instance is version."
+        }
+    }
+    # AppX will not allow leading zeros, so we strip them out
+    $extracted = [string]$VersionData[0]
+    $parts = $extracted.Split(".")
+
+    if ($parts.Count -ne 4)
+    {
+        Write-Error "Could not find the expected 4 parts in version number data in $VersionNumber."
+        exit 1
+    }
+
+    $versionData = @{MajorVersion = [int]$parts[0]; MinorVersion = [int]$parts[1];BuildNumber = [int]$parts[2];Revision = [int]$parts[3];FullVersion =  [string]::Format("{0}.{1}.{2}.{3}" ,[int]$parts[0],[int]$parts[1],[int]$parts[2],[int]$parts[3])}
 }
-# AppX will not allow leading zeros, so we strip them out
-$extracted = [string]$VersionData[0]
-$parts = $extracted.Split(".")
-
-if ($parts.Count -ne 4)
-{
-    Write-Error "Could not find the expected 4 parts in version number data in $VersionNumber."
-    exit 1
-}
-
-$versionData = @{MajorVersion = [int]$parts[0]; MinorVersion = [int]$parts[1];BuildNumber = [int]$parts[2];Revision = [int]$parts[3];FullVersion =  [string]::Format("{0}.{1}.{2}.{3}" ,[int]$parts[0],[int]$parts[1],[int]$parts[2],[int]$parts[3])}
-
 Write-Verbose "Version: $NewVersion"
 
 # Apply the version to the assembly property files

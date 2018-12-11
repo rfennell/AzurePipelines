@@ -53,12 +53,39 @@
         "helpMarkDown": "Format of version number to apply as Version Name. Assumes starting from the beginning of the version number."
       },
       {
+        "name": "Injectversioncode",
+        "type": "boolean",
+        "label": "Inject Version Code",
+        "defaultValue": "false",
+        "required": true,
+        "helpMarkDown": "If True use the version code as it directly entered, do not generate it"
+      },
+      {
         "name": "VersionCodeFormat",
         "type": "string",
         "label": "Version Code Pattern",
         "defaultValue": "{3}",
         "required": true,
-        "helpMarkDown": "Part(s) of the version number to use for the version code. This will concatenate these parts together to a single integer."
+        "helpMarkDown": "This is the part(s) of the version number to use for the version code. This will concatenate these parts together to a single integer.",
+        "visibleRule": "Injectversioncode = false"
+      },
+      {
+        "name": "VersionCode",
+        "type": "string",
+        "label": "Version Code",
+        "defaultValue": "",
+        "required": false,
+        "helpMarkDown": "An externally generated version code in range 1-2100000000 as required by Google Play Store.",
+        "visibleRule": "Injectversioncode = true"
+      },
+      {
+        "name": "Injectversion",
+        "type": "boolean",
+        "label": "Inject Version",
+        "defaultValue": "false",
+        "required": true,
+        "helpMarkDown": "If True no regex processing will be done to the build number. The build number must format must match the requirements of the 'Version Name Pattern' and 'Version Code Pattern'",
+        "groupName":"advanced"
       },
       {
         "name": "VersionRegex",
@@ -67,7 +94,8 @@
         "defaultValue": "\\d+\\.\\d+\\.\\d+",
         "required": true,
         "helpMarkDown": "Regular expression filter to get build number from the build name.",
-        "groupName":"advanced"
+        "groupName":"advanced",
+        "visibleRule": "Injectversion = false"
       },
       {
         "name": "FilenamePattern",

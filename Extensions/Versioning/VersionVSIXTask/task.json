@@ -45,7 +45,7 @@
       "label": "Process VersionNumber with Regex",
       "defaultValue": "true",
       "required": true,
-      "helpMarkDown": "If set a regex expression is used to extra the version number, in the form 1.1.1.1 from a build number."
+      "helpMarkDown": "If set a regex expression is used to extra the version number, in the form 1.1.1.1 from a build number. (For legacy reason inverse of 'Inject Version' on other tasks in family"
       },
       {
       "name": "DigitMode",

@@ -29,6 +29,8 @@ param (
 
     [string]$ToolPath,
 
+    [string]$InjectVersion,
+
     $VersionRegex,
 
     $outputversion
@@ -200,22 +202,29 @@ function Update-DacpacVerion
 If ($VersionNumber -eq "" -and $path -eq "") {Exit}
 
 # Get and validate the version data
-$VersionData = [regex]::matches($VersionNumber,$VersionRegex)
-switch($VersionData.Count)
-{
-0
+if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
+    Write-Verbose "Using the version number directly"
+    $NewVersion = $VersionNumber
+} else {
+    Write-Verbose "Extracting version number from build number"
+
+    $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
+    switch($VersionData.Count)
     {
-        Write-Error "Could not find version number data in $VersionNumber."
-        exit 1
+    0
+        {
+            Write-Error "Could not find version number data in $VersionNumber."
+            exit 1
+        }
+    1 {}
+    default
+        {
+            Write-Warning "Found more than instance of version data in $VersionNumber."
+            Write-Warning "Will assume first instance is version."
+        }
     }
-1 {}
-default
-    {
-        Write-Warning "Found more than instance of version data in $VersionNumber."
-        Write-Warning "Will assume first instance is version."
-    }
+    $NewVersion = $VersionData[0]
 }
-$NewVersion = $VersionData[0]
 Write-Verbose "Version: $NewVersion"
 
 

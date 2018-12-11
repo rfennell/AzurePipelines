@@ -19,6 +19,7 @@ All these tasks take at least two parameters, which are both defaulted
 
 * Path to files to version: Defaults to $(Build.SourcesDirectory)
 * Version number: Defaults to $(Build.BuildNumber)
+* [Advanced] Inject Version: If true then the build number will be used without regex processing
 * [Advanced] Version Regex: The filter used to extract the version number from the build. Default to '\d+\.\d+\.\d+\.\d+'
 * [Output] OutputVersion: Outputs the actual version number extracted from build number.
 
@@ -37,6 +38,8 @@ The VSIX versioner also takes the following parameters
 
 The Android manifest versioner takes the following extra parameters:
 
+* [Advanced] Inject Version Code: If true then the provided version code will be used as opposed genrating from the build number will regex processing
+* Version Code - A number between 1 and 2100000000 as required by the Google Play Store
 * Version Name Pattern - This is the pattern you'd like the publicly visible version name to take in. This should be in the format {1}.{2} or similar but will also work with 1.2.3 etc.
 * Version Code Pattern - This is the elements that you'd like to use to store the internal version number that Google uses for detecting if a version of the app is newer than an existing version, both in the play store and on the device. This will concatenate any specifies parts together into a single integer. It Accepts single values like {3} or multiple like {1}{2}{3}, delmiting with `{x}` is optional and should work with 123.
 
@@ -91,3 +94,4 @@ The Android manifest versioner takes the following extra parameters:
 - V1.42   - Fix a logic issue with the PowerShell versioning task not installing the Configuration module.
 - V2.1.x  - Fix Android Versioning task from assigning a 0 to VersionCode, build will now fail if it is.
 - V2.2.x  - Issue398 fix for non Windows Platforms for tasks that run cross platform 
+- V2.3.x  - Issue306 added ability to inject a version number directly (no regex processing) to all tasks

@@ -14,6 +14,11 @@
    },
    "minimumAgentVersion": "1.83.0",
      "groups": [
+      {
+         "name": "advanced",
+         "displayName": "Advanced",
+         "isExpanded": false
+       },
     {
       "name": "output",
       "displayName": "Output",
@@ -37,6 +42,25 @@
          "required": true,
          "helpMarkDown": "Version number to apply to files"
       },
+      {
+         "name": "InjectVersion",
+         "type": "boolean",
+         "label": "Inject Version",
+         "defaultValue": "False",
+         "required": true,
+         "helpMarkDown": "If True no regex processing will be done to the build number.",
+         "groupName":"advanced"
+       },
+       {
+       "name": "VersionRegex",
+       "type": "string",
+       "label": "Regex Filter",
+       "defaultValue": "\\d+\\.\\d+\\.\\d+\\.\\d+",
+       "required": true,
+       "helpMarkDown": "Regular expression filter build number from name.",
+       "groupName":"advanced",
+       "visibleRule": "InjectVersion = false"
+     },
       {
         "name": "OutputVersion",
         "type": "string",
