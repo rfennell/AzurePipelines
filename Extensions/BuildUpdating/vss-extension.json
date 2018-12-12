@@ -1,33 +1,33 @@
 {
- "manifestVersion": 1,
- "id": "BM-VSTS-BuildUpdating-Tasks",
- "version": "1.0.0",
- "name": "Build Updating Tasks",
- "publisher": "richardfennellBM",
- "description": "A set of tasks that update VSTS Builds and Releases.",
- "categories": [
+  "manifestVersion": 1,
+  "id": "BM-VSTS-BuildUpdating-Tasks",
+  "version": "1.0.0",
+  "name": "Build Updating Tasks",
+  "publisher": "richardfennellBM",
+  "description": "A set of tasks that update VSTS Builds and Releases.",
+  "categories": [
     "Build and release"
   ],
- "targets": [
-         {
-             "id": "Microsoft.VisualStudio.Services"
-         }
-     ],
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
   "tags": [
     "Release",
     "Build"
-  ],   
-    "galleryFlags": [
-        "Public"
-    ],
+  ],
+  "galleryFlags": [
+    "Public"
+  ],
   "branding": {
-        "color": "#f97923",
-        "theme": "dark"
+    "color": "#f97923",
+    "theme": "dark"
   },
   "icons": {
-      "default": "images/logo.png"
+    "default": "images/logo.png"
   },
-   "links": {
+  "links": {
     "getstarted": {
       "uri": "https://github.com/rfennell/vNextBuild/wiki/BuildTasks-Task"
     },
@@ -52,8 +52,11 @@
     {
       "path": "BuildRetensionTask"
     },
-     {
+    {
       "path": "BuildVariableTask"
+    },
+    {
+      "path": "GetBuildDefinitionVariableValueTask"
     }
   ],
   "contributions": [
@@ -75,6 +78,16 @@
       ],
       "properties": {
         "name": "BuildVariableTask"
+      }
+    },
+    {
+      "id": "GetBuildDefinitionVariableValueTask-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "GetBuildDefinitionVariableValueTask"
       }
     }
   ]

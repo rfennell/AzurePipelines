@@ -1,0 +1,83 @@
+{
+  "id": "789E778A-4F77-4C63-A56D-054AB85B6EAE",
+  "name": "GetBuildDefinitionVariableValueTask",
+  "friendlyName": "Get the variable value of a build defintion variable",
+  "description": "Get the variable value of a build defintion variable",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BuildTasks-Task/)",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "Riccardo Viglianisi",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "minimumAgentVersion": "1.82.0",
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "buildmode",
+      "type": "pickList",
+      "label": "Build selection mode",
+      "defaultValue": "Prime",
+      "required": true,
+      "options": {
+        "AllArtifacts": "All build artifacts",
+        "NamedArtifacts": "Named artifacts",
+        "Prime": "Only primary build artifact"
+      },
+      "helpMarkDown": "Select the builds to update (Used in Releases only)."
+    },
+    {
+      "name": "artifacts",
+      "type": "string",
+      "label": "Artifacts",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "A comma separated list of artifacts",
+      "visibleRule": "buildmode = NamedArtifacts"
+    },
+    {
+      "name": "variable",
+      "type": "string",
+      "label": "Variable to update",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The name of the build variable you wish to get the value of"
+    },
+    {
+      "name": "localVariable",
+      "type": "string",
+      "label": "Local Variable to update",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The name of the build variable in this definition you wish to use to store the value of the remote variable"
+    },
+    {
+      "name": "usedefaultcreds",
+      "type": "boolean",
+      "label": "Use default credentials",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true will use the credentials of the running agent as opposed to access token provided by build service.",
+      "groupName": "advanced"
+    }
+  ],
+  "instanceNameFormat": "Get Build Definition Variable",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\GetBuildVariableTask.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
