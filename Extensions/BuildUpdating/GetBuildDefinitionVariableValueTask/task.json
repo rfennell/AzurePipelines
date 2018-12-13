@@ -1,8 +1,8 @@
 {
   "id": "789E778A-4F77-4C63-A56D-054AB85B6EAE",
   "name": "GetBuildDefinitionVariableValueTask",
-  "friendlyName": "Get the current value of a specific build defintion variable",
-  "description": "Get the current value of a specific build defintion variable",
+  "friendlyName": "Set variable in current build from another build",
+  "description": "Get the current value of a specified build defintion variable and update a local build time variable to it.",
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BuildTasks-Task/)",
   "category": "Utility",
   "visibility": [
