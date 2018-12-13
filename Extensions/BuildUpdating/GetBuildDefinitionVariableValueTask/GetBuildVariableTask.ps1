@@ -150,82 +150,17 @@ function Get-Build
 # Output execution parameters.
 $VerbosePreference ='Continue' # equiv to -verbose
 
-# Get the build and release details
+# Get the build details
 $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
 $teamproject = $env:SYSTEM_TEAMPROJECT
-$releaseid = $env:RELEASE_RELEASEID
 $builddefid = $env:BUILD_DEFINITIONID
-$buildid = $env:BUILD_BUILDID
 
 Write-Verbose "collectionUrl = [$env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI]"
 Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
-Write-Verbose "releaseid = [$env:RELEASE_RELEASEID]"
 Write-Verbose "builddefid = [$env:BUILD_DEFINITIONID]"
-Write-Verbose "buildid = [$env:BUILD_BUILDID]"
 Write-Verbose "usedefaultcreds = $usedefaultcreds"
-Write-Verbose "artifacts = [$artifacts]"
-Write-Verbose "buildmode = [$buildmode]"
 
-if ( [string]::IsNullOrEmpty($releaseid))
-{
-    Write-Verbose "Running inside a build so updating current build $buildid"
-    $build = Get-Build -tfsuri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds
 
-    $builddefid = $build.definition.id
-    Write-Verbose "Build has definition id of $builddefid"
-
-     Update-CurrentScopeVariable -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -variable $variable -localVariable $localVariable -usedefaultcreds $usedefaultcreds
-}
-else
-{
-    Write-Verbose "Running inside a release so updating asking which build(s) to update"
-    if ($buildmode -eq "AllArtifacts")
-    {
-        Write-Verbose ("Updating all artifacts")
-        $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
-        foreach($build in $builddefs)
-        {
-            Write-Verbose ("Updating artifact $build.name")
-             Update-CurrentScopeVariable -tfsuri $collectionUrl -teamproject $teamproject -builddefid $build.id -variable $variable -localVariable $localVariable -usedefaultcreds $usedefaultcreds
-        }
-    }
-    elseif ($buildmode -eq "Prime")
-    {
-        Write-Verbose ("Getting variable only from primary artifact")
-        Update-CurrentScopeVariable -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -variable $variable -localVariable $localVariable -usedefaultcreds $usedefaultcreds
-    }
-    else 
-    {
-        Write-Verbose ("Getting variable only from named artifacts")
-        if ([string]::IsNullOrEmpty($artifacts) -eq $true)
-        {
-            Write-Error ("The artifacts list to update is empty")
-        }
-        else
-        {
-            $artifactsArray = $artifacts -split "," | foreach {$_.Trim()}
-            if ($artifactsArray -gt 0)
-            {
-                $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
-                Write-Verbose "$($builddefs.Count) builds found for release"
-                foreach($build in $builddefs)
-                {
-                    if ($artifactsArray -contains $build.name)
-                    {
-                        Write-Verbose ("Updating artifact $($build.name)")
-                        Update-CurrentScopeVariable -tfsuri $collectionUrl -teamproject $teamproject -builddefid $build.id -variable $variable -localVariable $localVariable -usedefaultcreds $usedefaultcreds
-                    }
-                    else
-                    {
-                        Write-Verbose ("Skipping artifact $($build.name) as not in named list")
-                    }
-                }
-            }
-            else
-            {
-                Write-Error ("The artifacts list cannot be split") 
-            }
-        }
-    }
-}
+Write-Verbose ("Getting the variable from specified definition.")
+Update-CurrentScopeVariable -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -variable $variable -localVariable $localVariable -usedefaultcreds $usedefaultcreds
 

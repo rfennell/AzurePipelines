@@ -1,8 +1,8 @@
 {
   "id": "789E778A-4F77-4C63-A56D-054AB85B6EAE",
   "name": "GetBuildDefinitionVariableValueTask",
-  "friendlyName": "Get the variable value of a build defintion variable",
-  "description": "Get the variable value of a build defintion variable",
+  "friendlyName": "Get the variable value of a build defintion",
+  "description": "Get the variable value of a build defintion",
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BuildTasks-Task/)",
   "category": "Utility",
   "visibility": [
