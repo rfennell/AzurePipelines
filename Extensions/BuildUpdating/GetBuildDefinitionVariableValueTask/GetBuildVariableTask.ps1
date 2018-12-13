@@ -1,6 +1,6 @@
 param
 (
-    $builddefinitionid,
+    $builddefinitionname,
     $variable,
     $localVariable,
     $usedefaultcreds
@@ -39,7 +39,7 @@ function Get-BuildDefinition
     (
         $tfsuri,
         $teamproject,
-        $buildDefID,
+        $buildDefName,
         $usedefaultcreds
     )
 
@@ -47,8 +47,13 @@ function Get-BuildDefinition
 
     write-verbose "Getting Build Definition $builddefID "
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=4.0"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions?api-version=2.0"
 
+    $response = $webclient.DownloadString($uri) | ConvertFrom-Json
+    $response
+    $definition = ($response.value | Where-Object {$_.Name -eq $buildDefName})
+
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($definition.id)?api-version=4.0"
     $response = $webclient.DownloadString($uri) | ConvertFrom-Json
     $response
 }
@@ -58,13 +63,13 @@ function Update-CurrentScopeVariable
     Param(
         $tfsuri,
         $teamproject,
-        $builddefid,
+        $builddefname,
         $variable,
         $localVariable,
         $usedefaultcreds
       )
     # get the old definition
-    $def = Get-BuildDefinition -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -usedefaultcreds $usedefaultcreds
+    $def = Get-BuildDefinition -tfsuri $tfsuri -teamproject $teamproject -buildDefName $builddefname -usedefaultcreds $usedefaultcreds
 
     $foundGroup = $null
     $item = $null
@@ -91,25 +96,6 @@ function Update-CurrentScopeVariable
     Write-Output ("##vso[task.setvariable variable=$localVariable;]$value")
 }
 
-function Get-Build
-{
-
-    param
-    (
-    $tfsUri,
-    $teamproject,
-    $buildid,
-    $usedefaultcreds
-    )
-
-    write-verbose "Getting BuildDef for Build"
-
-    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=4.0"
-    $jsondata = $webclient.DownloadString($uri) | ConvertFrom-Json
-    $jsondata
-}
-
 # Output execution parameters.
 $VerbosePreference ='Continue' # equiv to -verbose
 
@@ -125,5 +111,5 @@ Write-Verbose "usedefaultcreds = $usedefaultcreds"
 
 
 Write-Verbose ("Getting the variable from specified definition.")
-Update-CurrentScopeVariable -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -variable $variable -localVariable $localVariable -usedefaultcreds $usedefaultcreds
+Update-CurrentScopeVariable -tfsuri $collectionUrl -teamproject $teamproject -builddefname $builddefinitionname -variable $variable -localVariable $localVariable -usedefaultcreds $usedefaultcreds
 

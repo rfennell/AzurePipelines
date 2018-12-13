@@ -25,12 +25,12 @@
   ],
   "inputs": [
     {
-      "name": "builddefinitionid",
+      "name": "builddefinitionname",
       "type": "string",
-      "label": "Build definition ID.",
+      "label": "Build Definition Name.",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The ID of the build definition containing the variable you wish to read the value of."
+      "helpMarkDown": "The friendly name of the build definition containing the variable you wish to read the value of."
     },
     {
       "name": "variable",
