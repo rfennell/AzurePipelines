@@ -1,10 +1,9 @@
 param
 (
-    $buildmode,
+    $builddefinitionid,
     $variable,
     $localVariable,
-    $usedefaultcreds,
-    $artifacts
+    $usedefaultcreds
  )
 
 function Get-WebClient
@@ -90,42 +89,6 @@ function Update-CurrentScopeVariable
         }
     }
     Write-Output ("##vso[task.setvariable variable=$localVariable;]$value")
-}
-
-function Get-BuildsDefsForRelease
-{
-    param
-    (
-        $tfsuri,
-        $teamproject,
-        $releaseID,
-        $usedefaultcreds
-    )
-
-    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
-
-    write-verbose "Getting Builds for Release releaseID"
-
-    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up
-    $rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
-    
-    # at september 2018 this API is also available at vsrm.dev.azure.com
-    $rmtfsUri = $rmtfsUri -replace "dev.azure.com", "vsrm.dev.azure.com"
-
-    $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseId)?api-version=3.0-preview"
-    $response = $webclient.DownloadString($uri)
-
-    $data = $response | ConvertFrom-Json
-
-    $return = @()
-    $data.artifacts.Where({$_.type -eq "Build"}).ForEach( {
-        Write-Verbose "Getting DefintionID $($_.definitionReference.definition.id) for build instance $($_.definitionReference.version.id)"
-        $return +=  @{ 'id' =  $_.definitionReference.definition.id;
-                       'name' = $_.alias }
-    })
-
-    $return
-
 }
 
 function Get-Build

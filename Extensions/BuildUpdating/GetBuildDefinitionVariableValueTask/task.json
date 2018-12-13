@@ -1,8 +1,8 @@
 {
   "id": "789E778A-4F77-4C63-A56D-054AB85B6EAE",
   "name": "GetBuildDefinitionVariableValueTask",
-  "friendlyName": "Get the variable value of a build defintion",
-  "description": "Get the variable value of a build defintion",
+  "friendlyName": "Get the current value of a specific build defintion variable",
+  "description": "Get the current value of a specific build defintion variable",
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BuildTasks-Task/)",
   "category": "Utility",
   "visibility": [
@@ -25,34 +25,20 @@
   ],
   "inputs": [
     {
-      "name": "buildmode",
-      "type": "pickList",
-      "label": "Build selection mode",
-      "defaultValue": "Prime",
-      "required": true,
-      "options": {
-        "AllArtifacts": "All build artifacts",
-        "NamedArtifacts": "Named artifacts",
-        "Prime": "Only primary build artifact"
-      },
-      "helpMarkDown": "Select the builds to update (Used in Releases only)."
-    },
-    {
-      "name": "artifacts",
+      "name": "builddefinitionid",
       "type": "string",
-      "label": "Artifacts",
+      "label": "Build definition ID.",
       "defaultValue": "",
-      "required": false,
-      "helpMarkDown": "A comma separated list of artifacts",
-      "visibleRule": "buildmode = NamedArtifacts"
+      "required": true,
+      "helpMarkDown": "The ID of the build definition containing the variable you wish to read the value of."
     },
     {
       "name": "variable",
       "type": "string",
-      "label": "Variable to update",
+      "label": "Variable to read.",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The name of the build variable you wish to get the value of"
+      "helpMarkDown": "The name of the variable in the specified definition you wish to get the value of"
     },
     {
       "name": "localVariable",
