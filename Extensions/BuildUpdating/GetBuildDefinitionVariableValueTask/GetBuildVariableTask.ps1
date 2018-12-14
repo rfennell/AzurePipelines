@@ -53,12 +53,12 @@ function Get-BuildDefinition
 
     Write-Verbose "Initiating GET Request to URI: $uri"
     $response = $webclient.DownloadString($uri) | ConvertFrom-Json
-    Write-Verbose "DEFINITIONS RESPONSE: response"
+    Write-Verbose "DEFINITIONS RESPONSE: $response"
     if($null -ne $response){
         $response
         $definition = ($response.value | Where-Object {$_.Name -eq $buildDefName})
     
-        if($null -eq $definition ){
+        if($null -ne $definition ){
             $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($definition.id)?api-version=4.0"
             Write-Verbose "Initiating GET Request to URI: $uri"
             $response = $webclient.DownloadString($uri) | ConvertFrom-Json
@@ -66,7 +66,7 @@ function Get-BuildDefinition
             $response
             return $response
         }
-        else {
+        if ($null -eq $definition ) {
             Write-Verbose "Failed to find the specified definition $buildDefName."
         }
     }
