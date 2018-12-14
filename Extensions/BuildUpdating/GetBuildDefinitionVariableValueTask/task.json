@@ -1,0 +1,69 @@
+{
+  "id": "789E778A-4F77-4C63-A56D-054AB85B6EAE",
+  "name": "GetBuildDefinitionVariableValueTask",
+  "friendlyName": "Set variable in current build from another build",
+  "description": "Get the current value of a specified build defintion variable.",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BuildTasks-Task/)",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "Riccardo Viglianisi",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "minimumAgentVersion": "1.82.0",
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "builddefinitionname",
+      "type": "string",
+      "label": "Build Definition Name.",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The friendly name of the build definition containing the variable you wish to read the value of."
+    },
+    {
+      "name": "variable",
+      "type": "string",
+      "label": "Variable to read.",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The name of the variable in the specified definition you wish to get the value of"
+    },
+    {
+      "name": "localVariable",
+      "type": "string",
+      "label": "Local Variable to update",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The name of the build variable in this definition you wish to use to store the value of the remote variable"
+    },
+    {
+      "name": "usedefaultcreds",
+      "type": "boolean",
+      "label": "Use default credentials",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true will use the credentials of the running agent as opposed to access token provided by build service.",
+      "groupName": "advanced"
+    }
+  ],
+  "instanceNameFormat": "Get Build Definition Variable",
+  "execution": {
+    "PowerShell": {
+      "target": "$(currentDirectory)\\GetBuildVariableTask.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
