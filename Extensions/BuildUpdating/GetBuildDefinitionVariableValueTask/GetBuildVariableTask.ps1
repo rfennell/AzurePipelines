@@ -47,10 +47,11 @@ function Get-BuildDefinition
     
     $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
 
-    write-verbose "Getting Build Definition $builddefID "
+    write-verbose "Getting Build Definition $buildDefName "
 
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions?api-version=2.0"
 
+    Write-Verbose "Initiating GET Request to URI: $uri"
     $response = $webclient.DownloadString($uri) | ConvertFrom-Json
     if($null -eq $response){
         $response
@@ -58,6 +59,7 @@ function Get-BuildDefinition
     
         if($null -eq $definition ){
             $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($definition.id)?api-version=4.0"
+            Write-Verbose "Initiating GET Request to URI: $uri"
             $response = $webclient.DownloadString($uri) | ConvertFrom-Json
             $response
             return $response
@@ -82,7 +84,7 @@ function Update-CurrentScopeVariable
         $usedefaultcreds
       )
     # get the old definition
-    Write-Verbose "Function: Get-BuildDefinition Parameters"
+    Write-Verbose "Function: Update-CurrentScopeVariable"
     Write-Verbose "tfsUri: $tfsuri"
     Write-Verbose "teamProject: $teamproject"
     Write-Verbose "buildDefinitionName: $builddefname"
