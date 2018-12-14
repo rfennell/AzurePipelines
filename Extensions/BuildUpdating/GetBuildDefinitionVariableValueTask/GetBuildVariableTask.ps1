@@ -31,8 +31,6 @@ function Get-WebClient
     $webclient
 
 }
-
-
 function Get-BuildDefinition
 {
     param
@@ -42,7 +40,11 @@ function Get-BuildDefinition
         $buildDefName,
         $usedefaultcreds
     )
-
+    Write-Verbose "Function: Get-BuildDefinition Parameters"
+    Write-Verbose "tfsUri: $tfsuri"
+    Write-Verbose "teamProject: $teamproject"
+    Write-Verbose "buildDefinitionName: $buildDefName"
+    
     $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
 
     write-verbose "Getting Build Definition $builddefID "
@@ -50,12 +52,23 @@ function Get-BuildDefinition
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions?api-version=2.0"
 
     $response = $webclient.DownloadString($uri) | ConvertFrom-Json
-    $response
-    $definition = ($response.value | Where-Object {$_.Name -eq $buildDefName})
-
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($definition.id)?api-version=4.0"
-    $response = $webclient.DownloadString($uri) | ConvertFrom-Json
-    $response
+    if($null -eq $response){
+        $response
+        $definition = ($response.value | Where-Object {$_.Name -eq $buildDefName})
+    
+        if($null -eq $definition ){
+            $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($definition.id)?api-version=4.0"
+            $response = $webclient.DownloadString($uri) | ConvertFrom-Json
+            $response
+            return $response
+        }
+        else {
+            Write-Verbose "Failed to find the specified definition $buildDefName."
+        }
+    }
+    else {
+        Write-Verbose "Failed to retrieve list of build definitions from $tfsuri"
+    }
 }
 
 function Update-CurrentScopeVariable
@@ -69,31 +82,42 @@ function Update-CurrentScopeVariable
         $usedefaultcreds
       )
     # get the old definition
-    $def = Get-BuildDefinition -tfsuri $tfsuri -teamproject $teamproject -buildDefName $builddefname -usedefaultcreds $usedefaultcreds
+    Write-Verbose "Function: Get-BuildDefinition Parameters"
+    Write-Verbose "tfsUri: $tfsuri"
+    Write-Verbose "teamProject: $teamproject"
+    Write-Verbose "buildDefinitionName: $builddefname"
+    Write-Verbose "remoteVariable: $variable"
+    Write-Verbose "localVariable: $localVariable"
+    Write-Verbose "usingDefaultCreds: $usedefaultcreds"
 
-    $foundGroup = $null
-    $item = $null
-    if ($variable -in $def.variables.PSobject.Properties.Name)
+    $def = Get-BuildDefinition -tfsuri $tfsuri -teamproject $teamproject -buildDefName $builddefname -usedefaultcreds $usedefaultcreds
+    if($null -ne $def)
     {
-        Write-Verbose "Current value of the pipeline variable [$variable] is [$($def.variables.$variable.value)]"
-        $value = "$($def.variables.$variable.value)"
-    } else {
-        Write-verbose "Variable is not found as a pipeline variable"
-        # check if there is a variable group
-        foreach ($group in $def.variableGroups)
+        Write-Verbose "Found definition $def"
+        $foundGroup = $null
+        $item = $null
+        if ($variable -in $def.variables.PSobject.Properties.Name)
         {
-            Write-verbose "Checking for variable in '$($group.name)'"
-            if ($variable -in $group.variables.PSobject.Properties.Name)
+            Write-Verbose "Current value of the pipeline variable [$variable] is [$($def.variables.$variable.value)]"
+            $value = "$($def.variables.$variable.value)"
+        } else {
+            Write-verbose "Variable is not found as a pipeline variable"
+            # check if there is a variable group
+            foreach ($group in $def.variableGroups)
             {
-                write-verbose "group details $group"
-                Write-Verbose "Current value of the variable [$variable] is [$($group.variables.$variable.value)] in [$($group.name)] with ID [$($group.id)]"
-                $item =$group.variables.$variable
-                $foundGroup = $group
-                break
-            }  
+                Write-verbose "Checking for variable in '$($group.name)'"
+                if ($variable -in $group.variables.PSobject.Properties.Name)
+                {
+                    write-verbose "group details $group"
+                    Write-Verbose "Current value of the variable [$variable] is [$($group.variables.$variable.value)] in [$($group.name)] with ID [$($group.id)]"
+                    $item =$group.variables.$variable
+                    $foundGroup = $group
+                    break
+                }  
+            }
         }
+        Write-Output ("##vso[task.setvariable variable=$localVariable;]$value")
     }
-    Write-Output ("##vso[task.setvariable variable=$localVariable;]$value")
 }
 
 # Output execution parameters.
@@ -109,6 +133,10 @@ Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
 Write-Verbose "builddefid = [$env:BUILD_DEFINITIONID]"
 Write-Verbose "usedefaultcreds = $usedefaultcreds"
 
+Write-Verbose "Parameters"
+Write-Verbose "$builddefinitionname"
+Write-Verbose "$variable"
+Write-Verbose "$localVariable"
 
 Write-Verbose ("Getting the variable from specified definition.")
 Update-CurrentScopeVariable -tfsuri $collectionUrl -teamproject $teamproject -builddefname $builddefinitionname -variable $variable -localVariable $localVariable -usedefaultcreds $usedefaultcreds
