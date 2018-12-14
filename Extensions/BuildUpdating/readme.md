@@ -63,4 +63,3 @@ To address this problem
 - 1.9.x - Issue #374 add better logging of update issues
 - 1.10.x - Issue #400 added support to variable update task for variablegroups
 - 1.11.x - Added new task for reading build definition variables.
-- 1.12.x - Fixed task definition for reading build variables.
