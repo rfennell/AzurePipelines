@@ -1,42 +1,40 @@
 param
 (
-    $builddefinitionname = "BuildUpdatingExtension",
-    $variable = "ExtensionRoot",
-    $localVariable = "localMinor",
-    $usedefaultcreds = $true,
-    $Username = "riccardo.viglianisi@hotmail.co.uk",
-    $password = "f5hb5x5slk37cc5nnycdgitfjhmp547vj4qcoj3yg22q7dlygpza",
-    $ProjectName = "GitHub",
-    $account = "richardfennell"
+    $builddefinitionname,
+    $variable,
+    $localVariable,
+    $usedefaultcreds
  )
-function Invoke-WebRequest
-{
-    param(
-        $Username,
-        $password,
-        $account,
-        $ProjectName,
-        $ApiUrl
-    )
 
-
-    Add-Type -AssemblyName System.Net.Http
-    $RequestHandler = New-Object -TypeName System.Net.Http.HttpClientHandler
-    $Request =  New-Object -TypeName System.Net.Http.HttpClient $RequestHandler
-    $DefaultRequestHeaderContentType = New-Object -TypeName System.Net.Http.Headers.MediaTypeWithQualityHeaderValue "application/json"
-    $TextToEncode = [System.String]::Format("{0}:{1}",$Username, $Password)
-    $Text = [System.Text.ASCIIEncoding]::ASCII.GetBytes($TextToEncode)
-    $Base64String = [System.Convert]::ToBase64String($Text)
-    $DefaultRequestHeaderAuthType = New-Object System.Net.Http.Headers.AuthenticationHeaderValue -ArgumentList "Basic", $Base64String
-    $Request.DefaultRequestHeaders.Accept.Add($DefaultRequestHeaderContentType)
-    $Request.DefaultRequestHeaders.Authorization = $DefaultRequestHeaderAuthType
-    $BaseUrl = "https://dev.azure.com/$($account)/$($ProjectName)/$($ApiUrl)"
-    $Request.BaseAddress = $BaseUrl
-    $Response = $Request.GetAsync($BaseUrl).Result.Content.ReadAsStringAsync().Result
-    $Response  = $Response | ConvertFrom-Json
-    $Request.Dispose()
-    $Response
-}
+#DEBUG Invoke-Request
+#function Invoke-WebRequest
+#{
+#    param(
+#        $Username,
+#        $password,
+#        $account,
+#        $ProjectName,
+#        $ApiUrl
+#    )
+#
+#
+#    Add-Type -AssemblyName System.Net.Http
+#    $RequestHandler = New-Object -TypeName System.Net.Http.HttpClientHandler
+#    $Request =  New-Object -TypeName System.Net.Http.HttpClient $RequestHandler
+#    $DefaultRequestHeaderContentType = New-Object -TypeName System.Net.Http.Headers.MediaTypeWithQualityHeaderValue "application/json"
+#    $TextToEncode = [System.String]::Format("{0}:{1}",$Username, $Password)
+#    $Text = [System.Text.ASCIIEncoding]::ASCII.GetBytes($TextToEncode)
+#    $Base64String = [System.Convert]::ToBase64String($Text)
+#    $DefaultRequestHeaderAuthType = New-Object System.Net.Http.Headers.AuthenticationHeaderValue -ArgumentList "Basic", $Base64String
+#    $Request.DefaultRequestHeaders.Accept.Add($DefaultRequestHeaderContentType)
+#    $Request.DefaultRequestHeaders.Authorization = $DefaultRequestHeaderAuthType
+#    $BaseUrl = "https://dev.azure.com/$($account)/$($ProjectName)/$($ApiUrl)"
+#    $Request.BaseAddress = $BaseUrl
+#    $Response = $Request.GetAsync($BaseUrl).Result.Content.ReadAsStringAsync().Result
+#    $Response  = $Response | ConvertFrom-Json
+#    $Request.Dispose()
+#    $Response
+#}
 function Get-WebClient
 {
     param
@@ -83,8 +81,9 @@ function Get-BuildDefinition
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions?api-version=2.0"
 
     Write-Verbose "Initiating GET Request to URI: $uri"
-    #$response = $webclient.DownloadString($uri) | ConvertFrom-Json
-    $definitionsResponse = Invoke-WebRequest -Username $Username -password $password -account $account -ProjectName $teamproject -ApiUrl "_apis/build/definitions?api-version=2.0"
+    $definitionsResponse = $webclient.DownloadString($uri) | ConvertFrom-Json
+    #DEBUG
+    #$definitionsResponse = Invoke-WebRequest -Username $Username -password $password -account $account -ProjectName $teamproject -ApiUrl "_apis/build/definitions?api-version=2.0"
     Write-Verbose "DEFINITIONS RESPONSE: $webclient"
     if($null -ne $webclient){
         $definition = ($definitionsResponse.value | Where-Object {$_.Name -eq $buildDefName})
@@ -92,8 +91,10 @@ function Get-BuildDefinition
         if($null -ne $definition ){
             $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($definition.id)?api-version=4.0"
             Write-Verbose "Initiating GET Request to URI: $uri"
-            #$response = $webclient.DownloadString($uri) | ConvertFrom-Json
-            $buildResponse = Invoke-WebRequest -Username $Username -password $password -account $account -ProjectName $teamproject -ApiUrl "_apis/build/definitions/$($definition.id)?api-version=4.0"
+            $buildResponse = $webclient.DownloadString($uri) | ConvertFrom-Json
+            
+            #DEBUG
+            #$buildResponse = Invoke-WebRequest -Username $Username -password $password -account $account -ProjectName $teamproject -ApiUrl "_apis/build/definitions/$($definition.id)?api-version=4.0"
             Write-Verbose "DEFINITION RESPONSE: $buildResponse"
             return $buildResponse
             
@@ -161,12 +162,16 @@ function Update-CurrentScopeVariable
 $VerbosePreference ='Continue' # equiv to -verbose
 
 # Get the build details
-#$collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
-#$teamproject = $env:SYSTEM_TEAMPROJECT
-#$builddefid = $env:BUILD_DEFINITIONID
+$collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
+$teamproject = $env:SYSTEM_TEAMPROJECT
+$builddefid = $env:BUILD_DEFINITIONID
 
-#Debug Variables
-$teamproject = $ProjectName
+#DEBUG ONLY
+#$Username = "anyvalue"
+#$password = "a PAT token"
+#$ProjectName = "TEAM PROJECT NAME"
+#$account  = "The account name"
+#$teamproject
 
 Write-Verbose "collectionUrl = [$env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI]"
 Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
