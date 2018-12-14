@@ -53,7 +53,8 @@ function Get-BuildDefinition
 
     Write-Verbose "Initiating GET Request to URI: $uri"
     $response = $webclient.DownloadString($uri) | ConvertFrom-Json
-    if($null -eq $response){
+    Write-Verbose "DEFINITIONS RESPONSE: response"
+    if($null -ne $response){
         $response
         $definition = ($response.value | Where-Object {$_.Name -eq $buildDefName})
     
@@ -61,6 +62,7 @@ function Get-BuildDefinition
             $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($definition.id)?api-version=4.0"
             Write-Verbose "Initiating GET Request to URI: $uri"
             $response = $webclient.DownloadString($uri) | ConvertFrom-Json
+            Write-Verbose "DEFINITION RESPONSE: $response"
             $response
             return $response
         }
@@ -68,7 +70,7 @@ function Get-BuildDefinition
             Write-Verbose "Failed to find the specified definition $buildDefName."
         }
     }
-    else {
+    if($null -eq $response){
         Write-Verbose "Failed to retrieve list of build definitions from $tfsuri"
     }
 }
