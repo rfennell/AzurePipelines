@@ -49,6 +49,15 @@
       "required": false,
       "helpMarkDown": "Prefix for filename, if not set the <extension ID>-YAML.md will be used",
       "groupName": "advanced"
+    },
+    {
+      "name": "copyReadme",
+      "type": "boolean",
+      "label": "Copy Readme.md",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true also copies the extension readme.md as <extension ID>.md ",
+      "groupName": "advanced"
     }
   ],
   "instanceNameFormat": "YAML Documentation Generator",

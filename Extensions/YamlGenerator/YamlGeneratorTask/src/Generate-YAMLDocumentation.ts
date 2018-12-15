@@ -116,7 +116,19 @@ function filePath(outDir, extension) {
     return path.join(outDir, `${extension}-YAML.md`);
 }
 
-async function main(inDir, outDir, filePrefix) {
+async function copyReadmeToOutput(inDir, outDir, filePrefix) {
+    // Get the extension details
+    const extension = JSON.parse(fs.readFileSync(path.join(inDir, "vss-extension.json"), "utf8"));
+
+    if (filePrefix === "") {
+        filePrefix = extension.id;
+    }
+
+    logInfo(`Copying readme.md to ${outDir}\\${filePrefix}.md`);
+    fs.copyFileSync (`${inDir}\\readme.md`, `${outDir}\\${filePrefix}.md`);
+}
+
+async function generateYaml(inDir, outDir, filePrefix) {
 
     // Make sure the folder exists
     mkDirByPathSync(outDir);
@@ -155,9 +167,15 @@ function logInfo(msg) {
 var outDir = tl.getInput("outDir");
 var inDir = tl.getInput("inDir");
 var filePrefix = tl.getInput("filePrefix");
+var copyReadme = tl.getBoolInput("copyReadme");
 
 logInfo(`Variable: outDir [${outDir}]`);
 logInfo(`Variable: inDir [${outDir}]`);
-logInfo(`Variable: inDir [${filePrefix}]`);
+logInfo(`Variable: filePrefix [${filePrefix}]`);
+logInfo(`Variable: copyReadme [${copyReadme}]`);
 
-main(inDir, outDir, filePrefix);
+generateYaml(inDir, outDir, filePrefix);
+
+if (copyReadme === true) {
+    copyReadmeToOutput(inDir, outDir, filePrefix);
+}
