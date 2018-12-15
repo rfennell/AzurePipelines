@@ -29,7 +29,7 @@
       "name": "inDir",
       "type": "string",
       "label": "Source Directory",
-      "defaultValue": "$(System.DefaultWorkingDirectory",
+      "defaultValue": "$(System.DefaultWorkingDirectory)",
       "required": true,
       "helpMarkDown": "The directory that contains the 'vss-extensionjson' for the extension"
     },
@@ -37,7 +37,7 @@
       "name": "outDir",
       "type": "string",
       "label": "Output Directory",
-      "defaultValue": "$(System.ArtifactStagingDirectory",
+      "defaultValue": "$(System.ArtifactStagingDirectory)",
       "required": true,
       "helpMarkDown": "The folder to write the documentation to."
     },
