@@ -1,0 +1,61 @@
+{
+  "id": "02d4adb5-7ba0-4164-ab9b-9c1facc97b3d",
+  "name": "GenerateYAMLTask",
+  "friendlyName": "Generate YAML Documentation",
+  "description": "Generate YAML documentation for the Azure DevOps Extension",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BM-VSTS-YAMLGenerator/)",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "Richard Fennell",
+  "version": {
+    "Major": 1,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "demands": [],
+  "minimumAgentVersion": "1.82.0",
+  "groups": [
+    {
+        "name": "advanced",
+        "displayName": "Advanced",
+        "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "inDir",
+      "type": "string",
+      "label": "Source Directory",
+      "defaultValue": "$(System.DefaultWorkingDirectory",
+      "required": true,
+      "helpMarkDown": "The directory that contains the 'vss-extensionjson' for the extension"
+    },
+    {
+      "name": "outDir",
+      "type": "string",
+      "label": "Output Directory",
+      "defaultValue": "$(System.ArtifactStagingDirectory",
+      "required": true,
+      "helpMarkDown": "The folder to write the documentation to."
+    },
+    {
+      "name": "filePrefix",
+      "type": "string",
+      "label": "File Prefix ",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Prefix for filename, if not set the <extension ID>-YAML.md will be used",
+      "groupName": "advanced"
+    }
+  ],
+  "instanceNameFormat": "YAML Documentation Generator",
+  "execution": {
+    "Node": {
+      "target": "Generate-YAMLDocumentation.js",
+      "argumentFormat": ""
+    }
+  }
+}
