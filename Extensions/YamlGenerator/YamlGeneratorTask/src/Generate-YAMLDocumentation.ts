@@ -136,11 +136,11 @@ async function generateYaml(inDir, outDir, filePrefix) {
     // Get the extension details
     const extension = JSON.parse(fs.readFileSync(path.join(inDir, "vss-extension.json"), "utf8"));
 
-    // Delete the target file
     if (filePrefix === "") {
         filePrefix = extension.id;
     }
 
+    // Delete the target file
     const fileName = filePath(outDir, extension.id);
     if (fs.existsSync(fileName)) {
         logInfo(`Deleting old output file '${fileName}`);
@@ -169,8 +169,8 @@ var inDir = tl.getInput("inDir");
 var filePrefix = tl.getInput("filePrefix");
 var copyReadme = tl.getBoolInput("copyReadme");
 
+logInfo(`Variable: inDir [${inDir}]`);
 logInfo(`Variable: outDir [${outDir}]`);
-logInfo(`Variable: inDir [${outDir}]`);
 logInfo(`Variable: filePrefix [${filePrefix}]`);
 logInfo(`Variable: copyReadme [${copyReadme}]`);
 
