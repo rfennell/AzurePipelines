@@ -120,15 +120,20 @@ async function copyReadmeToOutput(inDir, outDir, filePrefix) {
     // Get the extension details
     const extension = JSON.parse(fs.readFileSync(path.join(inDir, "vss-extension.json"), "utf8"));
 
-    if (filePrefix === "") {
-        logInfo(`No fileprefix so using '${extension.id}`);
-        filePrefix = extension.id;
-    } else {
-        logInfo(`Using fileprefix '${filePrefix}`);
-    }
+    filePrefix = GetFilePrefix(filePrefix, extension.id);
 
     logInfo(`Copying readme.md to ${outDir}\\${filePrefix}.md`);
     fs.copyFileSync (`${inDir}\\readme.md`, `${outDir}\\${filePrefix}.md`);
+}
+
+function GetFilePrefix(filePrefix, extensionId) {
+    if (filePrefix === "") {
+        logInfo(`No fileprefix so using '${extensionId}'`);
+        filePrefix = extensionId;
+    } else {
+        logInfo(`Using fileprefix '${filePrefix}'`);
+    }
+    return filePrefix;
 }
 
 async function generateYaml(inDir, outDir, filePrefix) {
@@ -139,12 +144,7 @@ async function generateYaml(inDir, outDir, filePrefix) {
     // Get the extension details
     const extension = JSON.parse(fs.readFileSync(path.join(inDir, "vss-extension.json"), "utf8"));
 
-    if (filePrefix === "") {
-        logInfo(`No fileprefix so using '${extension.id}`);
-        filePrefix = extension.id;
-    } else {
-        logInfo(`Using fileprefix '${filePrefix}`);
-    }
+    filePrefix = GetFilePrefix(filePrefix, extension.id);
 
     // Delete the target file
     const fileName = filePath(outDir, extension.id);
@@ -186,5 +186,8 @@ logInfo(`Variable: copyReadme [${copyReadme}]`);
 generateYaml(inDir, outDir, filePrefix);
 
 if (copyReadme === true) {
+    logInfo(`Copying Readme.md file`);
     copyReadmeToOutput(inDir, outDir, filePrefix);
+} else {
+    logInfo(`Not copying Readme.md file`);
 }
