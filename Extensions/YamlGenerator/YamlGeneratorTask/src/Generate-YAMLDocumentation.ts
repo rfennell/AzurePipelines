@@ -121,7 +121,10 @@ async function copyReadmeToOutput(inDir, outDir, filePrefix) {
     const extension = JSON.parse(fs.readFileSync(path.join(inDir, "vss-extension.json"), "utf8"));
 
     if (filePrefix === "") {
+        logInfo(`No fileprefix so using '${extension.id}`);
         filePrefix = extension.id;
+    } else {
+        logInfo(`Using fileprefix '${filePrefix}`);
     }
 
     logInfo(`Copying readme.md to ${outDir}\\${filePrefix}.md`);
@@ -137,7 +140,10 @@ async function generateYaml(inDir, outDir, filePrefix) {
     const extension = JSON.parse(fs.readFileSync(path.join(inDir, "vss-extension.json"), "utf8"));
 
     if (filePrefix === "") {
+        logInfo(`No fileprefix so using '${extension.id}`);
         filePrefix = extension.id;
+    } else {
+        logInfo(`Using fileprefix '${filePrefix}`);
     }
 
     // Delete the target file
@@ -158,6 +164,9 @@ async function generateYaml(inDir, outDir, filePrefix) {
     list.forEach(task => {
         writeToFile(fileName, GetTask(task));
     });
+
+    logInfo(`Completed generation of output file '${fileName}`);
+
 }
 
 function logInfo(msg) {
