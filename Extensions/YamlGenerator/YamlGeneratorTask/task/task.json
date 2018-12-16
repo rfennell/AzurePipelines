@@ -37,7 +37,7 @@
       "name": "outDir",
       "type": "string",
       "label": "Output Directory",
-      "defaultValue": "$(System.ArtifactStagingDirectory)",
+      "defaultValue": "$(Build.ArtifactStagingDirectory)",
       "required": true,
       "helpMarkDown": "The folder to write the documentation to."
     },
