@@ -1,6 +1,7 @@
 ﻿import * as fs from "fs";
 import * as path from "path";
 import tl = require("vsts-task-lib/task");
+import { log } from "util";
 
 function DumpField(field) {
     var line = `- **Argument:** ${field.name}\r\n`;
@@ -77,7 +78,11 @@ function GetTask(filePath) {
 }
 
 function writeToFile (fileName, data) {
-    fs.appendFileSync (fileName, data);
+    try {
+        fs.appendFileSync (fileName, data);
+    } catch (e) {
+        logError(e);
+    }
 }
 
 function mkDirByPathSync(targetDir, { isRelativeToScript = false } = {}) {
@@ -116,14 +121,23 @@ function filePath(outDir, extension) {
     return path.join(outDir, `${extension}-YAML.md`);
 }
 
+function logError (msg: string) {
+    tl.error(msg);
+    tl.setResult(tl.TaskResult.Failed, msg);
+}
+
 async function copyReadmeToOutput(inDir, outDir, filePrefix) {
     // Get the extension details
     const extension = JSON.parse(fs.readFileSync(path.join(inDir, "vss-extension.json"), "utf8"));
 
     filePrefix = GetFilePrefix(filePrefix, extension.id);
 
-    logInfo(`Copying readme.md to ${outDir}\\${filePrefix}.md`);
-    fs.copyFileSync (path.join(inDir, "readme.md"), path.join(outDir, `${filePrefix}.md`));
+    logInfo(`Copying 'readme.md' to '${outDir}\\${filePrefix}.md'`);
+    try {
+        fs.copyFileSync (path.join(inDir, "readme.md"), path.join(outDir, `${filePrefix}.md`));
+    } catch (e) {
+        logError(e);
+    }
 }
 
 function GetFilePrefix(filePrefix, extensionId) {
@@ -158,14 +172,14 @@ async function generateYaml(inDir, outDir, filePrefix) {
     writeToFile(fileName, `# ${extension.name} \r\n`);
     writeToFile(fileName, `The '${extension.name}' package contains the following tasks. The table show the possible variables that can be used in YAML Azure DevOps Pipeline configurations \r\n`);
 
-    logInfo(`Scanning for task.json files under '${inDir}`);
+    logInfo(`Scanning for 'task.json' files under '${inDir}'`);
     // Note we look for tasks so we see extensions multiple time
     var list = listFiles(inDir, list);
     list.forEach(task => {
         writeToFile(fileName, GetTask(task));
     });
 
-    logInfo(`Completed generation of output file '${fileName}`);
+    logInfo(`Completed generation of output file '${fileName}'`);
 
 }
 
