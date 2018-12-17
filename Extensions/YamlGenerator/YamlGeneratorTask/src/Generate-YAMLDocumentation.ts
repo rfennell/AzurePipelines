@@ -134,7 +134,8 @@ async function copyReadmeToOutput(inDir, outDir, filePrefix) {
 
     logInfo(`Copying 'readme.md' to '${outDir}\\${filePrefix}.md'`);
     try {
-        fs.copyFileSync (path.join(inDir, "readme.md"), path.join(outDir, `${filePrefix}.md`));
+        // can't use fs.copyFileSync as get error fs.copyFileSync is not a function on build agents
+        fs.writeFileSync(path.join(outDir, `${filePrefix}.md`), fs.readFileSync(path.join(inDir, "readme.md"), "utf8"));
     } catch (e) {
         logError(e);
     }
