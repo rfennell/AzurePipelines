@@ -22,7 +22,7 @@ var user = tl.getInput("user");
 var password = tl.getInput("password");
 var useAgentToken = tl.getBoolInput("useAgentToken");
 var dataIsFile = tl.getBoolInput("dataIsFile");
-var sourceFile = tl.getInput("soureFile");
+var sourceFile = tl.getInput("sourceFile");
 
 console.log(`Variable: Repo [${repo}]`);
 console.log(`Variable: Filename [${filename}]`);
