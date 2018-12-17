@@ -142,7 +142,7 @@ async function copyReadmeToOutput(inDir, outDir, filePrefix) {
 }
 
 function GetFilePrefix(filePrefix, extensionId) {
-    if (filePrefix === "") {
+    if ((filePrefix === null) || (filePrefix === "")) {
         logInfo(`No fileprefix so using '${extensionId}'`);
         filePrefix = extensionId;
     } else {
