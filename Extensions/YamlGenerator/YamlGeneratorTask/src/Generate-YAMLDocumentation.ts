@@ -123,7 +123,7 @@ async function copyReadmeToOutput(inDir, outDir, filePrefix) {
     filePrefix = GetFilePrefix(filePrefix, extension.id);
 
     logInfo(`Copying readme.md to ${outDir}\\${filePrefix}.md`);
-    fs.copyFileSync (`${inDir}\\readme.md`, `${outDir}\\${filePrefix}.md`);
+    fs.copyFileSync (path.join(inDir, "readme.md"), path.join(outDir, `${filePrefix}.md`));
 }
 
 function GetFilePrefix(filePrefix, extensionId) {
