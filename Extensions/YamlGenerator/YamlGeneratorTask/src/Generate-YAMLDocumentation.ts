@@ -132,7 +132,7 @@ async function copyReadmeToOutput(inDir, outDir, filePrefix) {
 
     filePrefix = GetFilePrefix(filePrefix, extension.id);
 
-    logInfo(`Copying 'readme.md' to '${outDir}\\${filePrefix}.md'`);
+    logInfo(`Copying 'readme.md' to '${path.join(outDir, filePrefix)}.md'`);
     try {
         // can't use fs.copyFileSync as get error fs.copyFileSync is not a function on build agents
         fs.writeFileSync(path.join(outDir, `${filePrefix}.md`), fs.readFileSync(path.join(inDir, "readme.md"), "utf8"));
@@ -162,7 +162,7 @@ async function generateYaml(inDir, outDir, filePrefix) {
     filePrefix = GetFilePrefix(filePrefix, extension.id);
 
     // Delete the target file
-    const fileName = filePath(outDir, extension.id);
+    const fileName = filePath(outDir, filePrefix);
     if (fs.existsSync(fileName)) {
         logInfo(`Deleting old output file '${fileName}`);
         fs.unlinkSync(fileName);
