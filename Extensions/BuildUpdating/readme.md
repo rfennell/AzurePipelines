@@ -11,6 +11,13 @@ This task sets the 'keep forever' retension flag on a build. It takes one parame
 There is also an advanced option
 * (Advanced) Use use build agents default credentials as opposed to agent token - usually only every needed for TFS usage
 
+### Get Build Variable Task
+This task gets the value of a specified variable from a build definition, then publishes the value to a local variable from the current build/release.
+
+* The build definition id must be supplied.
+* The local variable which is updated is only updated to the scope of the current build or release. Not the definition
+ is also an advanced option
+
 ### Update Build Variable Task
 This task allows a variable to be set in a build definition.
 
@@ -54,4 +61,6 @@ To address this problem
           Issue #237 allowed reset of retension as well as setting
 - 1.8.x - Issue #380 fix to allow support for dev.azure.com URL format 
 - 1.9.x - Issue #374 add better logging of update issues
-- 1.10.x - Issue #400 added support to variable update task for variablegroups 
+- 1.10.x - Issue #400 added support to variable update task for variablegroups
+- 1.11.x - Added new task for reading build definition variables.
+- 1.12.x - Removed accidentally committed debug logic from the task script, fixing the script execution in production

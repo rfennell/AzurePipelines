@@ -20,7 +20,7 @@ param (
     [Parameter(Mandatory)]
     [string]$VersionNumber,
 
-    $InjectVersion
+    $InjectVersion,
     
     [string]$VersionRegex,
 
