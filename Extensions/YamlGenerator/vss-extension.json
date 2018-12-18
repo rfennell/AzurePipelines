@@ -1,0 +1,68 @@
+{
+ "manifestVersion": 1,
+ "id": "BM-VSTS-YAMLGenerator",
+ "version": "1.0.0",
+ "name": "YAML Documentation Generator",
+ "publisher": "richardfennellBM",
+  "description": "A task that generates YAML documentation for an Azure DevOps Extension.",
+  "CustomerQnASupport": {
+    "enableqna":"true",
+    "url": "https://github.com/rfennell/AzurePipelines/issues"
+  }, 
+  "categories": [
+    "Azure Pipelines"
+  ],
+  "targets": [
+         {
+             "id": "Microsoft.VisualStudio.Services"
+         }
+     ],
+  "tags": [
+    "YAML"
+  ],   
+  "branding": {
+        "color": "#f97923",
+        "theme": "dark"
+  },
+  "icons": {
+      "default": "images/logo.png"
+  },
+   "links": {
+    "getstarted": {
+      "uri": "https://github.com/rfennell/AzurePipelines/wiki/BM-VSTS-YAMLGenerator"
+    },
+    "support": {
+      "uri": "https://github.com/rfennell/AzurePipelines/issues"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot1.png"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "files": [
+    {
+      "path": "YamlGeneratorTask"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "YamlGeneratorTask",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "YamlGeneratorTask"
+      }
+    }
+  ]
+}

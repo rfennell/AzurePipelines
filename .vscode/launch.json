@@ -2,6 +2,18 @@
     "version": "0.2.0",
     "configurations": 
     [ 
+
+        {
+            "type": "node",
+           "request": "launch",
+           "name": "Node - YAMLGenerator",
+           "program": "${workspaceRoot}/Extensions/YamlGenerator/YamlGeneratorTask/src/Generate-YAMLDocumation.ts",
+           "outFiles": ["${workspaceRoot}/Extensions/YamlGenerator/YamlGeneratorTask/dist/*.js"],
+           "cwd": "${workspaceRoot}",
+           "env": {                
+           }    
+       },
+
         {
              "type": "node",
             "request": "launch",

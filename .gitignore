@@ -264,6 +264,15 @@ Extensions/WikiUpdater/WikiUpdaterTask/node_modules
 Extensions/WikiUpdater/WikiUpdaterTask/dist
 Extensions/WikiUpdater/WikiUpdaterTask/repo
 
+Extensions/YamlGenerator/YamlGeneratorTask/*.js
+Extensions/YamlGenerator/YamlGeneratorTask/*.js.map
+Extensions/YamlGenerator/YamlGeneratorTask/test/*.js
+Extensions/YamlGenerator/YamlGeneratorTask/test/*.js.map
+Extensions/YamlGenerator/YamlGeneratorTask/node_modules
+Extensions/YamlGenerator/YamlGeneratorTask/dist
+Extensions/YamlGenerator/YamlGeneratorTask/repo
+
+
 /.vs
 /Extensions/GenerateReleaseNotes/GenerateReleaseNotesTask/ReleaseNotes.md
 /Extensions/GenerateReleaseNotes/GenerateReleaseNotesTask/ReleaseNotes_AllFields.md
