@@ -55,19 +55,19 @@
             "name": "PowerShell - GenerateReleaseNotes",
             "type": "PowerShell",
             "request": "launch",
-            "program": "${workspaceRoot}/Extensions/GenerateReleaseNotes/test/runtests.ps1"
+            "script": "${workspaceRoot}/Extensions/GenerateReleaseNotes/test/runtests.ps1"
         },
         {
             "name": "PowerShell - StyleCop",
             "type": "PowerShell",
             "request": "launch",
-            "program": "${workspaceRoot}/Extensions/StyleCop/test/runtests.ps1"
+            "script": "${workspaceRoot}/Extensions/StyleCop/test/runtests.ps1"
         },
         {
             "name": "PowerShell - current file",
             "type": "PowerShell",
             "request": "launch",
-            "program": "${file}"
+            "script": "${file}"
         }
     ]
 }
