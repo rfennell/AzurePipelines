@@ -33,22 +33,22 @@ Releases
 - 4.4.x - Added support for multiple comma separated tags
 - 5.0.x - Added optional support for Pester 4.0.3
 - 5.1.x - Fixes issue with running tests using the 32Bit process switch (#150)
-- 6.0.x - Add support for JaCoCo code coverage as provided by Pester 4.0.8 ([issue #152](https://github.com/rfennell/vNextBuild/issues/152))
+- 6.0.x - Add support for JaCoCo code coverage as provided by Pester 4.0.8 ([issue #152](https://github.com/rfennell/AzurePipelines/issues/152))
 - 6.1.x - Engineering updates, no functional change
 - 6.2.x - Issue265 documentation change to show how other scripts can be used
 - 6.3.x - Engineering test same as 7.0.x
 - 7.0.x - PR287 changed included version of 4x Pester from 4.0.8 to 4.3.1, incremented major version as change of advanced options blocks auto update.
-- 7.1.x - Added additionalModulePath and CodeCoverageFolder, to support testing compiled modules ([PR#285](https://github.com/rfennell/vNextBuild/pull/285))
+- 7.1.x - Added additionalModulePath and CodeCoverageFolder, to support testing compiled modules ([PR#285](https://github.com/rfennell/AzurePipelines/pull/285))
 - 7.2.x - Multiple fixes:
-    - Fix check for code coverage folder being specified to ensure code coverage is generated from the correct files rather than files under $ScriptFolder. ([Fixes #330](https://github.com/rfennell/vNextBuild/issues/330))
-    - Swap logging to use Write-Host to ensure it logs out by default. ([Fixes #320](https://github.com/rfennell/vNextBuild/issues/320))
-    - Change Hashtable parsing function to use language parser to handle more cases. ([Fixes #321](https://github.com/rfennell/vNextBuild/issues/321))
-- 8.0.x - Removed complicated version loading logic and replaced with installing the latest version from the gallery if you're on PSv5+ or have PowerShellGet available. If neither of those are options then it will load the 4.3.1 version of Pester that ships with the task. ([PR#314](https://github.com/rfennell/vNextBuild/pull/314))
-- 8.1.x - Fixed the default working folder to System.DefaultWorkingDirectory as this is a variable available in both build and release. ([Fixes #350](https://github.com/rfennell/vNextBuild/issues/350))
-- 8.3.x - Fixed the version number comparison for Code Coverage so it should no longer incorrectly warn when a version is newer than 4.0.4 [Fixes #356](https://github.com/rfennell/vNextBuild/issues/356)
-- 8.4.x - Fixed the hashtable conversion for lower versions of PowerShell. Sadly this makes use of Invoke-Expression but there is a warning that it is an unsafe operation and the build agent should be upgraded to v5 when possible. [Fixes #358](https://github.com/rfennell/vNextBuild/issues/358)
-- 8.6.x - Fixed the installation of Pester from the PSGallery to use the first available PS Repository so it handles situations where only a private repository is available. [Fixes #366](https://github.com/rfennell/vNextBuild/issues/366)
-- 8.7.x - Fixed the installation of Pester to use whatever repository has the latest version available. This handles situations where the first private repository available doesn't have Pester or has an older version of Pester. [Fixes #366 Comment](https://github.com/rfennell/vNextBuild/issues/366#issuecomment-420618766)
-- 8.8.x - Add ScriptBlock parameter to allow running a script before running the tests. [Fixes #377](https://github.com/rfennell/vNextBuild/issues/377)
+    - Fix check for code coverage folder being specified to ensure code coverage is generated from the correct files rather than files under $ScriptFolder. ([Fixes #330](https://github.com/rfennell/AzurePipelines/issues/330))
+    - Swap logging to use Write-Host to ensure it logs out by default. ([Fixes #320](https://github.com/rfennell/AzurePipelines/issues/320))
+    - Change Hashtable parsing function to use language parser to handle more cases. ([Fixes #321](https://github.com/rfennell/AzurePipelines/issues/321))
+- 8.0.x - Removed complicated version loading logic and replaced with installing the latest version from the gallery if you're on PSv5+ or have PowerShellGet available. If neither of those are options then it will load the 4.3.1 version of Pester that ships with the task. ([PR#314](https://github.com/rfennell/AzurePipelines/pull/314))
+- 8.1.x - Fixed the default working folder to System.DefaultWorkingDirectory as this is a variable available in both build and release. ([Fixes #350](https://github.com/rfennell/AzurePipelines/issues/350))
+- 8.3.x - Fixed the version number comparison for Code Coverage so it should no longer incorrectly warn when a version is newer than 4.0.4 [Fixes #356](https://github.com/rfennell/AzurePipelines/issues/356)
+- 8.4.x - Fixed the hashtable conversion for lower versions of PowerShell. Sadly this makes use of Invoke-Expression but there is a warning that it is an unsafe operation and the build agent should be upgraded to v5 when possible. [Fixes #358](https://github.com/rfennell/AzurePipelines/issues/358)
+- 8.6.x - Fixed the installation of Pester from the PSGallery to use the first available PS Repository so it handles situations where only a private repository is available. [Fixes #366](https://github.com/rfennell/AzurePipelines/issues/366)
+- 8.7.x - Fixed the installation of Pester to use whatever repository has the latest version available. This handles situations where the first private repository available doesn't have Pester or has an older version of Pester. [Fixes #366 Comment](https://github.com/rfennell/AzurePipelines/issues/366#issuecomment-420618766)
+- 8.8.x - Add ScriptBlock parameter to allow running a script before running the tests. [Fixes #377](https://github.com/rfennell/AzurePipelines/issues/377)
 - 8.9.x - Fix Find-Module so it doesn't attempt to find prerelease versions. [Fixes #412](https://github.com/rfennell/AzurePipelines/issues/412)
 - 8.10.x - Replace -AllowPrerelease with -AllVersions and a filter for valid version formats as older versions of PowerShellGet don't have -AllowPrerelease. [Fixes #412](https://github.com/rfennell/AzurePipelines/issues/412)
