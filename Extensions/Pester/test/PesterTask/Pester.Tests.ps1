@@ -229,7 +229,8 @@ Describe "Testing Pester Task" {
         Mock Write-Warning { }
         Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
         Mock Write-Error { }
-        Mock Get-Command { [PsCustomObject]@{Parameters=@{SkipPublisherCheck='SomeValue'}}}
+        Mock Get-Command { [PsCustomObject]@{Parameters=@{SkipPublisherCheck='SomeValue'}}} -ParameterFilter {$Name -eq 'Install-Module'}
+        Mock Get-Command { [PsCustomObject]@{Parameters=@{AllowPrerelease='SomeValue'}}} -ParameterFilter {$Name -eq 'Find-Module'}
 
         it "Installs the latest version of Pester when on PS5+ and PowerShellGet is available" {
             Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.3.1") }
@@ -288,7 +289,7 @@ Describe "Testing Pester Task" {
             Mock Get-ChildItem  { return $true }
             Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9);Repository='PSGallery'}}
             Mock Get-PackageProvider { $True }
-            Mock Get-Command { [PsCustomObject]@{Parameters=@{OtherProperty='SomeValue'}} }
+            Mock Get-Command { [PsCustomObject]@{Parameters=@{OtherProperty='SomeValue'}} } -ParameterFilter {$Name -eq 'Install-Module'}
 
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
 
