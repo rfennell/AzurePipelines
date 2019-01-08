@@ -68,20 +68,24 @@ if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
     $env:PSModulePath = $additionalModulePath + ';' + $env:PSModulePath
 }
 
-if ((Get-Module -Name PowerShellGet -ListAvailable) -and (Get-Command Install-Module).Parameters.ContainsKey('SkipPublisherCheck')) {
+if ((Get-Module -Name PowerShellGet -ListAvailable) -and 
+    (Get-Command Install-Module).Parameters.ContainsKey('SkipPublisherCheck') -and
+    (Get-Command Find-Module).Parameters.ContainsKey('AllowPrerelease')) {
+
     try {
         $null = Get-PackageProvider -Name NuGet -ErrorAction Stop
     }
     catch {
         Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false
     }
-    $NewestPester = Find-Module -Name Pester | Sort-Object Version -Descending | Select-Object -First 1
+    $NewestPester = Find-Module -Name Pester -AllowPrerelease:$False | Sort-Object Version -Descending | Select-Object -First 1
     If ((Get-Module Pester -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
         Install-Module -Name Pester -Scope CurrentUser -Force -Repository $NewestPester.Repository -SkipPublisherCheck
     }
     Import-Module -Name Pester
 }
 else {
+    Write-Host "##vos[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
     Import-Module "$PSScriptRoot\4.3.1\Pester.psd1" -force
 }
 
