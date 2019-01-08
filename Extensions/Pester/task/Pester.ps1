@@ -76,7 +76,7 @@ if ((Get-Module -Name PowerShellGet -ListAvailable) -and (Get-Command Install-Mo
         Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false
     }
     $NewestPester = Find-Module -Name Pester -AllVersions |
-            Where-Object { try { $_.Version -as [Version] } catch { } } |
+            Where-Object { $_.Version -match '^\d+\.\d+\.\d+$' } |
             Sort-Object Version -Descending |
             Select-Object -First 1
 
