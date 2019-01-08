@@ -51,3 +51,4 @@ Releases
 - 8.7.x - Fixed the installation of Pester to use whatever repository has the latest version available. This handles situations where the first private repository available doesn't have Pester or has an older version of Pester. [Fixes #366 Comment](https://github.com/rfennell/vNextBuild/issues/366#issuecomment-420618766)
 - 8.8.x - Add ScriptBlock parameter to allow running a script before running the tests. [Fixes #377](https://github.com/rfennell/vNextBuild/issues/377)
 - 8.9.x - Fix Find-Module so it doesn't attempt to find prerelease versions. [Fixes #412](https://github.com/rfennell/AzurePipelines/issues/412)
+- 8.10.x - Replace -AllowPrerelease with -AllVersions and a filter for valid version formats as older versions of PowerShellGet don't have -AllowPrerelease. [Fixes #412](https://github.com/rfennell/AzurePipelines/issues/412)
