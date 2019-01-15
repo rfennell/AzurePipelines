@@ -65,7 +65,7 @@
    ],
   "instanceNameFormat": "Update Build Retension",
   "execution": {
-    "PowerShell": {
+    "PowerShell3": {
       "target": "$(currentDirectory)\\BuildRetensionTask.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"

@@ -87,7 +87,7 @@
    ],
   "instanceNameFormat": "Update Build Variable",
   "execution": {
-    "PowerShell": {
+    "PowerShell3": {
       "target": "$(currentDirectory)\\BuildVariableTask.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
