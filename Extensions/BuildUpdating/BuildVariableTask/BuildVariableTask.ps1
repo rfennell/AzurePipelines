@@ -1,12 +1,7 @@
+[CmdletBinding()]
 param
 (
-    $buildmode,
-    $variable,
-    $mode,
-    $value,
-    $usedefaultcreds,
-    $artifacts
- )
+)
 
 function Set-BuildDefinationVariable
 {

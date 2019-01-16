@@ -1,10 +1,7 @@
+[CmdletBinding()]
 param
 (
-    $builddefinitionname,
-    $variable,
-    $localVariable,
-    $usedefaultcreds
- )
+)
 
 #DEBUG Invoke-Request
 #function Invoke-WebRequest

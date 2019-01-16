@@ -1,8 +1,5 @@
+[CmdletBinding()]
 Param(
-    $mode,
-    $usedefaultcreds,
-    $artifacts,
-    $keepForever
     )
 
 function Set-BuildRetension
