@@ -80,7 +80,7 @@ function Get-WebClient
         $webclient.UseDefaultCredentials = $true
     } else {
         Write-Verbose "Using SystemVssConnection personal access token"
-        $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
+        $vssEndPoint = Get-VstsEndpoint -Name "SystemVssConnection" 
         $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
         $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
     }
