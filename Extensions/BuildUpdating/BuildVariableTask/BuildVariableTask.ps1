@@ -246,6 +246,14 @@ $releaseid = $env:RELEASE_RELEASEID
 $builddefid = $env:BUILD_DEFINITIONID
 $buildid = $env:BUILD_BUILDID
 
+$buildmode = Get-VstsInput -Name "buildmode" 
+$variable = Get-VstsInput -Name "variable" 
+$mode = Get-VstsInput -Name "mode" 
+$value = Get-VstsInput -Name "value" 
+$usedefaultcreds = Get-VstsInput -Name "usedefaultcreds" 
+$artifacts = Get-VstsInput -Name "artifacts" 
+
+
 Write-Verbose "collectionUrl = [$env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI]"
 Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
 Write-Verbose "releaseid = [$env:RELEASE_RELEASEID]"

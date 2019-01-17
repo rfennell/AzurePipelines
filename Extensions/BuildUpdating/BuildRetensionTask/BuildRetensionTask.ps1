@@ -1,7 +1,7 @@
 [CmdletBinding()]
 Param(
-    )
-
+)
+   
 function Set-BuildRetension
 {
     param
@@ -94,6 +94,11 @@ function Get-WebClient
 
 # Output execution parameters.
 $VerbosePreference ='Continue' # equiv to -verbose
+
+$mode = Get-VstsInput -Name "mode"  
+$usedefaultcreds = Get-VstsInput -Name "usedefaultcreds" 
+$artifacts = Get-VstsInput -Name "artifacts"   
+$keepForever = Get-VstsInput -Name "keepForever" 
 
 # Get the build and release details
 $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI

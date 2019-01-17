@@ -163,6 +163,12 @@ $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
 $teamproject = $env:SYSTEM_TEAMPROJECT
 $builddefid = $env:BUILD_DEFINITIONID
 
+$builddefinitionname = Get-VstsInput -Name "builddefinitionname" 
+$variable = Get-VstsInput -Name "variable" 
+$localVariable = Get-VstsInput -Name "localVariable" 
+$usedefaultcreds = Get-VstsInput -Name "usedefaultcreds" 
+
+
 #DEBUG ONLY
 #$Username = "anyvalue"
 #$password = "a PAT token"
