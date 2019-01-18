@@ -81,7 +81,7 @@ function Get-WebClient
     } else {
         Write-Verbose "Using SystemVssConnection personal access token"
         $vssEndPoint = Get-VstsEndpoint -Name "SystemVssConnection" 
-        $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
+        $personalAccessToken = $env:ENDPOINT_AUTH_SystemVssConnection
         $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
     }
 
