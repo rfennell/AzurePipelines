@@ -1,10 +1,7 @@
+[CmdletBinding()]
 param
 (
-    $builddefinitionname,
-    $variable,
-    $localVariable,
-    $usedefaultcreds
- )
+)
 
 #DEBUG Invoke-Request
 #function Invoke-WebRequest
@@ -50,9 +47,8 @@ function Get-WebClient
         $webclient.UseDefaultCredentials = $true
     } else {
         Write-Verbose "Using SystemVssConnection personal access token"
-        $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
-        $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
-        $webclient.Headers.Add("Authorization" ,"Bearer $personalAccessToken")
+        $vstsEndpoint = Get-VstsEndpoint -Name SystemVssConnection -Require
+        $webclient.Headers.Add("Authorization" ,"Bearer $($vstsEndpoint.auth.parameters.AccessToken)")
     }
 
     $webclient.Encoding = [System.Text.Encoding]::UTF8
@@ -165,6 +161,12 @@ $VerbosePreference ='Continue' # equiv to -verbose
 $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
 $teamproject = $env:SYSTEM_TEAMPROJECT
 $builddefid = $env:BUILD_DEFINITIONID
+
+$builddefinitionname = Get-VstsInput -Name "builddefinitionname" 
+$variable = Get-VstsInput -Name "variable" 
+$localVariable = Get-VstsInput -Name "localVariable" 
+$usedefaultcreds = Get-VstsInput -Name "usedefaultcreds" 
+
 
 #DEBUG ONLY
 #$Username = "anyvalue"
