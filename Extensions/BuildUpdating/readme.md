@@ -50,16 +50,10 @@ To address this problem you need to grant rights
 
 Add permission to edit the build definition
 
-![Build Security](images/buildrights.PNG)
-
 1. In a browser select the Pipeline tab
 1. Select the folder view
 1. Click the ... on the right and select Security
-
-![Build Security](images/buildrights2.PNG)
-
-
-3. Pick the user 
+1. Pick the user 
   - 'Project Collection Build Service (_a name_)' [(if your builds are scoped to the project collection)](https://docs.microsoft.com/en-us/azure/devops/pipelines/build/options?view=vsts&tabs=yaml#build-job-authorization-scope)   
   - '(_projectname_) Build Service (_a name_)' [(if your builds are scoped to the project )](https://docs.microsoft.com/en-us/azure/devops/pipelines/build/options?view=vsts&tabs=yaml#build-job-authorization-scope) 
 
