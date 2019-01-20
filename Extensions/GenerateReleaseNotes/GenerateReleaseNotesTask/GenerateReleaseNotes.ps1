@@ -27,58 +27,6 @@
 #Enable -Verbose option
 [CmdletBinding()]
 param (
- 
-    [parameter(Mandatory=$false,HelpMessage="The markdown output file")]
-    $outputfile ,
-
-    [parameter(Mandatory=$false,HelpMessage="The markdown output variable name")]
-    $outputvariablename ,
-
-    [parameter(Mandatory=$false,HelpMessage="The markdown template file")]
-    $templatefile ,
-	
-    [parameter(Mandatory=$false,HelpMessage="The inline markdown template")]
-    $inlinetemplate, 
-	
-	[parameter(Mandatory=$false,HelpMessage="Location of markdown template")]
-    $templateLocation,
-
-	[parameter(Mandatory=$false,HelpMessage="If true use default credentials, else get them from VSTS")]
-    $usedefaultcreds, 
-
-	[parameter(Mandatory=$false,HelpMessage="If running in a release to only generate for primary artifact")]
-    $generateForOnlyPrimary,
-
-	[parameter(Mandatory=$false,HelpMessage="Only consider the current release")]
-    $generateForCurrentRelease,
-    
-	[parameter(Mandatory=$false,HelpMessage="Overide the name of the release stage to compare against")]
-     $overrideStageName,
-
-	[parameter(Mandatory=$false,HelpMessage="Overide the text to put in generated files if no data returned")]
-    $emptySetText,
-    
-    [parameter(Mandatory=$false,HelpMessage="Overide the default of 50 changesets/commits items returned")]
-    $maxChanges, 
-
-    [parameter(Mandatory=$false,HelpMessage="Overide the default of 50 work items returned")]
-    $maxWi,
-
-    [parameter(Mandatory=$false,HelpMessage="A comma-separated list of Work Item types that should be included in the output.")]
-    $wiFilter,
-
-    [parameter(Mandatory=$false,HelpMessage="A comma-separated list of Work Item states that should be included in the output.")]
-    $wiStateFilter,
-
-    [parameter(Mandatory=$false,HelpMessage="A boolean flag whether to added parent work items of those associated with a build.")]
-    $showParents,
-
-    [parameter(Mandatory=$false,HelpMessage="A boolean flag whether to over-write output file or append to it.")]
-    $appendToFile,
-
-    [parameter(Mandatory=$false,HelpMessage="A boolean flag whether to provide a unified list of wi and commits for all builds in a release.")]
-    $unifiedList
-
 )
 
 # Set a flag to force verbose as a default
@@ -98,6 +46,25 @@ $builddefname = $env:BUILD_DEFINITIONNAME
 $releasedefname = $env:RELEASE_DEFINITIONNAME
 $buildnumber = $env:BUILD_BUILDNUMBER
 $currentStageName = $env:RELEASE_ENVIRONMENTNAME
+
+$outputfile = Get-VstsInput -Name "outputfile"  
+$outputvariablename = Get-VstsInput -Name "outputvariablename"  
+$templatefile = Get-VstsInput -Name "templatefile"  
+$inlinetemplate = Get-VstsInput -Name "inlinetemplate"  
+$templateLocation = Get-VstsInput -Name "templateLocation"  
+$usedefaultcreds = Get-VstsInput -Name "usedefaultcreds"  
+$generateForOnlyPrimary = Get-VstsInput -Name "generateForOnlyPrimary"  
+$generateForCurrentRelease = Get-VstsInput -Name "generateForCurrentRelease"  
+$overrideStageName = Get-VstsInput -Name "overrideStageName"  
+$emptySetText = Get-VstsInput -Name "emptySetText"  
+$maxChanges= Get-VstsInput -Name "maxChanges"  
+$maxWi = Get-VstsInput -Name "maxWi"  
+$wiFilter = Get-VstsInput -Name "wiFilter"  
+$wiStateFilter= Get-VstsInput -Name "wiStateFilter"  
+$showParents = Get-VstsInput -Name "showParents"  
+$appendToFile = Get-VstsInput -Name "appendToFile"  
+$unifiedList = Get-VstsInput -Name "unifiedList"  
+
 
 if ( ([string]::IsNullOrEmpty($releaseid) -eq $false) -and [string]::IsNullOrEmpty($releasedefid) )
 {

@@ -190,7 +190,7 @@
   ],
   "instanceNameFormat": "Generate release notes",
   "execution": {
-    "PowerShell": {
+    "PowerShell3": {
       "target": "$(currentDirectory)\\GenerateReleaseNotes.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
