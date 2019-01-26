@@ -68,7 +68,7 @@ if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
     $env:PSModulePath = $additionalModulePath + ';' + $env:PSModulePath
 }
 
-if ((Get-Module -Name PowerShellGet -ListAvailable) -and 
+if ((Get-Module -Name PowerShellGet -ListAvailable) -and
     (Get-Command Install-Module).Parameters.ContainsKey('SkipPublisherCheck') -and
     (Get-Command Find-Module).Parameters.ContainsKey('AllowPrerelease')) {
 
@@ -86,7 +86,7 @@ if ((Get-Module -Name PowerShellGet -ListAvailable) -and
 }
 else {
     Write-Host "##vos[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
-    Import-Module "$PSScriptRoot\4.3.1\Pester.psd1" -force
+    Import-Module "$PSScriptRoot\4.6.0\Pester.psd1" -force
 }
 
 $Parameters = @{
