@@ -407,9 +407,9 @@ function Invoke-GetCommand {
     }
     else {
         # Write-Verbose "Using SystemVssConnection personal access token"
-        $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
-        $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
-        $webclient.Headers.Add("Authorization" , "Bearer $personalAccessToken")
+        Write-Verbose "Using SystemVssConnection personal access token"
+        $vstsEndpoint = Get-VstsEndpoint -Name SystemVssConnection -Require
+        $webclient.Headers.Add("Authorization" ,"Bearer $($vstsEndpoint.auth.parameters.AccessToken)")
     }
 		
     #write-verbose "REST Call [$uri]"
@@ -444,9 +444,10 @@ function Invoke-PostCommand() {
         }
         else {
             # Write-Verbose "Using SystemVssConnection personal access token"
-            $vssEndPoint = Get-ServiceEndPoint -Name "SystemVssConnection" -Context $distributedTaskContext
-            $personalAccessToken = $vssEndpoint.Authorization.Parameters.AccessToken
-            $headers["Authorization"] = "Bearer $personalAccessToken"
+            Write-Verbose "Using SystemVssConnection personal access token"
+            $vstsEndpoint = Get-VstsEndpoint -Name SystemVssConnection -Require
+            $headers["Authorization"] = "Bearer $($vstsEndpoint.auth.parameters.AccessToken)"
+    
         }
         Invoke-RestMethod $uri -Method "POST" -Headers $headers -ContentType "application/json" -Body ([System.Text.Encoding]::UTF8.GetBytes($jsonBody))
     }
