@@ -104,7 +104,7 @@ describe("Test the file processing", () => {
 
     after(function() {
       // remove the file if created
-   //   del.sync("test/testdata/sample.xml");
+      del.sync("test/testdata/sample.xml");
     });
 
   });

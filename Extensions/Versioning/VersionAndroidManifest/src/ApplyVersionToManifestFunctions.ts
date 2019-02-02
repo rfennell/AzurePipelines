@@ -55,7 +55,7 @@ function extractDelimitersRegex(format) {
 }
 
 export function updateManifestFile (filename, versionCode, versionName) {
-    console.log(`Updating ${filename)}`);
+    console.log(`Updating ${filename}`);
     var filecontent = fs.readFileSync(filename).toString();
     fs.chmodSync(filename, "600");
     // first the "
