@@ -157,6 +157,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
 
           // get the line change mode if any
           var mode = getMode(line);
+          var tags = getModeTags(line);
 
           if (mode !== Mode.BODY) {
               // is there a mode block change
@@ -287,7 +288,7 @@ export function getMode (line): string {
      return mode;
 }
 
-export function getModeTag (line): string[] {
+export function getModeTags (line): string[] {
     line = line.trim().toUpperCase();
     var tags = [];
     if (line.startsWith("@@") && line.endsWith("@@") ) {
