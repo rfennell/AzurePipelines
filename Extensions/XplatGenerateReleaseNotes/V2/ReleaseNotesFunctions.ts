@@ -267,21 +267,38 @@ export function writeFile(filename: string, data: string) {
     agentApi.logInfo(`Finsihed writing output file ${filename}`);
 }
 
-const Mode = {
+export const Mode = {
      BODY : "BODY",
      WI : "WI",
      CS : "CS"
 };
 
-function getMode (line): string {
+export function getMode (line): string {
      var mode = Mode.BODY;
-     if (line.trim() === "@@WILOOP@@") {
+     line = line.trim().toUpperCase();
+     if (line.startsWith("@@WILOOP") &&
+         line.endsWith("@@") ) {
          mode = Mode.WI;
      }
-     if (line.trim() === "@@CSLOOP@@") {
+     if (line.startsWith("@@CSLOOP@@") &&
+         line.endsWith("@@") ) {
          mode = Mode.CS;
      }
      return mode;
+}
+
+export function getModeTag (line): string[] {
+    line = line.trim().toUpperCase();
+    var tags = [];
+    if (line.startsWith("@@") && line.endsWith("@@") ) {
+        line = line.replace(/@@/g, ""); // have to use refex form of replac eelse only first replaced
+        var parts = line.split(":");
+        if (parts.length > 1) {
+            parts.splice(0, 1); // return the tags
+            tags = parts; // return the tags
+        }
+    }
+    return tags;
 }
 
 function addStackItem (
