@@ -35,7 +35,7 @@
          "label": "Source folder",
          "defaultValue": "$(Build.SourcesDirectory)",
          "required": true,
-         "helpMarkDown": "Source folder for VSIX files, can be root as it will find all files recursively"
+         "helpMarkDown": "Source folder for NuSpec files, can be root as it will find all files recursively"
       },
       {
          "name": "VersionNumber",
