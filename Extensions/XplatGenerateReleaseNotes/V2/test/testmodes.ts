@@ -33,19 +33,19 @@ describe("Check the Mode extraction", () => {
     });
 
     it("should be able to get tag from WI mode", () => {
-      expect(getModeTags("@@WILOOP:TAG1@@")).to.deep.equal(["TAG1"]);
+      expect(getModeTags("@@WILOOP:TAG1@@", ":")).to.deep.equal(["TAG1"]);
     });
 
     it("should be able to get two tags from WI mode", () => {
-      expect(getModeTags("@@WILOOP:TAG1:TAG2@@")).to.deep.equal(["TAG1", "TAG2"]);
+      expect(getModeTags("@@WILOOP:TAG1:TAG2@@", ":")).to.deep.equal(["TAG1", "TAG2"]);
     });
 
     it("should be able to get two tags inc spaces from WI mode", () => {
-      expect(getModeTags("@@WILOOP:TAG 1:TAG 2@@")).to.deep.equal(["TAG 1", "TAG 2"]);
+      expect(getModeTags("@@WILOOP:TAG 1:TAG 2@@", ":")).to.deep.equal(["TAG 1", "TAG 2"]);
     });
 
     it("should be able to get empty array if not tags", () => {
-        expect(getModeTags("@@WILOOP@@")).to.deep.equal([]);
+        expect(getModeTags("@@WILOOP@@", ":")).to.deep.equal([]);
     });
 
 });

@@ -34,6 +34,11 @@ async function run(): Promise<void>  {
             var outputfile = tl.getInput("outputfile", true);
             var outputVariableName = tl.getInput("outputVariableName");
             var emptyDataset = tl.getInput("emptySetText");
+            var delimiter = tl.getInput("delimiter");
+            if (delimiter === null) {
+                agentApi.logInfo(`No delimiter passed, setting a default of :`);
+                delimiter = ":";
+            }
 
             let credentialHandler: vstsInterfaces.IRequestHandler = util.getCredentialHandler();
             let vsts = new webApi.WebApi(tpcUri, credentialHandler);
@@ -180,7 +185,7 @@ async function run(): Promise<void>  {
             agentApi.logInfo(`Total workitems: [${globalWorkItems.length}]`);
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
-            var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset);
+            var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset, delimiter);
             util.writeFile(outputfile, outputString);
 
             agentApi.writeVariable(outputVariableName, outputString.toString());

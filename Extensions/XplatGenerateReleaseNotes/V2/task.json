@@ -87,6 +87,16 @@
       "groupName":"advanced"
     }
   ,
+  {
+    "name": "delimiter",
+    "type": "string",
+    "label": "Delimiter for tags",
+    "defaultValue": ":",
+    "required": true,
+    "helpMarkDown": "The delimiter is used to separate tags in the @@WILOOP:TAG1:TAG2@@ block markers.",
+    "groupName":"advanced"
+  }
+,
     {
       "name": "overrideStageName",
       "type": "string",

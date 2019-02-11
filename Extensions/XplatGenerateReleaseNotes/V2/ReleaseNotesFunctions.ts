@@ -137,7 +137,7 @@ export function getTemplate(
 }
 
 // The Argument compareReleaseDetails is used in the template processing.  Renaming or removing will break the templates
-export function processTemplate(template, workItems: WorkItem[], commits: Change[], releaseDetails: Release, compareReleaseDetails: Release, emptySetText): string {
+export function processTemplate(template, workItems: WorkItem[], commits: Change[], releaseDetails: Release, compareReleaseDetails: Release, emptySetText, delimiter): string {
 
     var widetail = undefined;
     var csdetail = undefined;
@@ -148,26 +148,27 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
         agentApi.logDebug("Processing template");
         // create our work stack and initialise
         var modeStack = [];
-        modeStack.push(Mode.BODY);
 
-      // process each line
-      for (var index = 0; index < template.length; index++) {
-        agentApi.logDebug("Processing Line: " + (index + 1));
-          var line = template[index];
+        addStackItem (null, modeStack, Mode.BODY, -1);
 
-          // get the line change mode if any
-          var mode = getMode(line);
-          var tags = getModeTags(line);
+        // process each line
+        for (var index = 0; index < template.length; index++) {
+           agentApi.logDebug(`${addSpace(modeStack.length + 1)} Processing Line No: ${(index + 1)}`);
+           var line = template[index];
+           // agentApi.logDebug("Line: " + line);
+           // get the line mode (if any)
+           var mode = getMode(line);
+           var tags = getModeTags(line, delimiter);
 
-          if (mode !== Mode.BODY) {
-              // is there a mode block change
-              if (modeStack[modeStack.length - 1].Mode === mode) {
+           if (mode !== Mode.BODY) {
+               // is there a mode block change
+              if (getMode(modeStack[modeStack.length - 1].BlockMode) === mode) {
                   // this means we have reached the end of a block
                   // need to work out if there are more items to process
                   // or the end of the block
                   var queue = modeStack[modeStack.length - 1].BlockQueue;
                   if (queue.length > 0) {
-                      // get the next item and initialise
+                      // get the mode items and initialise
                       // the variables exposed to the template
                       var item = queue.shift();
                       // reset the index to process the block
@@ -175,7 +176,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                       switch (mode) {
                         case Mode.WI :
                             agentApi.logDebug (`${addSpace(modeStack.length + 1)} Getting next workitem ${item.id}`);
-                            widetail = item;
+                            widetail = item; // should filter
                             break;
                         case Mode.CS :
                             if (csdetail.type.toLowerCase() === "tfsgit") {
@@ -190,20 +191,37 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                       } // end switch
                   } else {
                       // end of block and no more items, so exit the block
-                      mode = modeStack.pop().Mode;
-                      agentApi.logDebug (`${addSpace(modeStack.length + 1)} Ending block ${mode}`);
+                      var blockMode = modeStack.pop().BlockMode;
+                      agentApi.logDebug (`${addSpace(modeStack.length + 1)} Ending block ${blockMode}`);
                   }
               } else {
                   // this a new block to add the stack
                   // need to get the items to process and place them in a queue
-                  agentApi.logDebug (`${addSpace(modeStack.length + 1)} Starting block ${mode}`);
-
+                  agentApi.logDebug (`${addSpace(modeStack.length + 1)} Starting block ${line}`);
                   // set the index to jump back to
                   lastBlockStartIndex = index;
                   switch (mode) {
                       case Mode.WI:
                         // store the block and load the first item
-                        addStackItem (workItems, modeStack, mode, index);
+                        // Need to check if we are in tag mode
+                        var modeArray = [];
+                        if (tags.length > 0) {
+                            widetail = undefined;
+                            workItems.forEach(wi => {
+                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${tags.join("; ")}' (ignoring case)`);
+                                if ((wi.fields["System.Tags"] !== undefined) &&
+                                    (wi.fields["System.Tags"].toUpperCase() === tags.join("; ").toUpperCase())) {
+                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id}`);
+                                    modeArray.push(wi);
+                                }
+                            });
+                        } else {
+                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding all WI`);
+                            modeArray = workItems;
+                        }
+                        agentApi.logDebug (`${addSpace(modeStack.length + 1)} There are ${modeArray.length} WI to add`);
+                        addStackItem (modeArray, modeStack, line, index);
+                        // now we have stack item we can get the first item
                         if (modeStack[modeStack.length - 1].BlockQueue.length > 0) {
                             widetail = modeStack[modeStack.length - 1].BlockQueue.shift();
                             agentApi.logDebug (`${addSpace(modeStack.length + 1)} Getting first workitem ${widetail.id}`);
@@ -212,9 +230,10 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                         }
                         break;
                       case Mode.CS:
-                         // store the block and load the first item
-                         addStackItem (commits, modeStack, mode, index);
-                         if (modeStack[modeStack.length - 1].BlockQueue.length > 0) {
+                        // store the block and load the first item
+                        addStackItem (commits, modeStack, line, index);
+                        // now we have stack item we can get the first item
+                        if (modeStack[modeStack.length - 1].BlockQueue.length > 0) {
                              csdetail = modeStack[modeStack.length - 1].BlockQueue.shift();
                              if (csdetail.type.toLowerCase() === "tfsgit") {
                                 // Git mode
@@ -223,37 +242,39 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                 // TFVC mode
                                 agentApi.logDebug (`${addSpace(modeStack.length + 1)} Getting first changeset ${csdetail.id}`);
                              }
-                            } else {
+                        } else {
                               csdetail = undefined;
                         }
                          break;
                     } // end switch
                 }
             } else {
-                agentApi.logDebug("Mode != BODY");
-                if (line.trim().length === 0) {
+                // agentApi.logDebug(`${addSpace(modeStack.length + 1)} Mode != BODY`);
+                if ( line.trim().length === 0) {
                     // we have a blank line, we can't eval this
+                    agentApi.logDebug(`${addSpace(modeStack.length + 1)} Outputing a blank line`);
                     output += "\n";
-            } else {
-                if (((modeStack[modeStack.length - 1].Mode === Mode.WI) && (widetail === undefined)) ||
-                   ((modeStack[modeStack.length - 1].Mode === Mode.CS) && (csdetail === undefined))) {
-                    // # there is no data to expand
-                    output += emptySetText;
                 } else {
-                    agentApi.logDebug("Nothing to expand, just process the line");
-                    // nothing to expand just process the line
-                    var fixedline = fixline (line);
-                    var processedLine = eval(fixedline);
-                    var lines = processedLine.split("\r\n");
-                    for ( var i = 0; i < lines.length; i ++) {
-                       output += lines[i];
+                    if (((getMode(modeStack[modeStack.length - 1].BlockMode) === "WILOOP") && (widetail === undefined)) ||
+                       ((getMode(modeStack[modeStack.length - 1].BlockMode) === Mode.CS) && (csdetail === undefined))) {
+                        // # there is no data to expand
+                        agentApi.logDebug(`${addSpace(modeStack.length + 1)} No WI or CS so outputing emptySetText`);
+                        output += emptySetText;
+                    } else {
+                        agentApi.logDebug(`${addSpace(modeStack.length + 1)} Nothing to expand, just process the line`);
+                        // nothing to expand just process the line
+                        var fixedline = fixline (line);
+                        var processedLine = eval(fixedline);
+                        var lines = processedLine.split("\r\n");
+                        for ( var i = 0; i < lines.length; i ++) {
+                            output += lines[i];
+                        }
                     }
-                }
                     // always add a line feed
-                output += "\n";
-           }
-        }
-    }  // loop
+                    output += "\n";
+                }
+            }
+        }  // loop
         agentApi.logInfo( "Completed processing template");
     } else {
         agentApi.logError( `Cannot load template file [${template}] or it is empty`);
@@ -268,32 +289,34 @@ export function writeFile(filename: string, data: string) {
     agentApi.logInfo(`Finsihed writing output file ${filename}`);
 }
 
+// There is no WI in this list as they are dynamic as they can include tags
 export const Mode = {
      BODY : "BODY",
-     WI : "WI",
-     CS : "CS"
+     CS : "CS",
+     WI : "WI"
 };
 
 export function getMode (line): string {
      var mode = Mode.BODY;
-     line = line.trim().toUpperCase();
-     if (line.startsWith("@@WILOOP") &&
-         line.endsWith("@@") ) {
-         mode = Mode.WI;
-     }
-     if (line.startsWith("@@CSLOOP@@") &&
-         line.endsWith("@@") ) {
-         mode = Mode.CS;
-     }
-     return mode;
+     if (line !== undefined ) {
+        line = line.trim().toUpperCase();
+        if (line.startsWith("@@WILOOP") && line.endsWith("@@")) {
+            mode = Mode.WI;
+        }
+        if (line.startsWith("@@CSLOOP@@") &&
+            line.endsWith("@@") ) {
+            mode = Mode.CS;
+        }
+    }
+    return mode;
 }
 
-export function getModeTags (line): string[] {
+export function getModeTags (line, delimiter): string[] {
     line = line.trim().toUpperCase();
     var tags = [];
     if (line.startsWith("@@") && line.endsWith("@@") ) {
-        line = line.replace(/@@/g, ""); // have to use refex form of replac eelse only first replaced
-        var parts = line.split(":");
+        line = line.replace(/@@/g, ""); // have to use regex form of replac eelse only first replaced
+        var parts = line.split(delimiter);
         if (parts.length > 1) {
             parts.splice(0, 1); // return the tags
             tags = parts; // return the tags
@@ -305,7 +328,7 @@ export function getModeTags (line): string[] {
 function addStackItem (
         items,
         modeStack,
-        mode,
+        blockMode,
         index
     ) {
     // Create a queue of the items
@@ -317,9 +340,9 @@ function addStackItem (
         }
     }
 
-    agentApi.logDebug (`${addSpace(modeStack.length + 1)} Added ${queue.length} items to queue for ${mode}`);
+    agentApi.logDebug (`${addSpace(modeStack.length + 1)} Added ${queue.length} items to queue for ${blockMode}`);
     // place it on the stack with the blocks mode and start line index
-    modeStack.push({"Mode": mode, "BlockQueue": queue, "Index": index});
+    modeStack.push({"BlockMode": blockMode.trim(), "BlockQueue": queue, "Index": index});
 }
 
 function addSpace (indent): string {
