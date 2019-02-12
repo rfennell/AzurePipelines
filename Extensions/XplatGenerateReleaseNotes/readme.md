@@ -1,6 +1,15 @@
-This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's comparison calls that are also used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the VSTS UI.
+# Summary
+* Written in Typescript (Node.JS)
+* Can be used on any type of release agents (Windows, Mac or linux)
+* Can be used in VSTS or TFS 2018 releases (TFS 2018 required as older versions are missing the required API)
+* Uses same logic as VSTS Release UI to work out the work items and commits/changesets associated with the release
+* **IMPORTANT** - Both V1 and V2 of this task are shipped in the same extension, this is because V2 is a complete rewrite by [@gregpakes](https://github.com/gregpakes) with minor but breaking changes in the template format and that oAuth needs enabling on the build agent running the tasks .
+* Since this re-write support has been added for tag filtering in the work items listed in a report. A report can have many WILOOPs with different filters. For a WI to appear in suhc a loop all tags must be matched.
 
-Note: That this comparison is only done against the primary build artifact linked to the Release
+# Usage
+As with my original [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks), this task generates a release notes file based on a template passed into the tool.  For this version of the task the data source for the generated Release Notes is the VSTS REST API's comparison calls that are also used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the VSTS UI. 
+
+**Note:** That this comparison is only done against the primary build artifact linked to the Release  
 
 If the template file is markdown the output report being something like the following:
 
@@ -19,105 +28,80 @@ If the template file is markdown the output report being something like the foll
 ```
 
 ## The Template
-
-> There are differences in the template syntax between Version 1 and Version 2 of this task.  These differences are due to Rest API changes between VSTS and TFS.
-
 The use of a template allows the user to define the format, layout and fields shown in the release notes document. It is basically a file in the format required with tags to denote the fields to be replaced when the tool generates the report file.
 
-- Most samples are in Markdown, but samples are available for HTML
-- The @@VALUE@@ tags are special loop control flags
-- The ${properties} are the fields to be expanded from properties in the JSON response objects returned from the VSTS REST API
+- Most samples are in Markdown, but it is possible to generate any other format such as HTML
+- The @@TAG@@ tags are special loop control flags
+- The ${properties} are the fields to be expanded from properties in the JSON response objects returned from the VSTS REST API 
+- This task differed from [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks) in that the ${properties} format changes slightly due to the move from PowerShell to Node within the task
 
-The only real change from standard markdown is the use of the @@TAG@@ blocks to denote areas that should be looped over i.e: the points where we get the details of all the work items and commits associated with the build.
+The only real change from standard markdown is the use of the @@TAG@@ blocks to denote areas that should be looped over i.e: the points where we get the details of all the work items and commits associated with the build. So for the V1 version of the task a template for GIT repo could be 
 
-**Version 1.x**
 ```
-# Release notes
+# Release notes 
 ## Notes for release  ${releaseDetails.releaseDefinition.name}
-**Release Number**  : ${releaseDetails.name}
-**Release completed** : ${releaseDetails.modifiedOn}
-**Compared Release Number**  : ${compareReleaseDetails.name}
+**Release Number**  : ${releaseDetails.name} 
+**Release completed** : ${releaseDetails.modifiedOn} 
+**Compared Release Number**  : ${compareReleaseDetails.name} 
 
-### Associated work items
-@@WILOOP@@
-* ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}
-@@WILOOP@@
+### All associated work items  
+@@WILOOP@@  
+* ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
+@@WILOOP@@ 
 
+### Associated work items that have both the tags 'Tag 1' and 'Tag2' 
+@@WILOOP:Tag 1:Tag2@@  
+* ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
+@@WILOOP:Tag 1:Tag2@@ 
+  
 ### Associated commits
-@@CSLOOP@@
-* **ID ${csdetail.commitId} ** ${csdetail.comment}
-@@CSLOOP@@
+@@CSLOOP@@  
+* **ID ${csdetail.commitId} ** ${csdetail.comment}    
+@@CSLOOP@@  
 ```
 
-**Version 2.x**
+Whilst a TFVC repo requires a V1 template of the format
 
 ```
-# Release notes
-## Notes for release  ${releaseDetails.releaseDefinition.name}
-**Release Number**  : ${releaseDetails.name}
-**Release completed** : ${releaseDetails.modifiedOn}
-**Compared Release Number**  : ${compareReleaseDetails.name}
-
-### Associated work items
-@@WILOOP@@
-* ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}
-@@WILOOP@@
-
 ### Associated commits
-@@CSLOOP@@
-* **ID ${csdetail.id} ** ${csdetail.message}
-@@CSLOOP@@
+@@CSLOOP@@  
+* **ID ${csdetail.changesetId} ** ${csdetail.comment}    
+@@CSLOOP@@  
 ```
+The V2 task allows a common format of
 
-You can see the full contracts of what you can access by looking here:
-
-- [WorkItems](https://docs.microsoft.com/en-gb/rest/api/vsts/wit/work%20items/get%20work%20item#workitem)
-- [Commits](https://docs.microsoft.com/en-gb/rest/api/vsts/build/builds/get%20build%20changes#change)
-
-> Please note that git commits are automatically expanded by the task (TFS/VSTS will truncate to 100 chars).
+```
+### Associated commits
+@@CSLOOP@@  
+* **ID ${csdetail.id} ** ${csdetail.message}    
+@@CSLOOP@@  
+```
 
 What is done behind the scenes is that each line of the template is evaluated as a line of Node.JS in turn, the in memory versions of the objects are used to provide the runtime values. The available objects to get data from at runtime are
 
 * releaseDetails – the release details returned by the REST call Get Release Details of the release that the task was triggered for.
 * compareReleaseDetails - the release that the REST call is using to comapre against
 * widetail – the details of a given work item inside the loop returned by the REST call Get Work Item (within the @@WILOOP@@@ block)
-* csdetail – the details of a given changeset/commit inside the loop by the REST call to Changes or Commit depending on whether it is a GIT or TFVC based build (within the @@CSLOOP@@@ block)
+* csdetail – the details of a given Git commit or TFVC changeset inside the loop returned by the REST call to Get Commits(within the @@CSLOOP@@@ block)
 
-There are sample templates that just produce basic releases notes and dumps out all the available fields (to help you find all the available options) for both builds and releases
-
-- [Sample templates for version 1](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%201) 
-- [Sample templates for version 2](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%202) 
+There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes for both Git and TFVC based releases  
 
 ## Usage
 Once the extension is added to your TFS or VSTS server, the task should be available in the utilities section of 'add tasks'
 
+**IMPORTANT** - The V2 Tasks requires that oAuth access is enabled on agent running the task
+
 The task takes three parameters
 
-* The output file name, for builds this will normally be set to $(Build.ArtifactStagingDirectory)\releasenotes.md as the release notes will usually be part of your build artifacts. For release management usage the parameter should be set to something like $(System.DefaultWorkingDirectory)\releasenotes.md. Where you choose to send the created files is down to your deployment needs.
+* The output file name, for builds this will normally be set to $(Build.ArtifactStagingDirectory)\releasenotes.md as the release notes will usually be part of your build artifacts. For release management usage the parameter should be set to something like $(System.DefaultWorkingDirectory)\releasenotes.md. Where you choose to send the created files is down to your deployment needs. 
 * A picker allows you to set if the template is provided as a file in source control (usually used for builds) or an inline file (usually used for release management). The setting of this picker effects which third parameter is shown
 * Either - The template file name, which should point to a file in source control.
 * Or - The template text.
 * (Advanced) Empty set text - the text to place in the results file if there is no changeset/commit or WI content
 * (Advanced) Name of the release stage to look for the last successful release in, default to empty value so uses the current stage of the release that the task is running in (release mode, when scanning past build only)
+* (Advanced) Delimiter for the tag separation in the WI Loop, defaults to colon ':'  
 * (Outputs) Optional: Name of the variable that markdown contents will be copied into for use in other tasks
 
 Using the settings for the output file shown above, the release notes will be created in the specified folder, and will probably need be copied by a task such as 'Publish Artifacts' to your final required location.
 
-## Changes
-- 1.0 - Initial release
-- 1.1 - Reduced the API version requirement to allow support for TFS 2017 as well as VSTS (still using preview API)
-- 1.2 - Includes PR130 @gregpakes that added multiple artifact support, moved to async/await model
-- 1.3 - Includes PR141 @gregpakes that address issues with errors being swallowed and no work items being listed
-- 1.4 - Includes PR157 @gregpakes that address issues with redeployments
-- 1.5 - Issue200 Engineering fixes for build process, also fixes an issue if empty work item list is returned when checking between releases
-- 1.6 - Issue215 Fixed error when release references build that that is not VSTS repo based
-- 1.7 - Issue270 Fixed problem getting work item detail on TFVC repos
-- 1.8 - Issue272 Fixed problem with no output if the artifact source is not a VSTS hosted repository
-- 1.9 - Issue277 fixed vulnerability in Moment 2.19.1 NPM package, no functional change
-- 2.0 - Major refactor PR305 by @gregpakes to move to newer API, does contain breaking changes to template. Hence from this point both V1 and V2 will be shipped in the same extension
-- 2.1 - Issue315 with PR316 by @marco-gallinari to fix incorrect mapping of stage override parameter
-- 2.2 - Issue319 fixed problem that cannot generate release notes for the first release of a pipeline
-- 2.3 - Issue337 fixed paths in readme
-- 2.4 - PR353 @gregpakes minor logging changes
-- 2.5 - Issue349 fixed missing work items due to VSTS API limitation - set variable ReleaseNotes.Fix349 to true to enable the workaround code
-- 2.6 - Issue380 fixed issue with new Azure DevOps urls, updated npm packages
+
