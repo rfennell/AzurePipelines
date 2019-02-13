@@ -255,7 +255,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                     agentApi.logDebug(`${addSpace(modeStack.length + 1)} Outputing a blank line`);
                     output += "\n";
                 } else {
-                    if (((getMode(modeStack[modeStack.length - 1].BlockMode) === "WILOOP") && (widetail === undefined)) ||
+                    if (((getMode(modeStack[modeStack.length - 1].BlockMode) === Mode.WI) && (widetail === undefined)) ||
                        ((getMode(modeStack[modeStack.length - 1].BlockMode) === Mode.CS) && (csdetail === undefined))) {
                         // # there is no data to expand
                         agentApi.logDebug(`${addSpace(modeStack.length + 1)} No WI or CS so outputing emptySetText`);
