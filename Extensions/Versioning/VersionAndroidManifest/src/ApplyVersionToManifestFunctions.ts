@@ -58,12 +58,16 @@ export function updateManifestFile (filename, versionCode, versionName) {
     console.log(`Updating ${filename}`);
     var filecontent = fs.readFileSync(filename).toString();
     fs.chmodSync(filename, "600");
-    // first the "
-    filecontent = filecontent.replace(/versionCode=\"([^"]*)\"/g, `versionCode=\"${versionCode}\"`);
-    filecontent = filecontent.replace(/versionName=\"([^"]*)\"/g, `versionName=\"${versionName}\"`);
+    // first the ", note space and : I check for and add back prior in the replacement
+    filecontent = filecontent.replace(/\sversionCode=\"([^"]*)\"/g, ` versionCode=\"${versionCode}\"`);
+    filecontent = filecontent.replace(/\sversionName=\"([^"]*)\"/g, ` versionName=\"${versionName}\"`);
+    filecontent = filecontent.replace(/android:versionCode=\"([^"]*)\"/g, `android:versionCode=\"${versionCode}\"`);
+    filecontent = filecontent.replace(/android:versionName=\"([^"]*)\"/g, `android:versionName=\"${versionName}\"`);
     // and the ' a little ugly but simple to understand
-    filecontent = filecontent.replace(/versionCode=\'([^']*)\'/g, `versionCode=\'${versionCode}\'`);
-    filecontent = filecontent.replace(/versionName=\'([^']*)\'/g, `versionName=\'${versionName}\'`);
+    filecontent = filecontent.replace(/\sversionCode=\'([^']*)\'/g, ` versionCode=\'${versionCode}\'`);
+    filecontent = filecontent.replace(/\sversionName=\'([^']*)\'/g, ` versionName=\'${versionName}\'`);
+    filecontent = filecontent.replace(/android:versionCode=\'([^']*)\'/g, `android:versionCode=\'${versionCode}\'`);
+    filecontent = filecontent.replace(/android:versionName=\'([^']*)\'/g, `android:versionName=\'${versionName}\'`);
     fs.writeFileSync(filename, filecontent);
 }
 
