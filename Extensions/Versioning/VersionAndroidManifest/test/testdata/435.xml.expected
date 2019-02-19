@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest
+    versionCode='15117'
+    versionName='1.0.3'
+    compileSdkVersion='28'
+    compileSdkVersionCodename='9'
+    package='com.acosta.ftg'
+    platformBuildVersionCode='10031'
+    platformBuildVersionName='1.0.0.31.ftg-app-android-ci_development_20190211_134413'>
+  <uses-sdk
+      minSdkVersion='24'
+      targetSdkVersion='28'>
+  </uses-sdk>
+  <application
+      theme='@res/0x7F0C0005'
+      label='@res/0x7F0B0027'
+      icon='@res/0x7F0A0000'
+      name='com.acosta.ftg.FtgApp'
+      allowBackup='true'
+      supportsRtl='true'
+      roundIcon='@res/0x7F0A0001'
+      appComponentFactory='android.support.v4.app.CoreComponentFactory'>
+    <activity
+        name='com.acosta.ftg.views.MainActivity'>
+      <intent-filter>
+        <action
+            name='android.intent.action.MAIN'>
+        </action>
+        <category
+            name='android.intent.category.LAUNCHER'>
+        </category>
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>
