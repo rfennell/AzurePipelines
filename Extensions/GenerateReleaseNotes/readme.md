@@ -1,3 +1,4 @@
+DDDNorth
 This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's:
 - if used in a build it is the current active build
 - if it is used in a release, then all the release artifacts are scanned back to the last successful release to the current environment and work items and commits/changesets retrieved for all these build artifcats. This is different mechanisim to that used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task may not generate the same list of items as the VSTS UI. 
