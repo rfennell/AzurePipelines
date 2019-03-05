@@ -1,24 +1,32 @@
 import { expect } from "chai";
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import "mocha";
-import { SetWorkingFolder } from "../src/GitWikiFuntions";
+import { GetWorkingFolder } from "../src/GitWikiFuntions";
 import { logInfo } from "../src/agentSpecific";
+import { existsSync, fstat } from "fs";
+import { pathToFileURL } from "url";
+const del = require("del");
 
 describe("Test on the target folder creation", () => {
     it("should be able to use a path", () => {
-        SetWorkingFolder(".\\", "/testdata/subfolder/file.md", logInfo);
+      var actual = GetWorkingFolder(".\\", "testdata\\subfolder\\1\\file.md", logInfo);
+      expect(existsSync(actual)).to.equal(true);
+      expect(actual).to.equal("testdata\\subfolder\\1");
+    });
+    after(function() {
+      // remove the file if created
+      del.sync("testdata\\subfolder");
     });
 
     it("should be use filename only", () => {
-      SetWorkingFolder(".\\", "file.md", logInfo);
+      expect(GetWorkingFolder(".\\", "file.md", logInfo)).to.equal(".\\");
   });
 
   it("should be use filename only with a leading /", () => {
-    SetWorkingFolder(".\\", "/file1.md", logInfo);
-});
+    expect(GetWorkingFolder(".\\", "/file1.md", logInfo)).to.equal(".\\");
+  });
 
-it("should be use filename only with a leading \\", () => {
-  SetWorkingFolder(".\\", "\\file1.md", logInfo);
-});
-
+  it("should be use filename only with a leading \\", () => {
+    expect(GetWorkingFolder(".\\", "\\file1.md", logInfo)).to.equal(".\\");
+  });
 });

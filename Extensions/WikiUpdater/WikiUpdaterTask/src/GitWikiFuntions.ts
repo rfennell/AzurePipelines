@@ -14,14 +14,47 @@ function rimrafPromise (localpath)  {
     });
 }
 
-export async function SetWorkingFolder(localpath, filename, logInfo) {
+function mkDirByPathSync(targetDir, { isRelativeToScript = false } = {}) {
+    const sep = path.sep;
+    const initDir = path.isAbsolute(targetDir) ? sep : "";
+    const baseDir = isRelativeToScript ? __dirname : ".";
+
+    return targetDir.split(sep).reduce((parentDir, childDir) => {
+      const curDir = path.resolve(baseDir, parentDir, childDir);
+      try {
+        fs.mkdirSync(curDir);
+      } catch (err) {
+        if (err.code === "EEXIST") { // curDir already exists!
+          return curDir;
+        }
+
+        // To avoid `EISDIR` error on Mac and `EACCES`-->`ENOENT` and `EPERM` on Windows.
+        if (err.code === "ENOENT") { // Throw the original parentDir error on curDir `ENOENT` failure.
+          throw new Error(`EACCES: permission denied, mkdir '${parentDir}'`);
+        }
+
+        const caughtErr = ["EACCES", "EPERM", "EISDIR"].indexOf(err.code) > -1;
+        if (!caughtErr || caughtErr && curDir === path.resolve(targetDir)) {
+          throw err; // Throw if it's just the last created dir.
+        }
+      }
+
+      return curDir;
+    }, initDir);
+  }
+
+export function GetWorkingFolder(localpath, filename, logInfo): any {
     var pathParts = path.parse(filename);
     if (pathParts.dir && pathParts.dir !== "/" && pathParts.dir !== "\\") {
-        logInfo(`Got the directory ${pathParts.dir}`);
-        logInfo(fs.existsSync(path.join(localpath, path.join(pathParts.dir))));
+        var targetPath = path.join(localpath, path.join(pathParts.dir));
+        if (!fs.existsSync(targetPath)) {
+            logInfo(`Creating the directory ${targetPath}`);
+            mkDirByPathSync(targetPath);
+        }
+        return targetPath;
     } else {
         logInfo(`Got the no directory passed change to ${localpath}`);
-        process.chdir(localpath);
+        return localpath;
     }
 }
 
@@ -53,7 +86,7 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
         logInfo(`Set GIT values in ${localpath}`);
 
         // move to the root folder
-        process.chdir(localpath);
+        process.chdir(GetWorkingFolder(localpath, "file.md", logInfo));
 
         // hander in case there is a folder
 
