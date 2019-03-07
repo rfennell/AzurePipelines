@@ -101,11 +101,11 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
         fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
         logInfo(`Created the ${workingFile} in ${workingPath}`);
 
-        await git.add(workingFile);
-        logInfo(`Added ${workingFile} to repo ${localpath}`);
+        await git.add(filename);
+        logInfo(`Added ${filename} to repo ${localpath}`);
 
-        await git.commit(message, workingFile);
-        logInfo(`Committed to ${localpath}`);
+        await git.commit(message);
+        logInfo(`Committed to ${localpath} woht message "${message}`);
 
         await git.push();
         logInfo(`Pushed to ${repo}`);
