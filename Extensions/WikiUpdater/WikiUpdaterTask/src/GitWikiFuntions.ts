@@ -98,13 +98,13 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
 
         // we need to change any encoded
         var workingFile = GetWorkingFile(filename, logInfo);
-        fs.writeFileSync(filename, contents.replace(/`n/g, "\r\n"));
-        logInfo(`Created the ${filename} in ${localpath}`);
+        fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+        logInfo(`Created the ${workingFile} in ${workingPath}`);
 
-        await git.add(filename);
-        logInfo(`Added ${filename} to repo ${localpath}`);
+        await git.add(workingFile);
+        logInfo(`Added ${workingFile} to repo ${localpath}`);
 
-        await git.commit(message, filename);
+        await git.commit(message, workingFile);
         logInfo(`Committed to ${localpath}`);
 
         await git.push();
