@@ -60,8 +60,9 @@ export function GetWorkingFolder(localpath, filename, logInfo): any {
 
 export function GetWorkingFile(filename, logInfo): any {
     var pathParts = path.parse(filename);
-    logInfo(`Working file name is ${path.parse(filename)}`);
-    return pathParts.base;
+    var name = pathParts.base;
+    logInfo(`Working file name is ${name}`);
+    return name;
 }
 
 export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError) {
