@@ -53,9 +53,15 @@ export function GetWorkingFolder(localpath, filename, logInfo): any {
         }
         return targetPath;
     } else {
-        logInfo(`Got the no directory passed change to ${localpath}`);
+        logInfo(`No sub-directory passed change to ${localpath}`);
         return localpath;
     }
+}
+
+export function GetWorkingFile(filename, logInfo): any {
+    var pathParts = path.parse(filename);
+    logInfo(`Working file name is ${path.parse(filename)}`);
+    return pathParts.base;
 }
 
 export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError) {
@@ -85,12 +91,12 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
         await git.addConfig("user.email", email);
         logInfo(`Set GIT values in ${localpath}`);
 
-        // move to the root folder
-        process.chdir(GetWorkingFolder(localpath, filename, logInfo));
-
-        // hander in case there is a folder
+        // move to the working folder
+        var workingPath = GetWorkingFolder(localpath, filename, logInfo);
+        process.chdir(workingPath);
 
         // we need to change any encoded
+        var workingFile = GetWorkingFile(filename, logInfo);
         fs.writeFileSync(filename, contents.replace(/`n/g, "\r\n"));
         logInfo(`Created the ${filename} in ${localpath}`);
 

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import "mocha";
-import { GetWorkingFolder } from "../src/GitWikiFuntions";
+import { GetWorkingFolder, GetWorkingFile } from "../src/GitWikiFuntions";
 import { logInfo } from "../src/agentSpecific";
 import { existsSync, fstat } from "fs";
 import { pathToFileURL } from "url";
@@ -28,5 +28,15 @@ describe("Test on the target folder creation", () => {
 
   it("should be use filename only with a leading \\", () => {
     expect(GetWorkingFolder(".\\", "\\file1.md", logInfo)).to.equal(".\\");
+  });
+});
+
+describe("Test on the target file", () => {
+  it("should be able to use a path", () => {
+    expect(GetWorkingFile("testdata\\subfolder\\1\\file.md", logInfo)).to.equal("file.md");
+  });
+
+  it("should be use filename only", () => {
+    expect(GetWorkingFile( "file.md", logInfo)).to.equal("file.md");
   });
 });
