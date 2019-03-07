@@ -86,7 +86,7 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
         logInfo(`Set GIT values in ${localpath}`);
 
         // move to the root folder
-        process.chdir(GetWorkingFolder(localpath, "file.md", logInfo));
+        process.chdir(GetWorkingFolder(localpath, filename, logInfo));
 
         // hander in case there is a folder
 
