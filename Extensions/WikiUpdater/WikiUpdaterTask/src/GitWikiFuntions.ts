@@ -105,7 +105,7 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
         logInfo(`Added ${filename} to repo ${localpath}`);
 
         await git.commit(message);
-        logInfo(`Committed to ${localpath} woht message "${message}`);
+        logInfo(`Committed to ${localpath} with message "${message}`);
 
         await git.push();
         logInfo(`Pushed to ${repo}`);
