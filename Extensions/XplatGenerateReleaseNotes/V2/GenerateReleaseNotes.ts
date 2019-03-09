@@ -34,6 +34,11 @@ async function run(): Promise<void>  {
             var outputfile = tl.getInput("outputfile", true);
             var outputVariableName = tl.getInput("outputVariableName");
             var emptyDataset = tl.getInput("emptySetText");
+            var delimiter = tl.getInput("delimiter");
+            if (delimiter === null) {
+                agentApi.logInfo(`No delimiter passed, setting a default of :`);
+                delimiter = ":";
+            }
 
             let credentialHandler: vstsInterfaces.IRequestHandler = util.getCredentialHandler();
             let vsts = new webApi.WebApi(tpcUri, credentialHandler);
@@ -52,6 +57,7 @@ async function run(): Promise<void>  {
 
             let mostRecentSuccessfulDeployment = await util.getMostRecentSuccessfulDeployment(releaseApi, teamProject, releaseDefinitionId, environmentId);
             let mostRecentSuccessfulDeploymentRelease: Release;
+            let isInitialRelease = false;
 
             agentApi.logInfo(`Getting all artifacts in the current release...`);
             var arifactsInThisRelease = util.getSimpleArtifactArray(currentRelease.artifacts);
@@ -70,6 +76,9 @@ async function run(): Promise<void>  {
                 agentApi.logInfo(`Skipping fetching artifact in the most recent successful release as there isn't one.`);
                 // we need to set the last successful as the current release to templates can get some data
                 mostRecentSuccessfulDeploymentRelease = currentRelease;
+                mostRecentSuccessfulDeploymentName = "Initial Deployment";
+                arifactsInMostRecentRelease = arifactsInThisRelease;
+                isInitialRelease = true;
             }
 
             var globalCommits: Change[] = [];
@@ -88,12 +97,16 @@ async function run(): Promise<void>  {
                             if (artifactInThisRelease.artifactAlias.toLowerCase() === artifactInMostRecentRelease.artifactAlias.toLowerCase()) {
                                 agentApi.logInfo(`Found artifact [${artifactInMostRecentRelease.artifactAlias}] with build number [${artifactInMostRecentRelease.buildNumber}] in release [${mostRecentSuccessfulDeploymentName}]`);
 
-                                // Only get the commits and workitems if the builds are different
-                                if (artifactInMostRecentRelease.buildNumber.toLowerCase() !== artifactInThisRelease.buildNumber.toLowerCase()) {
-                                    agentApi.logInfo(`Checking what commits and workitems have changed from [${artifactInMostRecentRelease.buildNumber}] => [${artifactInThisRelease.buildNumber}]`);
+                                var commits: Change[];
+                                var workitems: ResourceRef[];
 
-                                    var commits: Change[];
-                                    var workitems: ResourceRef[];
+                                // Only get the commits and workitems if the builds are different
+                                if (isInitialRelease) {
+                                    agentApi.logInfo(`This is the first release so checking what commits and workitems are associated with artifacts`);
+                                    commits = await buildApi.getBuildChanges(teamProject, parseInt(artifactInThisRelease.buildId));
+                                    workitems = await buildApi.getBuildWorkItemsRefs(teamProject, parseInt(artifactInThisRelease.buildId));
+                                } else if (artifactInMostRecentRelease.buildNumber.toLowerCase() !== artifactInThisRelease.buildNumber.toLowerCase()) {
+                                    agentApi.logInfo(`Checking what commits and workitems have changed from [${artifactInMostRecentRelease.buildNumber}] => [${artifactInThisRelease.buildNumber}]`);
 
                                     // Check if workaround for issue #349 should be used
                                     let activateFix = tl.getVariable("ReleaseNotes.Fix349");
@@ -116,24 +129,25 @@ async function run(): Promise<void>  {
                                         commits = await buildApi.getChangesBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                         workitems = await buildApi.getWorkItemsBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                     }
-
-                                    var commitCount: number = 0;
-                                    var workItemCount: number = 0;
-
-                                    if (commits) {
-                                        commitCount = commits.length;
-                                        globalCommits = globalCommits.concat(commits);
-                                    }
-
-                                    if (workitems) {
-                                        workItemCount = workitems.length;
-                                        globalWorkItems = globalWorkItems.concat(workitems);
-                                    }
-
-                                    agentApi.logInfo(`Detected ${commitCount} commits/changesets and ${workItemCount} workitems between the builds.`);
                                 } else {
                                     agentApi.logInfo(`Build for artifact [${artifactInThisRelease.artifactAlias}] has not changed.  Nothing to do`);
                                 }
+
+                                var commitCount: number = 0;
+                                var workItemCount: number = 0;
+
+                                if (commits) {
+                                    commitCount = commits.length;
+                                    globalCommits = globalCommits.concat(commits);
+                                }
+
+                                if (workitems) {
+                                    workItemCount = workitems.length;
+                                    globalWorkItems = globalWorkItems.concat(workitems);
+                                }
+
+                                agentApi.logInfo(`Detected ${commitCount} commits/changesets and ${workItemCount} workitems between the builds.`);
+
                             }
                         }
                     } else {
@@ -180,7 +194,7 @@ async function run(): Promise<void>  {
             agentApi.logInfo(`Total workitems: [${globalWorkItems.length}]`);
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
-            var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset);
+            var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset, delimiter);
             util.writeFile(outputfile, outputString);
 
             agentApi.writeVariable(outputVariableName, outputString.toString());
