@@ -295,11 +295,7 @@ function Get-Release {
 
     Write-Verbose "Getting details of release [$releaseid] from server [$tfsUri/$teamproject]"
 
-    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up
-    $rmtfsUri = $tfsUri -replace ".visualstudio.com", ".vsrm.visualstudio.com/defaultcollection"
-
-    # at september 2018 this API is also available at vsrm.dev.azure.com
-    $rmtfsUri = $rmtfsUri -replace "dev.azure.com", "vsrm.dev.azure.com"
+    $rmtfsUri = Convert-ToReleaseAPIURL -uri $tfsUri
 
     # This is an old API call, but leaving it to provide historic TFS support
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseid)?api-version=3.0-preview"
@@ -721,6 +717,21 @@ function Get-BuildDataSet {
     $build
 }
 
+function Convert-ToReleaseAPIURL {
+    param
+    (
+         $uri
+    )
+
+    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up
+    $uri = $uri -replace ".visualstudio.com", ".vsrm.visualstudio.com/defaultcollection"
+
+    # at september 2018 this API is also available at vsrm.dev.azure.com
+    $uri = $uri -replace "dev.azure.com", "vsrm.dev.azure.com"
+
+    return $uri
+}
+
 function Get-ReleaseByDefinitionId {
 
     param
@@ -733,10 +744,10 @@ function Get-ReleaseByDefinitionId {
 
     Write-Verbose "Getting details of release by definition [$releasedefid] from server [$tfsUri/$teamproject]"
 
-    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up
-    $rmtfsUri = $tfsUri -replace ".visualstudio.com", ".vsrm.visualstudio.com/defaultcollection"
+    $rmtfsUri = Convert-ToReleaseAPIURL -uri $tfsUri
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases?definitionId=$($releasedefid)&`$Expand=environments,artifacts&queryOrder=descending&api-version=3.0-preview"
 
+    Write-Verbose "Using URL: " + $uri
     $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
     $jsondata.value
 }
