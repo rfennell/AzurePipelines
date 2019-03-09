@@ -38,6 +38,7 @@ Use-SystemWebProxy
 
 # Get the build and release details
 $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
+$collectionUrlRM = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI.replace("https://dev","https://vsrm.dev")
 $teamproject = $env:SYSTEM_TEAMPROJECT
 $releaseid = $env:RELEASE_RELEASEID
 $releasedefid = $env:RELEASE_DEFINITIONID
@@ -110,7 +111,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
     {
         Write-Verbose "Only processing current release"
         # we only need the current release
-        $releases += Get-Release -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
+        $releases += Get-Release -tfsUri $collectionUrlRM -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
         $allReleases += $releases # add this for backwards support
         $stageName = $currentStageName
     } else 
@@ -126,7 +127,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
 
         Write-Verbose "Processing all releases back to the last successful release in stage [$stageName]"
            
-        $allReleases = Get-ReleaseByDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -releasedefid $releasedefid -usedefaultcreds $usedefaultcreds
+        $allReleases = Get-ReleaseByDefinitionId -tfsUri $collectionUrlRM -teamproject $teamproject -releasedefid $releasedefid -usedefaultcreds $usedefaultcreds
 
         # find the set of release since the last good release of a given stage
         # we filter for any release newer than the current release 
