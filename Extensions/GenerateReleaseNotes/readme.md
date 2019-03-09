@@ -1,21 +1,21 @@
-This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's:
+This task can be used in Builds and Releases, it generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's:
 - if used in a build it is the current active build
-- if it is used in a release, then all the release artifacts are scanned back to the last successful release to the current environment and work items and commits/changesets retrieved for all these build artifcats. This is different mechanisim to that used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task may not generate the same list of items as the VSTS UI. 
+- if it is used in a release, then all the release artifacts are scanned back to the last successful release to the current environment and work items and commits/changesets retrieved for all these build artifcats. This is different mechanisim to that used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task may not generate the same list of items as the VSTS UI.
 
 
 If the template file is markdown the output report being something like the following:
 
 > Release notes for build SampleSolution.Master
-> 
+>
 > Build Number: 20160229.3
 > Build started: 29/02/16 15:47:58
 > Source Branch: refs/heads/master
-> 
+>
 > Associated work items
-> 
+>
 > Task 60 [Assigned by: Bill <MYDOMAIN\Bill>] Design WP8 client
 > Associated change sets/commits
-> 
+>
 > ID bf9be94e61f71f87cb068353f58e860b982a2b4b Added a template
 > ID 8c3f8f9817606e48f37f8e6d25b5a212230d7a86 Start of the project
 
@@ -24,22 +24,22 @@ The use of a template allows the user to define the format, layout and fields sh
 
 - Most samples are in Markdown, but samples are available for HTML
 - The @@VALUE@@ tags are special loop control flags
-- The $(properties) are the fields to be expanded from properties in the JSON response objects returned from the VSTS REST API 
+- The $(properties) are the fields to be expanded from properties in the JSON response objects returned from the VSTS REST API
 
 The only real change from standard markdown is the use of the @@TAG@@ blocks to denote areas that should be looped over i.e: the points where we get the details of all the work items and commits associated with the build.
 
-    #Release notes for build $defname  
-    **Build Number**  : $($build.buildnumber)    
-    **Build started** : $("{0:dd/MM/yy HH:mm:ss}" -f [datetime]$build.startTime)     
-    **Source Branch** : $($build.sourceBranch)  
-    ###Associated work items  
-    @@WILOOP@@  
-    * **$($widetail.fields.'System.WorkItemType') $($widetail.id)** [Assigned by: $($widetail.fields.'System.AssignedTo')]     $($widetail.fields.'System.Title') 
-    @@WILOOP@@  
-    ###Associated change sets/commits  
-    @@CSLOOP@@  
-    * **ID $($csdetail.changesetid)$($csdetail.commitid)** $($csdetail.comment)    
-    @@CSLOOP@@   
+    #Release notes for build $defname
+    **Build Number**  : $($build.buildnumber)
+    **Build started** : $("{0:dd/MM/yy HH:mm:ss}" -f [datetime]$build.startTime)
+    **Source Branch** : $($build.sourceBranch)
+    ###Associated work items
+    @@WILOOP@@
+    * **$($widetail.fields.'System.WorkItemType') $($widetail.id)** [Assigned by: $($widetail.fields.'System.AssignedTo')]     $($widetail.fields.'System.Title')
+    @@WILOOP@@
+    ###Associated change sets/commits
+    @@CSLOOP@@
+    * **ID $($csdetail.changesetid)$($csdetail.commitid)** $($csdetail.comment)
+    @@CSLOOP@@
 
 * Note 1: We can return the builds startTime and/or finishTime, remember if you are running the template within an automated build the build by definition has not finished so the finishTime property is empty to can’t be parsed. This does not stop the generation of the release notes, but an error is logged in the build logs.
 * Note 2: We have some special handling in the @@CSLOOP@@ section, we include both the changesetid and the commitid values, only one of there will contain a value, the other is blank. Thus allowing the template to work for both GIT and TFVC builds.
@@ -52,14 +52,14 @@ What is done behind the scenes is that each line of the template is evaluated as
 * $widetail – the details of a given work item inside the loop returned by the REST call Get Work Item (within the @@WILOOP@@@ block)
 * $csdetail – the details of a given changeset/commit inside the loop by the REST call to Changes or Commit depending on whether it is a GIT or TFVC based build (within the @@CSLOOP@@@ block)
 
-There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes and dumps out all the available fields (to help you find all the available options) for both builds and releases  
+There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes and dumps out all the available fields (to help you find all the available options) for both builds and releases
 
 ## Usage
 Once the extension is added to your TFS or VSTS server, the task should be available in the utilities section of 'add tasks'
 
 The task takes three parameters
 
-* The output file name, for builds this will normally be set to $(Build.ArtifactStagingDirectory)\releasenotes.md as the release notes will usually be part of your build artifacts. For release management usage the parameter should be set to something like $(System.DefaultWorkingDirectory)\releasenotes.md. Where you choose to send the created files is down to your deployment needs. 
+* The output file name, for builds this will normally be set to $(Build.ArtifactStagingDirectory)\releasenotes.md as the release notes will usually be part of your build artifacts. For release management usage the parameter should be set to something like $(System.DefaultWorkingDirectory)\releasenotes.md. Where you choose to send the created files is down to your deployment needs.
 * A picker allows you to set if the template is provided as a file in source control (usually used for builds) or an inline file (usually used for release management). The setting of this picker effects which third parameter is shown
 * Either - The template file name, which should point to a file in source control.
 * Or - The template text.

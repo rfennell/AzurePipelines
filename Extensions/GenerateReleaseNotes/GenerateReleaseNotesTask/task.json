@@ -1,8 +1,8 @@
 {
   "id": "661BC005-61BE-430F-B994-065BF08C0F39",
   "name": "GenerateReleaseNotes",
-  "friendlyName": "Generate Release Notes",
-  "description": "Generates a release notes file in a format of your choice",
+  "friendlyName": "Generate Release Notes for Pipeline Builds or Releases",
+  "description": "Generates a release notes file in a format of your choice for Azure DevOps Pipeline Builds or Releases",
     "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes%20-Tasks/)",
 
   "category": "Utility",

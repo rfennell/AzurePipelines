@@ -4,15 +4,15 @@
 # Create as a Markdown Release notes file for a build froma template file
 #
 # Where the format of the template file is as follows
-# Note the use of @@WILOOP@@ and @@CSLOOP@@ marker to denotes areas to be expended 
+# Note the use of @@WILOOP@@ and @@CSLOOP@@ marker to denotes areas to be expended
 # based on the number of work items or change sets
 # Other fields can be added to the report by accessing the $build, $wiDetail and $csdetail objects
 #
 # #Release notes for build $defname  `n
 # **Build Number**  : $($build.buildnumber)   `n
-# **Build completed** $("{0:dd/MM/yy HH:mm:ss}" -f [datetime]$build.finishTime)   `n   
+# **Build completed** $("{0:dd/MM/yy HH:mm:ss}" -f [datetime]$build.finishTime)   `n
 # **Source Branch** $($build.sourceBranch)   `n
-# 
+#
 # ###Associated work items   `n
 # @@WILOOP@@
 # * **$($widetail.fields.'System.WorkItemType') $($widetail.id)** [Assigned by: $($widetail.fields.'System.AssignedTo')] $($widetail.fields.'System.Title')
@@ -32,13 +32,12 @@ param (
 # Set a flag to force verbose as a default
 $VerbosePreference ='Continue' # equiv to -verbose
 
-Import-Module -Name "$PSScriptRoot\GenerateReleaseNotes.psm1" -Force 
+Import-Module -Name "$PSScriptRoot\GenerateReleaseNotes.psm1" -Force
 
 Use-SystemWebProxy
 
 # Get the build and release details
 $collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
-$collectionUrlRM = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI.replace("https://dev","https://vsrm.dev")
 $teamproject = $env:SYSTEM_TEAMPROJECT
 $releaseid = $env:RELEASE_RELEASEID
 $releasedefid = $env:RELEASE_DEFINITIONID
@@ -48,23 +47,23 @@ $releasedefname = $env:RELEASE_DEFINITIONNAME
 $buildnumber = $env:BUILD_BUILDNUMBER
 $currentStageName = $env:RELEASE_ENVIRONMENTNAME
 
-$outputfile = Get-VstsInput -Name "outputfile"  
-$outputvariablename = Get-VstsInput -Name "outputvariablename"  
-$templatefile = Get-VstsInput -Name "templatefile"  
-$inlinetemplate = Get-VstsInput -Name "inlinetemplate"  
-$templateLocation = Get-VstsInput -Name "templateLocation"  
-$usedefaultcreds = Get-VstsInput -Name "usedefaultcreds"  
-$generateForOnlyPrimary = Get-VstsInput -Name "generateForOnlyPrimary"  
-$generateForCurrentRelease = Get-VstsInput -Name "generateForCurrentRelease"  
-$overrideStageName = Get-VstsInput -Name "overrideStageName"  
-$emptySetText = Get-VstsInput -Name "emptySetText"  
-$maxChanges= Get-VstsInput -Name "maxChanges"  
-$maxWi = Get-VstsInput -Name "maxWi"  
-$wiFilter = Get-VstsInput -Name "wiFilter"  
-$wiStateFilter= Get-VstsInput -Name "wiStateFilter"  
-$showParents = Get-VstsInput -Name "showParents"  
-$appendToFile = Get-VstsInput -Name "appendToFile"  
-$unifiedList = Get-VstsInput -Name "unifiedList"  
+$outputfile = Get-VstsInput -Name "outputfile"
+$outputvariablename = Get-VstsInput -Name "outputvariablename"
+$templatefile = Get-VstsInput -Name "templatefile"
+$inlinetemplate = Get-VstsInput -Name "inlinetemplate"
+$templateLocation = Get-VstsInput -Name "templateLocation"
+$usedefaultcreds = Get-VstsInput -Name "usedefaultcreds"
+$generateForOnlyPrimary = Get-VstsInput -Name "generateForOnlyPrimary"
+$generateForCurrentRelease = Get-VstsInput -Name "generateForCurrentRelease"
+$overrideStageName = Get-VstsInput -Name "overrideStageName"
+$emptySetText = Get-VstsInput -Name "emptySetText"
+$maxChanges= Get-VstsInput -Name "maxChanges"
+$maxWi = Get-VstsInput -Name "maxWi"
+$wiFilter = Get-VstsInput -Name "wiFilter"
+$wiStateFilter= Get-VstsInput -Name "wiStateFilter"
+$showParents = Get-VstsInput -Name "showParents"
+$appendToFile = Get-VstsInput -Name "appendToFile"
+$unifiedList = Get-VstsInput -Name "unifiedList"
 
 
 if ( ([string]::IsNullOrEmpty($releaseid) -eq $false) -and [string]::IsNullOrEmpty($releasedefid) )
@@ -97,40 +96,40 @@ Write-Verbose "appendToFile = [$appendToFile]"
 
 if ( [string]::IsNullOrEmpty($releaseid))
 {
-    
+
    Write-Verbose "In Build mode"
    $builds = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges -wiFilter $wiFilter -wiStateFilter $wiStateFilter -showParents $showParents
-    
+
 } else
 {
 	Write-Verbose "In Release mode"
- 
+
     $releases = @()
     $allReleases = @()
     if ($generateForCurrentRelease -eq $true)
     {
         Write-Verbose "Only processing current release"
         # we only need the current release
-        $releases += Get-Release -tfsUri $collectionUrlRM -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
+        $releases += Get-Release -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
         $allReleases += $releases # add this for backwards support
         $stageName = $currentStageName
-    } else 
+    } else
     {
         # work out the name of the stage to compare the release against
         if ( [string]::IsNullOrEmpty($overrideStageName))
         {
             $stageName = $currentStageName
-        } else 
+        } else
         {
             $stageName = $overrideStageName
         }
 
         Write-Verbose "Processing all releases back to the last successful release in stage [$stageName]"
-           
+
         $allReleases = Get-ReleaseByDefinitionId -tfsUri $collectionUrlRM -teamproject $teamproject -releasedefid $releasedefid -usedefaultcreds $usedefaultcreds
 
         # find the set of release since the last good release of a given stage
-        # we filter for any release newer than the current release 
+        # we filter for any release newer than the current release
         # we assume the releases are ordered by date
         foreach ($r in $allReleases | Where-Object { $_.id -le $releaseid })
         {
@@ -139,7 +138,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
                 # we always add the current release that trigger the task
                 Write-Verbose "   Adding release [$r.id] to list as it is the current release"
                 $releases += $r
-            } else 
+            } else
             {
                 # add all the past releases where the this stage was not a success
                 $stage = $r.environments | Where-Object { $_.name -eq $stageName }
@@ -154,19 +153,19 @@ if ( [string]::IsNullOrEmpty($releaseid))
                         break
                     }
                 }
-            }       
+            }
         }
     }
-    
+
     Write-Verbose "Discovered [$($releases.Count)] releases for processing after checking a total of [$($allReleases.Count)] releases"
 
     # we put all the builddefs into an array
     $buildsDefinitionList = @()
-    
+
     # get our boundary releases, we have to force it to be an array in case there is a single entry
     $currentRelease = @($releases)[0]
     $lastSuccessfulRelease = @($releases)[-1]
-  
+
     # find the list of artifacts
     foreach ($artifact in  $currentRelease.artifacts)
     {
@@ -176,7 +175,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
             {
                 Write-Verbose "The artifact [$($artifact.alias)] is a VSTS build, will attempt to find associated commits/changesets and work items"
                 $buildsDefinitionList +=($artifact.definitionReference.definition.id)
-            } else 
+            } else
             {
                 Write-Verbose "The artifact [$($artifact.alias)] is a [$($artifact.type)], will be skipped as has no associated commits/changesets and work items"
             }
@@ -191,8 +190,8 @@ if ( [string]::IsNullOrEmpty($releaseid))
     foreach ($defId in $buildsDefinitionList)
     {
         Write-Verbose "Checking build artifacts for the Build Defintion ID $($defId)"
-        $lastBuild = $currentRelease.artifacts | Where-Object { $_.definitionReference.definition.id -eq $defId} 
-        $firstBuild = $lastSuccessfulRelease.artifacts | Where-Object { $_.definitionReference.definition.id -eq $defId} 
+        $lastBuild = $currentRelease.artifacts | Where-Object { $_.definitionReference.definition.id -eq $defId}
+        $firstBuild = $lastSuccessfulRelease.artifacts | Where-Object { $_.definitionReference.definition.id -eq $defId}
         foreach ($build in Get-BuildsByDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -buildDefid $defId -usedefaultcreds $usedefaultcreds)
         {
             # if build in build number range and completed
@@ -203,7 +202,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
             }
         }
     }
-	
+
 	# also for backwards compibiluty we swap the hash table for a simple array in build create order (we assume buildID is incrementing)
     $builds = $($buildsList.GetEnumerator() | Sort-Object { $_.Value.build.id }).Value
 }
@@ -212,7 +211,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
 {
     write-Verbose "In release mode so checking if wi/commits should be returned as unified lists"
     if ($unifiedList -eq $true)
-    { 
+    {
         write-Verbose "Processing a unified set of WI/Commits, removing duplicates from $($builds.count) builds"
 
         # reduce the builds
@@ -230,14 +229,14 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
                 {
                     Write-Verbose "     Adding WI $($wi.id) to unified set"
                     $unifiedWorkItems.Add($wi.id, $wi)
-                } else 
+                } else
                 {
                     Write-Verbose "     Skipping WI $($wi.id) as already in unified set"
                 }
             }
 
             Write-Verbose "  Checking Changesets/Commits"
-           
+
             foreach($changeset in $build.changesets)
             {
                 # the ID field differs from GIT to TFVC
@@ -253,14 +252,14 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
                 if ($id -eq $null)
                 {
                     write-error "Cannot find the commit/changeset ID"
-                } else 
+                } else
                 {
-                    # we use hash as the ID changes between GIT and TFVC 
+                    # we use hash as the ID changes between GIT and TFVC
                     if ($unifiedChangesets.ContainsKey($id) -eq $false)
                     {
                         Write-Verbose "     Adding Changeset/Commit with hash $id to unified set"
                         $unifiedChangesets.Add($id, $changeset)
-                    } else 
+                    } else
                     {
                         Write-Verbose "     Skipping Changeset/Commit $id as already in unified set"
                     }
@@ -274,7 +273,7 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
                      'workitems' = $($unifiedWorkitems.GetEnumerator() | Sort-Object { $_.Value.workitems.id }).Value;
                      'changesets' = $($unifiedChangesets.GetEnumerator() | Sort-Object { $_.Value.changesets.id }).Value;
                     }
-    } else 
+    } else
     {
         write-Verbose "Return a nested set of builds each with their own WI/Commits, hence report can have duplicated workitems and commits"
     }
@@ -286,20 +285,20 @@ $outputmarkdown = Invoke-Template -template $template -builds $builds -releases 
 if ($appendToFile -eq $false)
 {
     write-Verbose "Writing to output file [$outputfile]."
-    Set-Content -Path $outputfile -Value $outputmarkdown -Encoding UTF8   
-} else 
+    Set-Content -Path $outputfile -Value $outputmarkdown -Encoding UTF8
+} else
 {
     write-Verbose "Appending to output file [$outputfile]."
-    Add-Content -Path $outputfile -Value $outputmarkdown -Encoding UTF8  
+    Add-Content -Path $outputfile -Value $outputmarkdown -Encoding UTF8
 }
 
 if ([string]::IsNullOrEmpty($outputvariablename))
 {
     write-Verbose "Skipping setting output variable name as parameter was not set."
-} 
-else 
-{    
-    # reload the file, this is quick fix for issues we see that only the first line 
+}
+else
+{
+    # reload the file, this is quick fix for issues we see that only the first line
     # is returned as in the output varibable if we just try to pipe the local variable
     $file = Get-Content $outputfile
     Write-Verbose "Setting variable: [$outputvariablename] = $file" -Verbose

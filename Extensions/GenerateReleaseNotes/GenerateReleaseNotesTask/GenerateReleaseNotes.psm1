@@ -3,7 +3,7 @@
 ##-----------------------------------------------------------------------
 # Library ysed to create as a Markdown Release notes file for a build froma template file
 #
-Import-Module -Name "$PSScriptRoot\Get-CallerPreference.ps1" -Force 
+Import-Module -Name "$PSScriptRoot\Get-CallerPreference.ps1" -Force
 
 function Use-SystemWebProxy {
     <#
@@ -121,14 +121,14 @@ function Expand-WorkItemData {
     )
 
     $wiList = @();
-	 
+
     try {
 		if ($showParents -eq $false)
 		{
 			Write-Verbose "        Running in directly associated WI only mode"
 			foreach ($wi in $workItemData.value) {
 				$wiList += Get-Detail -uri $wi.url -usedefaultcreds $usedefaultcreds
-			}	
+			}
 		} else {
             $wiArray = @{}
 			Write-Verbose "        Running in directly associated WI and parent mode"
@@ -203,7 +203,7 @@ function Get-BuildChangeSets {
     Write-Verbose "        Getting up to $($maxItems) associated changesets/commits for build [$($buildid)]"
     $csList = @();
 
-    try { 
+    try {
         $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)/changes?api-version=2.0&`$top=$($maxItems)"
         $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
         foreach ($cs in $jsondata.value) {
@@ -250,7 +250,7 @@ function Get-Build {
 
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=2.0"
     $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
-    $jsondata 
+    $jsondata
 }
 
 function Get-BuildsByDefinitionId {
@@ -274,9 +274,9 @@ function Get-ReleaseDefinitionByName {
         $tfsUri,
         $teamproject,
         $releasename,
-        $usedefaultcreds  
+        $usedefaultcreds
     )
-	
+
     $uri = "$($tfsUri)/$($teamproject)/_apis/release/definitions?api-version=3.0-preview.1"
     $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
     $jsondata.value | where { $_.name -eq $releasename  }
@@ -295,14 +295,16 @@ function Get-Release {
 
     Write-Verbose "Getting details of release [$releaseid] from server [$tfsUri/$teamproject]"
 
-    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up   
+    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up
     $rmtfsUri = $tfsUri -replace ".visualstudio.com", ".vsrm.visualstudio.com/defaultcollection"
-    
+
     # at september 2018 this API is also available at vsrm.dev.azure.com
     $rmtfsUri = $rmtfsUri -replace "dev.azure.com", "vsrm.dev.azure.com"
-    
+
+    # This is an old API call, but leaving it to provide historic TFS support
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseid)?api-version=3.0-preview"
 
+    Write-Verbose "Using the URL: " + $uri
     $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
     $jsondata
 }
@@ -329,24 +331,24 @@ function ConvertFrom-JsonUsingDOTNET {
       $data,
       [int]$maxdatasize = 104857600 #100mb as bytes, default is 2mb
     )
- 
+
     add-type -assembly system.web.extensions
     # Work around on
     # ConvertFrom-Json : Error during serialization or deserialization using the JSON JavaScriptSerializer. The length of the string exceeds the value set on the maxJsonLength property.
- 
+
     $json = New-Object -TypeName System.Web.Script.Serialization.JavaScriptSerializer
     $json.MaxJsonLength = $maxdatasize
- 
+
     $jsonTree = $json.Deserialize($data, [System.Object])
     Expand-Tree $jsonTree $jsondata.count
  }
- 
+
  function Expand-Tree($jsonTree) {
      $result = @()
- 
+
      # Go through each node in the tree
      foreach ($node in $jsonTree) {
- 
+
          # For each node we need to set up its keys/properties/fields
          $nodeHash = @{}
          foreach ($property in $node.Keys) {
@@ -355,18 +357,18 @@ function ConvertFrom-JsonUsingDOTNET {
                  # This assignment is important as it forces single result sets to be wrapped in an array, which is required
                  $inner = @()
                  $inner += Expand-Tree $node[$property]
- 
+
                  $nodeHash.Add($property, $inner)
              } else {
                  $nodeHash.Add($property, $node[$property])
              }
          }
- 
+
          # Create a custom object from the hash table so it matches the original. It must be a PSCustomObject
          # because the serializer (later) requires that and not a PSObject or HashTable.
          $result += [PSCustomObject] $nodeHash
      }
- 
+
      return $result
  }
 
@@ -375,11 +377,11 @@ function Add-Space {
         $size = 3,
         $indent = 1
 			 )
-		
+
     $upperBound = $size * $indent
     for ($i = 1 ; $i -le $upperBound  ; $i++) {
         $padding += " "
-    } 
+    }
     $padding
 }
 
@@ -396,11 +398,11 @@ function Invoke-GetCommand {
 
     $webclient = new-object System.Net.WebClient
     $webclient.Encoding = [System.Text.Encoding]::UTF8
-	
+
     if ([System.Convert]::ToBoolean($usedefaultcreds) -eq $true) {
         Write-Verbose "Using default credentials"
         $webclient.UseDefaultCredentials = $true
-    } 
+    }
     elseif ([string]::IsNullOrEmpty($debugpat) -eq $false) {
         $encodedPat = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(":$debugpat"))
         $webclient.Headers.Add("Authorization", "Basic $encodedPat")
@@ -411,7 +413,7 @@ function Invoke-GetCommand {
         $vstsEndpoint = Get-VstsEndpoint -Name SystemVssConnection -Require
         $webclient.Headers.Add("Authorization" ,"Bearer $($vstsEndpoint.auth.parameters.AccessToken)")
     }
-		
+
     #write-verbose "REST Call [$uri]"
     $webclient.DownloadString($uri)
 }
@@ -436,7 +438,7 @@ function Invoke-PostCommand() {
     if ([System.Convert]::ToBoolean($usedefaultcreds) -eq $true) {
         Write-Verbose "Using default credentials"
         Invoke-RestMethod $uri -Method "POST" -Headers $headers -ContentType "application/json" -Body ([System.Text.Encoding]::UTF8.GetBytes($jsonBody)) -UseDefaultCredentials
-    } 
+    }
     else {
         if ([string]::IsNullOrEmpty($debugpat) -eq $false) {
             $encodedPat = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(":$debugpat"))
@@ -447,7 +449,7 @@ function Invoke-PostCommand() {
             Write-Verbose "Using SystemVssConnection personal access token"
             $vstsEndpoint = Get-VstsEndpoint -Name SystemVssConnection -Require
             $headers["Authorization"] = "Bearer $($vstsEndpoint.auth.parameters.AccessToken)"
-    
+
         }
         Invoke-RestMethod $uri -Method "POST" -Headers $headers -ContentType "application/json" -Body ([System.Text.Encoding]::UTF8.GetBytes($jsonBody))
     }
@@ -456,7 +458,7 @@ function Invoke-PostCommand() {
 function Render() {
     [CmdletBinding()]
     param ( [parameter(ValueFromPipeline = $true)] [string] $str)
-		
+
     # following line would be the obvious choice but it is buggy in V4 seems ok in older and newer
     # so we have to use invoke-expression
     #$ExecutionContext.InvokeCommand.ExpandString($str)
@@ -471,7 +473,7 @@ function Render() {
         write-verbose "RENDER ERROR: cannot process [$str]"
         write-verbose $output
     }
-		
+
 }
 
 function Get-Template {
@@ -480,7 +482,7 @@ function Get-Template {
         $templatefile,
         $inlinetemplate
     )
-	
+
     Write-Verbose "Using template mode [$templateLocation]"
 
     if ($templateLocation -eq 'File') {
@@ -492,7 +494,7 @@ function Get-Template {
         # it appears as single line we need to split it out
         $template = $inlinetemplate -split "`n"
     }
-	
+
     $template
 }
 
@@ -519,7 +521,7 @@ function Add-StackItem {
     )
     # Create a queue of the items
     $queue = new-object  System.Collections.Queue
-    # add each item to the queue  
+    # add each item to the queue
     foreach ($item in @($items)) {
         $queue.Enqueue($item)
     }
@@ -540,15 +542,15 @@ function Invoke-Template {
         $releasedefname,
         $emptySetText
     )
-	
+
     if ($template.count -gt 0) {
         write-Verbose "Processing template"
         write-verbose "There are [$(@($builds).count)] builds to process"
 
         # create our work stack and initialise
-        $modeStack = new-object  System.Collections.Stack 
+        $modeStack = new-object  System.Collections.Stack
         $modeStack.Push([Mode]::BODY)
-		
+
         # this line is to provide support the the legacy build only template
         # if using a release template it will be reset when processing tags
         $builditem = $builds
@@ -560,7 +562,7 @@ function Invoke-Template {
             write-verbose "From [$(@($releases).count)] releases"
             $release = @($releases)[0]
         }
-	
+
         #process each line
         For ($index = 0; $index -lt $template.Count; $index++) {
             $line = $template[$index]
@@ -574,7 +576,7 @@ function Invoke-Template {
                 # is there a mode block change
                 if ($modeStack.Peek().Mode -eq $mode) {
                     # this means we have reached the end of a block
-                    # need to work out if there are more items to process 
+                    # need to work out if there are more items to process
                     # or the end of the block
                     $queue = $modeStack.Peek().BlockQueue;
                     if ($queue.Count -gt 0) {
@@ -586,11 +588,11 @@ function Invoke-Template {
                         switch ($mode) {
                             "WI" {
                                 Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting next workitem $($item.id)"
-                                $widetail = $item  
+                                $widetail = $item
                             }
                             "CS" {
                                 Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting next changeset/commit $($item.id)"
-                                $csdetail = $item 
+                                $csdetail = $item
                             }
                             "BUILD" {
                                 Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting next build $($item.build.id)"
@@ -609,9 +611,9 @@ function Invoke-Template {
                     # this a new block to add the stack
                     # need to get the items to process and place them in a queue
                     Write-Verbose "$(Add-Space -indent ($modeStack.Count))Starting block $($mode)"
-					 
+
                     #set the index to jump back to
-                    $lastBlockStartIndex = $index       
+                    $lastBlockStartIndex = $index
                     switch ($mode) {
                         "WI" {
                             # store the block and load the first item
@@ -628,22 +630,22 @@ function Invoke-Template {
                             # store the block and load the first item
                             Add-StackItem -items @($builditem.changesets) -modeStack $modeStack -mode $mode -index $index
                             if ($modeStack.Peek().BlockQueue.Count -gt 0) {
-                                $csdetail = $modeStack.Peek().BlockQueue.Dequeue()   
+                                $csdetail = $modeStack.Peek().BlockQueue.Dequeue()
                                 Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting first changeset/commit $($csdetail.id)"
-												
+
                             }
                             else {
                                 $csdetail = $null
                             }
-																											
+
                         }
                         "BUILD" {
                             Add-StackItem -items @($builds) -modeStack $modeStack -mode $mode -index $index
                             if ($modeStack.Peek().BlockQueue.Count -gt 0) {
-                                $builditem = $modeStack.Peek().BlockQueue.Dequeue() 
+                                $builditem = $modeStack.Peek().BlockQueue.Dequeue()
                                 $build = $builditem.build
                                 Write-Verbose "$(Add-Space -indent $modeStack.Count)Getting first build $($build.id)"
-											 
+
                             }
                             else {
                                 $builditem = $null
@@ -654,7 +656,7 @@ function Invoke-Template {
                 }
             }
             else {
-                if ((($modeStack.Peek().mode -eq [Mode]::WI) -and ($widetail -eq $null)) -or 
+                if ((($modeStack.Peek().mode -eq [Mode]::WI) -and ($widetail -eq $null)) -or
                     (($modeStack.Peek().mode -eq [Mode]::CS) -and ($csdetail -eq $null))) {
                     # there is no data to expand
                     $out += $emptySetText
@@ -671,7 +673,7 @@ function Invoke-Template {
     }
     else {
         write-error "Cannot load template file [$templatefile] or it is empty"
-    } 
+    }
 }
 
 function Get-BuildDataSet {
@@ -731,7 +733,7 @@ function Get-ReleaseByDefinitionId {
 
     Write-Verbose "Getting details of release by definition [$releasedefid] from server [$tfsUri/$teamproject]"
 
-    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up   
+    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up
     $rmtfsUri = $tfsUri -replace ".visualstudio.com", ".vsrm.visualstudio.com/defaultcollection"
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases?definitionId=$($releasedefid)&`$Expand=environments,artifacts&queryOrder=descending&api-version=3.0-preview"
 
