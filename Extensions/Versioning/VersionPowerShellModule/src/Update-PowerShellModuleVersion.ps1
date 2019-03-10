@@ -38,8 +38,8 @@ param (
 
 # Get and validate the version data
 if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
-    Write-Verbose "Using the version number directly" 
-    # First the old check 
+    Write-Verbose "Using the version number directly"
+    # First the old check
     try {
         Write-Verbose -Message "Validating version number - $VersionNumber"
         $null = [Version]::Parse($VersionNumber)
@@ -49,9 +49,9 @@ if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
         exit 1
     }
 } else {
-    Write-Verbose "Extracting version number from build number" 
+    Write-Verbose "Extracting version number from build number"
     $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
-    
+
     switch($VersionData.Count)
     {
     0
@@ -76,15 +76,21 @@ if (Get-Module -Name PowerShellGet -ListAvailable) {
         $null = Get-PackageProvider -Name NuGet -ErrorAction Stop
     }
     catch {
-        Write-Verbose -Message "No NuGet provider found, installing it first"
-        Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false
+        try {
+            Write-Verbose -Message "No NuGet provider found, installing it first"
+            Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false -ErrorAction Stop
+        }
+        catch {
+            Write-Host "##vos[task.logissue type=warning]Falling back to version of Configuration shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
+            Import-Module "$PSScriptRoot\1.3.0\Configuration.psd1" -force
+        }
     }
 
     Write-Verbose -Message "Finding the latest version of the Configuration module on the PSGallery"
-    $NewestPester = Find-Module -Name Configuration -Repository PSGallery
-    If (-not(Get-Module Configuration) -or (Get-Module Configuration -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
+    $NewestConfiguration = Find-Module -Name Configuration | Sort-Object Version -Descending | Select-Object -First 1
+    If (-not(Get-Module Configuration) -or (Get-Module Configuration -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestConfiguration.Version) {
         Write-Verbose -Message "Newer version of the module is available online, installing as current user"
-        Install-Module -Name Configuration -Scope CurrentUser -Force -Repository PSGallery
+        Install-Module -Name Configuration -Scope CurrentUser -Force -Repository $NewestConfiguration.Repository
         Import-Module Configuration -force
         $Null = Get-Command -Module Configuration
     }
