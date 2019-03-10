@@ -26,7 +26,9 @@ Describe "Testing Update-PowerShellModuleVersion.ps1" {
         Mock -CommandName Write-Error -MockWith {}
         Mock -CommandName Get-PackageProvider -MockWith {}
         Mock -CommandName Install-PackageProvider -MockWith {}
-        Mock -CommandName Find-Module -MockWith {}
+        Mock Find-Module {
+                [PsCustomObject]@{Version=[version]::new(4,3,0);Repository='OtherRepository'}
+        }
         Mock -CommandName Install-Module -MockWith {}
         Mock -CommandName Import-Module -MockWith {}
         Mock -CommandName Update-MetaData -MockWith {}
@@ -44,7 +46,7 @@ Describe "Testing Update-PowerShellModuleVersion.ps1" {
                 Path = 'TestDrive:\First.psd1'
             }
         }
-        Mock -CommandName Select-Object -MockWith {}
+        #Mock -CommandName Select-Object -MockWith {}
 
         It "Should write an error when the version number isn't a valid format" {
             &$Sut -Path TestDrive:\ -VersionNumber 'FakeNumber' -InjectVersion "true" -VersionRegex "\d+\.\d+\.\d+\.\d+"
@@ -64,15 +66,15 @@ Describe "Testing Update-PowerShellModuleVersion.ps1" {
             Assert-MockCalled -CommandName Install-PackageProvider -Scope It -Times 1
         }
         It "Should install the latest version of Configuration when a newer version is available on the Gallery" {
-            Mock -CommandName Find-Module -MockWith { [PsCustomObject]@{Version='9.9.9.9'}}
+            Mock -CommandName Find-Module -MockWith { [PsCustomObject]@{Version='9.9.9.9';Repository='OtherRepository'}}
 
             &$Sut -Path TestDrive:\ -VersionNumber '1.2.3.4' -InjectVersion "true" -VersionRegex "\d+\.\d+\.\d+\.\d+"
 
             Assert-MockCalled -CommandName Install-Module -Scope It -Times 1
         }
         It "Should not install a new version of Configuration when it is already available locally" -Skip {
-            Mock -CommandName Find-Module -MockWith { [PsCustomObject]@{Version=[Version]::Parse('0.0.0.0')}}
-            Mock -CommandName Select-Object -MockWith {[PsCustomObject]@{Version=[Version]::Parse('1.1.1.1')}} -ParameterFilter {$InputObject.Name -eq 'Configuration'}
+            Mock -CommandName Find-Module -MockWith { [PsCustomObject]@{Version=[Version]::Parse('0.0.0.0');Repository='OtherRepository'}}
+            Mock -CommandName Select-Object -MockWith {[PsCustomObject]@{Version=[Version]::Parse('1.1.1.1');Repository='OtherRepository'}} -ParameterFilter {$InputObject.Name -eq 'Configuration'}
 
             &$Sut -Path TestDrive:\ -VersionNumber '1.2.3.4' -InjectVersion "true" -VersionRegex "\d+\.\d+\.\d+\.\d+"
 
