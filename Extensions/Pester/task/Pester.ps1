@@ -75,7 +75,13 @@ if ((Get-Module -Name PowerShellGet -ListAvailable) -and
         $null = Get-PackageProvider -Name NuGet -ErrorAction Stop
     }
     catch {
-        Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false
+        try {
+            Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false -ErrorAction Stop
+        }
+        catch {
+            Write-Host "##vos[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
+            Import-Module "$PSScriptRoot\4.6.0\Pester.psd1" -force
+        }
     }
     $NewestPester = Find-Module -Name Pester | Sort-Object Version -Descending | Select-Object -First 1
     If ((Get-Module Pester -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {

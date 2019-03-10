@@ -52,3 +52,4 @@ Releases
 - 8.8.x - Add ScriptBlock parameter to allow running a script before running the tests. [Fixes #377](https://github.com/rfennell/vNextBuild/issues/377)
 - 8.11.x - Fixing Find-Module issues raised in [#412](https://github.com/rfennell/AzurePipelines/issues/412) and [415](https://github.com/rfennell/AzurePipelines/issues/415) by adding a check for AllowPrerelease switch on the cmdlet. If it's not available we'll fall back to the version of Pester that is shipped with the extension and write a warning that a newer version can't be used without a newer version of PowerShellGet being available.
 - 8.12.x - Updating built in version of Pester to 4.6.0. Remove check for AllowPrerelease as it's not needed. Fixes [#421](https://github.com/rfennell/AzurePipelines/issues/421)
+- 8.13.x - Update to better support offline build machines with no nuget installed. Falls back to shipped version of Pester. Fixes [#447](https://github.com/rfennell/AzurePipelines/issues/447)
