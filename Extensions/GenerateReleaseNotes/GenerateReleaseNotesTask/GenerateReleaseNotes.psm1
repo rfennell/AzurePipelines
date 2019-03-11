@@ -300,7 +300,7 @@ function Get-Release {
     # This is an old API call, but leaving it to provide historic TFS support
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases/$($releaseid)?api-version=3.0-preview"
 
-    Write-Verbose "Using the URL: " + $uri
+    Write-Verbose "Using the URL [$uri]"
     $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
     $jsondata
 }
@@ -747,9 +747,9 @@ function Get-ReleaseByDefinitionId {
     $rmtfsUri = Convert-ToReleaseAPIURL -uri $tfsUri
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases?definitionId=$($releasedefid)&`$Expand=environments,artifacts&queryOrder=descending&api-version=3.0-preview"
 
-    Write-Verbose "Using URL: " + $uri
+    Write-Verbose "Using URL [$uri"
     $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
-    $jsondata.value
+    $jsondata.value]
 }
 
 # types to make the switches neater
