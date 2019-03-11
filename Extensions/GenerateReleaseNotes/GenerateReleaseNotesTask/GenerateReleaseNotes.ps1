@@ -126,7 +126,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
 
         Write-Verbose "Processing all releases back to the last successful release in stage [$stageName]"
 
-        $allReleases = Get-ReleaseByDefinitionId -tfsUri $collectionUrlRM -teamproject $teamproject -releasedefid $releasedefid -usedefaultcreds $usedefaultcreds
+        $allReleases = Get-ReleaseByDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -releasedefid $releasedefid -usedefaultcreds $usedefaultcreds
 
         # find the set of release since the last good release of a given stage
         # we filter for any release newer than the current release

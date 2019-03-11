@@ -747,7 +747,7 @@ function Get-ReleaseByDefinitionId {
     $rmtfsUri = Convert-ToReleaseAPIURL -uri $tfsUri
     $uri = "$($rmtfsUri)/$($teamproject)/_apis/release/releases?definitionId=$($releasedefid)&`$Expand=environments,artifacts&queryOrder=descending&api-version=3.0-preview"
 
-    Write-Verbose "Using URL [$uri"
+    Write-Verbose "Using URL [$uri]"
     $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
     $jsondata.value
 }
