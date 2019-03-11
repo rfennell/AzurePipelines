@@ -124,8 +124,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
             $stageName = $overrideStageName
         }
 
-        Write-Verbose "Processing all releases back to the last successful release in stage [$stageName]"
-        Write-Verbose "Coll $collectionUrl"
+        Write-Verbose "Process all releases back to the last successful release in stage [$stageName]"
         $allReleases = Get-ReleaseByDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -releasedefid $releasedefid -usedefaultcreds $usedefaultcreds
 
         # find the set of release since the last good release of a given stage
