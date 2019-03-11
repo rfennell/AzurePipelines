@@ -723,11 +723,13 @@ function Convert-ToReleaseAPIURL {
          $uri
     )
 
+    write-verbose "Converting URL for API form [$uri]"
     # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up
     $uri = $uri -replace ".visualstudio.com", ".vsrm.visualstudio.com/defaultcollection"
 
     # at september 2018 this API is also available at vsrm.dev.azure.com
     $uri = $uri -replace "dev.azure.com", "vsrm.dev.azure.com"
+    write-verbose "Converting URL for API to [$uri]"
 
     return $uri
 }
