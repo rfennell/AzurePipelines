@@ -749,7 +749,7 @@ function Get-ReleaseByDefinitionId {
 
     Write-Verbose "Using URL [$uri"
     $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
-    $jsondata.value]
+    $jsondata.value
 }
 
 # types to make the switches neater
