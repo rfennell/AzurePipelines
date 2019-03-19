@@ -276,3 +276,5 @@ Extensions/YamlGenerator/YamlGeneratorTask/repo
 /.vs
 /Extensions/GenerateReleaseNotes/GenerateReleaseNotesTask/ReleaseNotes.md
 /Extensions/GenerateReleaseNotes/GenerateReleaseNotesTask/ReleaseNotes_AllFields.md
+Tools/GetAPIJsonPayloads/*.js
+Tools/GetAPIJsonPayloads/*.js.map
