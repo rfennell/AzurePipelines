@@ -137,7 +137,9 @@ function Expand-WorkItemData {
 				$wiuri = $wi.url
 				$wiuri = "$($wiuri)?`$expand=relations"
 				$wiDetail = Get-Detail -uri $wiuri -usedefaultcreds $usedefaultcreds
-				$wiArray.Add($wiDetail.id, $wiDetail)
+				if ($wiArray.ContainsKey($wiDetail.id) -eq $false) {
+					$wiArray.Add($wiDetail.id, $wiDetail)
+				}
 				$wiType = $wiDetail.fields."System.WorkItemType"
 				if ("Task,Bug" -like "*$wiType*") {
 					# Get parent work item (for Task and Bug only)
