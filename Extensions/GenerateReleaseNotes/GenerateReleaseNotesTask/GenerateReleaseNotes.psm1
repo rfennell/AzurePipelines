@@ -469,7 +469,13 @@ function Render() {
     }
     Catch {
         write-verbose "RENDER ERROR: cannot process [$str]"
-        write-verbose $output
+        try {
+            # try to write out any output
+            $output
+        }
+        Catch {
+            write-verbose "RENDER ERROR: cannot output anything, probably a NULL variable"
+        }
     }
 
 }
