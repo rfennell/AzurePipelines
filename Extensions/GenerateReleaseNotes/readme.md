@@ -1,4 +1,4 @@
-This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's:
+﻿This task generates a release notes file based on a template passed into the tool.  The data source for the generated Release Notes is the VSTS REST API's:
 - if used in a build it is the current active build
 - if it is used in a release, then all the release artifacts are scanned back to the last successful release to the current environment and work items and commits/changesets retrieved for all these build artifcats. This is different mechanisim to that used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task may not generate the same list of items as the VSTS UI. 
 
@@ -112,3 +112,4 @@ Using the settings for the output file shown above, the release notes will be cr
 - 2.21 - Issue291 fixed bug that empty text parameter was not being used 
 - 2.22 - Issue349 fixed missing work items due to VSTS API limitation - set variable ReleaseNotes.Fix349 to true to enable the workaround code
 - 2.23 - PR375 from @rdeveen to provide support for Azure DevOps URL format 
+- 2.24 - Issue460 Fixed bug that try to add entry to a dictionary already containing that entry
