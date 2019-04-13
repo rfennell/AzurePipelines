@@ -34,7 +34,7 @@
           "label": "Lab VM ID",
           "defaultValue": "$(labVMId)",
           "required": true,
-          "helpMarkDown": "Resource ID of the lab VM to start. Default is `$(labVMId)`. You can use any variable such as `$(labVMId)`, which is the output of calling **Create Azure DevTest Labs VM**, that contains a value in the form `/subscriptions/{subId}/resourceGroups/{rgName}/providers/Microsoft.DevTestLab/labs/{labName}/virtualMachines/{vmName}`."
+          "helpMarkDown": "Resource ID of the lab VM to start. Default is `$(labVMId)`. You can use any variable such as `$(labVMId)`, which is the output of calling **Create Azure DevTest Labs VM**, that contains a value in the form `/subscriptions/{subId}/resourceGroups/{rgName}/providers/Microsoft.DevTestLab/labs/{labName}/virtualMachines/{vmName}`. See [Wiki](https://github.com/rfennell/AzurePipelines/wiki/DevTestLabs) for details"
       }
    ],
   "instanceNameFormat": "Start a DevTest Labs VM",
