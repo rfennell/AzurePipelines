@@ -31,11 +31,11 @@ function ReplaceVersion {
     )
 
     # regex for a single digit replace
-    $regex = "<\?define\s+{0}\s+=\s+\""\d+\""\s+\?>"
+    $regex = "<\?define\s+{0}\s*=\s*\""\d+\""\s+\?>"
     if ([regex]::IsMatch($value , "\d+\.\d+\.\d+\.\d+"))
     {
         # we need to handle a full version
-        $regex = "<\?define\s+{0}\s+=\s+\""\d+\.\d+\.\d+\.\d+\""\s+\?>"
+        $regex = "<\?define\s+{0}\s*=\s*\""\d+\.\d+\.\d+\.\d+\""\s+\?>"
     }
 
     return $contents -replace  [string]::Format($regex, $name),  [string]::Format("<?define {0} = ""{1}"" ?>", $name, $value)
