@@ -48,6 +48,12 @@ async function run(): Promise<void>  {
             agentApi.logInfo("Getting the current release details");
             var currentRelease = await releaseApi.getRelease(teamProject, releaseId);
 
+            // check of redeploy
+            if ( util.getDeploymentCount(currentRelease.environments, environmentName) > 1) {
+                agentApi.logWarn(`Skipping release note generation as this deploy is a re-reployment`);
+                return;
+            }
+
             if (!currentRelease) {
                 reject(`Unable to locate the current release with id ${releaseId}`);
                 return;

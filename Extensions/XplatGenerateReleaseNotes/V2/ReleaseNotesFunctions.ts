@@ -23,6 +23,21 @@ import { WorkItem } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
 
 let agentApi = new AgentSpecificApi();
 
+export function getDeploymentCount(environments: ReleaseEnvironment[], environmentName: string): number {
+    agentApi.logInfo(`Getting deployment cound for stage`);
+    var attemptCount = 0;
+    for (let environment of environments) {
+        if (environment.name.toLowerCase() === environmentName) {
+            attemptCount = environment.preDeployApprovals["attempt"];
+        }
+    }
+    if (attemptCount === 0) {
+        throw `Failed to locate stage with name ${environmentName}`;
+    }
+    agentApi.logInfo(`Identified [${environmentName}] as having id [${attemptCount}]`);
+    return attemptCount;
+}
+
 export function getReleaseDefinitionId(environments: ReleaseEnvironment[], environmentName: string): number {
     agentApi.logInfo(`Getting the Environment Id`);
     var environmentId: number = 0;
