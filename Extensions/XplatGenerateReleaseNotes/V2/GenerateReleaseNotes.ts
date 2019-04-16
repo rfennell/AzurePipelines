@@ -39,6 +39,7 @@ async function run(): Promise<void>  {
                 agentApi.logInfo(`No delimiter passed, setting a default of :`);
                 delimiter = ":";
             }
+            var stopOnRedploy = tl.getBoolInput("stopOnRedploy");
 
             let credentialHandler: vstsInterfaces.IRequestHandler = util.getCredentialHandler();
             let vsts = new webApi.WebApi(tpcUri, credentialHandler);
@@ -49,9 +50,11 @@ async function run(): Promise<void>  {
             var currentRelease = await releaseApi.getRelease(teamProject, releaseId);
 
             // check of redeploy
-            if ( util.getDeploymentCount(currentRelease.environments, environmentName) > 1) {
-                agentApi.logWarn(`Skipping release note generation as this deploy is a re-reployment`);
-                return;
+            if (stopOnRedploy === true) {
+                if ( util.getDeploymentCount(currentRelease.environments, environmentName) > 1) {
+                    agentApi.logWarn(`Skipping release note generation as this deploy is a re-reployment`);
+                    return;
+                }
             }
 
             if (!currentRelease) {

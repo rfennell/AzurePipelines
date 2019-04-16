@@ -105,8 +105,16 @@
       "required": false,
       "helpMarkDown": "If set uses this stage name to find the last succesful deployment, as opposed to the currently active stage (Release usage only)",
       "groupName":"advanced"
+     },
+     {
+      "name": "stopOnRedploy",
+      "type": "boolean",
+      "label": "No generation on re-deploy",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "Do not generate release notes of a re-deploy",
+      "groupName":"advanced"
      }
-    
    ],
   "instanceNameFormat": "Generate Release Notes based on Release Comparision API",
   "execution": {
