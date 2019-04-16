@@ -24,15 +24,16 @@ import { WorkItem } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
 let agentApi = new AgentSpecificApi();
 
 export function getDeploymentCount(environments: ReleaseEnvironment[], environmentName: string): number {
-    agentApi.logInfo(`Getting deployment cound for stage`);
+    agentApi.logInfo(`Getting deploymentt for stage`);
     var attemptCount = 0;
     for (let environment of environments) {
         if (environment.name.toLowerCase() === environmentName) {
-            attemptCount = environment.preDeployApprovals["attempt"];
+            var currentDeployment = environment.preDeployApprovals[environment.preDeployApprovals.length - 1];
+            attemptCount = currentDeployment.attempt;
         }
     }
     if (attemptCount === 0) {
-        throw `Failed to locate stage with name ${environmentName}`;
+        throw `Failed to locate stage with name ${environmentName} so cannot get attempt`;
     }
     agentApi.logInfo(`Identified [${environmentName}] as having id [${attemptCount}]`);
     return attemptCount;
