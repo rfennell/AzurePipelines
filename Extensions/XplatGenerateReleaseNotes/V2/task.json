@@ -107,7 +107,7 @@
       "groupName":"advanced"
      },
      {
-      "name": "stopOnRedploy",
+      "name": "stopOnRedeploy",
       "type": "boolean",
       "label": "No generation on re-deploy",
       "defaultValue": "False",
