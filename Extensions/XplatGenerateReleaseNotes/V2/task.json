@@ -112,7 +112,7 @@
       "label": "No generation on re-deploy",
       "defaultValue": "False",
       "required": false,
-      "helpMarkDown": "Do not generate release notes of a re-deploy",
+      "helpMarkDown": "Do not generate release notes of a re-deploy. If this is set, and a re-deploy occurs the task will succeeds with a warning",
       "groupName":"advanced"
      }
    ],

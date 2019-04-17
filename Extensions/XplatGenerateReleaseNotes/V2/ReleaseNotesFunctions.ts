@@ -24,7 +24,7 @@ import { WorkItem } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
 let agentApi = new AgentSpecificApi();
 
 export function getDeploymentCount(environments: ReleaseEnvironment[], environmentName: string): number {
-    agentApi.logInfo(`Getting deploymentt for stage`);
+    agentApi.logInfo(`Getting deployment count for stage`);
     var attemptCount = 0;
     for (let environment of environments) {
         if (environment.name.toLowerCase() === environmentName) {
@@ -35,7 +35,7 @@ export function getDeploymentCount(environments: ReleaseEnvironment[], environme
     if (attemptCount === 0) {
         throw `Failed to locate stage with name ${environmentName} so cannot get attempt`;
     }
-    agentApi.logInfo(`Identified [${environmentName}] as having id [${attemptCount}]`);
+    agentApi.logInfo(`Identified [${environmentName}] as having deployment count of [${attemptCount}]`);
     return attemptCount;
 }
 

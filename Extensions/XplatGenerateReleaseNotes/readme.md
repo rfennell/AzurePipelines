@@ -107,6 +107,7 @@ The task takes three parameters
 * (Advanced) Empty set text - the text to place in the results file if there is no changeset/commit or WI content
 * (Advanced) Name of the release stage to look for the last successful release in, default to empty value so uses the current stage of the release that the task is running in (release mode, when scanning past build only)
 * (Advanced V2 only) Delimiter for the tag separation in the WI Loop, defaults to colon ':'
+* (Advanced V2 only) Do not generate release notes of a re-deploy. If this is set, and a re-deploy occurs the task will succeeds with a warning
 * (Outputs) Optional: Name of the variable that markdown contents will be copied into for use in other tasks
 
 Using the settings for the output file shown above, the release notes will be created in the specified folder, and will probably need be copied by a task such as 'Copy Files' to your final required location or email using a extension such as the [Send Email](https://marketplace.visualstudio.com/items?itemName=rvo.SendEmailTask) extension
