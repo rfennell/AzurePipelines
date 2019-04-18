@@ -29,6 +29,10 @@ export class AgentSpecificApi implements IAgentSpecificApi {
         console.log(msg);
     }
 
+    public logWarn(msg: string) {
+        console.warn(msg);
+    }
+
     public logDebug(msg: string) {
         tl.debug(msg);
     }

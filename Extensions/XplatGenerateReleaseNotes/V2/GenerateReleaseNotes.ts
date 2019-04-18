@@ -15,8 +15,8 @@ import * as issue349 from "./Issue349Workaround";
 
 let agentApi = new AgentSpecificApi();
 
-async function run(): Promise<void>  {
-    var promise = new Promise<void>(async (resolve, reject) => {
+async function run(): Promise<number>  {
+    var promise = new Promise<number>(async (resolve, reject) => {
 
         try {
             agentApi.logDebug("Starting Tag XplatGenerateReleaseNotes task");
@@ -39,6 +39,7 @@ async function run(): Promise<void>  {
                 agentApi.logInfo(`No delimiter passed, setting a default of :`);
                 delimiter = ":";
             }
+            var stopOnRedeploy = tl.getBoolInput("stopOnRedeploy");
 
             let credentialHandler: vstsInterfaces.IRequestHandler = util.getCredentialHandler();
             let vsts = new webApi.WebApi(tpcUri, credentialHandler);
@@ -47,6 +48,15 @@ async function run(): Promise<void>  {
 
             agentApi.logInfo("Getting the current release details");
             var currentRelease = await releaseApi.getRelease(teamProject, releaseId);
+
+            // check of redeploy
+            if (stopOnRedeploy === true) {
+                if ( util.getDeploymentCount(currentRelease.environments, environmentName) > 1) {
+                    agentApi.logWarn(`Skipping release note generation as this deploy is a re-reployment`);
+                    resolve(-1);
+                    return promise;
+                }
+            }
 
             if (!currentRelease) {
                 reject(`Unable to locate the current release with id ${releaseId}`);
@@ -199,7 +209,7 @@ async function run(): Promise<void>  {
 
             agentApi.writeVariable(outputVariableName, outputString.toString());
 
-            resolve();
+            resolve(0);
         } catch (err) {
 
             agentApi.logError(err);
@@ -211,7 +221,11 @@ async function run(): Promise<void>  {
 
 run()
     .then((result) => {
-        tl.setResult(tl.TaskResult.Succeeded, "");
+        if (result === -1) {
+            tl.setResult(tl.TaskResult.SucceededWithIssues, "Skipped release notes generation as redeploy");
+        } else {
+            tl.setResult(tl.TaskResult.Succeeded, "");
+        }
     })
     .catch((err) => {
         agentApi.publishEvent("reliability", { issueType: "error", errorMessage: JSON.stringify(err, Object.getOwnPropertyNames(err)) });
