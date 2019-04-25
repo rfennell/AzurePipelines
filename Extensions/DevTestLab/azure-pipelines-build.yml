@@ -26,18 +26,6 @@ steps:
     targetFiles: '**\task.json'
 
 - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
-  displayName: 'Package and Publish VSTS Extension: DEV Package'
-  inputs:
-    rootFolder: '$(ExtensionRoot)'
-    outputPath: '$(Build.ArtifactStagingDirectory)\vsix'
-    publisherId: '$(PackageID)'
-    extensionId: '$(ExtensionID)'
-    extensionTag: '-DEV'
-    extensionVersion: '$(Build.BuildNumber)'
-    updateTasksVersion: true
-    extensionVisibility: private
-
-- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
   displayName: 'Package and Publish VSTS Extension: PROD Package '
   inputs:
     rootFolder: '$(ExtensionRoot)'
