@@ -5,7 +5,7 @@ name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
 trigger: none # will disable CI builds entirely
 
-pr: # will trigger on PRs
+pr: # will trigger on PR
   branches:
     include: [ master ] # branch names which will trigger a build
   paths:
