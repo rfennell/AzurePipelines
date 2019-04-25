@@ -1,8 +1,18 @@
 resources:
 - repo: self
 
+name: $(Major).$(Minor).$(rev:r)  # build numbering format
+
+trigger: none # will disable CI builds entirely
+
+pr:
+  branches:
+    include: [ master ] # branch names which will trigger a build
+  paths:
+    include: [ /Extensions/DevTestLab ] # file paths which must match to trigger a build
+
 pool:
-  name: Hosted
+  name: 'Hosted VS2017'
   demands: npm
 
 variables:
