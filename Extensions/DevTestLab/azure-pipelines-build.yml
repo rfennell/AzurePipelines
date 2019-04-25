@@ -3,7 +3,7 @@ resources:
 
 name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
-trigger: none # will disable CI builds entirely
+trigger: none # will disable CI builds
 
 pr: # will trigger on PR
   branches:
