@@ -77,6 +77,7 @@ steps:
     Contents: |
      readme.md
      vss-extension.json
+     WikiUpdaterTask\task.json
     TargetFolder: '$(Build.ArtifactStagingDirectory)\vsix'
 
 - task: PublishBuildArtifacts@1
