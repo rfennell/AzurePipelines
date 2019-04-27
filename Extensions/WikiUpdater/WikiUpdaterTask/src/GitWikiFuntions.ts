@@ -99,6 +99,7 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
         // do git pull just in case the close was slow and their have been updates since
         // try to reduce concurrency issues
         await git.pull();
+        logInfo(`Pull incase of late updates from other uses`);
 
         // we need to change any encoded
         var workingFile = GetWorkingFile(filename, logInfo);
