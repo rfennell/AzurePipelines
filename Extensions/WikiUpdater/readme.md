@@ -45,6 +45,3 @@ For Azure DevOps then the **${user}** is you organisation account name and the *
 
 - LocalPath - The path used to clone the repo to for updating. Defaults to $(System.DefaultWorkingDirectory)\\repo
 
-## Releases
-
-- 1.0 Initial release
