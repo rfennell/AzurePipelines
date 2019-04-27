@@ -96,8 +96,8 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
         var workingPath = GetWorkingFolder(localpath, filename, logInfo);
         process.chdir(workingPath);
 
-        // do git pull just in case the close was slow and their have been updates since
-        // try to reduce concurrency issues
+        // do git pull just in case the clone was slow and there have been updates since
+        // this is to try to reduce concurrency issues
         await git.pull();
         logInfo(`Pull in case of post clone updates from other users`);
 
