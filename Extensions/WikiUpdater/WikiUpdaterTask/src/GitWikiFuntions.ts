@@ -96,6 +96,10 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
         var workingPath = GetWorkingFolder(localpath, filename, logInfo);
         process.chdir(workingPath);
 
+        // do git pull just in case the close was slow and their have been updates since
+        // try to reduce concurrency issues
+        await git.pull();
+
         // we need to change any encoded
         var workingFile = GetWorkingFile(filename, logInfo);
         fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
