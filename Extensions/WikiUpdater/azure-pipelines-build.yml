@@ -25,8 +25,37 @@ steps:
     rootDirectory: '$(ExtensionRoot)'
     targetFiles: '**\task.json'
 
-aa
+- task: Npm@0
+  displayName: 'npm install $(TaskFolder)'
+  inputs:
+    cwd: '$(ExtensionRoot)\$(TaskFolder)'
 
+- task: Npm@0
+  displayName: 'npm run build $(TaskFolder)'
+  inputs:
+    cwd: '$(ExtensionRoot)\$(TaskFolder)'
+    command: run
+    arguments: build
+
+- task: Npm@0
+  displayName: 'npm run test $(TaskFolder)'
+  inputs:
+    cwd: '$(ExtensionRoot)\$(TaskFolder)'
+    command: run
+    arguments: test
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results  $(TaskFolder)'
+  inputs:
+    testResultsFiles: '$(ExtensionRoot)\$(TaskFolder)\test-output\test-results.xml'
+    testRunTitle: '$(TaskFolder)'
+
+- task: Npm@0
+  displayName: 'npm run package $(TaskFolder)'
+  inputs:
+    cwd: '$(ExtensionRoot)\$(TaskFolder)'
+    command: run
+    arguments: package   
 
 - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
   displayName: 'Package and Publish VSTS Extension: PROD Package '
