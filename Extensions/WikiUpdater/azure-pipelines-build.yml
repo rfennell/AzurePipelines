@@ -1,0 +1,56 @@
+resources:
+- repo: self
+
+name: $(Major).$(Minor).$(rev:r)  # build numbering format
+
+trigger: none # will disable CI build
+
+pr: # will trigger on PR
+  branches:
+    include: [ master ] # branch names which will trigger a build
+  paths:
+    include: [ /Extensions/WikiUpdater ] # file paths which must match to trigger a build
+
+pool:
+  name: 'Hosted VS2017'
+  demands: npm
+
+variables:
+  ExtensionRoot: 'Extensions/WikiUpdater'
+
+steps:
+- task: qetza.replacetokens.replacetokens-task.replacetokens@1
+  displayName: 'Replace tokens in **\task.json'
+  inputs:
+    rootDirectory: '$(ExtensionRoot)'
+    targetFiles: '**\task.json'
+
+aa
+
+
+- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+  displayName: 'Package and Publish VSTS Extension: PROD Package '
+  inputs:
+    rootFolder: '$(ExtensionRoot)'
+    outputPath: '$(Build.ArtifactStagingDirectory)\vsix'
+    publisherId: '$(PackageID)'
+    extensionId: '$(ExtensionID)'
+    extensionVersion: '$(Build.BuildNumber)'
+    updateTasksVersion: true
+    extensionVisibility: public
+
+- task: CopyFiles@2
+  displayName: 'Copy Docs'
+  inputs:
+    SourceFolder: Extensions/WikiUpdater
+    Contents: |
+     readme.md
+     vss-extension.json
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\vsix'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: vsix'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
+    ArtifactName: vsix
+
