@@ -196,7 +196,7 @@ steps:
   inputs:
     rootFolder: '$(ExtensionRoot)'
     outputPath: '$(Build.ArtifactStagingDirectory)\vsix'
-    publisherId: '$(PackageID)'
+    publisherId: '$(PublisherID)'
     extensionId: '$(ExtensionID)'
     extensionVersion: '$(Build.BuildNumber)'
     updateTasksVersion: true
