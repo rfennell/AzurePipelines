@@ -127,3 +127,33 @@ describe("Test the version extraction", () => {
   });
 
 });
+
+describe("Test the 483 file processing", () => {
+  before(function() {
+    // make a copy we can overwrite without breaking test data
+    copyFileSync("test/testdata/core483.csproj.initial", "test/testdata/core.csproj");
+  });
+
+  it("should be able to add a detail version field in a file", () => {
+    var file = "test/testdata/core.csproj";
+    ProcessFile(file, "Version", "9.9.9.9", true);
+
+    var editedfilecontent = fs.readFileSync(file);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/core483.csproj.expected`);
+
+    var parseString = require("xml2js").parseString;
+    parseString(editedfilecontent, function (err, result) {
+      console.dir(result);
+    });
+    // var path = "//Project[1]/PropertyGroup[1]/Version"
+    // editedfilecontent.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+    expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
+  });
+
+  after(function() {
+    // remove the file if created
+    del.sync("test/testdata/*.csproj");
+  });
+
+});
