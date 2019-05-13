@@ -16,7 +16,7 @@ pool:
   demands: npm
 
 variables:
-  ExtensionRoot: 'Extensions/WikiUpdater'
+  ExtensionRoot: 'Extensions/Versioning'
 
 steps:
 - task: qetza.replacetokens.replacetokens-task.replacetokens@1
@@ -25,20 +25,20 @@ steps:
     rootDirectory: '$(ExtensionRoot)'
     targetFiles: '**\task.json'
 
-#- task: richardfennellBM.BM-VSTS-PesterRunner-Task-DEV.Pester-Task.Pester@8
-#  displayName: 'DACPac Versioning Pester Test Runner'
-#  inputs:
-#    scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionDacpacTask\test'
-#    resultsFile: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
-#    run32Bit: false
-#  continueOnError: true
+- task: richardfennellBM.BM-VSTS-PesterRunner-Task-DEV.Pester-Task.Pester@8
+  displayName: 'DACPac Versioning Pester Test Runner'
+  inputs:
+    scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionDacpacTask\test'
+    resultsFile: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
+    run32Bit: false
+  continueOnError: true
 
-#- task: PublishTestResults@1
-#  displayName: 'Publish Test Results $(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
-#  inputs:
-#    testRunner: NUnit
-#    testResultsFiles: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
-#    testRunTitle: 'DACPac Pester Tests'
+- task: PublishTestResults@1
+  displayName: 'Publish Test Results $(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
+  inputs:
+    testRunner: NUnit
+    testResultsFiles: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
+    testRunTitle: 'DACPac Pester Tests'
 
 - task: richardfennellBM.BM-VSTS-PesterRunner-Task-DEV.Pester-Task.Pester@8
   displayName: 'PowerShellModule Versioning Tests'
