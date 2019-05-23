@@ -141,13 +141,6 @@ describe("Test the 483 file processing", () => {
     var editedfilecontent = fs.readFileSync(file);
     var expectedfilecontent = fs.readFileSync(`test/testdata/core483.csproj.expected`);
 
-    var parseString = require("xml2js").parseString;
-    parseString(editedfilecontent, function (err, result) {
-      console.dir(result);
-    });
-    // var path = "//Project[1]/PropertyGroup[1]/Version"
-    // editedfilecontent.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-
     expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
   });
 

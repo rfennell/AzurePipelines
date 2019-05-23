@@ -67,42 +67,42 @@ export function stringToBoolean (value: string) {
 
 function UpdateSingleField(file, field, newVersion) {
     var filecontent = fs.readFileSync(file);
+    let content: string = filecontent.toString();
     fs.chmodSync(file, "600");
+
+    console.log (`Getting just the PropertyGroup that contains the version fields`);
+    var propertyGroupText = content.match(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi).toString();
+
     var tmpField = `<${field}>`;
-    if (filecontent.toString().toLowerCase().indexOf(tmpField.toLowerCase()) === -1) {
+    var newPropertyGroupText = "";
+    if (propertyGroupText.toString().toLowerCase().indexOf(tmpField.toLowerCase()) === -1) {
         console.log (`The ${tmpField} version is not present in the .csproj file so adding it`);
         // add the field, trying to avoid having to load library to parse xml
         // Check for TargetFramework when only using a single framework
-        regexp = new RegExp("</TargetFramework>", "g");
+        var regexp = new RegExp("</TargetFramework>", "gi");
         tmpField = tmpField.replace("<", "").replace(">", "");
-        if (regexp.exec(filecontent.toString())) {
+        if (regexp.exec(propertyGroupText.toString())) {
             console.log (`The ${file} .csproj file only targets 1 framework`);
             var newVersionField = `</TargetFramework><${tmpField}>${newVersion}<\/${tmpField}>`;
-            fs.writeFileSync(file, filecontent.toString().replace(`</TargetFramework>`, newVersionField));
-        }
-        // Check for TargetFrameworks when using multiple frameworks
-        regexp = new RegExp("</TargetFrameworks>", "g");
-        if (regexp.exec(filecontent.toString())) {
-            console.log (`The ${file} .csproj file targets multiple frameworks`);
-            var newVersionField1 = `</TargetFrameworks><${tmpField}>${newVersion}<\/${tmpField}>`;
-            fs.writeFileSync(file, filecontent.toString().replace(`</TargetFrameworks>`, newVersionField1));
+            newPropertyGroupText = propertyGroupText.replace(`</TargetFramework>`, newVersionField);
+            fs.writeFileSync(file, filecontent.toString().replace(propertyGroupText, newPropertyGroupText));
         }
     } else {
         console.log (`Updating only the ${field} version`);
-        const csprojVersionRegex = `(<${field}>)(.*)(<\/${field}>)`;
-        var regexp = new RegExp(csprojVersionRegex, "gmi");
-        let content: string = filecontent.toString();
-        let matches;
-        while ((matches = regexp.exec(content)) !== null) {
+
+        const fieldRegex = `(<${field}>)(.*)(<\/${field}>)`;
+        var fieldRegexp = new RegExp(fieldRegex, "gi");
+        var matches = fieldRegexp.exec(propertyGroupText);
+        if (matches !== null) {
             var existingTag1: string = matches[0];
             console.log(`Existing Tag: ${existingTag1}`);
             var replacementTag1: string = `${matches[1]}${newVersion}${matches[3]}`;
             console.log(`Replacement Tag: ${replacementTag1}`);
-            content = content.replace(existingTag1, replacementTag1);
+            newPropertyGroupText = propertyGroupText.replace(existingTag1, replacementTag1);
         }
-        fs.writeFileSync(file, content);
-    }
 
+        fs.writeFileSync(file, filecontent.toString().replace(propertyGroupText, newPropertyGroupText));
+    }
 }
 
 export function ProcessFile(file, field, newVersion, addDefault = false) {
@@ -114,27 +114,31 @@ export function ProcessFile(file, field, newVersion, addDefault = false) {
     } else {
         console.log(`Checking if any version fields to update`);
         var filecontent = fs.readFileSync(file);
-        fs.chmodSync(file, "600");
-        // We only need to consider the following fields
-        let versionFields = ["Version", "VersionPrefix", "AssemblyVersion"];
         let content: string = filecontent.toString();
+        fs.chmodSync(file, "600");
+        // We only need to consider the following fields in the main PropertyGroup block
+        console.log (`Getting just the PropertyGroup that contains the version fields`);
+        var propertyGroupText = content.match(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi).toString();
+
+        let versionFields = ["Version", "VersionPrefix", "AssemblyVersion"];
         var hasUpdateFields: any = false;
+        var newPropertyGroupText = propertyGroupText;
         versionFields.forEach(element => {
             console.log(`Processing Field ${element}`);
             const csprojVersionRegex = `(<${element}>)(.*)(<\/${element}>)`;
             var regexp = new RegExp(csprojVersionRegex, "gmi");
             let matches;
-            while ((matches = regexp.exec(content)) !== null) {
+            while ((matches = regexp.exec(newPropertyGroupText)) !== null) {
                 var existingTag1: string = matches[0];
                 console.log(`Existing Tag: ${existingTag1}`);
                 var replacementTag1: string = `${matches[1]}${newVersion}${matches[3]}`;
                 console.log(`Replacement Tag: ${replacementTag1}`);
-                content = content.replace(existingTag1, replacementTag1);
+                newPropertyGroupText = newPropertyGroupText.replace(existingTag1, replacementTag1);
                 hasUpdateFields = true;
             }
         });
         if (hasUpdateFields === true) {
-            fs.writeFileSync(file, content);
+            fs.writeFileSync(file, filecontent.toString().replace(propertyGroupText, newPropertyGroupText));
             isVersionApplied = true;
         } else {
             if (addDefault === true) {

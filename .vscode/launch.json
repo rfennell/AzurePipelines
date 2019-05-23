@@ -1,7 +1,7 @@
 {
     "version": "0.2.0",
-    "configurations": 
-    [ 
+    "configurations":
+    [
 
         {
             "type": "node",
@@ -10,8 +10,8 @@
            "program": "${workspaceRoot}/Extensions/YamlGenerator/YamlGeneratorTask/src/Generate-YAMLDocumation.ts",
            "outFiles": ["${workspaceRoot}/Extensions/YamlGenerator/YamlGeneratorTask/dist/*.js"],
            "cwd": "${workspaceRoot}",
-           "env": {                
-           }    
+           "env": {
+           }
        },
 
         {
@@ -21,7 +21,7 @@
             "program": "${workspaceRoot}/Extensions/XplatGenerateReleaseNotes/V2/GenerateReleaseNotes.ts",
             "outFiles": ["${workspaceRoot}/Extensions/XplatGenerateReleaseNotes/V2/*.js"],
             "cwd": "${workspaceRoot}",
-            "env": {                
+            "env": {
                 "System_TeamFoundationCollectionUri": "https://xxxx.visualstudio.com",
                 "System_TeamProject": "xxxx",
                 "System_HostType": "Release",
@@ -33,8 +33,8 @@
                 "INPUT_OVERRIDESTAGE": "xxxx",
                 "INPUT_TEMPLATELOCATION": "Inline",
                 "INPUT_INLINETEMPLATE": "#Release notes for release ${releaseDetails.releaseDefinition.name}\n**Release Number**  : ${releaseDetails.name}\n**Release completed** ${releaseDetails.modifiedOn}\n---\n\n\n@@CSLOOP@@\n${csdetail.message}\n@@CSLOOP@@",
-                "INPUT_OUTPUTFILE": "./test.md"               
-            }    
+                "INPUT_OUTPUTFILE": "./test.md"
+            }
         },
          {
             "type": "node",
@@ -42,7 +42,15 @@
             "name": "Node - VersionDotNetCoreAssembliesTask",
             "program": "${workspaceRoot}/Extensions/Versioning/VersionDotNetCoreAssembliesTask/src/ApplyVersionToAssemblies.ts",
             "outFiles": ["${workspaceRoot}/Extensions/Versioning/VersionDotNetCoreAssembliesTask/dist/src/*.js"],
-              "cwd": "${workspaceRoot}"
+              "cwd": "${workspaceRoot}",
+              "env": {
+                "INPUT_ADDDEFAULT": "Version",
+                "INPUT_INJECTVERSION": "True",
+                "INPUT_VERSIONNUMBER": "4.5.6.7",
+                "INPUT_FIELD": "",
+                "INPUT_FILENAMEPATTERN": "core483.csproj.initial",
+                "INPUT_PATH": "C:/projects/github/vNextBuild/Extensions/Versioning/VersionDotNetCoreAssembliesTask/test/testdata"
+            }
         },
          {
              "type": "node",
