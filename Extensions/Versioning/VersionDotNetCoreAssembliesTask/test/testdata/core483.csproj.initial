@@ -1,0 +1,158 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+    <IsPackable>false</IsPackable>
+    <SpaRoot>ClientApp\</SpaRoot>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+
+    <!-- Set this to true if you enable server-side prerendering -->
+    <BuildServerSideRenderer>false</BuildServerSideRenderer>
+    <UserSecretsId>1e99cb91-a158-4156-b4fd-bca3aa3847d5</UserSecretsId>
+    <Version>1.0.0</Version>
+    <Configurations>Debug;Release;Staging</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+    <DefineConstants>RELEASE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.8.1" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.1" />
+    <PackageReference Include="Bia.Common.Caching.Dictionary.Autofac" Version="1.2.81" />
+    <PackageReference Include="Bia.Common.DependencyResolution.Autofac" Version="1.2.81" />
+    <PackageReference Include="Bia.Common.FluentValidation.Autofac" Version="1.2.81" />
+    <PackageReference Include="Bia.Common.Logging.Serilog">
+      <Version>1.2.81</Version>
+    </PackageReference>
+    <PackageReference Include="Bia.Common.Messaging.Rebus.Autofac" Version="1.2.81" />
+    <PackageReference Include="Bia.EntityFramework" Version="1.2.81" />
+    <PackageReference Include="Bia.EntityFramework.Autofac" Version="1.2.81" />
+    <PackageReference Include="Bia.Security.Autofac" Version="1.2.81" />
+    <PackageReference Include="EntityFramework" Version="6.2.0" />
+    <PackageReference Include="FluentValidation" Version="8.1.2" />
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+    <PackageReference Include="Rebus" Version="5.2.1" />
+    <PackageReference Include="Rebus.AzureServiceBus" Version="6.0.5" />
+    <PackageReference Include="Rebus.Jil" Version="4.0.0" />
+    <PackageReference Include="RestSharp" Version="106.5.4" />
+      <PackageReference Include="Serilog">
+      <Version>2.7.1</Version>
+    </PackageReference>
+      <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
+      <PackageReference Include="Serilog.Enrichers.Demystify" Version="0.1.0-dev-00016" />
+    <PackageReference Include="Serilog.Enrichers.Environment">
+      <Version>2.1.2</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog.Exceptions">
+      <Version>4.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog.Extensions.Logging.File" Version="1.1.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.0.1" />
+    <PackageReference Include="Serilog.Sinks.AzureTableStorage">
+      <Version>4.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog.Sinks.Debug" Version="1.0.1" />
+    <PackageReference Include="Serilog.Sinks.Elasticsearch">
+      <Version>6.5.0</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog.Sinks.File">
+      <Version>4.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog.Sinks.MSSqlServer">
+      <Version>5.1.2</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog.Sinks.PeriodicBatching">
+      <Version>2.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog.Sinks.RollingFile">
+      <Version>3.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Content Remove="$(SpaRoot)**" />
+    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bia.AspNetCore\Bia.AspNetCore.csproj" />
+    <ProjectReference Include="..\MixMoveMatch.Carrier.ApiClient\MixMoveMatch.Carrier.ApiClient.csproj" />
+    <ProjectReference Include="..\MixMoveMatch.Carrier.EntityFramework.Autofac\MixMoveMatch.Carrier.EntityFramework.Autofac.csproj" />
+    <ProjectReference Include="..\MixMoveMatch.Carrier.EntityFramework\MixMoveMatch.Carrier.EntityFramework.csproj" />
+    <ProjectReference Include="..\MixMoveMatch.Carrier.Providers\MixMoveMatch.Carrier.Providers.csproj" />
+    <ProjectReference Include="..\MixMoveMatch.Carrier.RateCalculator\MixMoveMatch.Carrier.RateCalculator.csproj" />
+    <ProjectReference Include="..\MixMoveMatch.Common.EntityFramework\MixMoveMatch.Common.EntityFramework.csproj" />
+    <ProjectReference Include="..\MixMoveMatch.CustomerRelationManagement.EntityFramework\MixMoveMatch.CustomerRelationManagement.EntityFramework.csproj" />
+    <ProjectReference Include="..\MixMoveMatch.CustomerRelationManagement\MixMoveMatch.CustomerRelationManagement.csproj" />
+    <ProjectReference Include="..\MixMoveMatch.Tracking.Azure\MixMoveMatch.Tracking.Azure.csproj" />
+    <ProjectReference Include="..\MixMoveMatch.TransportManagement.ApiClient\MixMoveMatch.TransportManagement.ApiClient.csproj" />
+    <ProjectReference Include="..\MixMoveMatch.TransportManagement.EntityFramework.AutoFac\MixMoveMatch.TransportManagement.EntityFramework.AutoFac.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Web.Extensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="app.config">
+      <TransformOnBuild>true</TransformOnBuild>
+    </Content>
+  </ItemGroup>
+	
+  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
+    <!-- Ensure Node.js is installed -->
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+  </Target>
+	
+  <Target Name="DebugEnsureSass" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules\node-sass\vendor') ">
+    <Message Importance="high" Text="Configuring node-sass. This may take several minutes..." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm rebuild node-sass" />
+  </Target>
+
+  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+    
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm version $(Version)" />
+    
+    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install -no-cache" />
+    
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --configuration=production" Condition=" '$(Configuration)' == 'Release' " />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --configuration=staging" Condition=" '$(Configuration)' == 'Staging' " />
+    
+    <!-- Include the newly-built files in the publish output -->
+    <ItemGroup>
+      <DistFiles Include="$(SpaRoot)dist\**; $(SpaRoot)dist-server\**" />
+      <DistFiles Include="$(SpaRoot)node_modules\**" Condition="'$(BuildServerSideRenderer)' == 'true'" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>%(DistFiles.Identity)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
+</Project>
