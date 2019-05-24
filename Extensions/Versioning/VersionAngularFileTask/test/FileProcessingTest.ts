@@ -12,14 +12,6 @@ import fs = require("fs");
 const copyFileSync = require("fs-copy-file-sync");
 const del = require("del");
 
-describe ("Find files tests", () => {
-
-  it ("should be able to find one file", () => {
-      var filelist = findFiles ("test/testdata", "environment.ts.initial" , filelist);
-      expect(filelist.length).to.equal(1);
-  });
-});
-
 describe ("Version number split tests", () => {
 
   it ("should be able to get version name with . delimiters", () => {
@@ -52,7 +44,7 @@ describe("Test the update file processing", () => {
 
     after(function() {
       // remove the file if created
-      del.sync("test/testdata/*.ts");
+      del.sync("test/testdata/environment.ts");
     });
   }
 );
@@ -75,7 +67,7 @@ describe("Test the add tag file processing", () => {
 
   after(function() {
     // remove the file if created
-    del.sync("test/testdata/*.ts");
+    del.sync("test/testdata/environment.ts");
   });
 }
 );

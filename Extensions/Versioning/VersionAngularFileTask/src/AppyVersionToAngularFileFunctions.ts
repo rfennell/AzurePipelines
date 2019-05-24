@@ -65,8 +65,13 @@ export function findFiles (dir, filename , filelist) {
         filelist = findFiles(path.join(dir, file), filename, filelist);
       }
       else {
+        // we now also support regex, on the regex we add a $ to terminate the query
         if (file.toLowerCase().endsWith(filename.toLowerCase())) {
-          filelist.push(path.join(dir, file));
+            console.log (`Added file ${file} via .endswith`);
+            filelist.push(path.join(dir, file));
+        } else if (file.toLowerCase().match(`${filename.toLowerCase()}$`)) {
+            console.log (`Added file ${file} via regex`);
+            filelist.push(path.join(dir, file));
         }
       }
     });

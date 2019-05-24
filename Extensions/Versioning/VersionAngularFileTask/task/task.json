@@ -78,7 +78,7 @@
       "label": "Filename Pattern",
       "defaultValue": "environment.ts",
       "required": true,
-      "helpMarkDown": "The filename pattern to update.",
+      "helpMarkDown": "The filename pattern to update. Can be in the simple form 'environment.ts' or regex 'environment\\.(.*)\\.ts'",
       "groupName":"advanced"
     },
      {
@@ -99,7 +99,7 @@
       "helpMarkDown": "The actual version number extracted and used from the build number.",
       "groupName":"output"
     }
-      
+
    ],
   "minimumAgentVersion": "1.82.0",
    "instanceNameFormat": "Version Angular Environment.TS File",
