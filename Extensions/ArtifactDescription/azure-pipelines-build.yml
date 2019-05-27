@@ -27,34 +27,34 @@ steps:
 
 # standard block for Node
 - task: Npm@0
-  displayName: 'npm install $(TaskFolder)'
+  displayName: 'npm install ArtifactDescriptionTask'
   inputs:
-    cwd: '$(ExtensionRoot)\$(TaskFolder)'
+    cwd: '$(ExtensionRoot)\ArtifactDescriptionTask'
 
 - task: Npm@0
-  displayName: 'npm run build $(TaskFolder)'
+  displayName: 'npm run build ArtifactDescriptionTask'
   inputs:
-    cwd: '$(ExtensionRoot)\$(TaskFolder)'
+    cwd: '$(ExtensionRoot)\ArtifactDescriptionTask'
     command: run
     arguments: build
 
 - task: Npm@0
-  displayName: 'npm run test $(TaskFolder)'
+  displayName: 'npm run test ArtifactDescriptionTask'
   inputs:
-    cwd: '$(ExtensionRoot)\$(TaskFolder)'
+    cwd: '$(ExtensionRoot)\ArtifactDescriptionTask'
     command: run
     arguments: test
 
 - task: PublishTestResults@2
-  displayName: 'Publish Test Results  $(TaskFolder)'
+  displayName: 'Publish Test Results  ArtifactDescriptionTask'
   inputs:
-    testResultsFiles: '$(ExtensionRoot)\$(TaskFolder)\test-output\test-results.xml'
-    testRunTitle: '$(TaskFolder)'
+    testResultsFiles: '$(ExtensionRoot)\ArtifactDescriptionTask\test-output\test-results.xml'
+    testRunTitle: 'ArtifactDescriptionTask'
 
 - task: Npm@0
-  displayName: 'npm run package $(TaskFolder)'
+  displayName: 'npm run package ArtifactDescriptionTask'
   inputs:
-    cwd: '$(ExtensionRoot)\$(TaskFolder)'
+    cwd: '$(ExtensionRoot)\ArtifactDescriptionTask'
     command: run
     arguments: package
 # end node block
