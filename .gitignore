@@ -272,6 +272,15 @@ Extensions/YamlGenerator/YamlGeneratorTask/node_modules
 Extensions/YamlGenerator/YamlGeneratorTask/dist
 Extensions/YamlGenerator/YamlGeneratorTask/repo
 
+Extensions/ArtifactDescription/ArtifactDescriptionTask/*.js
+Extensions/ArtifactDescription/ArtifactDescriptionTask/*.js.map
+Extensions/ArtifactDescription/ArtifactDescriptionTask/test/*.js
+Extensions/ArtifactDescription/ArtifactDescriptionTask/test/*.js.map
+Extensions/ArtifactDescription/ArtifactDescriptionTask/node_modules
+Extensions/ArtifactDescription/ArtifactDescriptionTask/dist
+Extensions/ArtifactDescription/ArtifactDescriptionTask/repo
+
+Extensions/
 
 /.vs
 /Extensions/GenerateReleaseNotes/GenerateReleaseNotesTask/ReleaseNotes.md
