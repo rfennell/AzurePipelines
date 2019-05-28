@@ -13,9 +13,8 @@ stages:
   jobs:
   - job: Build
     pool: 
-        vmImage: 'Hosted VS2017'
-    demands: 
-        npm
+        name: 'Hosted VS2017'
+        demands: npm
     variables:
         ExtensionRoot: 'Extensions/ArtifactDescription'
     steps:
