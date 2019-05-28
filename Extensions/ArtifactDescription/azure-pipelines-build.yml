@@ -14,9 +14,10 @@ stages:
   - job: Build
     pool: 
         vmImage: 'Hosted VS2017'
-    demands: npm
+    demands: 
+        npm
     variables:
-    ExtensionRoot: 'Extensions/ArtifactDescription'
+        ExtensionRoot: 'Extensions/ArtifactDescription'
     steps:
         - task: qetza.replacetokens.replacetokens-task.replacetokens@1
           displayName: 'Replace tokens in **\\task.json'
