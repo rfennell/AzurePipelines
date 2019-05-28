@@ -18,7 +18,7 @@ stages:
     variables:
         ExtensionRoot: 'Extensions/ArtifactDescription'
     steps:
-        - task: qetza.replacetokens.replacetokens-task.replacetokens@1
+        - task: qetza.replacetokens.replacetokens-task.replacetokens@3
           displayName: 'Replace tokens in **\\task.json'
           inputs:
             rootDirectory: '$(ExtensionRoot)'
