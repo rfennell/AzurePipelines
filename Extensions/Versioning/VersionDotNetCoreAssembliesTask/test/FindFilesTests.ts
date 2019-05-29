@@ -14,7 +14,7 @@ describe("Test the find file processing", () => {
 
   it("should be able to find only .netcore project files", () => {
       var files = findFiles(`test/testdata`, ".csproj.initial", files);
-      expect(files.length).equals(5);
+      expect(files.length).equals(6);
     });
 
   });
