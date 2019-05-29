@@ -94,7 +94,7 @@ stages:
       pool: 
           name: 'Hosted VS2017'
       steps:
-        - task: DownloadPipelineArtifact@0
+        - task: DownloadPipelineArtifact@1
           inputs:
             buildType: 'specific'
             buildVersionToDownload: 'latest'
