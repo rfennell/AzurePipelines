@@ -96,8 +96,6 @@ stages:
       steps:
         - task: DownloadPipelineArtifact@1
           inputs:
-            buildType: 'specific'
-            buildVersionToDownload: 'latest'
             artifactName: 'vsix'
             targetPath: $(System.DefaultWorkingDirectory)
 
