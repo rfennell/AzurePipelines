@@ -97,7 +97,7 @@ stages:
       - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
         displayName: 'Publish Extension'
         inputs:
-          connectedServiceName: 'Marketplace 8 Nov'
+          connectedServiceName: 'Marketplace (6 Nov)'
           fileType: vsix
           vsixFile: '$(Build.ArtifactStagingDirectory)\\vsix\\richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-$(Build.BuildNumber).vsix'
           extensionTag: '-DEV'
