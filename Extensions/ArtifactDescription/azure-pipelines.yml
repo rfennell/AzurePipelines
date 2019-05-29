@@ -2,10 +2,6 @@ name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
 trigger: none # will disable CI build
 
-variables:
-  PublisherID: 'richardfennellBM'
-  ExtensionID: 'BM-VSTS-ArtifactDescription-Tasks'
-
 pr: # will trigger on PR
   branches:
     include: [ master ] # branch names which will trigger a build
@@ -21,6 +17,8 @@ stages:
         demands: npm
       variables:
         ExtensionRoot: 'Extensions/ArtifactDescription'
+        PublisherID: 'richardfennellBM'
+        ExtensionID: 'BM-VSTS-ArtifactDescription-Tasks'
       steps:
 
       - task: qetza.replacetokens.replacetokens-task.replacetokens@3
@@ -96,14 +94,12 @@ stages:
       pool: 
           name: 'Hosted VS2017'
       steps:
-      - task: PublishExtension@1
+      - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
+        displayName: 'Publish Extension'
         inputs:
-          connectTo: 'VsTeam'
           connectedServiceName: 'Marketplace 8 Nov'
-          fileType: 'vsix'
+          fileType: vsix
           vsixFile: '$(Build.ArtifactStagingDirectory)\\vsix\\richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-$(Build.BuildNumber).vsix'
-          publisherId: '$(PublisherID)'
-          extensionId: '$(ExtensionID)'
           extensionTag: '-DEV'
           updateTasksVersion: false
-          extensionVisibility: 'private'
+          extensionVisibility: private
