@@ -150,3 +150,49 @@ describe("Test the 483 file processing", () => {
   });
 
 });
+
+describe("Test the 494 file processing for singe field", () => {
+  before(function() {
+    // make a copy we can overwrite without breaking test data
+    copyFileSync("test/testdata/core494.csproj.initial", "test/testdata/core.csproj");
+  });
+
+  it("should be able to edit AssemblyVersion field in a file", () => {
+    var file = "test/testdata/core.csproj";
+    ProcessFile(file, "AssemblyVersion", "9.9.9.9", true);
+
+    var editedfilecontent = fs.readFileSync(file);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/core494.csproj.expected`);
+
+    expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
+  });
+
+  after(function() {
+    // remove the file if created
+    del.sync("test/testdata/*.csproj");
+  });
+
+});
+
+describe("Test the 494 file processing for all fields", () => {
+  before(function() {
+    // make a copy we can overwrite without breaking test data
+    copyFileSync("test/testdata/core494.csproj.initial", "test/testdata/core.csproj");
+  });
+
+  it("should be able to edit all version field in a file", () => {
+    var file = "test/testdata/core.csproj";
+    ProcessFile(file, "", "9.9.9.9", true);
+
+    var editedfilecontent = fs.readFileSync(file);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/core494.csproj.expected`);
+
+    expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
+  });
+
+  after(function() {
+    // remove the file if created
+    del.sync("test/testdata/*.csproj");
+  });
+
+});

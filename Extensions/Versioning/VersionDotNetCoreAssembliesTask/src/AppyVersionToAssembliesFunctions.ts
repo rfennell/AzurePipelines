@@ -71,7 +71,10 @@ function UpdateSingleField(file, field, newVersion) {
     fs.chmodSync(file, "600");
 
     console.log (`Getting just the PropertyGroup that contains the version fields`);
-    var propertyGroupText = content.match(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi).toString();
+    const propertyGroupRegex = new RegExp(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi);
+    var propertyGroupMatches = propertyGroupRegex.exec(content);
+    // we assume the first property group we find is the correct one
+    var propertyGroupText = propertyGroupMatches[0];
 
     var tmpField = `<${field}>`;
     var newPropertyGroupText = "";
@@ -100,8 +103,8 @@ function UpdateSingleField(file, field, newVersion) {
             console.log(`Replacement Tag: ${replacementTag1}`);
             newPropertyGroupText = propertyGroupText.replace(existingTag1, replacementTag1);
         }
-
-        fs.writeFileSync(file, filecontent.toString().replace(propertyGroupText, newPropertyGroupText));
+        var updateFileContents = content.replace(propertyGroupText, newPropertyGroupText);
+        fs.writeFileSync(file, updateFileContents);
     }
 }
 
@@ -118,7 +121,10 @@ export function ProcessFile(file, field, newVersion, addDefault = false) {
         fs.chmodSync(file, "600");
         // We only need to consider the following fields in the main PropertyGroup block
         console.log (`Getting just the PropertyGroup that contains the version fields`);
-        var propertyGroupText = content.match(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi).toString();
+        const propertyGroupRegex = new RegExp(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi);
+        var matches = propertyGroupRegex.exec(content);
+        // we assume the first property group we find is the correct one
+        var propertyGroupText = matches[0];
 
         let versionFields = ["Version", "VersionPrefix", "AssemblyVersion"];
         var hasUpdateFields: any = false;
@@ -126,6 +132,7 @@ export function ProcessFile(file, field, newVersion, addDefault = false) {
         versionFields.forEach(element => {
             console.log(`Processing Field ${element}`);
             const csprojVersionRegex = `(<${element}>)(.*)(<\/${element}>)`;
+
             var regexp = new RegExp(csprojVersionRegex, "gmi");
             let matches;
             while ((matches = regexp.exec(newPropertyGroupText)) !== null) {
@@ -138,7 +145,8 @@ export function ProcessFile(file, field, newVersion, addDefault = false) {
             }
         });
         if (hasUpdateFields === true) {
-            fs.writeFileSync(file, filecontent.toString().replace(propertyGroupText, newPropertyGroupText));
+            var updateFileContents = content.replace(propertyGroupText, newPropertyGroupText);
+            fs.writeFileSync(file, updateFileContents);
             isVersionApplied = true;
         } else {
             if (addDefault === true) {
