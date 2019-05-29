@@ -93,20 +93,17 @@ stages:
     - job: Deploy
       pool: 
           name: 'Hosted VS2017'
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-            - task: DownloadPipelineArtifact@0
-              inputs:
-              artifactName: 'vsix'
-              targetPath: $(System.DefaultWorkingDirectory)
-            - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
-              displayName: 'Publish Extension'
-              inputs:
-                connectedServiceName: 'Marketplace (6 Nov)'
-                fileType: vsix
-                vsixFile: '$(System.DefaultWorkingDirectory)\\vsix\\richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-$(Build.BuildNumber).vsix'
-                extensionTag: '-DEV'
-                updateTasksVersion: false
-                extensionVisibility: private
+      steps:
+        - task: DownloadPipelineArtifact@0
+          inputs:
+          artifactName: 'vsix'
+          targetPath: $(System.DefaultWorkingDirectory)
+        - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
+          displayName: 'Publish Extension'
+          inputs:
+            connectedServiceName: 'Marketplace (6 Nov)'
+            fileType: vsix
+            vsixFile: '$(System.DefaultWorkingDirectory)\\vsix\\richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-$(Build.BuildNumber).vsix'
+            extensionTag: '-DEV'
+            updateTasksVersion: false
+            extensionVisibility: private
