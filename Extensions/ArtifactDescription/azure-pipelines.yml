@@ -95,8 +95,6 @@ stages:
     - job: Deploy
       pool: 
           name: 'Hosted VS2017'
-          demands: npm
-      variables:
       steps:
       - task: PublishExtension@1
         inputs:
