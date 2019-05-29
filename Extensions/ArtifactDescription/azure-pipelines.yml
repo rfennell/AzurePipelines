@@ -94,10 +94,17 @@ stages:
       pool: 
           name: 'Hosted VS2017'
       steps:
-        - task: DownloadPipelineArtifact@1
+        - task: DownloadPipelineArtifact@0
           inputs:
             artifactName: 'vsix'
             targetPath: $(System.DefaultWorkingDirectory)
+
+        - task: DownloadPipelineArtifact@0
+          inputs:
+            buildType: 'current'
+            downloadType: 'single'
+            artifactName: 'vsix'
+            downloadPath: $(System.DefaultWorkingDirectory)
 
         - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
           displayName: 'Publish Extension'
