@@ -18,6 +18,7 @@ stages:
     variables:
         ExtensionRoot: 'Extensions/ArtifactDescription'
         PublisherID: 'richardfennellBM'
+        ExtensionID: 'BM-VSTS-ArtifactDescription-Tasks'
     steps:
         - task: qetza.replacetokens.replacetokens-task.replacetokens@3
           displayName: 'Replace tokens in **\\task.json'
