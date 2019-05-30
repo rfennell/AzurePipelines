@@ -20,7 +20,7 @@ function getEnv(name: string): string {
 }
 
 async function getWebApi(serverUrl?: string): Promise<vm.WebApi> {
-    serverUrl = serverUrl || getEnv("API_URL");
+    serverUrl = serverUrl || getEnv("System_TeamFoundationCollectionUri");
     return await this.getApi(serverUrl);
 }
 
