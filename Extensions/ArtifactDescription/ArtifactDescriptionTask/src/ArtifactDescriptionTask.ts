@@ -47,7 +47,7 @@ export async function run() {
         let vsts: vm.WebApi = await getWebApi();
         let vstsBuild: ba.IBuildApi = await vsts.getBuildApi();
         let build = await vstsBuild.getBuild(getEnv("API_PROJECT"), parseInt(getEnv("BUILD_BUILDID")));
-        logInfo(`Writing ${build.triggerInfo["pr.title"]} to variable ${outputText}`)
+        logInfo(`Writing ${build.triggerInfo["pr.title"]} to variable ${outputText}`);
         tl.setVariable(outputText, build.triggerInfo["pr.title"] );
     }
     catch (err) {
