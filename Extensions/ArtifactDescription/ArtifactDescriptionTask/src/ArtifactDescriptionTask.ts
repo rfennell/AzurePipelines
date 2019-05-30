@@ -54,3 +54,5 @@ export async function run() {
         logError(err);
     }
 }
+
+run();
