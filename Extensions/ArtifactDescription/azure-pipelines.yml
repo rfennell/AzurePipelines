@@ -91,7 +91,7 @@ stages:
     jobs:
     - job: Deploy
       pool: 
-          name: 'Hosted VS2017'
+          name: 'default'
       steps:
         - task: DownloadPipelineArtifact@0
           inputs:
