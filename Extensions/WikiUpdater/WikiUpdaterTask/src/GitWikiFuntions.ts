@@ -2,6 +2,7 @@ import * as simplegit from "simple-git/promise";
 import * as fs from "fs";
 import * as rimraf from "rimraf";
 import * as path from "path";
+import * as process from "process";
 
 // A wrapper to make sure that directory delete is handled in sync
 function rimrafPromise (localpath)  {
