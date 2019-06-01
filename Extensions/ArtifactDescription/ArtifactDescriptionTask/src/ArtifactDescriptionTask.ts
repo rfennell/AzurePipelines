@@ -1,7 +1,7 @@
-import * as vm from "azure-devops-node-api";
-import * as lim from "azure-devops-node-api/interfaces/LocationsInterfaces";
-import * as ba from "azure-devops-node-api/BuildApi";
 import tl = require("vsts-task-lib/task");
+import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
+import * as webApi from "azure-devops-node-api/WebApi";
+import { IBuildApi } from "azure-devops-node-api/BuildApi";
 
 import {
     logInfo,
@@ -10,44 +10,38 @@ import {
 }  from "./agentSpecific";
 import { basename } from "path";
 
-function getEnv(name: string): string {
-    let val = process.env[name];
-    if (!val) {
-        logError(`${name} env var not set`);
-        process.exit(1);
+// Gets the credential handler.  Supports both PAT and OAuth tokens
+function getCredentialHandler(): IRequestHandler {
+    var accessToken: string = tl.getVariable("System.AccessToken");
+    let credHandler: IRequestHandler;
+    if (!accessToken || accessToken.length === 0) {
+        throw "Unable to locate access token.  Please make sure you have enabled the \"Allow scripts to access OAuth token\" setting.";
+    } else {
+        tl.debug("Creating the credential handler");
+        // used for local debugging.  Allows switching between PAT token and Bearer Token for debugging
+        credHandler = webApi.getHandlerFromToken(accessToken);
     }
-    return val;
-}
-
-async function getWebApi(serverUrl?: string): Promise<vm.WebApi> {
-    serverUrl = serverUrl || getEnv("System_TeamFoundationCollectionUri");
-    return await this.getApi(serverUrl);
-}
-
-async function getApi(serverUrl: string): Promise<vm.WebApi> {
-    return new Promise<vm.WebApi>(async (resolve, reject) => {
-        try {
-            let token = getEnv("API_TOKEN");
-            let authHandler = vm.getPersonalAccessTokenHandler(token);
-            let option = undefined;
-            let vsts: vm.WebApi = new vm.WebApi(serverUrl, authHandler, option);
-            let connData: lim.ConnectionData = await vsts.connect();
-            logInfo(`Running as ${connData.authenticatedUser.providerDisplayName}`);
-            resolve(vsts);
-        }
-        catch (err) {
-            reject(err);
-        }
-    });
+    return credHandler;
 }
 
 export async function run() {
     try {
         var outputText = tl.getInput("OutputText");
-        let vsts: vm.WebApi = await getWebApi();
-        let vstsBuild: ba.IBuildApi = await vsts.getBuildApi();
-        let build = await vstsBuild.getBuild(getEnv("API_PROJECT"), parseInt(getEnv("BUILD_BUILDID")));
-        logInfo(`Writing ${build.triggerInfo["pr.title"]} to variable ${outputText}`);
+        let tpcUri = tl.getVariable("System.TeamFoundationCollectionUri");
+        let project = tl.getVariable("System.TeamProject");
+        let buildID = tl.getVariable("Build.BuildId");
+
+        logInfo (`Output variable name: ${outputText}`);
+        logInfo (`API URL: ${tpcUri}`);
+        logInfo (`Project: ${project}`);
+        logInfo (`Build ID: ${buildID}`);
+
+        let credentialHandler: IRequestHandler = getCredentialHandler();
+        let vsts = new webApi.WebApi(tpcUri, credentialHandler);
+        var buildApi: IBuildApi = await vsts.getBuildApi();
+
+        let build = await buildApi.getBuild( project , parseInt(buildID));
+        logInfo(`Writing message '${build.triggerInfo["pr.title"]}' to variable '${outputText}'`);
         tl.setVariable(outputText, build.triggerInfo["pr.title"] );
     }
     catch (err) {

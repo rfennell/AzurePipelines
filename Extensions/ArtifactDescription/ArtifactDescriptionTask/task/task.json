@@ -1,9 +1,9 @@
 {
   "id": "cda05591-0009-472a-9679-e8ed20b52506",
   "name": "ArtifactDescriptionTask",
-  "friendlyName": "Git PR Artifact Description Tool",
-  "description": "A tool to get the PR description, if any from an Azure DevOps Pipeline build artifact if present",
-  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-Updater-Task/)",
+  "friendlyName": "Get Git Artifact PR Reason",
+  "description": "A task to get the PR reason from the default artifact",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/ArtifactDescriptionTask-Task/)",
   "category": "Utility",
   "visibility": [
     "Build",
@@ -28,14 +28,14 @@
     {
       "name": "OutputText",
       "type": "string",
-      "label": "The PR Description",
+      "label": "The PR Reason",
       "defaultValue": "OutputedText",
       "required": true,
       "helpMarkDown": "The PR reason if present for the default artifact that triggerd the release.",
       "groupName":"output"
     }
   ],
-  "instanceNameFormat": "Git PR Artifact Description Tool",
+  "instanceNameFormat": "Get Git Artifact PR Reason",
   "execution": {
     "Node": {
       "target": "ArtifactDescriptionTask.js",
