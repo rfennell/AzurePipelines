@@ -1,0 +1,120 @@
+name: $(Major).$(Minor).$(rev:r)  # build numbering format
+
+trigger: none # will disable CI build
+
+pr: # will trigger on PR
+  branches:
+    include: [ master ] # branch names which will trigger a build
+  paths:
+    include: [ /Extensions/ArtifactDescription ] # file paths which must match to trigger a build
+
+stages:
+  - stage: Build
+    jobs:
+    - job: Build
+      pool: 
+        name: 'Hosted VS2017'
+        demands: npm
+      variables:
+        ExtensionRoot: 'Extensions/ArtifactDescription'
+        PublisherID: 'richardfennellBM'
+        ExtensionID: 'BM-VSTS-ArtifactDescription-Tasks'
+      steps:
+
+      - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+        displayName: 'Replace tokens in **\\task.json'
+        inputs:
+          rootDirectory: '$(ExtensionRoot)'
+          targetFiles: '**\\task.json'
+
+      # standard block for Node
+      - task: Npm@0
+        displayName: 'npm install ArtifactDescriptionTask'
+        inputs:
+          cwd: '$(ExtensionRoot)\\ArtifactDescriptionTask'
+      - task: Npm@0
+        displayName: 'npm run build ArtifactDescriptionTask'
+        inputs:
+          cwd: '$(ExtensionRoot)\\ArtifactDescriptionTask'
+          command: run
+          arguments: build
+      - task: Npm@0
+        displayName: 'npm run test ArtifactDescriptionTask'
+        inputs:
+          cwd: '$(ExtensionRoot)\\ArtifactDescriptionTask'
+          command: run
+          arguments: test
+      - task: PublishTestResults@2
+        displayName: 'Publish Test Results  ArtifactDescriptionTask'
+        inputs:
+          testResultsFiles: '$(ExtensionRoot)\\ArtifactDescriptionTask\test-output\test-results.xml'
+          testRunTitle: 'ArtifactDescriptionTask'
+      - task: Npm@0
+        displayName: 'npm run package ArtifactDescriptionTask'
+        inputs:
+          cwd: '$(ExtensionRoot)\\ArtifactDescriptionTask'
+          command: run
+          arguments: package
+      # end node block
+
+      - task: TfxInstaller@1
+        inputs:
+          version: 'v0.6.x'
+
+      - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+        displayName: 'Package and Publish VSTS Extension: PROD Package '
+        inputs:
+          rootFolder: '$(ExtensionRoot)'
+          outputPath: '$(Build.ArtifactStagingDirectory)\\vsix'
+          publisherId: '$(PublisherID)'
+          extensionId: '$(ExtensionID)'
+          extensionVersion: '$(Build.BuildNumber)'
+          updateTasksVersion: true
+          extensionVisibility: public
+
+      - task: CopyFiles@2
+        displayName: 'Copy Docs'
+        inputs:
+          SourceFolder: Extensions/ArtifactDescription
+          Contents: |
+            readme.md
+            vss-extension.json
+            ArtifactDescription\task\task.json
+          TargetFolder: '$(Build.ArtifactStagingDirectory)\\vsix'
+
+      - task: PublishPipelineArtifact@0
+        inputs:
+          artifactName: 'vsix'
+          targetPath: '$(Build.ArtifactStagingDirectory)\\vsix'
+
+  - stage: Private
+    jobs:
+    - job: Deploy
+      pool: 
+          name: 'Hosted VS2017'
+      steps:
+        - task: DownloadPipelineArtifact@0
+          inputs:
+            artifactName: 'vsix'
+            targetPath: $(System.DefaultWorkingDirectory)
+
+        - task: DownloadPipelineArtifact@0
+          inputs:
+            buildType: 'current'
+            downloadType: 'single'
+            artifactName: 'vsix'
+            downloadPath: $(System.DefaultWorkingDirectory)
+
+        - task: TfxInstaller@1
+          inputs:
+            version: 'v0.6.x'
+
+        - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
+          displayName: 'Publish Extension'
+          inputs:
+            connectedServiceName: 'Marketplace (6 Nov)'
+            fileType: vsix
+            vsixFile: '$(System.DefaultWorkingDirectory)\\richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-$(Build.BuildNumber).vsix'
+            extensionTag: '-DEV'
+            updateTasksVersion: false
+            extensionVisibility: private

@@ -1,0 +1,65 @@
+{
+ "manifestVersion": 1,
+ "id": "BM-VSTS-ArtifactDescription-Tasks",
+ "version": "1.0.0",
+ "name": "ArtifactDescription Tasks",
+ "publisher": "richardfennellBM",
+  "description": "Set of tasks to get details of build artifactss.",
+  "CustomerQnASupport": {
+    "enableqna":"true",
+    "url": "https://github.com/rfennell/AzurePipelines/issues"
+  },
+  "categories": [
+    "Azure Pipelines"
+  ],
+  "targets": [
+         {
+             "id": "Microsoft.VisualStudio.Services"
+         }
+     ],
+  "tags": [
+    "PR"
+  ],
+  "branding": {
+        "color": "#f97923",
+        "theme": "dark"
+  },
+  "icons": {
+      "default": "images/logo.png"
+  },
+   "links": {
+    "getstarted": {
+      "uri": "https://github.com/rfennell/AzurePipelines/wiki/WIKI-Updater-Tasks"
+    },
+    "support": {
+      "uri": "https://github.com/rfennell/AzurePipelines/issues"
+    }
+  },
+  "screenshots": [
+   ],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "files": [
+    {
+      "path": "ArtifactDescriptionTask"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "ArtifactDescriptionTask",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "ArtifactDescriptionTask"
+      }
+    }
+  ]
+}
