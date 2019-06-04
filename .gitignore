@@ -196,7 +196,7 @@ ModelManifest.xml
 /Package
 
 # Powershell for this project
-Tests/Extensions/StyleCopTask/logs
+Tests/Extensions/StyleCopTask/test/logs
 
 # Visual Studio Code
 .vscode/
