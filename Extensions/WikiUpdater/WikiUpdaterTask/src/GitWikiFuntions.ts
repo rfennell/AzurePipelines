@@ -70,14 +70,18 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
     const git = simplegit();
 
     let remote = "";
+    let logremote = ""; // make sure we hide the password
     if (password === null) {
         remote = `https://${repo}`;
+        logremote = remote;
     } else if (user === null) {
         remote = `https://${password}@${repo}`;
+        logremote = `https://***@${repo}`;
     } else {
         remote = `https://${user}:${password}@${repo}`;
+        logremote = `https://${user}:***@${repo}`;
     }
-    logInfo(`URL used ${remote}`);
+    logInfo(`URL used ${logremote}`);
 
     try {
         if (fs.existsSync(localpath)) {
