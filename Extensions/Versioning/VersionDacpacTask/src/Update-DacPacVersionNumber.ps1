@@ -269,7 +269,7 @@ else {
 
         foreach ($SqlProj in $SqlProjFiles) {
             Write-Verbose "Updating $($SqlProj.Basename) SQL Proj file."
-            Update-SqlProjVersion -Path $SqlProj.Fullname -VersionNumber $NewVersion -RegexPattern $VersionRegex
+            Update-SqlProjVersion -Path $SqlProj.Fullname -VersionNumber ([System.Version]::Parse($NewVersion)) -RegexPattern $VersionRegex
         }
     }
 }
