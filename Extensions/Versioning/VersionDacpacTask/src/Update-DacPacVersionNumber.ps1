@@ -198,6 +198,28 @@ function Update-DacpacVerion
     }
 }
 
+function Update-SqlProjVersion
+{
+    param (
+        [string]$Path,
+
+        [version]$VersionNumber,
+
+        [string]$RegexPattern
+    )
+
+    $SqlProj = Get-Content -Path $Path -Raw
+
+    if ($SqlProj -match '<DacVersion>') {
+        $SqlProj = $SqlProj -Replace "<DacVersion>$RegexPattern<\/DacVersion>","<DacVersion>$VersionNumber</DacVersion>"
+    }
+    else {
+        $SqlProj = $SqlProj -replace "<Name>", "<DacVersion>$VersionNumber</DacVersion><Name>"
+    }
+
+    Set-Content -Path $Path -Value $SqlProj
+}
+
 # check if we are in test mode i.e.
 If ($VersionNumber -eq "" -and $path -eq "") {Exit}
 
@@ -230,11 +252,26 @@ Write-Verbose "Version: $NewVersion"
 
 $DacPacFiles = Get-ChildItem -Path $Path -Include *.dacpac -Exclude master.dacpac,msdb.dacpac -Recurse
 
-Write-Verbose "Found $($DacPacFiles.Count) dacpacs. Beginning to apply updated version number $NewVersion." -Verbose
+if ($DacPacFiles.Count -gt 0) {
+    Write-Verbose "Found $($DacPacFiles.Count) dacpacs. Beginning to apply updated version number $NewVersion." -Verbose
 
-Foreach ($DacPac in $DacPacFiles)
-{
-    Update-DacpacVerion -Path $DacPac.FullName -VersionNumber ([System.Version]::Parse($NewVersion)) -ToolPath $ToolPath
+    Foreach ($DacPac in $DacPacFiles)
+    {
+        Update-DacpacVerion -Path $DacPac.FullName -VersionNumber ([System.Version]::Parse($NewVersion)) -ToolPath $ToolPath
+    }
+}
+else {
+    Write-Verbose "Found no dacpacs, checking for sqlproj files to version instead" -Verbose
+    $SqlProjFiles = Get-ChildItem -Path $Path -Include *.sqlproj -Recurse
+
+    if ($SqlProjFiles) {
+        Write-Verbose "Found $($SqlProjFiles.Count) sqlproj files. Adding or updating DacVersion field." -Verbose
+
+        foreach ($SqlProj in $SqlProjFiles) {
+            Write-Verbose "Updating $($SqlProj.Basename) SQL Proj file."
+            Update-SqlProjVersion -Path $SqlProj.Fullname -VersionNumber $NewVersion -RegexPattern $VersionRegex
+        }
+    }
 }
 Write-Verbose "Set the output variable '$outputversion' with the value $NewVersion"
 Write-Host "##vso[task.setvariable variable=$outputversion;]$NewVersion"

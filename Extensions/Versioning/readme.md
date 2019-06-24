@@ -6,7 +6,7 @@ A set of tasks based on the versioning sample script to version stamp assemblies
 * VersionDotNetCoreAssemblies - sets the version in the .csproj (used pre build)
 * VersionAPPX - sets the version in the Package.appxmanifest (used pre build)
 * VersionVSIX - sets the version in the source.extension.vsixmanifest (used pre build)
-* VersionDacpac - sets the version in a SQL DACPAC (used post build)
+* VersionDacpac - sets the version in a SQL DACPAC (used pre or post build)
 * VersionNuspec - sets the version in a Nuget Nuspec file (used pre packing)
 * VersionSharePoint - sets the version in a SharePoint 2013/2016/O365 Add-In
 * VersionWix - sets the version in a Wix Project
@@ -29,6 +29,7 @@ The Assembly & .NET Core versioner also takes the following Advanced option
 
 The DACPAC versioner also takes the following Advanced option
 
+* The task can now be run pre-build similar to the other versioning tasks and will set the DacVersion property in the SqlProj file to the required version number.
 * ToolPath: The path to the folder containing the files Microsoft.SqlServer.Dac.dll and Microsoft.SqlServer.Dac.Extensions.dll. This should be used if these files are not in the default location either C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120 or C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120"
 
 The VSIX versioner also takes the following parameters
