@@ -61,6 +61,14 @@ steps:
   inputs:
     cwd: '$(ExtensionRoot)\VersionDotNetCoreAssembliesTask'
 
+- task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
+  displayName: 'Scan for vulnerable package dependencies in VersionDotNetCoreAssembliesTask'
+  inputs:
+    cwd: '$(ExtensionRoot)\VersionDotNetCoreAssembliesTask\'
+    file: package.json
+    monitor: true
+    endpoint: 'Snky (Github RFennell)'
+
 - task: Npm@0
   displayName: 'npm run build VersionDotNetCoreAssembliesTask'
   inputs:
@@ -94,6 +102,14 @@ steps:
   displayName: 'npm install VersionJSONFileTask'
   inputs:
     cwd: '$(ExtensionRoot)\VersionJSONFileTask'
+
+- task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
+  displayName: 'Scan for vulnerable package dependencies in VersionJSONFileTask'
+  inputs:
+    cwd: '$(ExtensionRoot)\VersionJSONFileTask\'
+    file: package.json
+    monitor: true
+    endpoint: 'Snky (Github RFennell)'
 
 - task: Npm@0
   displayName: 'npm run build VersionJSONFileTask'
@@ -129,6 +145,14 @@ steps:
   inputs:
     cwd: '$(ExtensionRoot)\VersionAngularFileTask'
 
+- task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
+  displayName: 'Scan for vulnerable package dependencies in VersionAngularFileTask'
+  inputs:
+    cwd: '$(ExtensionRoot)\VersionAngularFileTask\'
+    file: package.json
+    monitor: true
+    endpoint: 'Snky (Github RFennell)'
+
 - task: Npm@0
   displayName: 'npm run build VersionAngularFileTask'
   inputs:
@@ -162,6 +186,14 @@ steps:
   displayName: 'npm install VersionAndroidManifest'
   inputs:
     cwd: '$(ExtensionRoot)\VersionAndroidManifest'
+
+- task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
+  displayName: 'Scan for vulnerable package dependencies in VersionAndroidManifest'
+  inputs:
+    cwd: '$(ExtensionRoot)\VersionAndroidManifest\'
+    file: package.json
+    monitor: true
+    endpoint: 'Snky (Github RFennell)'
 
 - task: Npm@0
   displayName: 'npm run build VersionAndroidManifest'
