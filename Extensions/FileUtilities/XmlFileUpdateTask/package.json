@@ -20,7 +20,7 @@
     "fs-copy-file-sync": "^1.0.1",
     "ncp": "^2.0.0",
     "request": "^2.80.0",
-    "tsd": "^0.6.5",
+    "tsd": "^0.7.4",
     "vsts-task-lib": "^1.1.0",
     "xmldom": "^0.1.27",
     "xpath": "0.0.24"
