@@ -32,7 +32,7 @@ steps:
 - task: Npm@0
   displayName: 'npm install XmlFileUpdateTask'
   inputs:
-    cwd: '$(ExtensionRoot)\'
+    cwd: '$(ExtensionRoot)\XmlFileUpdateTask'
 
 - task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
   displayName: 'Scan for vulnerable package dependencies in XmlFileUpdateTask'
