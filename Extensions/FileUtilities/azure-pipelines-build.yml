@@ -32,12 +32,12 @@ steps:
 - task: Npm@0
   displayName: 'npm install XmlFileUpdateTask'
   inputs:
-    cwd: '$(ExtensionRoot)\XmlFileUpdateTask'
+    cwd: '$(ExtensionRoot)\'
 
 - task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
   displayName: 'Scan for vulnerable package dependencies in XmlFileUpdateTask'
   inputs:
-    cwd: '$(ExtensionRoot)\VersionDotNetCoXmlFileUpdateTaskreAssembliesTask\'
+    cwd: '$(ExtensionRoot)\XmlFileUpdateTask\'
     file: package.json
     monitor: true
     endpoint: 'Snky (Github RFennell)'
