@@ -56,7 +56,7 @@
   "minimumAgentVersion": "1.82.0",
   "instanceNameFormat": "FileCopy",
   "execution": {
-    "PowerShell": {
+    "PowerShell3": {
       "target": "$(currentDirectory)\\FileCopy.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"

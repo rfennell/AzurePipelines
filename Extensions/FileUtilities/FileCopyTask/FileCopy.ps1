@@ -7,15 +7,13 @@
 [CmdletBinding()]
 param
 (
-    #where to look
-    $sourceFolder,
-    #where to copy to
-    $targetFolder,
-    #file name fragements only one pattern can be supplied
-    $filter,
-    #file types to include, can include an array
-    $includeInput
 )
+
+$sourceFolder = Get-VstsInput -Name "sourceFolder"
+$targetFolder = Get-VstsInput -Name "targetFolder"
+$filter = Get-VstsInput -Name "filter"
+$includeInput = Get-VstsInput -Name "includeInput"
+
 
 $include = $includeInput -split ","
 $paths = $sourceFolder -split ","
