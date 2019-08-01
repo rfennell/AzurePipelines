@@ -1,11 +1,10 @@
 [CmdletBinding()]
 param (
-)
+ )
 
 $VerbosePreference ='Continue' # equiv to -verbose
 
-Import-Module -Name "$PSScriptRoot\GenerateReleaseNotes.psm1" -Force
-
+# use the new API to set the variables
 $treatStyleCopViolationsErrorsAsWarnings = Get-VstsInput -Name "treatStyleCopViolationsErrorsAsWarnings"
 $maximumViolationCount = Get-VstsInput -Name "maximumViolationCount"
 $allowableViolationCount = Get-VstsInput -Name "allowableViolationCount"
@@ -73,7 +72,7 @@ function Invoke-DetailedSummaryBuild {
             
 # Set if the build should be failed or not getting the results from the file to avoid 32/64 bit issues
 $result = Import-Clixml $sourcefolder\results.xml
-            
+
 # the output summary to the artifact folder and the VSTS summary
 $summaryMdPath = (join-path $loggingfolder  $summaryFileName)
 Write-Verbose ("Placing summary of test run in [{0}]" -f $summaryMdPath)
