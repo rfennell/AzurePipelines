@@ -8,7 +8,7 @@ This task was developed as a short term fix around the time of TFS 2015.1. In th
 
 The reason to use still use this task over the built in one is that it flattens folder structures by default. Useful to get all the files of a single type into a single folder.
 
-###Usage
+### Usage
 
 - Source Folder e.g. $(build.sourcesdirectory)
 - Target Folder e.g. $(build.artifactstagingdirectory)\$(ArtifactName)\BlackMarble.Victory.Services.DACPackage_Packaged
@@ -61,7 +61,7 @@ This task edits the value if an attribute in a XML file based on a XPath filter
 
 The prime use for this is to set environment specific value in web.config or app.config files
 
-###Usage
+### Usage
 
 - Filename e.g. $(SYSTEM.ARTIFACTSDIRECTORY)/myfile.dll.config [can include wildcards $(SYSTEM.ARTIFACTSDIRECTORY)/*.config]
 - XPath e.g. /configuration/appSettings/add[@key='A variable']
