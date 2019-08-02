@@ -67,6 +67,7 @@ function GetTask(filePath) {
         });
 
         if (task.group) {
+            // Check for custom groups
             task.groups.forEach(group => {
                 logInfo (`   Argument Group ${group.displayName}`);
                 markdown += `"#### ${group.displayName}  \r\n`;
