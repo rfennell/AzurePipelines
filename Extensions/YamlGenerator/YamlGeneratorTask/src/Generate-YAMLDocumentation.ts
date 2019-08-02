@@ -38,7 +38,7 @@ function listFiles(dir, filelist) {
 
 function GetTask(filePath) {
     const task = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    logInfo(`Adding YAML sample for task ${task.name}`);
+    logInfo(`Adding YAML sample for task ${task.name} from  ${filePath})`);
     var markdown = `## ${task.name} \r\n`;
     markdown += `${task.description} \r\n`;
     markdown += `### YAML snippet \r\n`;
@@ -58,22 +58,28 @@ function GetTask(filePath) {
     markdown += `\`\`\`\`\`\`\r\n`;
     markdown += `### Arguments \r\n`;
 
-    logInfo ("   Default arguments");
-    task.inputs.forEach(field => {
-        if (field.groupName === undefined) {
-            markdown += DumpField (field);
-        }
-    });
-
-    task.groups.forEach(group => {
-        logInfo (`   Argument Group ${group.displayName}`);
-        markdown += `"#### ${group.displayName}  \r\n`;
+    if (task.inputs) {
+        logInfo ("   Default arguments");
         task.inputs.forEach(field => {
-            if (field.groupName === group.name) {
+            if (field.groupName === undefined) {
                 markdown += DumpField (field);
             }
         });
-    });
+
+        if (task.group) {
+            task.groups.forEach(group => {
+                logInfo (`   Argument Group ${group.displayName}`);
+                markdown += `"#### ${group.displayName}  \r\n`;
+                task.inputs.forEach(field => {
+                    if (field.groupName === group.name) {
+                        markdown += DumpField (field);
+                    }
+                });
+            });
+        }
+    } else {
+        markdown += `None  \r\n`;
+    }
     return markdown;
 }
 
@@ -151,7 +157,7 @@ function GetFilePrefix(filePrefix, extensionId) {
     return filePrefix;
 }
 
-async function generateYaml(inDir, outDir, filePrefix) {
+export async function generateYaml(inDir, outDir, filePrefix) {
 
     // Make sure the folder exists
     mkDirByPathSync(outDir);
