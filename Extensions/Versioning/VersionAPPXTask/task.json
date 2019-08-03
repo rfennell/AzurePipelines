@@ -78,7 +78,7 @@
   "minimumAgentVersion": "1.82.0",
   "instanceNameFormat": "Version APPX",
   "execution": {
-    "PowerShell": {
+    "PowerShell3": {
       "target": "$(currentDirectory)\\ApplyBuildVersionToAppx.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
