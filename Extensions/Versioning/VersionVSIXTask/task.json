@@ -82,7 +82,7 @@
   "minimumAgentVersion": "1.82.0",
   "instanceNameFormat": "Version VSIX",
   "execution": {
-    "PowerShell": {
+    "PowerShell3": {
       "target": "$(currentDirectory)\\ApplyVersionToVSIX.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
