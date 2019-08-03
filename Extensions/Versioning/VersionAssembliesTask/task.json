@@ -94,7 +94,7 @@
   "minimumAgentVersion": "1.82.0",
    "instanceNameFormat": "Version Assemblies",
   "execution": {
-    "PowerShell": {
+    "PowerShell3": {
       "target": "$(currentDirectory)\\ApplyVersionToAssemblies.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
