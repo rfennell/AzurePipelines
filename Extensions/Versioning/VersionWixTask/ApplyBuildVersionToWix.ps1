@@ -13,13 +13,16 @@
 [CmdletBinding()]
 # Enable -Verbose option
 param (
-   [String]$Path,
-   [String]$File,
-   [string]$VersionNumber,
-   $InjectVersion,
-   [string]$VersionRegex,
-   $outputversion
 )
+
+# use the new API to set the variables
+$Path = Get-VstsInput -Name "Path"
+$File = Get-VstsInput -Name "File"
+$VersionNumber = Get-VstsInput -Name "VersionNumber"
+$InjectVersion = Get-VstsInput -Name "InjectVersion"
+$VersionRegex = Get-VstsInput -Name "VersionRegex"
+$outputversion = Get-VstsInput -Name "outputversion"
+
 
 function ReplaceVersion {
     [CmdletBinding()]
