@@ -1,20 +1,22 @@
-param
-(
-    [string]$treatStyleCopViolationsErrorsAsWarnings,
-    [string]$maximumViolationCount,
-    [string]$allowableViolationCount,
-    [string]$showOutput,
-    [string]$cacheResults,
-    [string]$forceFullAnalysis,
-    [string]$additionalAddInPath,
-    [string]$settingsFile,
-    [string]$loggingfolder,
-    [string]$summaryFileName,
-    [string]$sourcefolder,
-    [string]$detailedSummary 
-)
+[CmdletBinding()]
+param (
+ )
 
 $VerbosePreference ='Continue' # equiv to -verbose
+
+# use the new API to set the variables
+$treatStyleCopViolationsErrorsAsWarnings = Get-VstsInput -Name "treatStyleCopViolationsErrorsAsWarnings"
+$maximumViolationCount = Get-VstsInput -Name "maximumViolationCount"
+$allowableViolationCount = Get-VstsInput -Name "allowableViolationCount"
+$showOutput = Get-VstsInput -Name "showOutput"
+$cacheResults = Get-VstsInput -Name "cacheResults"
+$forceFullAnalysis = Get-VstsInput -Name "forceFullAnalysis"
+$additionalAddInPath = Get-VstsInput -Name "additionalAddInPath"
+$settingsFile = Get-VstsInput -Name "settingsFile"
+$loggingfolder = Get-VstsInput -Name "loggingfolder"
+$summaryFileName = Get-VstsInput -Name "summaryFileName"
+$sourcefolder = Get-VstsInput -Name "sourcefolder"
+$detailedSummary = Get-VstsInput -Name "detailedSummary"
 
 function Invoke-DetailedSummaryBuild {
     Param(
@@ -52,8 +54,6 @@ function Invoke-DetailedSummaryBuild {
     return $text
 }
 
-import-module "Microsoft.TeamFoundation.DistributedTask.Task.Common" # to get the upload summary methods
-
 # Run the script that does the work in a separate script
 # so we can force it to be loaded in 32bit PowerShell as this is required for disctionary loading
 # We need to leave the non-Stylecop bit still function
@@ -72,7 +72,7 @@ import-module "Microsoft.TeamFoundation.DistributedTask.Task.Common" # to get th
             
 # Set if the build should be failed or not getting the results from the file to avoid 32/64 bit issues
 $result = Import-Clixml $sourcefolder\results.xml
-            
+
 # the output summary to the artifact folder and the VSTS summary
 $summaryMdPath = (join-path $loggingfolder  $summaryFileName)
 Write-Verbose ("Placing summary of test run in [{0}]" -f $summaryMdPath)

@@ -135,7 +135,7 @@
   ],
   "instanceNameFormat": "StyleCop Runner ",
   "execution": {
-    "PowerShell": {
+    "PowerShell3": {
       "target": "$(currentDirectory)\\StyleCop.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"

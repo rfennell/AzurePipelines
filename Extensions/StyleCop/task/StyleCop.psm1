@@ -30,12 +30,12 @@ function Invoke-StyleCop
     $scanner.ForceFullAnalysis = [System.Convert]::ToBoolean($forceFullAnalysis)
     $scanner.AdditionalAddInPaths = @($pwd, $additionalAddInPath) #  in local path as we place stylecop.csharp.rules.dll here
     $scanner.TreatViolationsErrorsAsWarnings = [System.Convert]::ToBoolean($treatStyleCopViolationsErrorsAsWarnings)
-
     $scanner.SourceFiles =  @($sourcefolders)
-    $scanner.XmlOutputFile = (join-path $loggingfolder $runName) +".stylecop.xml"
-    $scanner.LogFile =  (join-path $loggingfolder $runName) +".stylecop.log"
+    # we need to use resolve path to make sure ..\ paths are correctly expected
+    $scanner.XmlOutputFile = (join-path (Resolve-Path $loggingfolder) $runName) +".stylecop.xml"
+    $scanner.LogFile =  (join-path (Resolve-Path $loggingfolder) $runName) +".stylecop.log"
     $scanner.SettingsFile = $settingsfile
-   
+    
     # Do the scan
     $scanner.Scan()
 
