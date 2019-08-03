@@ -19,22 +19,15 @@
 #>
 [cmdletbinding()]
 param (
-
-    [Parameter(Mandatory)]
-    [String]$Path,
-
-    [Parameter(Mandatory)]
-    [string]$VersionNumber,
-
-    [Parameter(Mandatory)]
-    [string]$InjectVersion,
-
-    [Parameter(Mandatory)]
-    [string]$VersionRegex,
-
-    [string]$OutputVersion
-
 )
+
+# use the new API to set the variables
+$Path = Get-VstsInput -Name "Path"
+$VersionNumber = Get-VstsInput -Name "VersionNumber"
+$InjectVersion = Get-VstsInput -Name "InjectVersion"
+$VersionRegex = Get-VstsInput -Name "VersionRegex"
+$outputversion = Get-VstsInput -Name "outputversion"
+
 
 # Get and validate the version data
 if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
