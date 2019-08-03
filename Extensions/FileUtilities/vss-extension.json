@@ -5,6 +5,10 @@
  "name": "File Utilities Build Tasks",
  "publisher": "richardfennellBM",
   "description": "Set of tasks perform file copy actions.",
+  "CustomerQnASupport": {
+    "enableqna":"true",
+    "url": "https://github.com/rfennell/AzurePipelines/issues"
+  }, 
  "categories": [
     "Build and release"
   ],

@@ -10,18 +10,18 @@
 #Enable -Verbose option
 [CmdletBinding()]
 param (
-
-    $tfsUri,
-    $teamproject ,
-    $defname ,
-    $artifactname,
-    $buildnumber,
-    $username  ,
-    $password ,
-    $localdir
-    
 )
 
+
+$tfsUri = Get-VstsInput -Name "tfsUri"
+$teamproject = Get-VstsInput -Name "teamproject"
+$defname = Get-VstsInput -Name "defname"
+$artifactname = Get-VstsInput -Name "artifactname"
+$buildnumber = Get-VstsInput -Name "buildnumber"
+$username = Get-VstsInput -Name "username"
+$password = Get-VstsInput -Name "password"
+$localdir = Get-VstsInput -Name "localdir"
+    
 # Set a flag to force verbose as a default
 $VerbosePreference ='Continue' # equiv to -verbose
 

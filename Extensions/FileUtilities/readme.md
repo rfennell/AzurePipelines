@@ -8,7 +8,7 @@ This task was developed as a short term fix around the time of TFS 2015.1. In th
 
 The reason to use still use this task over the built in one is that it flattens folder structures by default. Useful to get all the files of a single type into a single folder.
 
-###Usage
+### Usage
 
 - Source Folder e.g. $(build.sourcesdirectory)
 - Target Folder e.g. $(build.artifactstagingdirectory)\$(ArtifactName)\BlackMarble.Victory.Services.DACPackage_Packaged
@@ -21,37 +21,39 @@ This tasks would usually be followed by a 'Publish Build Artifacts' task to move
 
 ## GetArtifactFromUncShareTask
 
-With TFS 2015.2 (and the associated VSTS version) Release Management cannot pick-up build artifacts from a remote TFS server.
+# IMPORTANT
 
-To get around this hopefully short term blocker this task does the getting of a build artifact from the UNC drop. It supports both XAML and vNext builds. Thus replacing the built in artifact linking feature if Release Management.
+**THIS TASK CAN ONLY COPY BUILD ARTIFACTS FROM UNC FILESHARE BASED BUILD DROP LOCATIONS.**
 
-It is hoped that at some point in the future there will be a build in way to achieve the linking to remote TFS servers build into VSTS/TFS, thus removing the need for the task.
+You will get an error in the form 
 
-###Usage
+> Cannot access source path [#/475339/atrifact]** if you try to use it with a server build drop
 
-To use the new task
+***
 
-- Install the task in your VSTS or TFS 2015.2 instance.
-- In your release definition, disable the auto getting of the artifacts for the environment this is on the environments general tab.
+With the advent of TFS 2015.2 RC (and the associated VSTS release) we have seen the short term removal of the ‘External TFS Build’ option for the Release Management artifacts source. This causes me a bit of a problem as I wanted to try out the new on premises vNext based Release Management features on 2015.2, but don’t want to place the RC on my production server (though there is go live support). Also the ability to get artifacts from an on premises TFS instance when using VSTS open up a number of scenarios, something I know some of my clients had been investigating.
 
-**Note**: In some scenarios you might choose to use both the built in linking to artifacts and this custom task
+To get around this blocker I have written a vNext build task that does the getting of a build artifact from the UNC drop. It supports both XAML and vNext builds. Thus replacing the built in artifact linking features.
 
-- Add the new task to your environment’s release process, the parameters are
-	- TFS Uri – the Uri of the TFS server inc. The TPC name
-	- Team Project – the project containing the source build
-	- Build Definition name – name of the build (can be XAML or vNext)
-	- Artifact name – the name of the build artifact (seems to be ‘drop’ if a XAML build)
-	- Build Number – default is to get the latest successful completed build, but you can pass a specific build number
-	- Username/Password – if you don’t want to use default credentials (the user the build agent is running as), these are the ones used. These are passed as ‘basic auth’ so can be used against an on prem TFS (if basic auth is enabled in IIS)  or VSTS (with alternate credentials enabled).
+## Usage
+To use the new task:
 
-When the task runs it should drop artifacts in the same location as the standard mechanism, so can be picked up by any other tasks on the release pipeline using a path similar to **$(System.DefaultWorkingDirectory)\SABS.Master.CI\drop**
+- Get the task from my vNextBuild repo (build using the instructions on the repo’s wiki) and install it on your TFS 2015.2 instance (also use the notes on the repo’s wiki). 
+- In your build, disable the auto getting of the artifacts for the environment (though in some scenarios you might choose to use both the built in linking and my custom task)
+- Add the new task to your environment’s release process, the parameters are 
+    - TFS Uri – the Uri of the TFS server inc. The TPC name 
+    - Team Project – the project containing the source build 
+    - Build Definition name – name of the build (can be XAML or vNext) 
+    - Artifact name – the name of the build artifact (seems to be ‘drop’ if a XAML build) 
+    - Build Number – default is to get the latest successful completed build, but you can pass a specific build number 
+    - Username/Password – if you don’t want to use default credentials (the user the build agent is running as), these are the ones used. These are passed as ‘basic auth’ so can be used against an on prem TFS (if basic auth is enabled in IIS)  or VSTS (with alternate credentials enabled).
 
-###Limitations
+When the task runs it should drop artifacts in the same location as the standard mechanism, so can be picked up by any other tasks on the release pipeline using a path similar to **$(System.DefaultWorkingDirectory)\buildname\drop**
 
-- The agent running the task will almost certainly be hosted on your network as it will need to be able to resolve the address the TFS server to copy artifacts from. This is unlikely to be possible for the Microsoft hosted build agent.
-- The task in its current form does not provide any linking of artifacts to the build reports, or allow the selection of build versions when the release is created. Thus removing audit trail features of TFS vNext Release Management.
+## Limitations
+The task in its current form does not provide any linking of artifacts to the build reports, or allow the selection of build versions when the release is created. This removing audit trail features.
 
-Even given these limitations, it does provide a means to get a pair of TFS servers working together, so can certainly enable some more edge case scenarios
+However, it does provide a means to get a pair of TFS servers working together, so can certainly enable some R&D scenarios while we await 2015.2 to RTM and/or the ‘official’ linking of External TFS builds as artifact
 
 ## Update XML file
 
@@ -59,22 +61,10 @@ This task edits the value if an attribute in a XML file based on a XPath filter
 
 The prime use for this is to set environment specific value in web.config or app.config files
 
-###Usage
+### Usage
 
 - Filename e.g. $(SYSTEM.ARTIFACTSDIRECTORY)/myfile.dll.config [can include wildcards $(SYSTEM.ARTIFACTSDIRECTORY)/*.config]
 - XPath e.g. /configuration/appSettings/add[@key='A variable']
 - Attribute e.g. value [optional: if left blank the InnerText on the selected node will be updated]
 - Value e.g. 'the new value'
 - Recurse e.g. True (whether any wildcards in the filename should be searched for recursivally)
-
-Releases
-
-- 1.0 Initial internal release
-- 2.0 Public release
-- 2.1 Added replacing InnerText of XML nodes as well as attributes in XML task
-    - Added support for multi-files on XML task
-- 2.2 Made the location of the local copy of the artifact configurable
-- 2.3 Issue147 fixed filter for successful builds on UNC copy task
-- 3.0 Converted the XML Task to Node.JS from PowerShell to make it cross platform Issue74
-- 3.1 Issue277 fixed vulnerability in Moment 2.19.1 NPM package, no functional change
-- 3.2 Issue279 recursion problem with XMLUpdater
