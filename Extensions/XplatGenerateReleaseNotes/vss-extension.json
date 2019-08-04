@@ -5,6 +5,10 @@
  "name": "Generate Release Notes (Crossplatform)",
  "publisher": "richardfennellBM",
   "description": "Generates a Markdown Release notes file.",
+  "CustomerQnASupport": {
+    "enableqna":"true",
+    "url": "https://github.com/rfennell/AzurePipelines/issues"
+  }, 
  "categories": [
     "Build and release"
   ],
