@@ -5,6 +5,11 @@
  "name": "DevTest Lab Tasks",
  "publisher": "richardfennellBM",
  "description": "A set of tasks that control DevTest Labs.",
+ "CustomerQnASupport": {
+  "enableqna":"true",
+  "url": "https://github.com/rfennell/AzurePipelines/issues"
+}, 
+
  "categories": [
     "Build and release"
   ],
