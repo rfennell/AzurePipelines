@@ -5,6 +5,11 @@
   "name": "Build Updating Tasks",
   "publisher": "richardfennellBM",
   "description": "A set of tasks that update VSTS Builds and Releases.",
+  "CustomerQnASupport": {
+    "enableqna":"true",
+    "url": "https://github.com/rfennell/AzurePipelines/issues"
+  }, 
+ 
   "categories": [
     "Build and release"
   ],
