@@ -85,7 +85,7 @@
    ],
    "instanceNameFormat": "Version Dacpac files",
    "execution": {
-      "PowerShell": {
+      "PowerShell3": {
          "target": "$(currentDirectory)\\Update-DacPacVersionNumber.ps1",
          "argumentFormat": "",
          "workingDirectory": "$(currentDirectory)"

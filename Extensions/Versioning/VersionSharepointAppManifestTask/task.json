@@ -78,7 +78,7 @@
   "minimumAgentVersion": "1.82.0",
   "instanceNameFormat": "Version Sharepoint App Manifest",
   "execution": {
-    "PowerShell": {
+    "PowerShell3": {
       "target": "$(currentDirectory)\\ApplyBuildVersionToSharepointAppManifest.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"

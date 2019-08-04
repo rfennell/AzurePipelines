@@ -75,7 +75,7 @@
    ],
    "instanceNameFormat": "Version PowerShell Modules",
    "execution": {
-      "PowerShell": {
+      "PowerShell3": {
          "target": "$(currentDirectory)\\Update-PowerShellModuleVersion.ps1",
          "argumentFormat": "",
          "workingDirectory": "$(currentDirectory)"

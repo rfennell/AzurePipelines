@@ -5,6 +5,10 @@
  "name": "Manifest Versioning Build Tasks",
  "publisher": "richardfennellBM",
   "description": "Applies a version to various formats of manifest files based on the build number.",
+  "CustomerQnASupport": {
+    "enableqna":"true",
+    "url": "https://github.com/rfennell/AzurePipelines/issues"
+  }, 
  "categories": [
     "Build and release"
   ],

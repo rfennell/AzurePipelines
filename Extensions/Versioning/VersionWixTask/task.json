@@ -86,7 +86,7 @@
   "minimumAgentVersion": "1.82.0",
   "instanceNameFormat": "Version Wix",
   "execution": {
-    "PowerShell": {
+    "PowerShell3": {
       "target": "$(currentDirectory)\\ApplyBuildVersionToWix.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"

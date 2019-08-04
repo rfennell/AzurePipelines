@@ -23,18 +23,6 @@
 #>
 [cmdletbinding()]
 param (
-
-    [String]$Path,
-    [string]$VersionNumber,
-
-    [string]$ToolPath,
-
-    [string]$InjectVersion,
-
-    $VersionRegex,
-
-    $outputversion
-
 )
 
 function Get-Toolpath
@@ -219,6 +207,14 @@ function Update-SqlProjVersion
 
     Set-Content -Path $Path -Value $SqlProj
 }
+
+$Path = Get-VstsInput -Name "Path"
+$VersionNumber = Get-VstsInput -Name "VersionNumber"
+$ToolPath = Get-VstsInput -Name "ToolPath"
+$InjectVersion = Get-VstsInput -Name "InjectVersion"
+$VersionRegex = Get-VstsInput -Name "VersionRegex"
+$outputversion = Get-VstsInput -Name "outputversion"
+
 
 # check if we are in test mode i.e.
 If ($VersionNumber -eq "" -and $path -eq "") {Exit}
