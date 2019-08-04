@@ -26,7 +26,7 @@ async function run(): Promise<number>  {
             if (tl.getVariable("Release.ReleaseId") === undefined) {
                 reject(`This extension cannot be run in a build. Consider using the old PowerShell based version https://marketplace.visualstudio.com/items?itemName=richardfennellBM.BM-VSTS-GenerateReleaseNotes-Task"`);
                 return;
-            } 
+            }
             let releaseId: number = parseInt(tl.getVariable("Release.ReleaseId"));
             let releaseDefinitionId: number = parseInt(tl.getVariable("Release.DefinitionId"));
 
