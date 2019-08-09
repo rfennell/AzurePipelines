@@ -19,7 +19,7 @@ function Set-BuildDefinationVariable
 
     write-verbose "Updating Build Definition $builddefID for $($tfsUri)/$($teamproject)"
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=4.0"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=2.0"
     $jsondata = $data | ConvertTo-Json -Compress -Depth 10 #else we don't get lower level items
 
     $response = $webclient.UploadString($uri,"PUT", $jsondata)
@@ -93,7 +93,7 @@ function Get-BuildDefination
 
     write-verbose "Getting Build Definition $builddefID "
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=4.0"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($buildDefID)?api-version=2.0"
 
     $response = $webclient.DownloadString($uri) | ConvertFrom-Json
     $response
@@ -230,7 +230,7 @@ function Get-Build
     write-verbose "Getting BuildDef for Build"
 
     $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=4.0"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=2.0"
     $jsondata = $webclient.DownloadString($uri) | ConvertFrom-Json
     $jsondata
 }
