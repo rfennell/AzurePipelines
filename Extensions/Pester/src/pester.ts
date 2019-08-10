@@ -21,7 +21,7 @@ export async function run() {
         let ScriptBlock = tl.getInput("ScriptBlock");
 
         // we need to not pass the null param
-        var args = [".\\pester.ps1",
+        var args = [__dirname + "\\pester.ps1",
                     "-scriptFolder", scriptFolder,
                     "-resultsFile", resultsFile,
                     "-run32Bit", run32Bit,
