@@ -280,6 +280,12 @@ Extensions/ArtifactDescription/ArtifactDescriptionTask/node_modules
 Extensions/ArtifactDescription/ArtifactDescriptionTask/dist
 Extensions/ArtifactDescription/ArtifactDescriptionTask/repo
 
+Extensions/Pester/*.js
+Extensions/Pester/*.js.map
+Extensions/Pester/*.js
+Extensions/Pester/node_modules
+Extensions/Pester/dist
+
 Extensions/
 
 /.vs

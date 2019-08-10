@@ -110,8 +110,8 @@
   ],
   "instanceNameFormat": "Pester Test Runner",
   "execution": {
-    "PowerShell": {
-      "target": "$(currentDirectory)\\Pester.ps1",
+    "Node": {
+      "target": "$(currentDirectory)\\Pester.js",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
     }
