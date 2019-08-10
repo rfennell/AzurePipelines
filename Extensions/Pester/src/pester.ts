@@ -11,14 +11,14 @@ export async function run() {
     try {
 
         let scriptFolder = tl.getInput("scriptFolder");
-        let resultsFile = tl.getVariable("resultsFile");
-        let run32Bit = tl.getVariable("run32Bit");
-        let additionalModulePath = tl.getVariable("additionalModulePath");
-        let Tag = tl.getVariable("Tag");
-        let ExcludeTag = tl.getVariable("ExcludeTag");
-        let CodeCoverageOutputFile = tl.getVariable("addCodeCoverageOutputFile");
-        let CodeCoverageFolder = tl.getVariable("CodeCoverageFolder");
-        let ScriptBlock = tl.getVariable("ScriptBlock");
+        let resultsFile = tl.getInput("resultsFile");
+        let run32Bit = tl.getInput("run32Bit");
+        let additionalModulePath = tl.getInput("additionalModulePath");
+        let Tag = tl.getInput("Tag");
+        let ExcludeTag = tl.getInput("ExcludeTag");
+        let CodeCoverageOutputFile = tl.getInput("addCodeCoverageOutputFile");
+        let CodeCoverageFolder = tl.getInput("CodeCoverageFolder");
+        let ScriptBlock = tl.getInput("ScriptBlock");
 
         var spawn = require("child_process").spawn, child;
         child = spawn(
