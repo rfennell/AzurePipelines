@@ -16,7 +16,7 @@ export async function run() {
         let additionalModulePath = tl.getInput("additionalModulePath");
         let Tag = tl.getInput("Tag");
         let ExcludeTag = tl.getInput("ExcludeTag");
-        let CodeCoverageOutputFile = tl.getInput("addCodeCoverageOutputFile");
+        let CodeCoverageOutputFile = tl.getInput("CodeCoverageOutputFile");
         let CodeCoverageFolder = tl.getInput("CodeCoverageFolder");
         let ScriptBlock = tl.getInput("ScriptBlock");
 
