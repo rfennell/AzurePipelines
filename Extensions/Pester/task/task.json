@@ -111,9 +111,8 @@
   "instanceNameFormat": "Pester Test Runner",
   "execution": {
     "Node": {
-      "target": "$(currentDirectory)\\Pester.js",
-      "argumentFormat": "",
-      "workingDirectory": "$(currentDirectory)"
+      "target": "Pester.js",
+      "argumentFormat": ""
     }
   }
 }
