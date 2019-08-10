@@ -24,12 +24,12 @@ param
     [String[]]$ExcludeTag,
 
     [validateScript( {
-            if ([string]::isNullOrWhitespace($_)) {
+            if ([string]::IsNullOrWhiteSpace($_)) {
                 $true
             }
             else {
                 if (-not($_.Split('.')[-1] -eq 'xml')) {
-                    throw "Extension must be XML"
+                    throw "Extension must be XML ($_)"
                 }
                 $true
             }
