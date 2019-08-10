@@ -23,7 +23,7 @@ export async function run() {
         var spawn = require("child_process").spawn, child;
         child = spawn(
             "powershell.exe",
-            [
+            [".\\pester.ps1",
             "-scriptFolder", scriptFolder,
             "-resultsFile", resultsFile,
             "-run32Bit", run32Bit,
