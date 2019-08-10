@@ -29,7 +29,7 @@ param
             }
             else {
                 if (-not($_.Split('.')[-1] -eq 'xml')) {
-                    throw "Extension must be XML ($_)"
+                    throw "Extension must be XML"
                 }
                 $true
             }
