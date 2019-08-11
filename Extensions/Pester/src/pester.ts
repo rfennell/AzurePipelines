@@ -20,6 +20,8 @@ export async function run() {
         let CodeCoverageFolder = tl.getInput("CodeCoverageFolder");
         let ScriptBlock = tl.getInput("ScriptBlock");
 
+        let executable = "pwsh"; // not powershell.exe
+
         // we need to not pass the null param
         var args = [__dirname + "\\pester.ps1",
                     "-scriptFolder", scriptFolder,
@@ -58,7 +60,7 @@ export async function run() {
         }
 
         var spawn = require("child_process").spawn, child;
-        child = spawn("powershell.exe", args);
+        child = spawn(executable, args);
         child.stdout.on("data", function (data) {
             logInfo("Powershell Data: " + data);
         });
