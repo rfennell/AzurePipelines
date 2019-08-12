@@ -20,6 +20,8 @@ export async function run() {
         let CodeCoverageFolder = tl.getInput("CodeCoverageFolder");
         let ScriptBlock = tl.getInput("ScriptBlock");
 
+        var verbose = (tl.getVariable("System.Debug") === "true");
+
         let executable = "pwsh"; // not powershell.exe
 
         // we need to not pass the null param
@@ -59,16 +61,20 @@ export async function run() {
             args.push(ScriptBlock);
         }
 
+        if (verbose) {
+            args.push("-Verbose");
+        }
+
         var spawn = require("child_process").spawn, child;
         child = spawn(executable, args);
         child.stdout.on("data", function (data) {
-            logInfo("Powershell Data: " + data);
+            logInfo("stdout: " + data);
         });
         child.stderr.on("data", function (data) {
-            logError("Powershell Errors: " + data);
+            logError("sterr: " + data);
         });
         child.on("exit", function () {
-            logInfo("Powershell Script finished");
+            logInfo("Pester Script finished");
         });
     }
     catch (err) {
