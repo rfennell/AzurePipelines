@@ -61,6 +61,8 @@ Add permission to edit the build definition
 
 #### For Variables Groups 
 
+Notes: Note supported in TFS 2017 due to lack of API calls
+
 Add permission to edit the variable group definition
 
 1. In a browser select the Library tab
