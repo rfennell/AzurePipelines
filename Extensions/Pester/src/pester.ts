@@ -20,6 +20,7 @@ export async function run() {
         let CodeCoverageFolder = tl.getInput("CodeCoverageFolder");
         let ScriptBlock = tl.getInput("ScriptBlock");
 
+        // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");
 
         let executable = "pwsh"; // not powershell.exe
@@ -68,10 +69,10 @@ export async function run() {
         var spawn = require("child_process").spawn, child;
         child = spawn(executable, args);
         child.stdout.on("data", function (data) {
-            logInfo("stdout: " + data);
+            logInfo(data);
         });
         child.stderr.on("data", function (data) {
-            logError("sterr: " + data);
+            logError(data);
         });
         child.on("exit", function () {
             logInfo("Pester Script finished");
