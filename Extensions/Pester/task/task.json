@@ -106,6 +106,15 @@
       "required": false,
       "helpMarkDown": "A scriptblock to run before tests are executed. This will be run in the scope of the task where Invoke-Pester is run.",
       "groupName": "advanced"
+    },
+    {
+      "name": "usePSCore",
+      "type": "boolean",
+      "label": "Use PowerShell Core",
+      "defaultValue": "True",
+      "required": true,
+      "helpMarkDown": "if set will run Pester tests with 'pwsh', if false will use 'PowerShell.exe'.",
+      "groupName": "advanced"
     }
   ],
   "instanceNameFormat": "Pester Test Runner",

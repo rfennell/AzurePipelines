@@ -23,7 +23,12 @@ export async function run() {
         // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");
 
-        let executable = "pwsh"; // not powershell.exe
+        // find the executeable
+        let executable = "pwsh";
+        if (!tl.getBoolInput("usePSCore")) {
+            executable = "powershell.exe";
+        }
+        logInfo(`Using executable '${executable}'`);
 
         // we need to not pass the null param
         var args = [__dirname + "\\Pester.ps1",
