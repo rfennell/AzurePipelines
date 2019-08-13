@@ -26,7 +26,12 @@ export async function run() {
         // find the executeable
         let executable = "pwsh";
         if (!tl.getBoolInput("usePSCore")) {
-            executable = "powershell.exe";
+            if (tl.getVariable("AGENT.OS") === "Windows_NT") {
+                executable = "powershell.exe";
+            } else {
+                logError(`Only PowerShell Core is supported on '${tl.getVariable("AGENT.OS")}'`);
+                return;
+            }
         }
         logInfo(`Using executable '${executable}'`);
 
