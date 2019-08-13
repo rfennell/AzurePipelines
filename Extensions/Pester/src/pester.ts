@@ -66,13 +66,15 @@ export async function run() {
             args.push("-Verbose");
         }
 
+        logInfo(`${executable} ${args.join(" ")}`);
+
         var spawn = require("child_process").spawn, child;
         child = spawn(executable, args);
         child.stdout.on("data", function (data) {
-            logInfo(data);
+            logInfo(data.toString());
         });
         child.stderr.on("data", function (data) {
-            logError(data);
+            logError(data.toString());
         });
         child.on("exit", function () {
             logInfo("Pester Script finished");
