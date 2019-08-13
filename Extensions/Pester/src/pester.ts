@@ -26,7 +26,7 @@ export async function run() {
         let executable = "pwsh"; // not powershell.exe
 
         // we need to not pass the null param
-        var args = [__dirname + "\\pester.ps1",
+        var args = [__dirname + "\\Pester.ps1",
                     "-scriptFolder", scriptFolder,
                     "-resultsFile", resultsFile,
                     "-run32Bit", run32Bit,

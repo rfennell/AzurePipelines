@@ -111,7 +111,7 @@
   "instanceNameFormat": "Pester Test Runner",
   "execution": {
     "Node": {
-      "target": "Pester.js",
+      "target": "pester.js",
       "argumentFormat": ""
     }
   }
