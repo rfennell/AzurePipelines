@@ -80,7 +80,8 @@
       "required": true,
       "helpMarkDown": "On a Windows agent, if set will run Pester tests with 'pwsh', if false will use 'PowerShell.exe'. On Non-Windows agents 'pwsh' always used",
       "groupName": "advanced"
-    }   {
+    },
+    {
       "name": "additionalModulePath",
       "type": "string",
       "label": "Path to additional PowerShell modules",
