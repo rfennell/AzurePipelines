@@ -41,6 +41,16 @@ param
     [string]$ScriptBlock
 )
 
+Write-Host "scriptFolder $scriptFolder"
+Write-Host "resultsFile $resultsFile"
+Write-Host "run32Bit $run32Bit"
+Write-Host "additionalModulePath $additionalModulePath"
+Write-Host "tag $Tag"
+Write-Host "ExcludeTag $ExcludeTag"
+Write-Host "CodeCoverageOutputFile $CodeCoverageOutputFile"
+Write-Host "CodeCoverageFolder $CodeCoverageFolder"
+Write-Host "ScriptBlock $ScriptBlock"
+
 Import-Module -Name "$PSScriptRoot\HelperModule.psm1" -Force
 
 if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
@@ -48,7 +58,7 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
     $args = $myinvocation.BoundParameters.GetEnumerator() | ForEach-Object {
         if (-not([string]::IsNullOrWhiteSpace($_.Value))) {
             If ($_.Value -eq 'True' -and $_.Key -ne 'run32Bit' -and $_.Key -ne 'ForceUseOfPesterInTasks') {
-                "-$($_.Key)"
+                "-$($_Write-Host ".Key)"
             }
             else {
                 "-$($_.Key)"
