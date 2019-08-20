@@ -1,12 +1,13 @@
 # Summary
 Generates a release notes markdown file using the same API calls as the Azure DevOps Pipeline Release UI
 * Can be used on any type of release agents (Windows, Mac or linux)
-* Can be used in Azure Devops Server and Service (***Note** TFS 2018 required as older V1 version are missing the required API, this is not in the marketplace, but can be downloaded from [here](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9))
-* Uses same logic as AZure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* Uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* This task cannot be used in a build
 * **IMPORTANT** - There have been two major versions of this extension, this is because
-   * V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs - is not longer shipped in extension
+   * V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs. This version is not longer shipped in extension download from [GitHub](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9)
    * V2 is a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the SDK, with minor but breaking changes in the template format and that oAuth needs enabling on the agent running the tasks .
 * Since the V2 re-write, support has been added for tag filtering in the work items listed in a report. A report can have many WILOOPs with different filters. For a WI to appear in such a loop all tags must be matched.
+* The Azure DevOps REST APIs have a limitation that by default they only return 200 items. As a release could include more Work Items or ChangeSets/Commits. A workaround for this has been added [#349](https://github.com/rfennell/AzurePipelines/issues/349). Since version 2.12.x this feature has been defaulted one. To disable it set the variable 'ReleaseNotes.Fix349' to 'false'
 
 # Usage
 As with my original [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks), this task generates a release notes file based on a template passed into the tool.  For this version of the task the data source for the generated Release Notes is the VSTS REST API's comparison calls that are also used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the VSTS UI.
