@@ -124,6 +124,10 @@ async function run(): Promise<number>  {
 
                                     // Check if workaround for issue #349 should be used
                                     let activateFix = tl.getVariable("ReleaseNotes.Fix349");
+                                    if (!activateFix) {
+                                        agentApi.logInfo("Defaulting on the workaround for build API limitation (see issue #349 set 'ReleaseNotes.Fix349=false' to disable)");
+                                        activateFix = "true";
+                                    }
                                     if (activateFix && activateFix.toLowerCase() === "true") {
                                         agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
                                         let baseBuild = await buildApi.getBuild(parseInt(artifactInMostRecentRelease.buildId));
@@ -195,13 +199,20 @@ async function run(): Promise<number>  {
             var workItemIds = globalWorkItems.map(wi => parseInt(wi.id));
             var workItemTrackingApi: IWorkItemTrackingApi = await vsts.getWorkItemTrackingApi();
 
-            let fullWorkItems: void | WorkItem[];
+            let fullWorkItems = [];
+            agentApi.logInfo(`Get details of [${workItemIds.length}] WIs`);
             if (workItemIds.length > 0) {
-                fullWorkItems = await workItemTrackingApi.getWorkItems(workItemIds, null, null, WorkItemExpand.Fields, null);
-            }
-
-            if (!fullWorkItems) {
-                fullWorkItems = [];
+                var indexStart = 0;
+                var indexEnd = (workItemIds.length > 200) ? 200 : workItemIds.length ;
+                while ((indexEnd <= workItemIds.length) && (indexStart !== indexEnd)) {
+                    var subList = workItemIds.slice(indexStart, indexEnd);
+                    agentApi.logInfo(`Getting full details of WI batch from index: [${indexStart}] to [${indexEnd}]`);
+                    var subListDetails = await workItemTrackingApi.getWorkItems(subList, null, null, WorkItemExpand.Fields, null);
+                    agentApi.logInfo(`Adding [${subListDetails.length}] items`);
+                    fullWorkItems.concat(subListDetails);
+                    indexStart = indexEnd;
+                    indexEnd = ((workItemIds.length - indexEnd) > 200) ? indexEnd + 200 : workItemIds.length;
+                }
             }
 
             agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
