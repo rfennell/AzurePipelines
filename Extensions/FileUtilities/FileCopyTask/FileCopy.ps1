@@ -12,8 +12,7 @@ param
 $sourceFolder = Get-VstsInput -Name "sourceFolder"
 $targetFolder = Get-VstsInput -Name "targetFolder"
 $filter = Get-VstsInput -Name "filter"
-$includeInput = Get-VstsInput -Name "includeInput"
-
+$includeInput = Get-VstsInput -Name "include"
 
 $include = $includeInput -split ","
 $paths = $sourceFolder -split ","
@@ -22,8 +21,8 @@ $paths = $sourceFolder -split ","
 $VerbosePreference ='Continue' # equiv to -verbose
 Write-Verbose "Source [$sourceFolder]"
 Write-Verbose "Target [$targetFolder]"
-Write-Verbose "FileTypes [$include]"
-Write-Verbose "Filtering on [$filter]"
+Write-Verbose "FileTypes (-Include) [$includeInput]"
+Write-Verbose "Filtering (-Filter) [$filter]"
 
 if((test-path($targetFolder)) -ne $true)
 {
@@ -31,5 +30,4 @@ if((test-path($targetFolder)) -ne $true)
     New-Item $targetFolder -Force -ItemType directory
 }
 
-
-Get-ChildItem -Path $paths -Recurse -Include $include -Filter $filter| Copy-Item  -Destination $targetFolder -Force -Verbose
+Get-ChildItem -Path $paths.Trim() -Recurse -Include $include.Trim() -Filter $filter| Copy-Item  -Destination $targetFolder -Force -Verbose
