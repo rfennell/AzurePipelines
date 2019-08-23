@@ -162,6 +162,8 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
 
     if (template.length > 0) {
         agentApi.logDebug("Processing template");
+        agentApi.logDebug(`WI: ${workItems.length}`);
+        agentApi.logDebug(`CS: ${commits.length}`);
         // create our work stack and initialise
         var modeStack = [];
 
