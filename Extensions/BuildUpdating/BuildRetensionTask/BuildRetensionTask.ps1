@@ -116,7 +116,7 @@ Write-Verbose "keepForever = [$keepForever]"
 
 if([string]::IsNullOrEmpty($releaseid))
 {
-    Write-Host ("Running within a build, only 'Named artifacts' mode supported")
+    Write-Host ("Running task within a build, only 'Named artifacts' mode supported")
     $mode = "Named artifacts"
     if([string]::IsNullOrEmpty($artifacts)){
         Write-Error ("No build name specified in the artifacts list")
