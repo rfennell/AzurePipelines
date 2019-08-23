@@ -116,12 +116,8 @@ Write-Verbose "keepForever = [$keepForever]"
 
 if([string]::IsNullOrEmpty($releaseid))
 {
-    Write-Host ("Running task within a build, only 'Named artifacts' mode supported")
-    $mode = "Named artifacts"
-    if([string]::IsNullOrEmpty($artifacts)){
-        Write-Error ("No build name specified in the artifacts list")
-        return
-    }
+    Write-Host ("Running task within a build, only 'Prime' mode supported i.e. update the retension on the current build")
+    $mode = "Prime"
 }
 
 if ($mode -eq "AllArtifacts")
