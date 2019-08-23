@@ -22,8 +22,9 @@ steps:
     rootDirectory: '$(ExtensionRoot)'
     targetFiles: '**\task.json'
 
-- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
-
+- task: TfxInstaller@2
+  inputs:
+    version: 'v0.6.x'
 - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
   displayName: 'Package and Publish VSTS Extension: PROD Package'
   inputs:
