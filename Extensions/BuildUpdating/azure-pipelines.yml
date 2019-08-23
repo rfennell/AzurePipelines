@@ -8,7 +8,6 @@ pr: # will trigger on PR
   paths:
     include: [ /Extensions/BuildUpdating ] # file paths which must match to trigger a build
 
-stages:
 pool:
   name: Hosted
   demands: npm
@@ -51,3 +50,4 @@ steps:
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
     ArtifactName: vsix
+
