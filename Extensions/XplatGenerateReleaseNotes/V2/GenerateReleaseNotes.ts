@@ -209,14 +209,14 @@ async function run(): Promise<number>  {
                     agentApi.logInfo(`Getting full details of WI batch from index: [${indexStart}] to [${indexEnd}]`);
                     var subListDetails = await workItemTrackingApi.getWorkItems(subList, null, null, WorkItemExpand.Fields, null);
                     agentApi.logInfo(`Adding [${subListDetails.length}] items`);
-                    fullWorkItems.concat(subListDetails);
+                    fullWorkItems = fullWorkItems.concat(subListDetails);
                     indexStart = indexEnd;
                     indexEnd = ((workItemIds.length - indexEnd) > 200) ? indexEnd + 200 : workItemIds.length;
                 }
             }
 
             agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
-            agentApi.logInfo(`Total workitems: [${globalWorkItems.length}]`);
+            agentApi.logInfo(`Total workitems: [${fullWorkItems.length}]`);
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
             var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset, delimiter);
