@@ -6,8 +6,8 @@
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BuildTasks-Task/)",
   "category": "Utility",
   "visibility": [
-    "Build",
-    "Release"
+      "Build",
+      "Release"
   ],
   "author": "Richard Fennell",
   "version": {
@@ -43,7 +43,7 @@
         "label": "Artifacts",
         "defaultValue": "",
         "required": false,
-        "helpMarkDown": "A comma separated list of artifacts",
+        "helpMarkDown": "A comma separated list of build artifacts",
         "visibleRule": "mode = NamedArtifacts"
       },
       {
