@@ -1,0 +1,10 @@
+<Project Sdk="MSBuild.Sdk.Extras">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <AssemblyName>VersionedLibrary</AssemblyName>
+    <AssemblyVersion>1.2.3.4</AssemblyVersion>
+    <Description>A description with an ü</Description>
+  </PropertyGroup>
+
+</Project>
