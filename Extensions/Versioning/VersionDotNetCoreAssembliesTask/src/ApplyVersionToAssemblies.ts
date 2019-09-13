@@ -1,7 +1,8 @@
 import { findFiles,
          ProcessFile,
          stringToBoolean,
-         extractVersion
+         extractVersion,
+         SplitSDKName
   } from "./AppyVersionToAssembliesFunctions";
 
 import tl = require("vsts-task-lib/task");
@@ -15,6 +16,7 @@ var outputversion = tl.getInput("outputversion");
 var filenamePattern = tl.getInput("FilenamePattern");
 var addDefault = tl.getInput("AddDefault");
 var injectversion = tl.getBoolInput("Injectversion");
+var sdknames = tl.getInput("SDKNames");
 
 console.log (`Source Directory:  ${path}`);
 console.log (`Filename Pattern: ${filenamePattern}`);
@@ -24,6 +26,7 @@ console.log (`Field to update (all if empty): ${field}`);
 console.log (`Add default field (all if empty): ${addDefault}`);
 console.log (`Output: Version Number Parameter Name: ${outputversion}`);
 console.log (`Inject Version: ${injectversion}`);
+console.log (`SDK names: ${sdknames}`);
 
 // Make sure path to source code directory is available
 if (!fs.existsSync(path)) {
@@ -36,7 +39,8 @@ var newVersion = extractVersion(injectversion, versionRegex, versionNumber);
 console.log (`Extracted Version: ${newVersion}`);
 
 // Apply the version to the assembly property files
-var files = findFiles(`${path}`, filenamePattern, files);
+var sdkArray = SplitSDKName(sdknames);
+var files = findFiles(`${path}`, filenamePattern, files, sdkArray);
 
 if (files.length > 0) {
 
