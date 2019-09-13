@@ -54,6 +54,7 @@ export function findFiles (dir, filename , filelist, sdknames: string[]) {
             // need to use a for loop to allow break, not the most elegent solution
             for (let i = 0; i < count; i++) {
                 if (filecontent.toString().toLowerCase().indexOf(`<project sdk=\"${sdknames[i].toLowerCase()}`) !== -1) {
+                    console.log(`Matched the file ${file} using the SDK name ${sdknames[i]}`);
                     matchingSDK = true;
                     break;
                 }
