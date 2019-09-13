@@ -22,5 +22,6 @@ const contents = `Some text ${new Date().toString()}` ;
 const message = "A message";
 const gitname = "BuildProcess";
 const gitemail = "Build@Process";
+const replaceFile = true;
 
-UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError);
+UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile);

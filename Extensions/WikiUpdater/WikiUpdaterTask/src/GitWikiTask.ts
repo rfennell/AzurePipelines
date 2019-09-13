@@ -21,6 +21,7 @@ var gitemail = tl.getInput("gitemail");
 var user = tl.getInput("user");
 var password = tl.getInput("password");
 var useAgentToken = tl.getBoolInput("useAgentToken");
+var replaceFile = tl.getBoolInput("replaceFile");
 var dataIsFile = tl.getBoolInput("dataIsFile");
 var sourceFile = tl.getInput("sourceFile");
 
@@ -31,6 +32,7 @@ console.log(`Variable: Commit Message [${message}]`);
 console.log(`Variable: Git Username [${gitname}]`);
 console.log(`Variable: Git Email [${gitemail}]`);
 console.log(`Variable: Use Agent Token [${useAgentToken}]`);
+console.log(`Variable: Replace File [${replaceFile}]`);
 console.log(`Variable: Username [${user}]`);
 console.log(`Variable: Password [${password}]`);
 console.log(`Variable: Localpath [${localpath}]`);
@@ -47,4 +49,4 @@ if (dataIsFile === true) {
     contents = fs.readFileSync(sourceFile, "utf8");
 }
 
-UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError);
+UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile);

@@ -47,6 +47,14 @@
       "helpMarkDown": "The name of the file (page) that will be updated or created e.g. page.md"
     },
     {
+      "name": "replaceFile",
+      "type": "boolean",
+      "label": "Replace the file in the WIKI",
+      "defaultValue": "True",
+      "required": true,
+      "helpMarkDown": "Replace the file in the WIKI"
+    },
+    {
       "name": "dataIsFile",
       "type": "boolean",
       "label": "Data is a file",
