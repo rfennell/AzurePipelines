@@ -23,4 +23,11 @@ describe("Test the find file processing", () => {
       var files = findFiles(`test/testdata`, ".csproj.initial", files, SplitSDKName(input));
       expect(files.length).equals(7);
     });
+
+    it("should not find any files is empty string of SDKs passed", () => {
+      var input = "";
+      var files = findFiles(`test/testdata`, ".csproj.initial", files, SplitSDKName(input));
+      expect(files.length).equals(0);
+    });
+
 });
