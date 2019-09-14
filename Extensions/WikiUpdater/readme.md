@@ -17,6 +17,7 @@ Add the task to a build or release
 - Message - The Git commit message
 - GitName - The name for the .gitatrributes file e.g. _builduser_
 - GitEmail - The email for the .gitatrributes file e.g. _builduser@domain_
+- Replace File - Replace the file in the WIKI defaults to True
 
 ### Authentication
 
