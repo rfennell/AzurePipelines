@@ -66,7 +66,7 @@ export function GetWorkingFile(filename, logInfo): any {
     return name;
 }
 
-export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError) {
+export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError, replaceFile) {
     const git = simplegit();
 
     let remote = "";
@@ -108,8 +108,13 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
 
         // we need to change any encoded
         var workingFile = GetWorkingFile(filename, logInfo);
-        fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
-        logInfo(`Created the ${workingFile} in ${workingPath}`);
+        if (replaceFile) {
+            fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+            logInfo(`Created the ${workingFile} in ${workingPath}`);
+        } else {
+            fs.appendFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+            logInfo(`Appended to the ${workingFile} in ${workingPath}`);
+        }
 
         await git.add(filename);
         logInfo(`Added ${filename} to repo ${localpath}`);
