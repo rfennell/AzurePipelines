@@ -32,28 +32,50 @@ export function extractVersion(injectversion, versionRegex, versionNumber ) {
     return newVersion;
 }
 
+export function SplitSDKName(sdkstring) {
+    var array = [];
+    if (sdkstring.length > 0) {
+        array = sdkstring.trim().split(",").map(item => item.trim());
+    }
+    return array;
+}
+
 // List all files in a directory in Node.js recursively in a synchronous fashion
-export function findFiles (dir, filename , filelist) {
+export function findFiles (dir, filename , filelist, sdknames: string[]) {
     var path = path || require("path");
     var fs = fs || require("fs"),
         files = fs.readdirSync(dir);
     filelist = filelist || [];
-    files.forEach(function(file) {
-      if (fs.statSync(path.join(dir, file)).isDirectory()) {
-        filelist = findFiles(path.join(dir, file), filename, filelist);
-      }
-      else {
-        if (file.toLowerCase().endsWith(filename.toLowerCase())) {
-            var filecontent = fs.readFileSync(path.join(dir, file));
-            if (filecontent.toString().toLowerCase().indexOf("<project sdk=\"microsoft.net.sdk") === -1) {
-                console.log(`Skipping file ${file} as is not a .NETCore Project`);
-            } else {
-                console.log(`Adding file ${file} as is a .NETCore Project`);
-                filelist.push(path.join(dir, file));
+    if (sdknames.length === 0 ) {
+        console.log (`No SDK Name passed, so cannot match files`);
+    } else {
+        files.forEach(function(file) {
+            if (fs.statSync(path.join(dir, file)).isDirectory()) {
+                filelist = findFiles(path.join(dir, file), filename, filelist, sdknames);
             }
-        }
-      }
-    });
+            else {
+                if (file.toLowerCase().endsWith(filename.toLowerCase())) {
+                    var filecontent = fs.readFileSync(path.join(dir, file));
+                    var matchingSDK = false;
+                    let count = sdknames.length;
+                    // need to use a for loop to allow break, not the most elegent solution
+                    for (let i = 0; i < count; i++) {
+                        if (filecontent.toString().toLowerCase().indexOf(`<project sdk=\"${sdknames[i].toLowerCase()}`) !== -1) {
+                            console.log(`Matched the file '${file}' using the SDK name '${sdknames[i]}'`);
+                            matchingSDK = true;
+                            break;
+                        }
+                    }
+                    if (matchingSDK) {
+                        console.log(`Adding file ${file} as is a .NETCore Project`);
+                        filelist.push(path.join(dir, file));
+                    } else {
+                        console.log(`Skipping file ${file} as is not a .NETCore Project`);
+                    }
+                }
+            }
+        });
+    }
     return filelist;
 }
 

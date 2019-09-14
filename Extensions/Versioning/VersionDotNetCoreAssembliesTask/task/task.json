@@ -72,6 +72,15 @@
       "helpMarkDown": "The filename pattern to update.",
       "groupName":"advanced"
     },
+    {
+      "name": "SDKNames",
+      "type": "string",
+      "label": "SDK Names",
+      "defaultValue": "Microsoft.NET.Sdk",
+      "required": true,
+      "helpMarkDown": "A comma separated list of SDK namespaces to use to match .csproj file.",
+      "groupName":"advanced"
+    },
      {
       "name": "Field",
       "type": "string",
