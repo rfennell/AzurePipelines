@@ -96,37 +96,43 @@ function UpdateSingleField(file, field, newVersion) {
     const propertyGroupRegex = new RegExp(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi);
     var propertyGroupMatches = propertyGroupRegex.exec(content);
     // we assume the first property group we find is the correct one
-    var propertyGroupText = propertyGroupMatches[0];
-
-    var tmpField = `<${field}>`;
-    var newPropertyGroupText = "";
-    if (propertyGroupText.toString().toLowerCase().indexOf(tmpField.toLowerCase()) === -1) {
-        console.log (`The ${tmpField} version is not present in the .csproj file so adding it`);
-        // add the field, trying to avoid having to load library to parse xml
-        // Check for TargetFramework when only using a single framework
-        var regexp = new RegExp("</TargetFramework>", "gi");
-        tmpField = tmpField.replace("<", "").replace(">", "");
-        if (regexp.exec(propertyGroupText.toString())) {
-            console.log (`The ${file} .csproj file only targets 1 framework`);
-            var newVersionField = `</TargetFramework><${tmpField}>${newVersion}<\/${tmpField}>`;
-            newPropertyGroupText = propertyGroupText.replace(`</TargetFramework>`, newVersionField);
-            fs.writeFileSync(file, filecontent.toString().replace(propertyGroupText, newPropertyGroupText));
-        }
+    if (propertyGroupMatches === null) {
+        console.log(`Cannot find any <PropertyGroup> blocks so adding one`);
+        var insertPropertyGroupText = `<PropertyGroup><${field}>${newVersion}<\/${field}></PropertyGroup></Project>`;
+        fs.writeFileSync(file, filecontent.toString().replace("</Project>", insertPropertyGroupText));
     } else {
-        console.log (`Updating only the ${field} version`);
+        console.log(`Found <PropertyGroup> block`);
+        var propertyGroupText = propertyGroupMatches[0];
+        var tmpField = `<${field}>`;
+        var newPropertyGroupText = "";
+        if (propertyGroupText.toString().toLowerCase().indexOf(tmpField.toLowerCase()) === -1) {
+            console.log (`The ${tmpField} version is not present in the .csproj file so adding it`);
+            // add the field, trying to avoid having to load library to parse xml
+            // Check for TargetFramework when only using a single framework
+            var regexp = new RegExp("</TargetFramework>", "gi");
+            tmpField = tmpField.replace("<", "").replace(">", "");
+            if (regexp.exec(propertyGroupText.toString())) {
+                console.log (`The ${file} .csproj file only targets 1 framework`);
+                var newVersionField = `</TargetFramework><${tmpField}>${newVersion}<\/${tmpField}>`;
+                newPropertyGroupText = propertyGroupText.replace(`</TargetFramework>`, newVersionField);
+                fs.writeFileSync(file, filecontent.toString().replace(propertyGroupText, newPropertyGroupText));
+            }
+        } else {
+            console.log (`Updating only the ${field} version`);
 
-        const fieldRegex = `(<${field}>)(.*)(<\/${field}>)`;
-        var fieldRegexp = new RegExp(fieldRegex, "gi");
-        var matches = fieldRegexp.exec(propertyGroupText);
-        if (matches !== null) {
-            var existingTag1: string = matches[0];
-            console.log(`Existing Tag: ${existingTag1}`);
-            var replacementTag1: string = `${matches[1]}${newVersion}${matches[3]}`;
-            console.log(`Replacement Tag: ${replacementTag1}`);
-            newPropertyGroupText = propertyGroupText.replace(existingTag1, replacementTag1);
+            const fieldRegex = `(<${field}>)(.*)(<\/${field}>)`;
+            var fieldRegexp = new RegExp(fieldRegex, "gi");
+            var matches = fieldRegexp.exec(propertyGroupText);
+            if (matches !== null) {
+                var existingTag1: string = matches[0];
+                console.log(`Existing Tag: ${existingTag1}`);
+                var replacementTag1: string = `${matches[1]}${newVersion}${matches[3]}`;
+                console.log(`Replacement Tag: ${replacementTag1}`);
+                newPropertyGroupText = propertyGroupText.replace(existingTag1, replacementTag1);
+            }
+            var updateFileContents = content.replace(propertyGroupText, newPropertyGroupText);
+            fs.writeFileSync(file, updateFileContents);
         }
-        var updateFileContents = content.replace(propertyGroupText, newPropertyGroupText);
-        fs.writeFileSync(file, updateFileContents);
     }
 }
 
@@ -146,8 +152,13 @@ export function ProcessFile(file, field, newVersion, addDefault = false) {
         const propertyGroupRegex = new RegExp(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi);
         var matches = propertyGroupRegex.exec(content);
         // we assume the first property group we find is the correct one
-        var propertyGroupText = matches[0];
-
+        var propertyGroupText = "<PropertyGroup></PropertyGroup>";
+        if (matches === null) {
+            console.log(`Cannot find any <PropertyGroup> blocks so adding one`);
+        } else {
+            console.log(`Found <PropertyGroup> block`);
+            propertyGroupText = matches[0];
+        }
         let versionFields = ["Version", "VersionPrefix", "AssemblyVersion"];
         var hasUpdateFields: any = false;
         var newPropertyGroupText = propertyGroupText;
