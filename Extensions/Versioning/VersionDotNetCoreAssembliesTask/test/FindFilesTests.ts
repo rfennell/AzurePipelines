@@ -15,13 +15,13 @@ describe("Test the find file processing", () => {
 
   it("should be able to find only .netcore project files", () => {
       var files = findFiles(`test/testdata`, ".csproj.initial", files, ["Microsoft.NET.Sdk"]);
-      expect(files.length).equals(6);
+      expect(files.length).equals(7);
     });
 
     it("should be able to find only .netcore project files with different SDKs", () => {
       var input = "Microsoft.NET.Sdk,  MSBuild.Sdk.Extras ";
       var files = findFiles(`test/testdata`, ".csproj.initial", files, SplitSDKName(input));
-      expect(files.length).equals(7);
+      expect(files.length).equals(8);
     });
 
     it("should not find any files is empty string of SDKs passed", () => {
