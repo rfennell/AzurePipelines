@@ -92,7 +92,7 @@ function UpdateSingleField(file, field, newVersion) {
     let content: string = filecontent.toString();
     fs.chmodSync(file, "600");
 
-    console.log (`Getting just the PropertyGroup that contains the version fields`);
+    console.log (`Getting just the PropertyGroup that contains the single version fields`);
     const propertyGroupRegex = new RegExp(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi);
     var propertyGroupMatches = propertyGroupRegex.exec(content);
     // we assume the first property group we find is the correct one
@@ -115,6 +115,11 @@ function UpdateSingleField(file, field, newVersion) {
                 console.log (`The ${file} .csproj file only targets 1 framework`);
                 var newVersionField = `</TargetFramework><${tmpField}>${newVersion}<\/${tmpField}>`;
                 newPropertyGroupText = propertyGroupText.replace(`</TargetFramework>`, newVersionField);
+                fs.writeFileSync(file, filecontent.toString().replace(propertyGroupText, newPropertyGroupText));
+            } else {
+                console.log (`Cannot find a <TargetFramework> block, so just adding the version field at the end of the first <PropertyGroup>`);
+                var forcedInsertPropertyGroupText = `<${field}>${newVersion}<\/${field}></PropertyGroup>`;
+                newPropertyGroupText = propertyGroupText.replace(`</PropertyGroup>`, forcedInsertPropertyGroupText);
                 fs.writeFileSync(file, filecontent.toString().replace(propertyGroupText, newPropertyGroupText));
             }
         } else {
