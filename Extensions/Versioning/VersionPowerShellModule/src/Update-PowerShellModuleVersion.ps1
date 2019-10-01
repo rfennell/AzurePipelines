@@ -28,7 +28,7 @@ $InjectVersion = Get-VstsInput -Name "InjectVersion"
 $VersionRegex = Get-VstsInput -Name "VersionRegex"
 $outputversion = Get-VstsInput -Name "outputversion"
 
-
+$VersionNumber,$Prerelease = $VersionNumber -split '-' -replace '"' -replace "'"
 # Get and validate the version data
 if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
     Write-Verbose "Using the version number directly"
@@ -59,7 +59,10 @@ if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
             Write-Warning "Will assume first instance is version."
         }
     }
-    $VersionNumber = $VersionData[0]
+    $VersionNumber = $VersionData[0].Value
+}
+if ($Prerelease) {
+    Write-Verbose -Message "Found prerelease flag: $Prerelease"
 }
 
 Write-Verbose -Message "Loading Configuration module for applying the version number"
@@ -105,6 +108,18 @@ Foreach ($Module in $ModuleFiles)
 {
     Write-Verbose -Message "Updating version for $($Module.split('\')[-1]) at path $Module"
     Update-Metadata -Path $Module -PropertyName ModuleVersion -Value $VersionNumber
+
+    if ($null -ne (Get-Metadata -Path $Module -PropertyName PrivateData.PSData.Prerelease -ErrorAction SilentlyContinue)) {
+        if ($Prerelease) {
+            Write-Verbose "Update Manifest at $Module with Prerelease: $Prerelease"
+            Update-Metadata -Path $Module -PropertyName PrivateData.PSData.Prerelease -Value $Prerelease
+        } else {
+            Update-Metadata -Path $Module -PropertyName PrivateData.PSData.Prerelease -Value ""
+        }
+    } elseif($Prerelease) {
+        Write-Warning ("Cannot set Prerelease in module manifest. Add an empty Prerelease to your module manifest, like:`n" +
+                       '         PrivateData = @{ PSData = @{ Prerelease = "" } }')
+    }
 }
 Write-Verbose "Set the output variable '$outputversion' with the value $VersionNumber"
 Write-Host "##vso[task.setvariable variable=$outputversion;]$VersionNumber"
