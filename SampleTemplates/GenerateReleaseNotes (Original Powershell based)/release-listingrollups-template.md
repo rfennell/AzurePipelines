@@ -15,7 +15,7 @@
   
 #### Associated work items  
 @@WILOOP@@  
-* **$($widetail.fields.'System.WorkItemType') $($widetail.id)** [Assigned by: $($widetail.fields.'System.AssignedTo')] $($widetail.fields.'System.Title')  
+* **$($widetail.fields.'System.WorkItemType') $($widetail.id)** [Assigned by: $($widetail.fields.'System.AssignedTo'.displayName)] $($widetail.fields.'System.Title')  
 @@WILOOP@@  
   
 #### Associated change sets/commits  
