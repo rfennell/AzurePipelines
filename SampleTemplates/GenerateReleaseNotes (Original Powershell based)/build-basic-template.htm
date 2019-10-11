@@ -4,7 +4,7 @@
 <b>Source Branch</b> : $($build.sourceBranch)  <br>  
 <h3>Associated work items</h3>  
 @@WILOOP@@  
-<li> <b>$($widetail.fields.'System.WorkItemType') $($widetail.id)</b> [Assigned by: $($widetail.fields.'System.AssignedTo')]     $($widetail.fields.'System.Title') 
+<li> <b>$($widetail.fields.'System.WorkItemType') $($widetail.id)</b> [Assigned by: $($widetail.fields.'System.AssignedTo'.displayName)]     $($widetail.fields.'System.Title') 
 @@WILOOP@@  
 <h3>Associated change sets/commits</h3>  
 @@CSLOOP@@  
