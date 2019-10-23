@@ -193,6 +193,12 @@ if ( [string]::IsNullOrEmpty($releaseid))
         $firstBuild = $lastSuccessfulRelease.artifacts | Where-Object { $_.definitionReference.definition.id -eq $defId}
         foreach ($build in Get-BuildsByDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -buildDefid $defId -usedefaultcreds $usedefaultcreds)
         {
+            # Extra login for #561
+            Write-Verbose "Build ID $($build.id)"
+            Write-Verbose "Build Status $($build.status)"
+            Write-Verbose "Lastbuild ID $($lastBuild.definitionReference.version.id)"
+            Write-Verbose "Firstbuild ID $($firstBuild.definitionReference.version.id)"
+        
             # if build in build number range and completed
             if ($build.id -le $lastBuild.definitionReference.version.id -and ($build.id -gt $firstBuild.definitionReference.version.id -or $build.id -eq $lastBuild.definitionReference.version.id) -and $build.status -eq "completed")
             {
