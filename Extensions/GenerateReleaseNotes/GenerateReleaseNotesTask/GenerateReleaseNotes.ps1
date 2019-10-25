@@ -193,14 +193,28 @@ if ( [string]::IsNullOrEmpty($releaseid))
         $firstBuild = $lastSuccessfulRelease.artifacts | Where-Object { $_.definitionReference.definition.id -eq $defId}
         foreach ($build in Get-BuildsByDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -buildDefid $defId -usedefaultcreds $usedefaultcreds)
         {
-            # Extra login for #561
+            # Extra checks for for #561
+            Write-Verbose "Comparing range values"
             Write-Verbose "Build ID $($build.id)"
             Write-Verbose "Build Status $($build.status)"
-            Write-Verbose "Lastbuild ID $($lastBuild.definitionReference.version.id)"
-            Write-Verbose "Firstbuild ID $($firstBuild.definitionReference.version.id)"
+
+            $lastID = $lastBuild.definitionReference.version.id
+            $firstID = $firstBuild.definitionReference.version.id
+
+            if ($lastID -is [array]) {
+                Write-Verbose "Converting array for lastID $lastID"
+                $lastID = ($lastID | measure -Maximum).Maximum
+            }
+            if ($firstID -is [array]) {
+                Write-Verbose "Converting array for firstID $firstID"
+                $firstID = ($firstID | measure -Minimum).Minimum
+            }
+
+            Write-Verbose "Lastbuild ID $lastBuild"
+            Write-Verbose "Firstbuild ID $firstID"
         
             # if build in build number range and completed
-            if ($build.id -le $lastBuild.definitionReference.version.id -and ($build.id -gt $firstBuild.definitionReference.version.id -or $build.id -eq $lastBuild.definitionReference.version.id) -and $build.status -eq "completed")
+            if ($build.id -le $lastID -and ($build.id -gt $firstID -or $build.id -eq $lastID) -and $build.status -eq "completed")
             {
 				$b = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges -wiFilter $wiFilter -wiStateFilter $wiStateFilter -showParents $showParents
 				$buildsList.Add($build.id , $b)
