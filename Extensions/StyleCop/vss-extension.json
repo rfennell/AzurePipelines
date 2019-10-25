@@ -2,9 +2,9 @@
  "manifestVersion": 1,
  "id": "BM-VSTS-StyleCop-Task",
  "version": "1.0.0",
- "name": "StyleCop Runner Build Task",
+ "name": "(deprecated) StyleCop Runner Build Task",
  "publisher": "richardfennellBM",
-  "description": "Run tests StyleCop using settings files in the project folders. Using StyleCop 5.0.6419.0.",
+  "description": "(deprecated) Run tests StyleCop using settings files in the project folders. Using StyleCop 5.0.6419.0.",
  "categories": [
     "Build and release"
   ],
