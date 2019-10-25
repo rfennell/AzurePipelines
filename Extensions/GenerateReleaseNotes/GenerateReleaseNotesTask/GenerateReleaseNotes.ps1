@@ -210,7 +210,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
                 $firstID = ($firstID | measure -Minimum).Minimum
             }
 
-            Write-Verbose "Lastbuild ID $lastBuild"
+            Write-Verbose "Lastbuild ID $lastID"
             Write-Verbose "Firstbuild ID $firstID"
         
             # if build in build number range and completed
