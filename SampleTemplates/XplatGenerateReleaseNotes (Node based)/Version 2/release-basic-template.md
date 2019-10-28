@@ -11,7 +11,7 @@
   
 ### Associated commits
 @@CSLOOP@@  
-* **ID ${csdetail.id} ** ${csdetail.message}    
-@@CSLOOP@@  
+* ** ID ${csdetail.id} ** Commited by:  ${csdetail.author.displayName} (${csdetail.author.uniqueName}) ${csdetail.message}
+@@CSLOOP@@
 
 

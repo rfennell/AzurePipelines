@@ -1,7 +1,8 @@
+# THIS PROJECT IS NOT UNDER ACTIVE DEVELOPMENT 
+## AS RECOMMENDED ON [STYLECOP REPO](https://github.com/StyleCop/StyleCop) LOOK ELSEWHERE FOR ANALYSIS TOOLS AS STYLECOP IS BECOMING INCREASING HARD TO KEEP UP TOO DATE. [SONARQUBE](https://www.sonarqube.org) IS A GOOD FIRST PLACE TO LOOK
+
 ### StyleCop Runner Task ###
 A task to run [StyleCop 6.1.0](https://www.nuget.org/packages/StyleCop/), not the older series of versions [on codeplex](https://stylecop.codeplex.com/)
-
-
 
 The task takes the following arguments
 - TreatStyleCopViolationsErrorsAsWarnings - Treat StyleCop violations errors as warnings (default false).
