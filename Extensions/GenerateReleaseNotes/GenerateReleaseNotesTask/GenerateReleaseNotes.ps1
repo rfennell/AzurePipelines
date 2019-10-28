@@ -196,8 +196,14 @@ if ( [string]::IsNullOrEmpty($releaseid))
             # if build in build number range and completed
             if ($build.id -le $lastBuild.definitionReference.version.id -and ($build.id -gt $firstBuild.definitionReference.version.id -or $build.id -eq $lastBuild.definitionReference.version.id) -and $build.status -eq "completed")
             {
-				$b = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges -wiFilter $wiFilter -wiStateFilter $wiStateFilter -showParents $showParents
-				$buildsList.Add($build.id , $b)
+                if ($buildsList.ContainsKey($build.id) -eq $false)
+                {
+                    write-Verbose "Getting details of build $($build.id)"
+				    $b = Get-BuildDataSet -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -usedefaultcreds $usedefaultcreds -maxWi $maxWi -maxChanges $maxChanges -wiFilter $wiFilter -wiStateFilter $wiStateFilter -showParents $showParents
+                    $buildsList.Add($build.id , $b)
+                } else {
+                    write-Verbose "Skipping getting details of build $($build.id) as already processed"
+                }
             }
         }
     }
