@@ -374,7 +374,7 @@ function addSpace (indent): string {
 }
 
 // Take a template line and convert it to something we can eval
-function fixline (line: string ): string {
+export function fixline (line: string ): string {
     // we can't use simple string replace as it only replaces the first instance
     // could use the regex form but think this is easier to read in the future
     return  "\"" + line.trim().split("${").join("\" + ").split("}").join(" + \"") + "\"";
