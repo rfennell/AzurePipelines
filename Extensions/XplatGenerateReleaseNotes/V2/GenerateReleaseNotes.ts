@@ -119,8 +119,8 @@ async function run(): Promise<number>  {
                                     agentApi.logInfo(`This is the first release so checking what commits and workitems are associated with artifacts`);
                                     commits = await buildApi.getBuildChanges(teamProject, parseInt(artifactInThisRelease.buildId));
                                     workitems = await buildApi.getBuildWorkItemsRefs(teamProject, parseInt(artifactInThisRelease.buildId));
-                                } else if (artifactInMostRecentRelease.buildNumber.toLowerCase() !== artifactInThisRelease.buildNumber.toLowerCase()) {
-                                    agentApi.logInfo(`Checking what commits and workitems have changed from [${artifactInMostRecentRelease.buildNumber}] => [${artifactInThisRelease.buildNumber}]`);
+                                } else if (artifactInMostRecentRelease.buildId !== artifactInThisRelease.buildId) {
+                                    agentApi.logInfo(`Checking what commits and workitems have changed from [${artifactInMostRecentRelease.buildNumber}][ID ${artifactInMostRecentRelease.buildId}] => [${artifactInThisRelease.buildNumber}] [ID ${artifactInThisRelease.buildId}]`);
 
                                     // Check if workaround for issue #349 should be used
                                     let activateFix = tl.getVariable("ReleaseNotes.Fix349");
