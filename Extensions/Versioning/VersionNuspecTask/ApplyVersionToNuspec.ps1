@@ -24,6 +24,7 @@ $VersionNumber = Get-VstsInput -Name "VersionNumber"
 $InjectVersion = Get-VstsInput -Name "InjectVersion"
 $VersionRegex = Get-VstsInput -Name "VersionRegex"
 $outputversion = Get-VstsInput -Name "outputversion"
+$filename = Get-VstsInput -Name "Filename"
 
 
 # Make sure path to source code directory is available
@@ -33,6 +34,7 @@ if (-not (Test-Path $Path))
     exit 1
 }
 Write-Verbose "Source Directory: $Path"
+Write-Verbose "Filename: $filename"
 Write-Verbose "Version Number/Build Number: $VersionNumber"
 Write-Verbose "Version Filter: $VersionRegex"
 Write-Verbose "Inject Version: $InjectVersion"
@@ -66,7 +68,7 @@ Write-Verbose "Version: $NewVersion"
 # Apply the version to the assembly property files
 $files = gci $Path -recurse | 
     ?{ $_.PSIsContainer } | 
-    foreach { gci -Path $_.FullName -Recurse -include *.nuspec }
+    foreach { gci -Path $_.FullName -Recurse -include $filename }
 if($files)
 {
     Write-Verbose "Will apply $NewVersion to $($files.count) files."
