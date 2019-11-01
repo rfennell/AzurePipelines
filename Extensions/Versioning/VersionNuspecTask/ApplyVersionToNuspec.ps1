@@ -66,9 +66,7 @@ if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
 Write-Verbose "Version: $NewVersion"
 
 # Apply the version to the assembly property files
-$files = gci $Path -recurse | 
-    ?{ $_.PSIsContainer } | 
-    foreach { gci -Path $_.FullName -Recurse -include $filename }
+$files = Get-ChildItem $Path -recurse -include $filename 
 if($files)
 {
     Write-Verbose "Will apply $NewVersion to $($files.count) files."
