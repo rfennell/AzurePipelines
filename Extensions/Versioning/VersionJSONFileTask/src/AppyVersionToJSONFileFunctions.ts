@@ -31,7 +31,12 @@ export function findFiles (dir, filename , filelist, enableRecursion) {
         filelist = findFiles(path.join(dir, file), filename, filelist, enableRecursion);
       }
       else {
+        var fullPath = path.join(dir, file);
         if (file.toLowerCase().endsWith(filename.toLowerCase())) {
+          console.log (`Added file ${fullPath} via .endswith`);
+          filelist.push(path.join(dir, file));
+        } else if (file.toLowerCase().match(`${filename.toLowerCase()}$`)) {
+          console.log (`Added file ${fullPath} via regex`);
           filelist.push(path.join(dir, file));
         }
       }
