@@ -88,7 +88,7 @@
       "label": "Filename Pattern",
       "defaultValue": "package.json",
       "required": true,
-      "helpMarkDown": "The filename pattern to update.",
+      "helpMarkDown": "The filename pattern to update. Can be in the simple form 'package.json' or regex such as '^package\\.json'",
       "groupName":"advanced"
     },
      {
