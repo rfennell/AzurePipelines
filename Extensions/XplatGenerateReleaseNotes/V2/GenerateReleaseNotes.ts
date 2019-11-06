@@ -44,6 +44,7 @@ async function run(): Promise<number>  {
                 delimiter = ":";
             }
             var stopOnRedeploy = tl.getBoolInput("stopOnRedeploy");
+            var sortWi = tl.getBoolInput("SortWi");
 
             let credentialHandler: vstsInterfaces.IRequestHandler = util.getCredentialHandler();
             let vsts = new webApi.WebApi(tpcUri, credentialHandler);
@@ -217,6 +218,14 @@ async function run(): Promise<number>  {
 
             agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
             agentApi.logInfo(`Total workitems: [${fullWorkItems.length}]`);
+
+            // by default order by ID, has the option to group by type
+            if (sortWi) {
+                agentApi.logInfo("Sorting WI by type then id");
+                fullWorkItems = fullWorkItems.sort((a, b) => (a.fields["System.WorkItemType"] > b.fields["System.WorkItemType"]) ? 1 : (a.fields["System.WorkItemType"] === b.fields["System.WorkItemType"]) ? ((a.id > b.id) ? 1 : -1) : -1 );
+            } else {
+                agentApi.logInfo("Leaving WI in default order as returned by API");
+            }
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
             var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset, delimiter);
