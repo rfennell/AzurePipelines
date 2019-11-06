@@ -114,7 +114,17 @@
       "required": false,
       "helpMarkDown": "Do not generate release notes of a re-deploy. If this is set, and a re-deploy occurs the task will succeeds with a warning",
       "groupName":"advanced"
+     },
+     {
+      "name": "sortWi",
+      "type": "boolean",
+      "label": "Sort WI",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true will sort work items by type, if false then it will leave the work items in default order",
+      "groupName":"advanced"
      }
+
    ],
   "instanceNameFormat": "Generate Release Notes based on Release Comparision API",
   "execution": {
