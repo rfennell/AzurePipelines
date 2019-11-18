@@ -292,11 +292,11 @@ if ( [string]::IsNullOrEmpty($releaseid) -eq $false)
             }
         }
 
-        write-Verbose "Returning a unified set of $($unifiedWorkItems.count) Workitems and $($unifiedChangesets.count) Changesets/Commits"
+        write-Verbose "Returning a sorted unified set of $($unifiedWorkItems.count) Workitems and $($unifiedChangesets.count) Changesets/Commits"
 
         $builds = @{ 'build' = 0; # a dummy build as not interested in build detail
-                     'workitems' = $($unifiedWorkitems.GetEnumerator() | Sort-Object { $_.Value.workitems.id }).Value;
-                     'changesets' = $($unifiedChangesets.GetEnumerator() | Sort-Object { $_.Value.changesets.id }).Value;
+                     'workitems' = $($unifiedWorkitems.GetEnumerator() | Sort-Object { $_.Key }).Value;
+                     'changesets' = $($unifiedChangesets.GetEnumerator() | Sort-Object { $_.Key }).Value;
                     }
     } else
     {
