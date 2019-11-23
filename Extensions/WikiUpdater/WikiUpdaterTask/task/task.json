@@ -36,7 +36,7 @@
       "label": "Repo",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The repo URL to clone e.g dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki"
+      "helpMarkDown": "The repo URL to clone e.g dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. See documentation for more details https://github.com/rfennell/AzurePipelines/wiki/WIKI-Updater-Tasks"
     },
     {
       "name": "filename",
@@ -44,7 +44,7 @@
       "label": "Name of the file/page",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The name of the file (page) that will be updated or created e.g. page.md"
+      "helpMarkDown": "The name of the file (page) that will be updated or created, must end in .md else it will not appear on the WIKI e.g. page.md"
     },
     {
       "name": "replaceFile",
@@ -68,7 +68,7 @@
       "label": "Contents",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The contents to write to the file",
+      "helpMarkDown": "If DataIsFile is false, this text to save in the file, can be the output from another task passed as pipeline variable",
       "visibleRule": "dataIsFile = False"
     },
     {
@@ -77,7 +77,7 @@
       "label": "Source File",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The filename to upload",
+      "helpMarkDown": "If DataIsFile is true, this is the filename to upload, will be renamed to the value of the 'filename' parameter",
       "visibleRule": "dataIsFile = True"
     },
     {
