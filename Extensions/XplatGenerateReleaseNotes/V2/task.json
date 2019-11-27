@@ -6,7 +6,10 @@
     "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task/)",
 
   "category": "Utility",
-  "visibility": ["Release"],
+  "visibility": [
+    "Build",
+    "Release"
+  ],
   "author": "Black Marble",
   "version": {
     "Major": 2,
