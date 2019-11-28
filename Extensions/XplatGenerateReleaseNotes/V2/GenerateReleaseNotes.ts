@@ -50,7 +50,7 @@ async function run(): Promise<number>  {
 
             if (tl.getVariable("Release.ReleaseId") === undefined) {
                 agentApi.logInfo("Getting the current build details");
-                let buildId: number = parseInt(tl.getVariable("Build.Build.ReleaseId"));
+                let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
                 var currentBuild = await buildApi.getBuild(buildId);
 
                 if (!currentBuild) {
