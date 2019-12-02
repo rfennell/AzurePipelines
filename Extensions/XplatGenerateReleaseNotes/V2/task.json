@@ -2,11 +2,14 @@
   "id": "7b0a5887-75c4-4ade-a915-f92a93c934cb",
   "name": "XplatGenerateReleaseNotes",
   "friendlyName": "Generate Release Notes (Crossplatform)",
-  "description": "Generates a release notes file in a format of your choice from the release history",
+  "description": "Generates a release notes file in a format of your choice from the build or release history",
     "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task/)",
 
   "category": "Utility",
-  "visibility": ["Release"],
+  "visibility": [
+    "Build",
+    "Release"
+  ],
   "author": "Black Marble",
   "version": {
     "Major": 2,

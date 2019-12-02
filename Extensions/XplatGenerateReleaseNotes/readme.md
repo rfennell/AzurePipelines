@@ -1,8 +1,8 @@
 # Summary
-Generates a release notes markdown file using the same API calls as the Azure DevOps Pipeline Release UI
-* Can be used on any type of release agents (Windows, Mac or linux)
-* Uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
-* This task cannot be used in a build
+Generates a release notes file, in a format of your choice, using the same API calls as the Azure DevOps Pipeline Release UI
+* Can be used on any type of release agents (Windows, Mac or Linux)
+* For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* Also since 2.17.x now supports operation in a build whether YAML or legacy, getting the commits/changesets associated with the build
 * **IMPORTANT** - There have been two major versions of this extension, this is because
    * V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs. This version is not longer shipped in extension download from [GitHub](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9)
    * V2 is a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the SDK, with minor but breaking changes in the template format and that oAuth needs enabling on the agent running the tasks .
@@ -10,9 +10,13 @@ Generates a release notes markdown file using the same API calls as the Azure De
 * The Azure DevOps REST APIs have a limitation that by default they only return 200 items. As a release could include more Work Items or ChangeSets/Commits. A workaround for this has been added [#349](https://github.com/rfennell/AzurePipelines/issues/349). Since version 2.12.x this feature has been defaulted one. To disable it set the variable 'ReleaseNotes.Fix349' to 'false'
 
 # Usage
-As with my original [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks), this task generates a release notes file based on a template passed into the tool.  For this version of the task the data source for the generated Release Notes is the VSTS REST API's comparison calls that are also used by the VSTS UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the VSTS UI.
+As with my original [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks), this task generates a release notes file based on a template passed into the tool.  
 
-**Note:** That this comparison is only done against the primary build artifact linked to the Release, and this task can only be run inside a build
+In the case of a Release, the data source for the generated Release Notes is the Azure DevOps REST API's comparison calls that are also used by the Azure DevOps UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the Azure DevOps UI.
+
+**Note:** That this comparison is only done against the primary build artifact linked to the Release
+
+If used in the build the release notes are based on the current build only.
 
 If the template file is markdown (other formats are possible) the output report being something like the following:
 
@@ -38,7 +42,7 @@ The use of a template allows the user to define the format, layout and fields sh
 
 - Most samples are in Markdown, but it is possible to generate any other format such as HTML
 - The @@TAG@@ markers are special loop control flags
-- The ${properties} are the fields to be expanded from properties in the JSON response objects returned from the VSTS REST API
+- The ${properties} are the fields to be expanded from properties in the JSON response objects returned from the Azure DevOps REST API
 - This task differed from [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks) in that the ${properties} format changes slightly due to the move from PowerShell to Node within the task
 
 The only real change from standard markdown is the use of the @@TAG@@ block markers to denote areas that should be looped over i.e: the points where we get the details of all the work items and commits associated with the build. So a template for GIT or TFVC (if using v2) repo could be
@@ -66,36 +70,23 @@ The only real change from standard markdown is the use of the @@TAG@@ block mark
 @@CSLOOP@@
 ```
 
-**Note** for the V1 version there is a difference between GIT and TFVC templates
-
-```
-
-### Associated commits for Git
-@@CSLOOP@@
-* **ID ${csdetail.commitId} ** ${csdetail.comment}
-@@CSLOOP@@
-```
-
-Whilst a TFVC repo requires
-
-```
-### Associated commits
-@@CSLOOP@@
-* **ID ${csdetail.changesetId} ** ${csdetail.comment}
-@@CSLOOP@@
-```
-
+## Template Objects ##
 
 What is done behind the scenes is that each line of the template is evaluated as a line of Node.JS in turn, the in memory versions of the objects are used to provide the runtime values. The available objects to get data from at runtime are
 
-* releaseDetails – the release details returned by the REST call Get Release Details of the release that the task was triggered for.
-* compareReleaseDetails - the release that the REST call is using to comapre against
-* widetail – the details of a given work item inside the loop returned by the REST call Get Work Item (within the @@WILOOP@@@ block) the : format can be used to specify tags to filter on (in V2)
-* csdetail – the details of a given Git commit or TFVC changeset inside the loop returned by the REST call to Get Commits(within the @@CSLOOP@@@ block)
+### Common objects ###
+* **widetail** – the details of a given work item inside the loop returned by the REST call Get Work Item (within the @@WILOOP@@@ block) the : format can be used to specify tags to filter on (in V2)
+* **csdetail** – the details of a given Git commit or TFVC changeset inside the loop returned by the REST call to Get Commits(within the @@CSLOOP@@@ block)
 
+### Release objects (only availble in a release) ###
+* **releaseDetails** – the release details returned by the REST call Get Release Details of the release that the task was triggered for.
+* **compareReleaseDetails** - the release that the REST call is using to comapre against
+
+### Build objects (only availble in a build) ###
+* **buildDetails** – the build details returned by the REST call Get Build Details of the build that the task was triggered for.
 
 ## Usage
-Once the extension is added to your TFS or VSTS server, the task should be available in the utilities section of 'add tasks'
+Once the extension is added to your Azure DevOps Server (TFS) or Azure DevOps Services, the task should be available in the utilities section of 'add tasks'
 
 **IMPORTANT** - The V2 Tasks requires that oAuth access is enabled on agent running the task
 
@@ -111,6 +102,10 @@ The task takes three parameters
 * (Advanced V2 only) Do not generate release notes of a re-deploy. If this is set, and a re-deploy occurs the task will succeeds with a warning
 * (Outputs) Optional: Name of the variable that markdown contents will be copied into for use in other tasks
 
-Using the settings for the output file shown above, the release notes will be created in the specified folder, and will probably need be copied by a task such as 'Copy Files' to your final required location or email using a extension such as the [Send Email](https://marketplace.visualstudio.com/items?itemName=rvo.SendEmailTask) extension
+### Output location ###
+
+When using this task within a build then it is sensible to place the release notes files as a build artifacts.
+
+However, within a release there are no such artifacts location. hence, it is recommended that a task such as the [WIKI Updater](https://marketplace.visualstudio.com/items?itemName=richardfennellBM.BM-VSTS-WIKIUpdater-Tasks) is used to upload the resultant file to a WIKI
 
 
