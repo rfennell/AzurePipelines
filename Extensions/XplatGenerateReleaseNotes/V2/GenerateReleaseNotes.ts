@@ -48,7 +48,6 @@ async function run(): Promise<number>  {
             var mostRecentSuccessfulDeploymentName: string = "";
             let mostRecentSuccessfulDeploymentRelease: Release;
 
-
             var currentRelease;
 
             if (tl.getVariable("Release.ReleaseId") === undefined) {
