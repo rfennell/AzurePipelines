@@ -15,7 +15,7 @@ import { IRequestHandler } from "vso-node-api/interfaces/common/VsoBaseInterface
 import * as webApi from "vso-node-api/WebApi";
 import fs  = require("fs");
 import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
-import { Change } from "vso-node-api/interfaces/BuildInterfaces";
+import { Build, Change } from "vso-node-api/interfaces/BuildInterfaces";
 import { IGitApi } from "vso-node-api/GitApi";
 import { GitCommit } from "vso-node-api/interfaces/GitInterfaces";
 import { HttpClient } from "typed-rest-client/HttpClient";
@@ -153,7 +153,7 @@ export function getTemplate(
 }
 
 // The Argument compareReleaseDetails is used in the template processing.  Renaming or removing will break the templates
-export function processTemplate(template, workItems: WorkItem[], commits: Change[], releaseDetails: Release, compareReleaseDetails: Release, emptySetText, delimiter): string {
+export function processTemplate(template, workItems: WorkItem[], commits: Change[], buildDetails: Build, releaseDetails: Release, compareReleaseDetails: Release, emptySetText, delimiter): string {
 
     var widetail = undefined;
     var csdetail = undefined;

@@ -8,7 +8,7 @@ import { Release } from "vso-node-api/interfaces/ReleaseInterfaces";
 import * as util from "./ReleaseNotesFunctions";
 import { IBuildApi } from "vso-node-api/BuildApi";
 import { IWorkItemTrackingApi } from "vso-node-api/WorkItemTrackingApi";
-import { Change } from "vso-node-api/interfaces/BuildInterfaces";
+import { Build, Change } from "vso-node-api/interfaces/BuildInterfaces";
 import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
 import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
 import * as issue349 from "./Issue349Workaround";
@@ -48,20 +48,19 @@ async function run(): Promise<number>  {
             var mostRecentSuccessfulDeploymentName: string = "";
             let mostRecentSuccessfulDeploymentRelease: Release;
 
-            var currentRelease;
+            var currentRelease: Release;
+            var currentBuild: Build;
 
             if (tl.getVariable("Release.ReleaseId") === undefined) {
                 agentApi.logInfo("Getting the current build details");
                 let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
-                var currentBuild = await buildApi.getBuild(buildId);
+                currentBuild = await buildApi.getBuild(buildId);
 
                 if (!currentBuild) {
                     reject(`Unable to locate the current build with id ${buildId}`);
                     return;
                 }
 
-                // to allow the same template to be used for builds and release
-                currentRelease = currentBuild;
                 globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
                 globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
 
@@ -243,7 +242,7 @@ async function run(): Promise<number>  {
             }
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
-            var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset, delimiter);
+            var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentBuild, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset, delimiter);
             util.writeFile(outputfile, outputString);
 
             agentApi.writeVariable(outputVariableName, outputString.toString());
