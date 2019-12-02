@@ -57,6 +57,9 @@ async function run(): Promise<number>  {
                     reject(`Unable to locate the current build with id ${buildId}`);
                     return;
                 }
+
+                // to allow the same template to be used for builds and release
+                var currentRelease = currentBuild;
                 globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
                 globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
 
