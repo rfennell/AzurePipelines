@@ -48,6 +48,9 @@ async function run(): Promise<number>  {
             var mostRecentSuccessfulDeploymentName: string = "";
             let mostRecentSuccessfulDeploymentRelease: Release;
 
+
+            var currentRelease;
+
             if (tl.getVariable("Release.ReleaseId") === undefined) {
                 agentApi.logInfo("Getting the current build details");
                 let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
@@ -59,7 +62,7 @@ async function run(): Promise<number>  {
                 }
 
                 // to allow the same template to be used for builds and release
-                var currentRelease = currentBuild;
+                currentRelease = currentBuild;
                 globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
                 globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
 
@@ -69,7 +72,7 @@ async function run(): Promise<number>  {
                 let environmentName: string = (tl.getInput("overrideStageName") || tl.getVariable("Release_EnvironmentName")).toLowerCase();
 
                 agentApi.logInfo("Getting the current release details");
-                var currentRelease = await releaseApi.getRelease(teamProject, releaseId);
+                currentRelease = await releaseApi.getRelease(teamProject, releaseId);
 
                 // check of redeploy
                 if (stopOnRedeploy === true) {
