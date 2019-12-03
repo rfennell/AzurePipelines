@@ -227,7 +227,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                         if (wiFilter.tags.length > 0) {
                             widetail = undefined;
                             workItems.forEach(wi => {
-                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${wiFilter.tags.sort().join("; ")}' (ignoring case) using comparison filter '${wiFilter.modifier}`);
+                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${wiFilter.tags.sort().join("; ")}' (ignoring case) using comparison filter '${wiFilter.modifier}'`);
                                 agentApi.logDebug (wiFilter.modifier);
                                 agentApi.logDebug (wiFilter.tags.join("; "));
                                 switch (wiFilter.modifier) {
@@ -241,7 +241,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                     case Modifier.ANY:
                                         if ((wi.fields["System.Tags"] !== undefined)) {
                                             for (let tag of wiFilter.tags) {
-                                                if (wi.fields["System.Tags"].toUpperCase().contains(tag)) {
+                                                if (wi.fields["System.Tags"].toUpperCase().indexOf(tag.toUpperCase()) !== -1) {
                                                     agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as at least one tag matches`);
                                                     modeArray.push(wi);
                                                     break;
