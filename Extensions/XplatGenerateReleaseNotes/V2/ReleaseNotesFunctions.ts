@@ -20,6 +20,7 @@ import { IGitApi } from "vso-node-api/GitApi";
 import { GitCommit } from "vso-node-api/interfaces/GitInterfaces";
 import { HttpClient } from "typed-rest-client/HttpClient";
 import { WorkItem } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
+import { type } from "os";
 
 let agentApi = new AgentSpecificApi();
 
@@ -176,7 +177,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
            // agentApi.logDebug("Line: " + line);
            // get the line mode (if any)
            var mode = getMode(line);
-           var tags = getModeTags(line, delimiter);
+           var wiFilter = getModeTags(line, delimiter);
 
            if (mode !== Mode.BODY) {
                // is there a mode block change
@@ -223,14 +224,31 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                         // store the block and load the first item
                         // Need to check if we are in tag mode
                         var modeArray = [];
-                        if (tags.length > 0) {
+                        if (wiFilter.tags.length > 0) {
                             widetail = undefined;
                             workItems.forEach(wi => {
-                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${tags.sort().join("; ")}' (ignoring case)`);
-                                if ((wi.fields["System.Tags"] !== undefined) &&
-                                    (wi.fields["System.Tags"].toUpperCase() === tags.join("; ").toUpperCase())) {
-                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id}`);
-                                    modeArray.push(wi);
+                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${wiFilter.tags.sort().join("; ")}' (ignoring case)`);
+                                switch (wiFilter.modifier) {
+                                    case Modifier.All:
+                                        if ((wi.fields["System.Tags"] !== undefined) &&
+                                            (wi.fields["System.Tags"].toUpperCase() === wiFilter.tags.join("; ").toUpperCase())) {
+                                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as all tags match`);
+                                            modeArray.push(wi);
+                                        }
+                                        break;
+                                    case Modifier.ANY:
+                                        if ((wi.fields["System.Tags"] !== undefined)) {
+                                            for (let tag of wiFilter.tags) {
+                                                if (wi.fields["System.Tags"].toUpperCase().contains(tag)) {
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as at least one tag matches`);
+                                                    modeArray.push(wi);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    default:
+                                        agentApi.logWarn (`${addSpace(modeStack.length + 2)} Invalid filter passed, skipping WI ${wi.id}`);
                                 }
                             });
                         } else {
@@ -314,6 +332,16 @@ export const Mode = {
      WI : "WI"
 };
 
+export const Modifier = {
+    All : "ALL",
+    ANY : "ANY"
+};
+
+export class WiFilter {
+    modifier;
+    tags;
+}
+
 export function getMode (line): string {
      var mode = Mode.BODY;
      if (line !== undefined ) {
@@ -329,18 +357,24 @@ export function getMode (line): string {
     return mode;
 }
 
-export function getModeTags (line, delimiter): string[] {
+export function getModeTags (line, delimiter): WiFilter {
     line = line.trim().toUpperCase();
-    var tags = [];
+    var filter = new WiFilter();
+    filter.modifier = Modifier.All;
+    filter.tags = [];
     if (line.startsWith("@@") && line.endsWith("@@") ) {
-        line = line.replace(/@@/g, ""); // have to use regex form of replac eelse only first replaced
+        line = line.replace(/@@/g, ""); // have to use regex form of replace else only first replaced
+        var match = line.match(/(\[.*?\])/g);
+        if (match !== null && match.toString() === "[ANY]") {
+            filter.modifier = Modifier.ANY;
+        }
         var parts = line.split(delimiter);
         if (parts.length > 1) {
             parts.splice(0, 1); // return the tags
-            tags = parts; // return the tags
+            filter.tags = parts; // return the tags
         }
     }
-    return tags;
+    return filter;
 }
 
 function addStackItem (
