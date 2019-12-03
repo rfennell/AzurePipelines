@@ -227,7 +227,9 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                         if (wiFilter.tags.length > 0) {
                             widetail = undefined;
                             workItems.forEach(wi => {
-                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${wiFilter.tags.sort().join("; ")}' (ignoring case)`);
+                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${wiFilter.tags.sort().join("; ")}' (ignoring case) using comparison filter '${wiFilter.modifier}`);
+                                agentApi.logDebug (wiFilter.modifier);
+                                agentApi.logDebug (wiFilter.tags.join("; "));
                                 switch (wiFilter.modifier) {
                                     case Modifier.All:
                                         if ((wi.fields["System.Tags"] !== undefined) &&

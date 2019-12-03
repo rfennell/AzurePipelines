@@ -67,12 +67,12 @@ The only real change from standard markdown is the use of the @@TAG@@ block mark
 ### Associated work items that have both the tags 'Tag 1' and 'Tag2', the new loop format
 @@WILOOP[ALL]:Tag 1:Tag2@@
 * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}
-@@WILOOP:Tag 1:Tag2@@
+@@WILOOP[ALL]:Tag 1:Tag2@@
 
 ### Associated work items that have any of the tags 'Tag 1' or 'Tag2', the new loop format
 @@WILOOP[ANY]:Tag 1:Tag2@@
 * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}
-@@WILOOP:Tag 1:Tag2@@
+@@WILOOP[ANY]:Tag 1:Tag2@@
 
 ### Associated commits
 @@CSLOOP@@

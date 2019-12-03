@@ -21,12 +21,12 @@
 ### Associated work items with 'Tag 1' and 'Tag 2' new format loop format 
 @@WILOOP[ALL]:TAG 1:TAG2@@  
 * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
-@@WILOOP:TAG 1:TAG2@@    
+@@WILOOP[ALL]:TAG 1:TAG2@@  
 
 ### Associated work items with and either of the 'Tag 1' or 'Tag 2' new lop format 
 @@WILOOP[ANY]:TAG 1:TAG2@@  
 * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
-@@WILOOP:TAG 1:TAG2@@    
+@@WILOOP[ANY]:TAG 1:TAG2@@  
 
 ### Associated commits
 @@CSLOOP@@  
