@@ -41,11 +41,16 @@ There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/
 The use of a template allows the user to define the format, layout and fields shown in the release notes document. It is basically a file in the format required with tags to denote the fields to be replaced when the tool generates the report file.
 
 - Most samples are in Markdown, but it is possible to generate any other format such as HTML
-- The @@TAG@@ markers are special loop control flags
+- The @@xxLOOP@@ markers are special loop control flags they shouldbe used in pairs before and after the block to be looped over
+   - @@CSLOOP@@ should wrapper the block to be performed for all changesets/commits
+   - @@WILOOP@@ should wrapper the block to be performed for all work items. This can accept a list of tags that can be used as a filter e.g.
+      - @@WILOOP:TAG1:TAG2@@ matches work items that have all tags (legacy behaviour)
+      - @@WILOOP[ALL]:TAG1:TAG2@@ matches work items that have all tags 
+      - @@WILOOP[ANY]:TAG1:TAG2@@ matches work items that any of the tags 
 - The ${properties} are the fields to be expanded from properties in the JSON response objects returned from the Azure DevOps REST API
-- This task differed from [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks) in that the ${properties} format changes slightly due to the move from PowerShell to Node within the task
+- This task differed from the older [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks) in that the ${properties} format changes slightly due to the move from PowerShell to Node within the task
 
-The only real change from standard markdown is the use of the @@TAG@@ block markers to denote areas that should be looped over i.e: the points where we get the details of all the work items and commits associated with the build. So a template for GIT or TFVC (if using v2) repo could be
+So a template for GIT or TFVC (if using V2 or later of thistask) repo could be
 
 ```
 # Release notes
