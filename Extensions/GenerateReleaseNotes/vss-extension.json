@@ -2,7 +2,7 @@
  "manifestVersion": 1,
  "id": "BM-VSTS-GenerateReleaseNotes-Task",
  "version": "1.0.0",
- "name": "Generate Release Notes Build Task",
+ "name": "Generate Release Notes Build Task (PowerShell)",
  "publisher": "richardfennellBM",
   "description": "Generates a Markdown Release notes file.",
   "CustomerQnASupport": {
