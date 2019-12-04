@@ -229,7 +229,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                             var parts;
                             var okToAdd;
                             workItems.forEach(wi => {
-                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${wiFilter.tags.sort().join("; ")}' (ignoring case) using comparison filter '${wiFilter.modifier}'`);
+                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${wiFilter.tags.sort().join("; ")}' (ignoring case) and fields '${wiFilter.fields.sort().join("; ")}' using comparison filter '${wiFilter.modifier}'`);
                                 switch (wiFilter.modifier) {
                                     case Modifier.All:
                                         if ((wi.fields["System.Tags"] !== undefined) &&
@@ -237,6 +237,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                             if (wiFilter.fields.length > 0) {
                                                 okToAdd = true;
                                                 for (let field of wiFilter.fields) {
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${field}`);
                                                     parts = field.split("=");
                                                     if (wi.fields[parts[0]] !== parts[1]) {
                                                         okToAdd = false;
@@ -249,7 +250,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                                 }
 
                                             } else {
-                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as all tags match and not fields to check`);
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as all tags match and no fields to check`);
                                                 modeArray.push(wi);
                                             }
                                         }
@@ -258,6 +259,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                         if ((wi.fields["System.Tags"] !== undefined)) {
                                             okToAdd = false;
                                             for (let tag of wiFilter.tags) {
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking tag ${tag}`);
                                                 if (wi.fields["System.Tags"].toUpperCase().indexOf(tag.toUpperCase()) !== -1) {
                                                     okToAdd = true;
                                                     break;
@@ -265,9 +267,10 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                             }
                                             if (okToAdd === false) {
                                                 for (let field of wiFilter.fields) {
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${field}`);
                                                     parts = field.split("=");
-                                                    if (wi.fields[parts[0]] !== parts[1]) {
-                                                        okToAdd = false;
+                                                    if (wi.fields[parts[0]] !== undefined && wi.fields[parts[0]] === parts[1]) {
+                                                        okToAdd = true;
                                                         break;
                                                     }
                                                 }
