@@ -235,6 +235,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                         if ((wi.fields["System.Tags"] !== undefined) &&
                                             (wi.fields["System.Tags"].toUpperCase() === wiFilter.tags.join("; ").toUpperCase())) {
                                             if (wiFilter.fields.length > 0) {
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Pontential match on tags, checking fields`);
                                                 okToAdd = true;
                                                 for (let field of wiFilter.fields) {
                                                     agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${field}`);
@@ -249,7 +250,6 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                                         modeArray.push(wi);
                                                     }
                                                 }
-
                                             } else {
                                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as all tags match and no fields to check`);
                                                 modeArray.push(wi);
@@ -262,6 +262,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                             for (let tag of wiFilter.tags) {
                                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking tag ${tag}`);
                                                 if (wi.fields["System.Tags"].toUpperCase().indexOf(tag.toUpperCase()) !== -1) {
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Found match on tag`);
                                                     okToAdd = true;
                                                     break;
                                                 }
@@ -272,6 +273,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                                     parts = field.split("=");
                                                     agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${wi.fields[parts[0]]}`);
                                                     if (wi.fields[parts[0]] !== undefined && wi.fields[parts[0]] === parts[1]) {
+                                                        agentApi.logDebug (`${addSpace(modeStack.length + 2)} Found match on field`);
                                                         okToAdd = true;
                                                         break;
                                                     }
