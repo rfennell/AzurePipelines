@@ -232,17 +232,18 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${wiFilter.tags.sort().join("; ")}' (ignoring case) and fields '${wiFilter.fields.sort().join("; ")}' using comparison filter '${wiFilter.modifier}'`);
                                 switch (wiFilter.modifier) {
                                     case Modifier.All:
+                                        okToAdd = true;
                                         if ((wi.fields["System.Tags"] !== undefined) &&
-                                            (wi.fields["System.Tags"].toUpperCase() === wiFilter.tags.join("; ").toUpperCase())) {
-                                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} Pontential match on tags, checking fields`);
-                                            okToAdd = true;
+                                            (wiFilter.tags.length > 0) &&
+                                            (wi.fields["System.Tags"].toUpperCase() !== wiFilter.tags.join("; ").toUpperCase())) {
+                                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} At least one tags does not match`);
+                                            okToAdd = false;
                                         }
                                         if (okToAdd && wiFilter.fields.length > 0) {
                                             for (let field of wiFilter.fields) {
                                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${field}`);
                                                 parts = field.split("=");
-                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} ${wi.fields[parts[0]]}`);
-                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} ${parts[0]}`);
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} ${wi.fields[parts[0]]} = ${parts[0]}`);
                                                 if (wi.fields[parts[0]] !== parts[1]) {
                                                     okToAdd = false;
                                                     break;
@@ -258,7 +259,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                         }
                                         break;
                                     case Modifier.ANY:
-                                        if ((wi.fields["System.Tags"] !== undefined)) {
+                                        if ((wi.fields["System.Tags"] !== undefined) && (wiFilter.tags.length > 0)) {
                                             okToAdd = false;
                                             for (let tag of wiFilter.tags) {
                                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking tag ${tag}`);
@@ -273,8 +274,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                             for (let field of wiFilter.fields) {
                                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${field}`);
                                                 parts = field.split("=");
-                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} ${wi.fields[parts[0]]}`);
-                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} ${parts[0]}`);
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} ${wi.fields[parts[0]]} = ${parts[0]}`);
                                                 if (wi.fields[parts[0]] !== undefined && wi.fields[parts[0]] === parts[1]) {
                                                     agentApi.logDebug (`${addSpace(modeStack.length + 2)} Found match on field`);
                                                     okToAdd = true;
