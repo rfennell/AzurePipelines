@@ -232,20 +232,20 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${wiFilter.tags.sort().join("; ")}' (ignoring case) and fields '${wiFilter.fields.sort().join("; ")}' using comparison filter '${wiFilter.modifier}'`);
                                 switch (wiFilter.modifier) {
                                     case Modifier.All:
-                                        okToAdd = true;
+                                        okToAdd = false;
                                         if ((wi.fields["System.Tags"] !== undefined) &&
                                             (wiFilter.tags.length > 0) &&
-                                            (wi.fields["System.Tags"].toUpperCase() !== wiFilter.tags.join("; ").toUpperCase())) {
-                                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} At least one tags does not match`);
-                                            okToAdd = false;
+                                            (wi.fields["System.Tags"].toUpperCase() === wiFilter.tags.join("; ").toUpperCase())) {
+                                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} Tags match, need to check fields if any`);
+                                            okToAdd = true;
                                         }
                                         if (okToAdd && wiFilter.fields.length > 0) {
                                             for (let field of wiFilter.fields) {
                                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${field}`);
                                                 parts = field.split("=");
                                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} ${wi.fields[parts[0]]} = ${parts[0]}`);
-                                                if (wi.fields[parts[0]] !== parts[1]) {
-                                                    okToAdd = false;
+                                                if (wi.fields[parts[0]] === parts[1]) {
+                                                    okToAdd = true;
                                                     break;
                                                 }
                                             }
