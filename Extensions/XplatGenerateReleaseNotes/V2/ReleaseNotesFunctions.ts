@@ -233,7 +233,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                 switch (wiFilter.modifier) {
                                     case Modifier.All:
                                         okToAdd = false;
-                                        if ((wi.fields["System.Tags"] !== undefined) &&
+                                        if ((wi.fields["System.Tags"] !== "undefined") &&
                                             (wiFilter.tags.length > 0) &&
                                             (wi.fields["System.Tags"].toUpperCase() === wiFilter.tags.join("; ").toUpperCase())) {
                                             agentApi.logDebug (`${addSpace(modeStack.length + 2)} Tags match, need to check fields if any`);
@@ -259,7 +259,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                         }
                                         break;
                                     case Modifier.ANY:
-                                        if ((wi.fields["System.Tags"] !== undefined) && (wiFilter.tags.length > 0)) {
+                                        if ((wi.fields["System.Tags"] !== "undefined") && (wiFilter.tags.length > 0)) {
                                             okToAdd = false;
                                             for (let tag of wiFilter.tags) {
                                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking tag ${tag}`);
