@@ -234,26 +234,27 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                     case Modifier.All:
                                         if ((wi.fields["System.Tags"] !== undefined) &&
                                             (wi.fields["System.Tags"].toUpperCase() === wiFilter.tags.join("; ").toUpperCase())) {
-                                            if (wiFilter.fields.length > 0) {
-                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Pontential match on tags, checking fields`);
-                                                okToAdd = true;
-                                                for (let field of wiFilter.fields) {
-                                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${field}`);
-                                                    parts = field.split("=");
-                                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${wi.fields[parts[0]]}`);
-                                                    if (wi.fields[parts[0]] !== parts[1]) {
-                                                        okToAdd = false;
-                                                        break;
-                                                    }
-                                                    if (okToAdd) {
-                                                        agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as all tags match and all fields match`);
-                                                        modeArray.push(wi);
-                                                    }
+                                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} Pontential match on tags, checking fields`);
+                                            okToAdd = true;
+                                        }
+                                        if (okToAdd && wiFilter.fields.length > 0) {
+                                            for (let field of wiFilter.fields) {
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${field}`);
+                                                parts = field.split("=");
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} ${wi.fields[parts[0]]}`);
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} ${parts[0]}`);
+                                                if (wi.fields[parts[0]] !== parts[1]) {
+                                                    okToAdd = false;
+                                                    break;
                                                 }
-                                            } else {
-                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as all tags match and no fields to check`);
+                                            }
+                                            if (okToAdd) {
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as all tags and fields match`);
                                                 modeArray.push(wi);
                                             }
+                                        } else {
+                                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as all tags match and no fields to check`);
+                                            modeArray.push(wi);
                                         }
                                         break;
                                     case Modifier.ANY:
@@ -267,22 +268,23 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                                     break;
                                                 }
                                             }
-                                            if (okToAdd === false) {
-                                                for (let field of wiFilter.fields) {
-                                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${field}`);
-                                                    parts = field.split("=");
-                                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${wi.fields[parts[0]]}`);
-                                                    if (wi.fields[parts[0]] !== undefined && wi.fields[parts[0]] === parts[1]) {
-                                                        agentApi.logDebug (`${addSpace(modeStack.length + 2)} Found match on field`);
-                                                        okToAdd = true;
-                                                        break;
-                                                    }
+                                        }
+                                        if (okToAdd === false) {
+                                            for (let field of wiFilter.fields) {
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${field}`);
+                                                parts = field.split("=");
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} ${wi.fields[parts[0]]}`);
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} ${parts[0]}`);
+                                                if (wi.fields[parts[0]] !== undefined && wi.fields[parts[0]] === parts[1]) {
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Found match on field`);
+                                                    okToAdd = true;
+                                                    break;
                                                 }
                                             }
-                                            if (okToAdd) {
-                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as at least one tag or field matches`);
-                                                modeArray.push(wi);
-                                            }
+                                        }
+                                        if (okToAdd) {
+                                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as at least one tag or field matches`);
+                                            modeArray.push(wi);
                                         }
                                         break;
                                     default:
