@@ -154,7 +154,7 @@ export function getTemplate(
 }
 
 // The Argument compareReleaseDetails is used in the template processing.  Renaming or removing will break the templates
-export function processTemplate(template, workItems: WorkItem[], commits: Change[], buildDetails: Build, releaseDetails: Release, compareReleaseDetails: Release, emptySetText, delimiter): string {
+export function processTemplate(template, workItems: WorkItem[], commits: Change[], buildDetails: Build, releaseDetails: Release, compareReleaseDetails: Release, emptySetText, delimiter, fieldEquality): string {
 
     var widetail = undefined;
     var csdetail = undefined;
@@ -177,7 +177,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
            // agentApi.logDebug("Line: " + line);
            // get the line mode (if any)
            var mode = getMode(line);
-           var wiFilter = getModeTags(line, delimiter);
+           var wiFilter = getModeTags(line, delimiter, fieldEquality);
 
            if (mode !== Mode.BODY) {
                // is there a mode block change
@@ -224,26 +224,57 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                         // store the block and load the first item
                         // Need to check if we are in tag mode
                         var modeArray = [];
-                        if (wiFilter.tags.length > 0) {
+                        if (wiFilter.tags.length > 0 || wiFilter.fields.length > 0) {
                             widetail = undefined;
+                            var parts;
+                            var okToAdd;
                             workItems.forEach(wi => {
                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${wiFilter.tags.sort().join("; ")}' (ignoring case) using comparison filter '${wiFilter.modifier}'`);
                                 switch (wiFilter.modifier) {
                                     case Modifier.All:
                                         if ((wi.fields["System.Tags"] !== undefined) &&
                                             (wi.fields["System.Tags"].toUpperCase() === wiFilter.tags.join("; ").toUpperCase())) {
-                                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as all tags match`);
-                                            modeArray.push(wi);
+                                            if (wiFilter.fields.length > 0) {
+                                                okToAdd = true;
+                                                for (let field of wiFilter.fields) {
+                                                    parts = field.split("=");
+                                                    if (wi.fields[parts[0]] !== parts[1]) {
+                                                        okToAdd = false;
+                                                        break;
+                                                    }
+                                                    if (okToAdd) {
+                                                        agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as all tags match and all fields match`);
+                                                        modeArray.push(wi);
+                                                    }
+                                                }
+
+                                            } else {
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as all tags match and not fields to check`);
+                                                modeArray.push(wi);
+                                            }
                                         }
                                         break;
                                     case Modifier.ANY:
                                         if ((wi.fields["System.Tags"] !== undefined)) {
+                                            okToAdd = false;
                                             for (let tag of wiFilter.tags) {
                                                 if (wi.fields["System.Tags"].toUpperCase().indexOf(tag.toUpperCase()) !== -1) {
-                                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as at least one tag matches`);
-                                                    modeArray.push(wi);
+                                                    okToAdd = true;
                                                     break;
                                                 }
+                                            }
+                                            if (okToAdd === false) {
+                                                for (let field of wiFilter.fields) {
+                                                    parts = field.split("=");
+                                                    if (wi.fields[parts[0]] !== parts[1]) {
+                                                        okToAdd = false;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            if (okToAdd) {
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as at least one tag or field matches`);
+                                                modeArray.push(wi);
                                             }
                                         }
                                         break;
@@ -340,6 +371,7 @@ export const Modifier = {
 export class WiFilter {
     modifier;
     tags;
+    fields;
 }
 
 export function getMode (line): string {
@@ -357,21 +389,28 @@ export function getMode (line): string {
     return mode;
 }
 
-export function getModeTags (line, delimiter): WiFilter {
-    line = line.trim().toUpperCase();
+export function getModeTags (line, tagDelimiter, fieldEquivalent): WiFilter {
+    line = line.trim();
     var filter = new WiFilter();
     filter.modifier = Modifier.All;
     filter.tags = [];
+    filter.fields = [];
     if (line.startsWith("@@") && line.endsWith("@@") ) {
         line = line.replace(/@@/g, ""); // have to use regex form of replace else only first replaced
         var match = line.match(/(\[.*?\])/g);
-        if (match !== null && match.toString() === "[ANY]") {
+        if (match !== null && match.toString().toUpperCase() === "[ANY]") {
             filter.modifier = Modifier.ANY;
         }
-        var parts = line.split(delimiter);
+        var parts = line.split(tagDelimiter);
         if (parts.length > 1) {
             parts.splice(0, 1); // return the tags
-            filter.tags = parts; // return the tags
+            parts.forEach(part => {
+                if (part.indexOf(fieldEquivalent) !== -1 ) {
+                    filter.fields.push(part.replace(fieldEquivalent, "="));
+                } else {
+                    filter.tags.push(part.toUpperCase());
+                }
+            });
         }
     }
     return filter;

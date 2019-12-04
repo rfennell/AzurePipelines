@@ -34,6 +34,12 @@ async function run(): Promise<number>  {
                 agentApi.logInfo(`No delimiter passed, setting a default of :`);
                 delimiter = ":";
             }
+            var fieldEquality = tl.getInput("fieldEquality");
+            if (fieldEquality === null) {
+                agentApi.logInfo(`No fieldEquality passed, setting a default of =`);
+                delimiter = "=";
+            }
+
             var stopOnRedeploy = tl.getBoolInput("stopOnRedeploy");
             var sortWi = tl.getBoolInput("SortWi");
 
@@ -242,7 +248,7 @@ async function run(): Promise<number>  {
             }
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
-            var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentBuild, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset, delimiter);
+            var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentBuild, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset, delimiter, fieldEquality);
             util.writeFile(outputfile, outputString);
 
             agentApi.writeVariable(outputVariableName, outputString.toString());

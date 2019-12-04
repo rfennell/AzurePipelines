@@ -37,45 +37,66 @@ describe("Check the Mode extraction", () => {
     });
 
     it("should be able to get tag from WI mode", () => {
-      var actual = getModeTags("@@WILOOP:TAG1@@", ":");
+      var actual = getModeTags("@@WILOOP:TAG1@@", ":", "=");
       expect(actual.tags).to.deep.equal(["TAG1"]);
+      expect(actual.fields).to.deep.equal([]);
       expect(actual.modifier).to.equal(Modifier.All);
     });
 
     it("should be able to get two tags and the any filter mode", () => {
-      var actual = getModeTags("@@WILOOP[ANY]:TAG1:TAG2@@", ":");
+      var actual = getModeTags("@@WILOOP[ANY]:TAG1:TAG2@@", ":", "=");
       expect(actual.tags).to.deep.equal(["TAG1", "TAG2"]);
+      expect(actual.fields).to.deep.equal([]);
       expect(actual.modifier).to.equal(Modifier.ANY);
     });
 
     it("should be able to get two tags and the all filter mode", () => {
-      var actual = getModeTags("@@WILOOP[ALL]:TAG1:TAG2@@", ":");
+      var actual = getModeTags("@@WILOOP[ALL]:TAG1:TAG2@@", ":", "=");
       expect(actual.tags).to.deep.equal(["TAG1", "TAG2"]);
+      expect(actual.fields).to.deep.equal([]);
       expect(actual.modifier).to.equal(Modifier.All);
     });
 
     it("should be able to get two tags and the filter mode when malformed", () => {
-      var actual = getModeTags("@@WILOOP[Rubbish]:TAG1:TAG2@@", ":");
+      var actual = getModeTags("@@WILOOP[Rubbish]:TAG1:TAG2@@", ":", "=");
       expect(actual.tags).to.deep.equal(["TAG1", "TAG2"]);
+      expect(actual.fields).to.deep.equal([]);
       expect(actual.modifier).to.equal(Modifier.All);
     });
 
     it("should be able to get two tags and the filter mode when empty", () => {
-      var actual = getModeTags("@@WILOOP[]:TAG1:TAG2@@", ":");
+      var actual = getModeTags("@@WILOOP[]:TAG1:TAG2@@", ":", "=");
       expect(actual.tags).to.deep.equal(["TAG1", "TAG2"]);
+      expect(actual.fields).to.deep.equal([]);
       expect(actual.modifier).to.equal(Modifier.All);
     });
 
     it("should be able to get two tags inc spaces from WI mode", () => {
-      var actual = getModeTags("@@WILOOP:TAG 1:TAG 2@@", ":");
+      var actual = getModeTags("@@WILOOP:TAG 1:TAG 2@@", ":", "=");
       expect(actual.tags).to.deep.equal(["TAG 1", "TAG 2"]);
+      expect(actual.fields).to.deep.equal([]);
       expect(actual.modifier).to.equal(Modifier.All);
     });
 
     it("should be able to get empty array if not tags", () => {
-        var actual = getModeTags("@@WILOOP@@", ":");
+        var actual = getModeTags("@@WILOOP@@", ":", "=");
         expect(actual.tags).to.deep.equal([]);
+        expect(actual.fields).to.deep.equal([]);
         expect(actual.modifier).to.equal(Modifier.All);
-      });
+    });
+
+    it("should be able to get a tag and a field defintion", () => {
+      var actual = getModeTags("@@WILOOP[ANY]:System.Title==123:TAG2@@", ":", "==");
+      expect(actual.tags).to.deep.equal(["TAG2"]);
+      expect(actual.fields).to.deep.equal(["System.Title=123"]);
+      expect(actual.modifier).to.equal(Modifier.ANY);
+    });
+
+    it("should be able to treat malformed field defintion as a tag", () => {
+      var actual = getModeTags("@@WILOOP[ANY]:System.Title=AAAA:TAG2@@", ":", "==");
+      expect(actual.tags).to.deep.equal(["SYSTEM.TITLE=AAAA", "TAG2"]);
+      expect(actual.fields).to.deep.equal([]);
+      expect(actual.modifier).to.equal(Modifier.ANY);
+    });
 
 });

@@ -96,7 +96,16 @@
     "label": "Delimiter for tags",
     "defaultValue": ":",
     "required": true,
-    "helpMarkDown": "The delimiter is used to separate tags in the @@WILOOP:TAG1:TAG2@@ block markers.",
+    "helpMarkDown": "The delimiter is used to separate field filter and tags in the @@WILOOP:TAG1:TAG2@@ block markers. Default is :",
+    "groupName":"advanced"
+  },
+  {
+    "name": "fieldEquality",
+    "type": "string",
+    "label": "Expression equality",
+    "defaultValue": ":",
+    "required": true,
+    "helpMarkDown": "The field equality symbol used to in field filter e.g. @@WILOOP:System.Title=123@@ block markers. The default is =",
     "groupName":"advanced"
   }
 ,
