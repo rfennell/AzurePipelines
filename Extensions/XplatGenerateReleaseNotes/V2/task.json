@@ -103,7 +103,7 @@
     "name": "fieldEquality",
     "type": "string",
     "label": "Expression equality",
-    "defaultValue": ":",
+    "defaultValue": "=",
     "required": true,
     "helpMarkDown": "The field equality symbol used to in field filter e.g. @@WILOOP:System.Title=123@@ block markers. The default is =",
     "groupName":"advanced"

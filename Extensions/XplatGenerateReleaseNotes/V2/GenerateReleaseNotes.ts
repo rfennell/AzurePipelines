@@ -40,6 +40,10 @@ async function run(): Promise<number>  {
                 delimiter = "=";
             }
 
+            if (fieldEquality === delimiter) {
+                agentApi.logError (`The delimiter and fieldequality parameters cannot be the same, plase change one. The usual defaults a : and = respectivally`);
+            }
+
             var stopOnRedeploy = tl.getBoolInput("stopOnRedeploy");
             var sortWi = tl.getBoolInput("SortWi");
 

@@ -239,6 +239,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                                 for (let field of wiFilter.fields) {
                                                     agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${field}`);
                                                     parts = field.split("=");
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${wi.fields[parts[0]]}`);
                                                     if (wi.fields[parts[0]] !== parts[1]) {
                                                         okToAdd = false;
                                                         break;
@@ -269,6 +270,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                                 for (let field of wiFilter.fields) {
                                                     agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${field}`);
                                                     parts = field.split("=");
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking field ${wi.fields[parts[0]]}`);
                                                     if (wi.fields[parts[0]] !== undefined && wi.fields[parts[0]] === parts[1]) {
                                                         okToAdd = true;
                                                         break;
