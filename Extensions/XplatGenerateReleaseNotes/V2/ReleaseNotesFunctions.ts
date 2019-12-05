@@ -232,7 +232,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${wiFilter.tags.sort().join("; ")}' (ignoring case) and fields '${wiFilter.fields.sort().join("; ")}' using comparison filter '${wiFilter.modifier}'`);
                                 switch (wiFilter.modifier) {
                                     case Modifier.All:
-                                        if (wiFilter.tags > 0) {
+                                        if (wiFilter.tags.length > 0) {
                                             if ((wi.fields["System.Tags"] !== undefined) &&
                                                 (wi.fields["System.Tags"].toUpperCase() === wiFilter.tags.join("; ").toUpperCase())) {
                                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Tags match, need to check fields`);
