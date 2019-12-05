@@ -249,7 +249,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                         if (okToAdd && wiFilter.fields.length > 0) {
                                             for (let field of wiFilter.fields) {
                                                 parts = field.split("=");
-                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Comparing '${wi.fields[parts[0]]}' to '${parts[0]}'`);
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Comparing field '${parts[0]} contents '${wi.fields[parts[0]]}' to '${parts[1]}'`);
                                                 if (wi.fields[parts[0]] !== parts[1]) {
                                                     agentApi.logDebug (`${addSpace(modeStack.length + 2)} Field does not match`);
                                                     okToAdd = false;
@@ -282,7 +282,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                         if (okToAdd === false) {
                                             for (let field of wiFilter.fields) {
                                                 parts = field.split("=");
-                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Comparing '${wi.fields[parts[0]]}' to ${parts[0]}'`);
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Comparing field '${parts[0]} contents '${wi.fields[parts[0]]}' to '${parts[1]}'`);
                                                 if (wi.fields[parts[0]] !== undefined && wi.fields[parts[0]] === parts[1]) {
                                                     agentApi.logDebug (`${addSpace(modeStack.length + 2)} Found match on field`);
                                                     okToAdd = true;
