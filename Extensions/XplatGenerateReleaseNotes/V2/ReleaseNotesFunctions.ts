@@ -266,18 +266,18 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                         break;
                                     case Modifier.ANY:
                                         agentApi.logDebug (`${addSpace(modeStack.length + 4)} Using ANY filter`);
+                                        okToAdd = false;
                                         if ((wi.fields["System.Tags"] !== undefined) && (wiFilter.tags.length > 0)) {
-                                            okToAdd = false;
-                                                for (let tag of wiFilter.tags) {
-                                                    agentApi.logDebug (`${addSpace(modeStack.length + 4)} Checking tag ${tag}`);
-                                                    if (wi.fields["System.Tags"].toUpperCase().indexOf(tag.toUpperCase()) !== -1) {
-                                                        agentApi.logDebug (`${addSpace(modeStack.length + 4)} Found match on tag`);
-                                                        okToAdd = true;
-                                                        break;
-                                                    } else {
+                                            for (let tag of wiFilter.tags) {
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 4)} Checking tag ${tag}`);
+                                                if (wi.fields["System.Tags"].toUpperCase().indexOf(tag.toUpperCase()) !== -1) {
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 4)} Found match on tag`);
+                                                    okToAdd = true;
+                                                    break;
+                                                } else {
                                                     agentApi.logDebug (`${addSpace(modeStack.length + 4)} No match on tag`);
-                                                    }
                                                 }
+                                            }
                                         } else {
                                             agentApi.logDebug (`${addSpace(modeStack.length + 4)} No tags to check, checking fields`);
                                         }
@@ -457,7 +457,7 @@ function addStackItem (
     modeStack.push({"BlockMode": blockMode.trim(), "BlockQueue": queue, "Index": index});
 }
 
-function addSpace (indent): string {
+export function addSpace (indent): string {
     var size = 3;
     var upperBound = size * indent;
     var padding = "";
