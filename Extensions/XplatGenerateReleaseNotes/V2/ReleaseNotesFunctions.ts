@@ -232,6 +232,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${wiFilter.tags.sort().join("; ")}' (ignoring case) and fields '${wiFilter.fields.sort().join("; ")}' using comparison filter '${wiFilter.modifier}'`);
                                 switch (wiFilter.modifier) {
                                     case Modifier.All:
+                                        agentApi.logDebug (`${addSpace(modeStack.length + 2)} Using ALL filter`);
                                         if (wiFilter.tags.length > 0) {
                                             if ((wi.fields["System.Tags"] !== undefined) &&
                                                 (wi.fields["System.Tags"].toUpperCase() === wiFilter.tags.join("; ").toUpperCase())) {
@@ -248,7 +249,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                         if (okToAdd && wiFilter.fields.length > 0) {
                                             for (let field of wiFilter.fields) {
                                                 parts = field.split("=");
-                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Comparing ${wi.fields[parts[0]]} to ${parts[0]}`);
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Comparing '${wi.fields[parts[0]]}' to '${parts[0]}'`);
                                                 if (wi.fields[parts[0]] !== parts[1]) {
                                                     agentApi.logDebug (`${addSpace(modeStack.length + 2)} Field does not match`);
                                                     okToAdd = false;
@@ -264,7 +265,8 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                         }
                                         break;
                                     case Modifier.ANY:
-                                        if ((wi.fields["System.Tags"] !== undefined) && (wiFilter.tags.length > 0)) {
+                                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} Using ANY filter`);
+                                            if ((wi.fields["System.Tags"] !== undefined) && (wiFilter.tags.length > 0)) {
                                             okToAdd = false;
                                             for (let tag of wiFilter.tags) {
                                                 agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking tag ${tag}`);
@@ -274,11 +276,13 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                                     break;
                                                 }
                                             }
+                                        } else {
+                                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} No tags to check, checking fields`);
                                         }
                                         if (okToAdd === false) {
                                             for (let field of wiFilter.fields) {
                                                 parts = field.split("=");
-                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Comapring ${wi.fields[parts[0]]} to ${parts[0]}`);
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Comparing '${wi.fields[parts[0]]}' to ${parts[0]}'`);
                                                 if (wi.fields[parts[0]] !== undefined && wi.fields[parts[0]] === parts[1]) {
                                                     agentApi.logDebug (`${addSpace(modeStack.length + 2)} Found match on field`);
                                                     okToAdd = true;
@@ -296,7 +300,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                 }
                             });
                         } else {
-                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding all WI`);
+                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding all WI as no tag or fields filter`);
                             modeArray = workItems;
                         }
                         agentApi.logDebug (`${addSpace(modeStack.length + 1)} There are ${modeArray.length} WI to add`);
