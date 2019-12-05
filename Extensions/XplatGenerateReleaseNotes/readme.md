@@ -1,15 +1,14 @@
 # Summary
-Generates a release notes file, in a format of your choice, using the same API calls as the Azure DevOps Pipeline Release UI
-* Can be used on any type of release agents (Windows, Mac or Linux)
-* Also since 2.17.x now supports operation in a build whether YAML or legacy, getting the commits/changesets associated with the build
+Generates release notes for a build or release. the file can be a format of your choice
+* Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
-* For builds, does a simiple lookup for work items and commits/changesets associaed with the build
-* **IMPORTANT** - There have been two major versions of this extension, this is because
-   * V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs. This version is not longer shipped in extension download from [GitHub](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9)
-   * V2 is a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the SDK, with minor but breaking changes in the template format and that oAuth needs enabling on the agent running the tasks .
-* Since the V2 re-write, support has been added for tag filtering in the work items listed in a report. A report can have many WILOOPs with different filters. For a WI to appear in such a loop all tags must be matched.
-* The Azure DevOps REST APIs have a limitation that by default they only return 200 items. As a release could include more Work Items or ChangeSets/Commits. A workaround for this has been added [#349](https://github.com/rfennell/AzurePipelines/issues/349). Since version 2.12.x this feature has been defaulted one. To disable it set the variable 'ReleaseNotes.Fix349' to 'false'
-* 2.18.x & 2.19.x add support for advanced work item filtering
+* 2.17.x onwards supports operation in a build whether YAML or legacy, getting the commits/changesets associated with the build. 
+* 2.0.x onwards supports tag filtering in the work items listed in a report. A report can have many WILOOPs with different filters. 2.18.x & 2.19.x add support for advanced work item filtering
+* The Azure DevOps REST APIs have a limitation that by default they only return 200 items. As a release could include more Work Items or ChangeSets/Commits. A workaround for this has been added [#349](https://github.com/rfennell/AzurePipelines/issues/349). Since version 2.12.x this feature has been defaulted on. To disable it set the variable 'ReleaseNotes.Fix349' to 'false'
+
+**IMPORTANT** - There have been two major versions of this extension, this is because
+* V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs. This version is not longer shipped in extension download from [GitHub](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9)
+* V2 was a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the Node Azure DevOps SDK, with minor but breaking changes in the template format and that oAuth needs enabling on the agent running the tasks .
 
 # Usage
 As with my original [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks), this task generates a release notes file based on a template passed into the tool.  
@@ -25,9 +24,9 @@ If the template file is markdown (other formats are possible) the output report 
 ```
 # Release notes
 ## Notes for release  New Empty Definition 25-Mar
-**Release Number**  : Release-5
+**Release Number** : Release-5
 **Release completed** : 2017-04-03T19:32:25.76Z
-**Compared Release Number**  : Release-4
+**Compared Release Number** : Release-4
 
 ### Associated work items
 * ** Epic 21 ** Assigned by: Richard Fennell (Work MSA) <bm-richard.fennell@outlook.com>  Add items
@@ -47,17 +46,19 @@ The `@@..@@` markers are special loop control flags, they should be used in pair
 The `@@..@@` marker options are as follow
 
    - `@@CSLOOP@@` should wrapper the block to be performed for all changesets/commits
-   - `@@WILOOP@@` should wrapper the block to be performed for all work items. This maker can accept a list of tags and field options that can be used as a filter. The general for is `@@WILOOP[ALL|ANY]:TAG:Fieldname=value:...@@`, there can be any number of parameters e.g.
+   - `@@WILOOP@@` should wrapper the block to be performed for all work items. This marker can accept a list of tags and field options that can be used as a filter on the work items. The general format is `@@WILOOP[ALL|ANY]:TAG:Fieldname=value:...@@`, there can be any number of parameters e.g.
       - `@@WILOOP:TAG1:TAG2@@` matches work items that have all tags (legacy behaviour for backwards compatability)
-      - `@@WILOOP[ALL]:TAG1:TAG2@@` matches work items that have all tags  (equivalent to legacy behaviour)
-      - `@@WILOOP[ANY]:TAG1:TAG2@@` matches work items that any of the tags 
+      - `@@WILOOP[ALL]:TAG1:TAG2@@` matches work items that have all tags (equivalent to legacy behaviour)
+      - `@@WILOOP[ANY]:TAG1:TAG2@@` matches work items that have any of the tags 
       - `@@WILOOP[ALL]:TAG1:System.Title=Exact match to title@@` matches work items that have both the named tag and the field  
-      - `@@WILOOP[ANY]:TAG1:System.Title=Exact match to title@@` matches work items that have either the named tag and the field  
-- The `${properties}` blocks inside the @@..@@ markers are the fields to be expanded from properties in the JSON response objects returned from the Azure DevOps REST API. Note: To dump all possible values use for for `${JSON.stringify(propertyToDump)}`
+      - `@@WILOOP[ANY]:TAG1:System.Title=Exact match to title@@` matches work items that have either the named tag or the field  
+- The `${properties}` blocks inside the `@@..@@` markers are the fields to be expanded from properties in the JSON response objects returned from the Azure DevOps REST API. 
 
-Note: This task differed from the older [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks) in that the `${properties}` format changes slightly due to the move from PowerShell to Node within the task
+**Note:** To dump all possible values use the form `${JSON.stringify(propertyToDump)}`
 
-So a template to run within a Release for GIT or TFVC based source (if using V2 or later of this task) repo could be
+**Note:** This task differed from the older [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks) that used the format `$(properties)`, this task uses the format `${properties}` due to the move from PowerShell to Node within the task
+
+An example template to run within a Release for GIT or TFVC Azure DevOps build based artifacts could be
 
 ```
 # Release notes
@@ -99,41 +100,41 @@ So a template to run within a Release for GIT or TFVC based source (if using V2 
 
 ## Template Objects ##
 
-What is done behind the scenes is that each line of the template is evaluated as a line of Node.JS in turn, the in memory versions of the objects are used to provide the runtime values. The available objects to get data from at runtime are
+What is done behind the scenes is that each `${properties}` block in the template is evaluated as a line of Node.JS in turn. The property  objects available to get data from at runtime are:
 
 ### Common objects ###
-* **widetail** – the details of a given work item inside the loop returned by the REST call Get Work Item (within the `@@WILOOP@@@` block) the : format can be used to specify tags to filter on (in V2)
-* **csdetail** – the details of a given Git commit or TFVC changeset inside the loop returned by the REST call to Get Commits(within the `@@CSLOOP@@@` block)
+* **widetail** – the details of a given work item within the `@@WILOOP@@@` block.
+* **csdetail** – the details of a given Git commit or TFVC changeset inside the `@@CSLOOP@@@` block
 
 ### Release objects (only availble in a release) ###
-* **releaseDetails** – the release details returned by the REST call Get Release Details of the release that the task was triggered for.
-* **compareReleaseDetails** - the release that the REST call is using to comapre against
+* **releaseDetails** – the release details of the release that the task was triggered for.
+* **compareReleaseDetails** - the the previous successful release that comparisons are bein made against
 
 ### Build objects (only availble in a build) ###
-* **buildDetails** – the build details returned by the REST call Get Build Details of the build that the task was triggered for.
+* **buildDetails** – the build details of the build that the task was triggered from.
 
 ## Usage
 Once the extension is added to your Azure DevOps Server (TFS) or Azure DevOps Services, the task should be available in the utilities section of 'add tasks'
 
 **IMPORTANT** - The V2 Tasks requires that oAuth access is enabled on agent running the task
 
-The task takes three parameters
+The task takes the following parameters
 
 * The output file name, for builds this will normally be set to `$(Build.ArtifactStagingDirectory)\releasenotes.md` as the release notes will usually be part of your build artifacts. For release management usage the parameter should be set to something like `$(System.DefaultWorkingDirectory)\releasenotes.md`. Where you choose to send the created files is down to your deployment needs.
-* A picker allows you to set if the template is provided as a file in source control (usually used for builds) or an inline file (usually used for release management). The setting of this picker effects which third parameter is shown
+* A picker allows you to set if the template is provided as a file in source control or an inline file. The setting of this picker effects which other parameters are shown
     * Either, the template file name, which should point to a file in source control.
     * Or, the template text.
 * (Advanced) Empty set text - the text to place in the results file if there is no changeset/commit or WI content
-* (Advanced) Name of the release stage to look for the last successful release in, default to empty value so uses the current stage of the release that the task is running in (release mode, when scanning past build only)
+* (Advanced) Name of the release stage to look for the last successful release in, defaults to empty value so uses the current stage of the release that the task is running in.
 * (Advanced V2 only) Delimiter for the tag separation in the WI Loop, defaults to colon ':'
 * (Advanced V2 only) Equality symbol for the equivalents in field filters in the WI Loop, defaults to equals '='
 * (Advanced V2 only) Do not generate release notes of a re-deploy. If this is set, and a re-deploy occurs the task will succeeds with a warning
-* (Outputs) Optional: Name of the variable that markdown contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the size. For larger release notes it is best to save the file locally as opposed to using an output variable.
+* (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.
 
 ### Output location ###
 
 When using this task within a build then it is sensible to place the release notes files as a build artifacts.
 
-However, within a release there are no such artifacts location. Hence, it is recommended that a task such as the [WIKI Updater](https://marketplace.visualstudio.com/items?itemName=richardfennellBM.BM-VSTS-WIKIUpdater-Tasks) is used to upload the resultant file to a WIKI
+However, within a release there are no such artifacts location. Hence, it is recommended that a task such as the [WIKI Updater](https://marketplace.visualstudio.com/items?itemName=richardfennellBM.BM-VSTS-WIKIUpdater-Tasks) is used to upload the resultant file to a WIKI. Though there are other options such as store the file on a UNC share, in an Azure DevOps Artifact or sent as an email.
 
 
