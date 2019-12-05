@@ -30,4 +30,10 @@ describe("Test the find file processing", () => {
       expect(files.length).equals(0);
     });
 
+    it("should be able to find a directory.build.props file", () => {
+      var input = "";
+      var files = findFiles(`test/testdata`, "directory.build.props.initial", files, SplitSDKName(input));
+      expect(files.length).equals(0);
+    });
+
 });

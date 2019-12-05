@@ -106,13 +106,13 @@ function UpdateSingleField(file, field, newVersion) {
         var tmpField = `<${field}>`;
         var newPropertyGroupText = "";
         if (propertyGroupText.toString().toLowerCase().indexOf(tmpField.toLowerCase()) === -1) {
-            console.log (`The ${tmpField} version is not present in the .csproj file so adding it`);
+            console.log (`The ${tmpField} version is not present in the file so adding it`);
             // add the field, trying to avoid having to load library to parse xml
             // Check for TargetFramework when only using a single framework
             var regexp = new RegExp("</TargetFramework>", "gi");
             tmpField = tmpField.replace("<", "").replace(">", "");
             if (regexp.exec(propertyGroupText.toString())) {
-                console.log (`The ${file} .csproj file only targets 1 framework`);
+                console.log (`The ${file} file only targets 1 framework`);
                 var newVersionField = `</TargetFramework><${tmpField}>${newVersion}<\/${tmpField}>`;
                 newPropertyGroupText = propertyGroupText.replace(`</TargetFramework>`, newVersionField);
                 fs.writeFileSync(file, filecontent.toString().replace(propertyGroupText, newPropertyGroupText));
