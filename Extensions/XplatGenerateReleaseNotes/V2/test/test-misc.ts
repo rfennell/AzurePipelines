@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { fixline} from "../ReleaseNotesFunctions";
+import { fixline, addSpace} from "../ReleaseNotesFunctions";
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import "mocha";
 
@@ -12,6 +12,10 @@ describe("Misc test", () => {
       var fixed = fixline(line);
       var processedLine = eval(fixed);
       expect(processedLine).to.equal("This is a line value of abc 4/9/2019 16:38");
+    });
+
+    it("should be able get an indent", () => {
+      expect(addSpace(2)).to.equal("     "); // 5 spaces
     });
 
 });

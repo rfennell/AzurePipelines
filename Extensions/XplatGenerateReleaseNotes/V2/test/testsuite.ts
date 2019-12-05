@@ -22,11 +22,6 @@ describe("a test suite", () => {
     if (debug) {
         console.log(tr.stdout);
     }
-    // if (tr.stderr) {
-    //     assert.fail(tr.stderr);
-    //     return;
-    // }
-
     expect(tr.failed, "should have failed");
   });
 });

@@ -28,6 +28,11 @@
 * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
 @@WILOOP[ANY]:TAG 1:TAG2@@  
 
+### Associated work items that have the title 'This is a title' or the tag 'Tage'
+@@WILOOP[ALL]:System.Title=This is a title:TAG 1@@  
+* **${widetail.fields['System.WorkItemType']} ${widetail.id}** ${widetail.fields['System.Title']}  
+@@WILOOP:TAG 1@@  
+
 ### Associated commits
 @@CSLOOP@@  
 * ** ID ${csdetail.id} ** ${csdetail.message}    

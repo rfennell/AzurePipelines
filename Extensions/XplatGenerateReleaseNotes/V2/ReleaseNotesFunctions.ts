@@ -154,7 +154,7 @@ export function getTemplate(
 }
 
 // The Argument compareReleaseDetails is used in the template processing.  Renaming or removing will break the templates
-export function processTemplate(template, workItems: WorkItem[], commits: Change[], buildDetails: Build, releaseDetails: Release, compareReleaseDetails: Release, emptySetText, delimiter): string {
+export function processTemplate(template, workItems: WorkItem[], commits: Change[], buildDetails: Build, releaseDetails: Release, compareReleaseDetails: Release, emptySetText, delimiter, fieldEquality): string {
 
     var widetail = undefined;
     var csdetail = undefined;
@@ -177,7 +177,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
            // agentApi.logDebug("Line: " + line);
            // get the line mode (if any)
            var mode = getMode(line);
-           var wiFilter = getModeTags(line, delimiter);
+           var wiFilter = getModeTags(line, delimiter, fieldEquality);
 
            if (mode !== Mode.BODY) {
                // is there a mode block change
@@ -224,35 +224,87 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                         // store the block and load the first item
                         // Need to check if we are in tag mode
                         var modeArray = [];
-                        if (wiFilter.tags.length > 0) {
+                        if (wiFilter.tags.length > 0 || wiFilter.fields.length > 0) {
                             widetail = undefined;
+                            var parts;
+                            var okToAdd;
                             workItems.forEach(wi => {
-                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} tags '${wi.fields["System.Tags"]}' against '${wiFilter.tags.sort().join("; ")}' (ignoring case) using comparison filter '${wiFilter.modifier}'`);
+                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} witht tags '${wi.fields["System.Tags"]}' against tags '${wiFilter.tags.sort().join("; ")}' and fields '${wiFilter.fields.sort().join("; ")}' using comparison filter '${wiFilter.modifier}'`);
                                 switch (wiFilter.modifier) {
                                     case Modifier.All:
-                                        if ((wi.fields["System.Tags"] !== undefined) &&
-                                            (wi.fields["System.Tags"].toUpperCase() === wiFilter.tags.join("; ").toUpperCase())) {
-                                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as all tags match`);
+                                        agentApi.logDebug (`${addSpace(modeStack.length + 4)} Using ALL filter`);
+                                        if (wiFilter.tags.length > 0) {
+                                            if ((wi.fields["System.Tags"] !== undefined) &&
+                                                (wi.fields["System.Tags"].toUpperCase() === wiFilter.tags.join("; ").toUpperCase())) {
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 4)} Tags match, need to check fields`);
+                                                okToAdd = true;
+                                            } else {
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 4)} Tags do not match, no need to check fields`);
+                                                okToAdd = false;
+                                            }
+                                        } else {
+                                            agentApi.logDebug (`${addSpace(modeStack.length + 4)} No tags in filter to match, need to check fields`);
+                                            okToAdd = true;
+                                        }
+                                        if (okToAdd && wiFilter.fields.length > 0) {
+                                            for (let field of wiFilter.fields) {
+                                                parts = field.split("=");
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 4)} Comparing field '${parts[0]}' contents '${wi.fields[parts[0]]}' to '${parts[1]}'`);
+                                                if (wi.fields[parts[0]] !== parts[1]) {
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 4)} Field does not match`);
+                                                    okToAdd = false;
+                                                    break;
+                                                } else {
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 4)} Field matches`);
+                                                }
+                                            }
+                                        }
+                                        if (okToAdd) {
+                                            agentApi.logDebug (`${addSpace(modeStack.length + 4)} Adding WI ${wi.id} as all tags and fields match`);
                                             modeArray.push(wi);
                                         }
                                         break;
                                     case Modifier.ANY:
-                                        if ((wi.fields["System.Tags"] !== undefined)) {
+                                        agentApi.logDebug (`${addSpace(modeStack.length + 4)} Using ANY filter`);
+                                        okToAdd = false;
+                                        if ((wi.fields["System.Tags"] !== undefined) && (wiFilter.tags.length > 0)) {
                                             for (let tag of wiFilter.tags) {
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 4)} Checking tag ${tag}`);
                                                 if (wi.fields["System.Tags"].toUpperCase().indexOf(tag.toUpperCase()) !== -1) {
-                                                    agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding WI ${wi.id} as at least one tag matches`);
-                                                    modeArray.push(wi);
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 4)} Found match on tag`);
+                                                    okToAdd = true;
                                                     break;
+                                                } else {
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 4)} No match on tag`);
+                                                }
+                                            }
+                                        } else {
+                                            agentApi.logDebug (`${addSpace(modeStack.length + 4)} No tags to check, checking fields`);
+                                        }
+                                        if (okToAdd === false) {
+                                            for (let field of wiFilter.fields) {
+                                                parts = field.split("=");
+                                                agentApi.logDebug (`${addSpace(modeStack.length + 4)} Comparing field '${parts[0]}' contents '${wi.fields[parts[0]]}' to '${parts[1]}'`);
+                                                if (wi.fields[parts[0]] !== undefined && wi.fields[parts[0]] === parts[1]) {
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 4)} Found match on field`);
+                                                    okToAdd = true;
+                                                    break;
+                                                } else {
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 4)} No match on field`);
                                                 }
                                             }
                                         }
+                                        if (okToAdd) {
+                                            agentApi.logDebug (`${addSpace(modeStack.length + 4)} Adding WI ${wi.id} as at least one tag or field matches`);
+                                            modeArray.push(wi);
+                                        }
                                         break;
                                     default:
-                                        agentApi.logWarn (`${addSpace(modeStack.length + 2)} Invalid filter passed, skipping WI ${wi.id}`);
+                                        agentApi.logWarn (`${addSpace(modeStack.length + 4)} Invalid filter passed, skipping WI ${wi.id}`);
                                 }
                             });
                         } else {
-                            agentApi.logDebug (`${addSpace(modeStack.length + 2)} Adding all WI`);
+                            agentApi.logDebug (`${addSpace(modeStack.length + 4)} Adding all WI as no tag or fields filter`);
                             modeArray = workItems;
                         }
                         agentApi.logDebug (`${addSpace(modeStack.length + 1)} There are ${modeArray.length} WI to add`);
@@ -340,6 +392,7 @@ export const Modifier = {
 export class WiFilter {
     modifier;
     tags;
+    fields;
 }
 
 export function getMode (line): string {
@@ -357,21 +410,28 @@ export function getMode (line): string {
     return mode;
 }
 
-export function getModeTags (line, delimiter): WiFilter {
-    line = line.trim().toUpperCase();
+export function getModeTags (line, tagDelimiter, fieldEquivalent): WiFilter {
+    line = line.trim();
     var filter = new WiFilter();
     filter.modifier = Modifier.All;
     filter.tags = [];
+    filter.fields = [];
     if (line.startsWith("@@") && line.endsWith("@@") ) {
         line = line.replace(/@@/g, ""); // have to use regex form of replace else only first replaced
         var match = line.match(/(\[.*?\])/g);
-        if (match !== null && match.toString() === "[ANY]") {
+        if (match !== null && match.toString().toUpperCase() === "[ANY]") {
             filter.modifier = Modifier.ANY;
         }
-        var parts = line.split(delimiter);
+        var parts = line.split(tagDelimiter);
         if (parts.length > 1) {
             parts.splice(0, 1); // return the tags
-            filter.tags = parts; // return the tags
+            parts.forEach(part => {
+                if (part.indexOf(fieldEquivalent) !== -1 ) {
+                    filter.fields.push(part.replace(fieldEquivalent, "="));
+                } else {
+                    filter.tags.push(part.toUpperCase());
+                }
+            });
         }
     }
     return filter;
@@ -397,7 +457,7 @@ function addStackItem (
     modeStack.push({"BlockMode": blockMode.trim(), "BlockQueue": queue, "Index": index});
 }
 
-function addSpace (indent): string {
+export function addSpace (indent): string {
     var size = 3;
     var upperBound = size * indent;
     var padding = "";
