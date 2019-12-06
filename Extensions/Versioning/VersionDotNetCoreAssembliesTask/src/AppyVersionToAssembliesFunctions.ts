@@ -34,7 +34,7 @@ export function extractVersion(injectversion, versionRegex, versionNumber ) {
 
 export function SplitSDKName(sdkstring) {
     var array = [];
-    if (sdkstring.length > 0) {
+    if (sdkstring !== null && sdkstring.length > 0) {
         array = sdkstring.trim().split(",").map(item => item.trim());
     }
     return array;
@@ -69,11 +69,11 @@ export function findFiles (dir, filename , filelist, sdknames: string[]) {
                     } else {
                         console.log(`Skipping file ${file} as is not a .NETCore Project`);
                     }
-                } else if (file.toLowerCase().indexOf("directory.build.props") !== -1 && sdknames.length === 0) {
+                } else if (file.toLowerCase().indexOf("directory.build.props") !== -1) {
                     console.log(`Adding file ${file} as is a directory.build.props file`);
                     filelist.push(path.join(dir, file));
                 } else {
-                    console.log(`No SDK Name passed, so cannot match .NETCore project files as is not a directory.build.props file`);
+                    console.log(`${file} considered but not added either because has is not .NETCore project file or a directory.build.props file`);
                 }
             }
         }

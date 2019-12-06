@@ -36,4 +36,16 @@ describe("Test the find file processing", () => {
       expect(files.length).equals(1);
     });
 
+    it("should be able to find a directory.build.props file with no SDK is null", () => {
+      var input = null;
+      var files = findFiles(`test/testdata`, "directory.build.props.initial", files, SplitSDKName(input));
+      expect(files.length).equals(1);
+    });
+
+    it("should be able to find a directory.build.props file with SDK passed", () => {
+      var input = "Microsoft.NET.Sdk";
+      var files = findFiles(`test/testdata`, "directory.build.props.initial", files, SplitSDKName(input));
+      expect(files.length).equals(1);
+    });
+
 });
