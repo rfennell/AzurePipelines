@@ -46,20 +46,17 @@ export function findFiles (dir, filename , filelist, sdknames: string[]) {
     var fs = fs || require("fs"),
         files = fs.readdirSync(dir);
     filelist = filelist || [];
-    if (sdknames.length === 0 ) {
-        console.log (`No SDK Name passed, so cannot match files`);
-    } else {
-        files.forEach(function(file) {
-            if (fs.statSync(path.join(dir, file)).isDirectory()) {
-                filelist = findFiles(path.join(dir, file), filename, filelist, sdknames);
-            }
-            else {
-                if (file.toLowerCase().endsWith(filename.toLowerCase())) {
-                    var filecontent = fs.readFileSync(path.join(dir, file));
-                    var matchingSDK = false;
-                    let count = sdknames.length;
+    files.forEach(function(file) {
+        if (fs.statSync(path.join(dir, file)).isDirectory()) {
+            filelist = findFiles(path.join(dir, file), filename, filelist, sdknames);
+        }
+        else {
+            if (file.toLowerCase().endsWith(filename.toLowerCase())) {
+                var filecontent = fs.readFileSync(path.join(dir, file));
+                var matchingSDK = false;
+                if (file.toLowerCase().indexOf("directory.build.props") === -1 && sdknames.length > 0) {
                     // need to use a for loop to allow break, not the most elegent solution
-                    for (let i = 0; i < count; i++) {
+                    for (let i = 0; i < sdknames.length; i++) {
                         if (filecontent.toString().toLowerCase().indexOf(`<project sdk=\"${sdknames[i].toLowerCase()}`) !== -1) {
                             console.log(`Matched the file '${file}' using the SDK name '${sdknames[i]}'`);
                             matchingSDK = true;
@@ -72,10 +69,15 @@ export function findFiles (dir, filename , filelist, sdknames: string[]) {
                     } else {
                         console.log(`Skipping file ${file} as is not a .NETCore Project`);
                     }
+                } else if (file.toLowerCase().indexOf("directory.build.props") !== -1 && sdknames.length === 0) {
+                    console.log(`Adding file ${file} as is a directory.build.props file`);
+                    filelist.push(path.join(dir, file));
+                } else {
+                    console.log(`No SDK Name passed, so cannot match .NETCore project files as is a directory.build.props file`);
                 }
             }
-        });
-    }
+        }
+    });
     return filelist;
 }
 

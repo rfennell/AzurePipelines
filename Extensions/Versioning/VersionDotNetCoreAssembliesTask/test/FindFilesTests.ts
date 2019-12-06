@@ -24,16 +24,16 @@ describe("Test the find file processing", () => {
       expect(files.length).equals(9);
     });
 
-    it("should not find any files is empty string of SDKs passed", () => {
+    it("should not find any  .csproj files is empty string of SDKs passed", () => {
       var input = "";
       var files = findFiles(`test/testdata`, ".csproj.initial", files, SplitSDKName(input));
       expect(files.length).equals(0);
     });
 
-    it("should be able to find a directory.build.props file", () => {
+    it("should be able to find a directory.build.props file with no SDK passed", () => {
       var input = "";
       var files = findFiles(`test/testdata`, "directory.build.props.initial", files, SplitSDKName(input));
-      expect(files.length).equals(0);
+      expect(files.length).equals(1);
     });
 
 });
