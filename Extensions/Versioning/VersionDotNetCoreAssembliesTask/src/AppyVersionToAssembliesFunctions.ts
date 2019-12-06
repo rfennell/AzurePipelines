@@ -73,7 +73,7 @@ export function findFiles (dir, filename , filelist, sdknames: string[]) {
                     console.log(`Adding file ${file} as is a directory.build.props file`);
                     filelist.push(path.join(dir, file));
                 } else {
-                    console.log(`No SDK Name passed, so cannot match .NETCore project files as is a directory.build.props file`);
+                    console.log(`No SDK Name passed, so cannot match .NETCore project files as is not a directory.build.props file`);
                 }
             }
         }

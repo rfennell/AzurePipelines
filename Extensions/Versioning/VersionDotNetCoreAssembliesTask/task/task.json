@@ -69,7 +69,7 @@
       "label": "Filename Pattern",
       "defaultValue": ".csproj",
       "required": true,
-      "helpMarkDown": "The filename pattern to update.",
+      "helpMarkDown": "The filename pattern to update. Default to .csproj or can be directory.build.props",
       "groupName":"advanced"
     },
     {
@@ -77,8 +77,8 @@
       "type": "string",
       "label": "SDK Names",
       "defaultValue": "Microsoft.NET.Sdk",
-      "required": true,
-      "helpMarkDown": "A comma separated list of SDK namespaces to use to match .csproj file.",
+      "required": false,
+      "helpMarkDown": "A comma separated list of SDK namespaces to use to match .csproj file. Ignored if filename pattern is directory.build.props",
       "groupName":"advanced"
     },
      {
