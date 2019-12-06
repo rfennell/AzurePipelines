@@ -27,6 +27,12 @@ The Assembly & .NET Core versioner also takes the following Advanced option
 
 * [Advanced] Field: The name of the version field to update, if blank updates all. Default is empty
 
+The .NET Core versioner also takes the following Advanced option
+
+* [Advanced] FilenamePattern: The filename pattern to update. Default to .csproj or can be directory.build.props
+* [Advanced] SDKNames: A comma separated list of SDK namespaces to use to match .csproj file. Ignored if filename pattern is directory.build.props
+
+
 The DACPAC versioner also takes the following Advanced option
 
 * The task can now be run pre-build similar to the other versioning tasks and will set the DacVersion property in the SqlProj file to the required version number.

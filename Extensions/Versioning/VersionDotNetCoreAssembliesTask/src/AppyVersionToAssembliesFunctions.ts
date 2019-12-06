@@ -34,7 +34,7 @@ export function extractVersion(injectversion, versionRegex, versionNumber ) {
 
 export function SplitSDKName(sdkstring) {
     var array = [];
-    if (sdkstring.length > 0) {
+    if (sdkstring !== null && sdkstring.length > 0) {
         array = sdkstring.trim().split(",").map(item => item.trim());
     }
     return array;
@@ -46,20 +46,17 @@ export function findFiles (dir, filename , filelist, sdknames: string[]) {
     var fs = fs || require("fs"),
         files = fs.readdirSync(dir);
     filelist = filelist || [];
-    if (sdknames.length === 0 ) {
-        console.log (`No SDK Name passed, so cannot match files`);
-    } else {
-        files.forEach(function(file) {
-            if (fs.statSync(path.join(dir, file)).isDirectory()) {
-                filelist = findFiles(path.join(dir, file), filename, filelist, sdknames);
-            }
-            else {
-                if (file.toLowerCase().endsWith(filename.toLowerCase())) {
-                    var filecontent = fs.readFileSync(path.join(dir, file));
-                    var matchingSDK = false;
-                    let count = sdknames.length;
+    files.forEach(function(file) {
+        if (fs.statSync(path.join(dir, file)).isDirectory()) {
+            filelist = findFiles(path.join(dir, file), filename, filelist, sdknames);
+        }
+        else {
+            if (file.toLowerCase().endsWith(filename.toLowerCase())) {
+                var filecontent = fs.readFileSync(path.join(dir, file));
+                var matchingSDK = false;
+                if (file.toLowerCase().indexOf("directory.build.props") === -1 && sdknames.length > 0) {
                     // need to use a for loop to allow break, not the most elegent solution
-                    for (let i = 0; i < count; i++) {
+                    for (let i = 0; i < sdknames.length; i++) {
                         if (filecontent.toString().toLowerCase().indexOf(`<project sdk=\"${sdknames[i].toLowerCase()}`) !== -1) {
                             console.log(`Matched the file '${file}' using the SDK name '${sdknames[i]}'`);
                             matchingSDK = true;
@@ -72,10 +69,15 @@ export function findFiles (dir, filename , filelist, sdknames: string[]) {
                     } else {
                         console.log(`Skipping file ${file} as is not a .NETCore Project`);
                     }
+                } else if (file.toLowerCase().indexOf("directory.build.props") !== -1) {
+                    console.log(`Adding file ${file} as is a directory.build.props file`);
+                    filelist.push(path.join(dir, file));
+                } else {
+                    console.log(`${file} considered but not added either because has is not .NETCore project file or a directory.build.props file`);
                 }
             }
-        });
-    }
+        }
+    });
     return filelist;
 }
 
@@ -106,13 +108,13 @@ function UpdateSingleField(file, field, newVersion) {
         var tmpField = `<${field}>`;
         var newPropertyGroupText = "";
         if (propertyGroupText.toString().toLowerCase().indexOf(tmpField.toLowerCase()) === -1) {
-            console.log (`The ${tmpField} version is not present in the .csproj file so adding it`);
+            console.log (`The ${tmpField} version is not present in the file so adding it`);
             // add the field, trying to avoid having to load library to parse xml
             // Check for TargetFramework when only using a single framework
             var regexp = new RegExp("</TargetFramework>", "gi");
             tmpField = tmpField.replace("<", "").replace(">", "");
             if (regexp.exec(propertyGroupText.toString())) {
-                console.log (`The ${file} .csproj file only targets 1 framework`);
+                console.log (`The ${file} file only targets 1 framework`);
                 var newVersionField = `</TargetFramework><${tmpField}>${newVersion}<\/${tmpField}>`;
                 newPropertyGroupText = propertyGroupText.replace(`</TargetFramework>`, newVersionField);
                 fs.writeFileSync(file, filecontent.toString().replace(propertyGroupText, newPropertyGroupText));
