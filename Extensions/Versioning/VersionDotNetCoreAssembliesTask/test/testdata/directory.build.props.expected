@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <Version>9.9.9.9</Version>
+    <FileVersion>1.2.1811.0</FileVersion>
+    <Product>A test</Product>
+    <Company>ABC Inc</Company>
+    <Copyright>Copyright © </Copyright>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+</Project>
