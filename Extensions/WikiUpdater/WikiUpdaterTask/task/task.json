@@ -55,6 +55,15 @@
       "helpMarkDown": "Replace the file in the WIKI"
     },
     {
+      "name": "appendToFile",
+      "type": "boolean",
+      "label": "Append to end of file in the WIKI",
+      "defaultValue": "True",
+      "required": true,
+      "helpMarkDown": "Append to end of file in the WIKI if not replacing file",
+      "visibleRule":"replaceFile = False"
+    },
+    {
       "name": "dataIsFile",
       "type": "boolean",
       "label": "Data is a file",
