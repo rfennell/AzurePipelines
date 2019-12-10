@@ -66,7 +66,7 @@ export function GetWorkingFile(filename, logInfo): any {
     return name;
 }
 
-export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError, replaceFile) {
+export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError, replaceFile, appendToFile) {
     const git = simplegit();
 
     let remote = "";
@@ -112,8 +112,15 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
             fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
             logInfo(`Created the ${workingFile} in ${workingPath}`);
         } else {
-            fs.appendFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
-            logInfo(`Appended to the ${workingFile} in ${workingPath}`);
+            if (appendToFile) {
+                fs.appendFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+                logInfo(`Appended to the ${workingFile} in ${workingPath}`);
+            } else {
+                var oldContent = fs.readFileSync(workingFile);
+                fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+                fs.appendFileSync(workingFile, oldContent);
+                logInfo(`Prepending to the ${workingFile} in ${workingPath}`);
+            }
         }
 
         await git.add(filename);

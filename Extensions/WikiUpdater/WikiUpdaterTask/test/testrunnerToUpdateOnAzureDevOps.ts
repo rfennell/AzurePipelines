@@ -23,5 +23,6 @@ const message = "A message";
 const gitname = "BuildProcess";
 const gitemail = "Build@Process";
 const replaceFile = false;
+const appendFile = true;
 
-UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile);
+UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendFile);
