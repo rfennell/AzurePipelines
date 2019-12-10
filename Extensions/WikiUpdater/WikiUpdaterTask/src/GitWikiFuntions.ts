@@ -116,7 +116,10 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
                 fs.appendFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
                 logInfo(`Appended to the ${workingFile} in ${workingPath}`);
             } else {
-                var oldContent = fs.readFileSync(workingFile);
+                var oldContent = "";
+                if (fs.existsSync(workingFile)) {
+                    oldContent = fs.readFileSync(workingFile, "utf8");
+                }
                 fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
                 fs.appendFileSync(workingFile, oldContent);
                 logInfo(`Prepending to the ${workingFile} in ${workingPath}`);
