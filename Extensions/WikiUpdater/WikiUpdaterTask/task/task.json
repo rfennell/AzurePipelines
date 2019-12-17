@@ -100,7 +100,7 @@
     {
       "name": "tagRepo",
       "type": "boolean",
-      "label": "Tag the comment",
+      "label": "Tag the commit",
       "defaultValue": "False",
       "required": false,
       "helpMarkDown": "If true a tag will be commited to the repo"
@@ -111,7 +111,7 @@
       "label": "Tag",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "Tag to commit to repo",
+      "helpMarkDown": "Tag text to commit to repo",
       "visibleRule": "tagRepo = True"
     },
     {
