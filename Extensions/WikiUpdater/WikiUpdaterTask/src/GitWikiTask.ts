@@ -25,6 +25,8 @@ var replaceFile = tl.getBoolInput("replaceFile");
 var appendToFile = tl.getBoolInput("appendToFile");
 var dataIsFile = tl.getBoolInput("dataIsFile");
 var sourceFile = tl.getInput("sourceFile");
+var tagRepo = tl.getBoolInput("tagRepo");
+var tag = tl.getInput("tag");
 
 console.log(`Variable: Repo [${repo}]`);
 console.log(`Variable: Filename [${filename}]`);
@@ -40,6 +42,8 @@ console.log(`Variable: Password [${password}]`);
 console.log(`Variable: Localpath [${localpath}]`);
 console.log(`Variable: Data Is File [${dataIsFile}]`);
 console.log(`Variable: SoureFile [${sourceFile}]`);
+console.log(`Variable: Tag Repo [${tagRepo}]`);
+console.log(`Variable: Tag [${tag}]`);
 
 if (useAgentToken === true) {
     console.log(`Using OAUTH Agent Token, overriding username and password`);
@@ -51,4 +55,4 @@ if (dataIsFile === true) {
     contents = fs.readFileSync(sourceFile, "utf8");
 }
 
-UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendToFile);
+UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag);

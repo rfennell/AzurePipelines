@@ -21,6 +21,8 @@ Add the task to a build or release
 - GitEmail - The email for the .gitatrributes file e.g. _builduser@domain_
 - Replace File - Replace the file in the WIKI defaults to True
 - Append to File - Only meaninfful if using the option to not replace the file. In this case, adds the contents to end of file if true, if false inserts at the start of the page defaults to True
+- Tag Repo - If true the tag set in the Tag parameter will be written to the repo
+- Tag - The tag to add to the repo
 
 #### Advanced
 
