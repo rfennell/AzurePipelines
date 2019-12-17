@@ -98,6 +98,23 @@
       "helpMarkDown": "The commit message"
     },
     {
+      "name": "tagRepo",
+      "type": "boolean",
+      "label": "Tag the commit",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true a tag will be commited to the repo"
+    },
+    {
+      "name": "tag",
+      "type": "string",
+      "label": "Tag",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Tag text to commit to repo",
+      "visibleRule": "tagRepo = True"
+    },
+    {
       "name": "gitname",
       "type": "string",
       "label": "Git Name",

@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as rimraf from "rimraf";
 import * as path from "path";
 import * as process from "process";
+import { logWarning } from "./agentSpecific";
 
 // A wrapper to make sure that directory delete is handled in sync
 function rimrafPromise (localpath)  {
@@ -66,7 +67,7 @@ export function GetWorkingFile(filename, logInfo): any {
     return name;
 }
 
-export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError, replaceFile, appendToFile) {
+export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag) {
     const git = simplegit();
 
     let remote = "";
@@ -134,6 +135,17 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
 
         await git.push();
         logInfo(`Pushed to ${repo}`);
+
+        if (tagRepo) {
+            if (tag.length > 0) {
+                logInfo(`Adding tag ${tag}`);
+                await git.addTag(tag);
+                await git.pushTags();
+            } else {
+                logWarning(`Requested to add tag, but no tag passed`);
+            }
+        }
+
     } catch (error) {
         logError(error);
     }
