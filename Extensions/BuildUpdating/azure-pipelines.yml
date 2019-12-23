@@ -22,6 +22,19 @@ steps:
     rootDirectory: '$(ExtensionRoot)'
     targetFiles: '**\task.json'
 
+# standard block for Node
+- task: Npm@0
+  displayName: 'npm install BuildVariableTask'
+  inputs:
+    cwd: '$(ExtensionRoot)\BuildVariableTask'
+
+- task: Npm@0
+  displayName: 'npm run build BuildVariableTask'
+  inputs:
+    cwd: '$(ExtensionRoot)\BuildVariableTask'
+    command: run
+    arguments: build
+
 - task: TfxInstaller@2
   inputs:
     version: 'v0.6.x'
