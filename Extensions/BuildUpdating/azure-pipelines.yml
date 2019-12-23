@@ -28,6 +28,14 @@ steps:
   inputs:
     cwd: '$(ExtensionRoot)\BuildVariableTask'
 
+- task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
+  displayName: 'Scan for vulnerable package dependencies in BuildVariableTask'
+  inputs:
+    cwd: '$(ExtensionRoot)\BuildVariableTask\'
+    file: package.json
+    monitor: true
+    endpoint: 'Snky (Github RFennell)'
+
 - task: Npm@0
   displayName: 'npm run build BuildVariableTask'
   inputs:
@@ -35,12 +43,26 @@ steps:
     command: run
     arguments: build
 
+#- task: Npm@0
+#  displayName: 'npm run test BuildVariableTask'
+#  inputs:
+#    cwd: '$(ExtensionRoot)\BuildVariableTask'
+#    command: run
+#    arguments: test
+
+#- task: PublishTestResults@2
+#  displayName: 'Publish Test Results  BuildVariableTask'
+#  inputs:
+#    testResultsFiles: '$(ExtensionRoot)\BuildVariableTask\test-output\test-results.xml'
+#    testRunTitle: 'BuildVariableTask'
+
 - task: Npm@0
   displayName: 'npm run package BuildVariableTask'
   inputs:
     cwd: '$(ExtensionRoot)\BuildVariableTask'
     command: run
     arguments: package
+# end block
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results  BuildVariableTask'
