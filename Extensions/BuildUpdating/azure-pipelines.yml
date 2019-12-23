@@ -35,6 +35,20 @@ steps:
     command: run
     arguments: build
 
+- task: Npm@0
+  displayName: 'npm run package BuildVariableTask'
+  inputs:
+    cwd: '$(ExtensionRoot)\BuildVariableTask'
+    command: run
+    arguments: package
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results  BuildVariableTask'
+  inputs:
+    testResultsFiles: '$(ExtensionRoot)\BuildVariableTask\test-output\test-results.xml'
+    testRunTitle: 'BuildVariableTask'
+
+
 - task: TfxInstaller@2
   inputs:
     version: 'v0.6.x'
