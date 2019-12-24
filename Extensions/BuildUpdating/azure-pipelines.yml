@@ -32,6 +32,11 @@ steps:
     taskPath: '$(ExtensionRoot)\BuildRetensionTask'
     taskName: 'BuildRetensionTask'
 
+- template: node-template.yml
+  parameters:
+    taskPath: '$(ExtensionRoot)\GetBuildDefinitionVariableValueTask'
+    taskName: 'GetBuildDefinitionVariableValueTask'
+
 - task: TfxInstaller@2
   inputs:
     version: 'v0.6.x'

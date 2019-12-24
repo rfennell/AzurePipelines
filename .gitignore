@@ -294,6 +294,12 @@ Extensions/BuildUpdating/BuildRetensionTask/*.js.map
 Extensions/BuildUpdating/BuildRetensionTask/test/*.js
 Extensions/BuildUpdating/BuildRetensionTask/test/*.js.map
 
+Extensions/BuildUpdating/GetBuildDefinitionVariableValueTask/mode_modules
+Extensions/BuildUpdating/GetBuildDefinitionVariableValueTask/dist
+Extensions/BuildUpdating/GetBuildDefinitionVariableValueTask/*.js
+Extensions/BuildUpdating/GetBuildDefinitionVariableValueTask/*.js.map
+Extensions/BuildUpdating/GetBuildDefinitionVariableValueTask/test/*.js
+Extensions/BuildUpdating/GetBuildDefinitionVariableValueTask/test/*.js.map
 
 Extensions/
 
