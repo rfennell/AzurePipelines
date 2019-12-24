@@ -12,7 +12,8 @@ param
     $mode,
     $value,
     $usedefaultcreds, 
-    $artifacts
+    $artifacts,
+    $token
 )
 
 function Set-BuildDefinationVariable
@@ -24,11 +25,12 @@ function Set-BuildDefinationVariable
         $buildDefID,
         $data,
         $usedefaultcreds,
-		$apiVersion
+        $apiVersion,
+        $token
 
     )
 
-    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds -token $token
 
     write-verbose "Updating Build Definition $builddefID for $($tfsUri)/$($teamproject)"
 
@@ -47,11 +49,12 @@ function Set-BuildVariableGroupVariable
         $tfsuri,
         $teamproject,
         $data,
-        $usedefaultcreds
+        $usedefaultcreds,
+        $token
 
     )
 
-    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds -token $token
 
     write-verbose "Updating VariableGroup $variablegroupid for $($tfsUri)/$($teamproject)"
 
@@ -69,7 +72,8 @@ function Get-WebClient
 {
     param
     (
-       $usedefaultcreds
+       $usedefaultcreds,
+       $token
     )
 
     $webclient = new-object System.Net.WebClient
@@ -80,8 +84,7 @@ function Get-WebClient
         $webclient.UseDefaultCredentials = $true
     } else {
         Write-Verbose "Using SystemVssConnection personal access token"
-        $vstsEndpoint = Get-VstsEndpoint -Name SystemVssConnection -Require
-        $webclient.Headers.Add("Authorization" ,"Bearer $($vstsEndpoint.auth.parameters.AccessToken)")
+        $webclient.Headers.Add("Authorization" ,"Bearer $token")
     }
 
     $webclient.Encoding = [System.Text.Encoding]::UTF8
@@ -99,10 +102,11 @@ function Get-BuildDefination
         $teamproject,
         $buildDefID,
         $usedefaultcreds,
-		$apiVersion
+        $apiVersion,
+        $token
     )
 
-    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds -token $token
 
     write-verbose "Getting Build Definition $builddefID "
 
@@ -124,10 +128,11 @@ function Update-Build
         $variable,
         $value,
         $usedefaultcreds,
-		$apiVersion
+        $apiVersion,
+        $token
       )
     # get the old definition
-    $def = Get-BuildDefination -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -usedefaultcreds $usedefaultcreds
+    $def = Get-BuildDefination -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -usedefaultcreds $usedefaultcreds -token $token
 
     $foundGroup = $null
     $item = $null
@@ -178,7 +183,7 @@ function Update-Build
             $item.value = $newValue
             try {
                 # write it back
-                $response = Set-BuildDefinationVariable -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -data $def -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion
+                $response = Set-BuildDefinationVariable -tfsuri $tfsuri -teamproject $teamproject -builddefid $builddefid -data $def -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
             } catch {
                 Write-Error "Cannot update the build, probably a rights issues see https://github.com/rfennell/AzurePipelines/wiki/BuildTasks-Task (foot of page) to see notes on granting rights to the build user to edit build defintions"
             }
@@ -187,7 +192,7 @@ function Update-Build
             $item.value = $newValue
             try {
                 # write it back
-                $response = Set-BuildVariableGroupVariable -tfsuri $tfsuri -teamproject $teamproject -data $group -usedefaultcreds $usedefaultcreds
+                $response = Set-BuildVariableGroupVariable -tfsuri $tfsuri -teamproject $teamproject -data $group -usedefaultcreds $usedefaultcreds -token $token
             } catch {
                 Write-Error "Cannot update the variable group, probably a rights issues see https://github.com/rfennell/AzurePipelines/wiki/BuildTasks-Task (foot of page) to see notes on making the build user an adminsitrator for the variable group"
             }
@@ -204,10 +209,11 @@ function Get-BuildsDefsForRelease
         $tfsuri,
         $teamproject,
         $releaseID,
-        $usedefaultcreds
+        $usedefaultcreds,
+        $token
     )
 
-    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds -token $token
 
     write-verbose "Getting Builds for Release releaseID"
 
@@ -242,12 +248,13 @@ function Get-Build
     $teamproject,
     $buildid,
     $usedefaultcreds,
-	$apiVersion
+    $apiVersion,
+    $token
     )
 
     write-verbose "Getting BuildDef for Build"
 
-    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds -token $token
     $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildid)?api-version=$apiVersion"
     $jsondata = $webclient.DownloadString($uri) | ConvertFrom-Json
     $jsondata
@@ -271,10 +278,10 @@ Write-Verbose "Running inside a build so updating current build $buildid"
 $apiVersion = "4.0"
 write-verbose "Checking API version available"
 try {
-	$build = Get-Build -tfsuri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion
+	$build = Get-Build -tfsuri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
 } catch {
 	$apiVersion = "2.0"
-	$build = Get-Build -tfsuri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion
+	$build = Get-Build -tfsuri $collectionUrl -teamproject $teamproject -buildid $buildid -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
 }
 write-verbose "API Version is $apiversion"
 
@@ -287,22 +294,22 @@ if ( [string]::IsNullOrEmpty($releaseid))
     $builddefid = $build.definition.id
     Write-Verbose "Build has definition id of $builddefid"
 
-    Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion
+    Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
 } else {
     Write-Verbose "Running inside a release so updating asking which build(s) to update"
     if ($buildmode -eq "AllArtifacts")
     {
         Write-Verbose ("Updating all artifacts")
-        $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
+        $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds --token $token
         foreach($build in $builddefs)
         {
             Write-Verbose ("Updating artifact $build.name")
-            Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $build.id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion
+            Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $build.id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
         }
     } elseif ($buildmode -eq "Prime")
     {
         Write-Verbose ("Updating only primary artifact")
-        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion
+        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
     } else 
     {
         Write-Verbose ("Updating only named artifacts")
@@ -311,13 +318,13 @@ if ( [string]::IsNullOrEmpty($releaseid))
         } else {
             $artifactsArray = $artifacts -split "," | foreach {$_.Trim()}
             if ($artifactsArray -gt 0) {
-                $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds
+                $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds -token $token
                 Write-Verbose "$($builddefs.Count) builds found for release"
                 foreach($build in $builddefs)
                 {
                     if ($artifactsArray -contains $build.name) {
                         Write-Verbose ("Updating artifact $($build.name)")
-                        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $build.id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion
+                        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $build.id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
                     } else {
                         Write-Verbose ("Skipping artifact $($build.name) as not in named list")
                     }

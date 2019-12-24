@@ -27,6 +27,9 @@ export async function run() {
         // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");
 
+        let url = tl.getEndpointUrl("SYSTEMVSSCONNECTION", false);
+        let token = tl.getEndpointAuthorizationParameter("SYSTEMVSSCONNECTION", "ACCESSTOKEN", false);
+
         // find the executeable
         let executable = "pwsh";
         if (tl.getVariable("AGENT.OS") === "Windows_NT") {
@@ -41,7 +44,8 @@ export async function run() {
         // we need to not pass the null param
         var args = [__dirname + "\\BuildVariableTask.ps1",
                     "-collectionUrl", collectionUrl,
-                    "-teamproject", teamproject
+                    "-teamproject", teamproject,
+                    "-token", token
                 ];
 
         if (releaseid) {
