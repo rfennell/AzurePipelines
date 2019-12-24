@@ -97,7 +97,7 @@
   "instanceNameFormat": "Update Build Variable",
   "execution": {
     "Node": {
-      "target": "$(currentDirectory)\\BuildVariableTask.js",
+      "target": "$(currentDirectory)/BuildVariableTask.js",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
     }
