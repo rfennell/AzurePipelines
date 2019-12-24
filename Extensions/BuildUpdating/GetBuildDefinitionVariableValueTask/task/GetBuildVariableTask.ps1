@@ -1,42 +1,21 @@
 [CmdletBinding()]
 param
 (
+    $collectionUrl,
+    $teamproject,
+    $builddefid, 
+    $builddefinitionname,
+    $variable,
+    $localVariable, 
+    $usedefaultcreds,
+    $token
 )
-
-#DEBUG Invoke-Request
-#function Invoke-WebRequest
-#{
-#    param(
-#        $Username,
-#        $password,
-#        $account,
-#        $ProjectName,
-#        $ApiUrl
-#    )
-#
-#
-#    Add-Type -AssemblyName System.Net.Http
-#    $RequestHandler = New-Object -TypeName System.Net.Http.HttpClientHandler
-#    $Request =  New-Object -TypeName System.Net.Http.HttpClient $RequestHandler
-#    $DefaultRequestHeaderContentType = New-Object -TypeName System.Net.Http.Headers.MediaTypeWithQualityHeaderValue "application/json"
-#    $TextToEncode = [System.String]::Format("{0}:{1}",$Username, $Password)
-#    $Text = [System.Text.ASCIIEncoding]::ASCII.GetBytes($TextToEncode)
-#    $Base64String = [System.Convert]::ToBase64String($Text)
-#    $DefaultRequestHeaderAuthType = New-Object System.Net.Http.Headers.AuthenticationHeaderValue -ArgumentList "Basic", $Base64String
-#    $Request.DefaultRequestHeaders.Accept.Add($DefaultRequestHeaderContentType)
-#    $Request.DefaultRequestHeaders.Authorization = $DefaultRequestHeaderAuthType
-#    $BaseUrl = "https://dev.azure.com/$($account)/$($ProjectName)/$($ApiUrl)"
-#    $Request.BaseAddress = $BaseUrl
-#    $Response = $Request.GetAsync($BaseUrl).Result.Content.ReadAsStringAsync().Result
-#    $Response  = $Response | ConvertFrom-Json
-#    $Request.Dispose()
-#    $Response
-#}
 function Get-WebClient
 {
     param
     (
-       $usedefaultcreds
+       $usedefaultcreds,
+       $token
     )
 
     $webclient = new-object System.Net.WebClient
@@ -47,8 +26,7 @@ function Get-WebClient
         $webclient.UseDefaultCredentials = $true
     } else {
         Write-Verbose "Using SystemVssConnection personal access token"
-        $vstsEndpoint = Get-VstsEndpoint -Name SystemVssConnection -Require
-        $webclient.Headers.Add("Authorization" ,"Bearer $($vstsEndpoint.auth.parameters.AccessToken)")
+        $webclient.Headers.Add("Authorization" ,"Bearer$token")
     }
 
     $webclient.Encoding = [System.Text.Encoding]::UTF8
@@ -63,14 +41,15 @@ function Get-BuildDefinition
         $tfsuri,
         $teamproject,
         $buildDefName,
-        $usedefaultcreds
+        $usedefaultcreds,
+        $token
     )
     Write-Verbose "Function: Get-BuildDefinition Parameters"
     Write-Verbose "tfsUri: $tfsuri"
     Write-Verbose "teamProject: $teamproject"
     Write-Verbose "buildDefinitionName: $buildDefName"
     
-    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds -token  $token
 
     write-verbose "Getting Build Definition $buildDefName "
 
@@ -113,7 +92,8 @@ function Update-CurrentScopeVariable
         $builddefname,
         $variable,
         $localVariable,
-        $usedefaultcreds
+        $usedefaultcreds,
+        $token
       )
     # get the old definition
     Write-Verbose "Function: Update-CurrentScopeVariable"
@@ -124,7 +104,7 @@ function Update-CurrentScopeVariable
     Write-Verbose "localVariable: $localVariable"
     Write-Verbose "usingDefaultCreds: $usedefaultcreds"
 
-    $def = Get-BuildDefinition -tfsuri $tfsuri -teamproject $teamproject -buildDefName $builddefname -usedefaultcreds $usedefaultcreds
+    $def = Get-BuildDefinition -tfsuri $tfsuri -teamproject $teamproject -buildDefName $builddefname -usedefaultcreds $usedefaultcreds -token  $token
     if($null -ne $def)
     {
         Write-Verbose "Found definition $def"
@@ -158,26 +138,9 @@ function Update-CurrentScopeVariable
 $VerbosePreference ='Continue' # equiv to -verbose
 
 # Get the build details
-$collectionUrl = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
-$teamproject = $env:SYSTEM_TEAMPROJECT
-$builddefid = $env:BUILD_DEFINITIONID
-
-$builddefinitionname = Get-VstsInput -Name "builddefinitionname" 
-$variable = Get-VstsInput -Name "variable" 
-$localVariable = Get-VstsInput -Name "localVariable" 
-$usedefaultcreds = Get-VstsInput -Name "usedefaultcreds" 
-
-
-#DEBUG ONLY
-#$Username = "anyvalue"
-#$password = "a PAT token"
-#$ProjectName = "TEAM PROJECT NAME"
-#$account  = "The account name"
-#$teamproject
-
-Write-Verbose "collectionUrl = [$env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI]"
-Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
-Write-Verbose "builddefid = [$env:BUILD_DEFINITIONID]"
+Write-Verbose "collectionUrl = [$collectionUrl]"
+Write-Verbose "teamproject = [$teamproject]"
+Write-Verbose "builddefid = [$builddefid]"
 Write-Verbose "usedefaultcreds = $usedefaultcreds"
 
 Write-Verbose "Parameters"
@@ -186,5 +149,5 @@ Write-Verbose "$variable"
 Write-Verbose "$localVariable"
 
 Write-Verbose ("Getting the variable from specified definition.")
-Update-CurrentScopeVariable -tfsuri $collectionUrl -teamproject $teamproject -builddefname $builddefinitionname -variable $variable -localVariable $localVariable -usedefaultcreds $usedefaultcreds
+Update-CurrentScopeVariable -tfsuri $collectionUrl -teamproject $teamproject -builddefname $builddefinitionname -variable $variable -localVariable $localVariable -usedefaultcreds $usedefaultcreds -token $token
 

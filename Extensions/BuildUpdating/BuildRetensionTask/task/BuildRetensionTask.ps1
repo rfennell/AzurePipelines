@@ -25,7 +25,7 @@ function Set-BuildRetension
 
     $boolKeepForever = [System.Convert]::ToBoolean($keepForever)
 
-    $webclient = Get-WebClient -usedefaultcreds $ -token $token
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds -token $token
     
     write-verbose "Setting BuildID $buildID with retension set to $boolKeepForever"
 

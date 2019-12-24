@@ -13,16 +13,12 @@ export async function run() {
         // Get the build and release details
         let collectionUrl = process.env.SYSTEM_TEAMFOUNDATIONCOLLECTIONURI;
         let teamproject = process.env.SYSTEM_TEAMPROJECT;
-        let releaseid = process.env.RELEASE_RELEASEID;
         let builddefid = process.env.BUILD_DEFINITIONID;
-        let buildid = process.env.BUILD_BUILDID;
 
-        let buildmode = tl.getInput("buildmode");
-        let variable = tl.getInput("variable");
-        let mode = tl.getInput("mode");
-        let value = tl.getInput("value");
         let usedefaultcreds = tl.getInput("usedefaultcreds");
-        let artifacts = tl.getInput("artifacts");
+        let builddefinitionname = tl.getInput("builddefinitionname");
+        let variable = tl.getInput("variable");
+        let localVariable = tl.getInput("localVariable");
 
         // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");
@@ -48,9 +44,9 @@ export async function run() {
                     "-token", token
                 ];
 
-        if (releaseid) {
-            args.push("-releaseid");
-            args.push(releaseid);
+        if (localVariable) {
+            args.push("-localVariable");
+            args.push(localVariable);
         }
 
         if (builddefid) {
@@ -58,39 +54,14 @@ export async function run() {
             args.push(builddefid);
         }
 
-        if (buildid) {
-            args.push("-buildid");
-            args.push(buildid);
-        }
-
-        if (buildmode) {
-            args.push("-buildmode");
-            args.push(buildmode);
-        }
-
         if (variable) {
             args.push("-variable");
             args.push(variable);
         }
 
-        if (mode) {
-            args.push("-mode");
-            args.push(mode);
-        }
-
-        if (value) {
-            args.push("-value");
-            args.push(value);
-        }
-
         if (usedefaultcreds) {
             args.push("-usedefaultcreds");
             args.push(usedefaultcreds);
-        }
-
-        if (artifacts) {
-            args.push("-artifacts");
-            args.push(artifacts);
         }
 
         if (verbose) {
