@@ -143,11 +143,11 @@ Write-Verbose "teamproject = [$teamproject]"
 Write-Verbose "builddefid = [$builddefid]"
 Write-Verbose "usedefaultcreds = $usedefaultcreds"
 
-Write-Verbose "Parameters"
-Write-Verbose "$builddefinitionname"
-Write-Verbose "$variable"
-Write-Verbose "$localVariable"
+Write-Verbose "builddefinitionname = [$builddefinitionname]"
+Write-Verbose "variable = [$variable]"
+Write-Verbose "localVariable = [$localVariable]"
 
 Write-Verbose ("Getting the variable from specified definition.")
 Update-CurrentScopeVariable -tfsuri $collectionUrl -teamproject $teamproject -builddefname $builddefinitionname -variable $variable -localVariable $localVariable -usedefaultcreds $usedefaultcreds -token $token
 
+s
