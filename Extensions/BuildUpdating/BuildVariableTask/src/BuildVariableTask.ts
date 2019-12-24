@@ -108,7 +108,7 @@ export async function run() {
             logError(data.toString());
         });
         child.on("exit", function () {
-            logInfo("Pester Script finished");
+            logInfo("Script finished");
         });
     }
     catch (err) {
