@@ -22,14 +22,12 @@ steps:
     rootDirectory: '$(ExtensionRoot)'
     targetFiles: '**\task.json'
 
-extends:
-  template: node-template.yaml
+- template: node-template.yaml
   parameters:
     taskPath: '$(ExtensionRoot)\BuildVariableTask'
     taskName: 'BuildVariableTask'
 
-extends:
-  template: node-template.yaml
+- template: node-template.yaml
   parameters:
     taskPath: '$(ExtensionRoot)\BuildRetensionTask'
     taskName: 'BuildRetensionTask'
