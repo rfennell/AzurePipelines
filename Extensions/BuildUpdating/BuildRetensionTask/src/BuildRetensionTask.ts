@@ -50,6 +50,11 @@ export async function run() {
             args.push(releaseid);
         }
 
+        if (keepForever) {
+            args.push("-keepForever");
+            args.push(keepForever);
+        }
+
         if (buildid) {
             args.push("-buildid");
             args.push(buildid);

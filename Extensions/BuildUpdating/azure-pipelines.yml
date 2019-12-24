@@ -9,7 +9,7 @@ pr: # will trigger on PR
     include: [ /Extensions/BuildUpdating ] # file paths which must match to trigger a build
 
 pool:
-  name: default
+  name: Hosted
   demands: npm
 
 variables:
