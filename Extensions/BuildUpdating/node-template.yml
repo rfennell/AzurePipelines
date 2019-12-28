@@ -1,0 +1,48 @@
+parameters:
+- name: taskPath
+  type: string
+- name: taskName
+  type: string
+
+steps:
+  # standard block for Node
+  - task: Npm@0
+    displayName: 'npm install ${{parameters.taskName}}'
+    inputs:
+      cwd: '${{parameters.taskPath}}'
+
+  - task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
+    displayName: 'Scan for vulnerable package dependencies in ${{parameters.taskName}}'
+    inputs:
+      cwd: '${{parameters.taskPath}}\'
+      file: package.json
+      monitor: true
+      endpoint: 'Snky (Github RFennell)'
+
+  - task: Npm@0
+    displayName: 'npm run build ${{parameters.taskName}}'
+    inputs:
+      cwd: '${{parameters.taskPath}}'
+      command: run
+      arguments: build
+
+  - task: Npm@0
+    displayName: 'npm run test ${{parameters.taskName}}'
+    inputs:
+      cwd: '${{parameters.taskPath}}'
+      command: run
+      arguments: test
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results ${{parameters.taskName}}'
+    inputs:
+      testResultsFiles: '${{parameters.taskPath}}\test-output\test-results.xml'
+      testRunTitle: '${{parameters.taskName}}'
+
+  - task: Npm@0
+    displayName: 'npm run package ${{parameters.taskName}}'
+    inputs:
+      cwd: '${{parameters.taskPath}}'
+      command: run
+      arguments: package
+  # end block

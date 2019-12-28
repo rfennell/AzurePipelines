@@ -22,6 +22,21 @@ steps:
     rootDirectory: '$(ExtensionRoot)'
     targetFiles: '**\task.json'
 
+- template: node-template.yml
+  parameters:
+    taskPath: '$(ExtensionRoot)\BuildVariableTask'
+    taskName: 'BuildVariableTask'
+
+- template: node-template.yml
+  parameters:
+    taskPath: '$(ExtensionRoot)\BuildRetensionTask'
+    taskName: 'BuildRetensionTask'
+
+- template: node-template.yml
+  parameters:
+    taskPath: '$(ExtensionRoot)\GetBuildDefinitionVariableValueTask'
+    taskName: 'GetBuildDefinitionVariableValueTask'
+
 - task: TfxInstaller@2
   inputs:
     version: 'v0.6.x'
