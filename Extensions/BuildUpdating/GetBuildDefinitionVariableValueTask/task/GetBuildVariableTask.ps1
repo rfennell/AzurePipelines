@@ -49,37 +49,42 @@ function Get-BuildDefinition
     Write-Verbose "teamProject: $teamproject"
     Write-Verbose "buildDefinitionName: $buildDefName"
     
-    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds -token  $token
+    $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds -token $token
 
     write-verbose "Getting Build Definition $buildDefName "
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions?api-version=2.0"
+    $apiVersion = "4.0"
+    write-verbose "Checking API version available"
 
-    Write-Verbose "Initiating GET Request to URI: $uri"
-    $definitionsResponse = $webclient.DownloadString($uri) | ConvertFrom-Json
-    #DEBUG
-    #$definitionsResponse = Invoke-WebRequest -Username $Username -password $password -account $account -ProjectName $teamproject -ApiUrl "_apis/build/definitions?api-version=2.0"
-    Write-Verbose "DEFINITIONS RESPONSE: $webclient"
-    if($null -ne $webclient){
+    try {
+        $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions?api-version=$apiVersion"
+        Write-Verbose "Initiating GET Request to URI: $uri"
+        $definitionsResponse = $webclient.DownloadString($uri) | ConvertFrom-Json
+    } catch {
+        # to provide TFS2017 support
+        $apiVersion = "2.0"
+        $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions?api-version=$apiVersion"
+        Write-Verbose "Initiating GET Request to URI: $uri"
+        $definitionsResponse = $webclient.DownloadString($uri) | ConvertFrom-Json
+    }
+    write-verbose "API Version is $apiversion"
+
+    if($null -ne $definitionsResponse){
         $definition = ($definitionsResponse.value | Where-Object {$_.Name -eq $buildDefName})
     
         if($null -ne $definition ){
-            $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($definition.id)?api-version=4.0"
+            $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($definition.id)?api-version=$apiversion"
             Write-Verbose "Initiating GET Request to URI: $uri"
             $buildResponse = $webclient.DownloadString($uri) | ConvertFrom-Json
             
-            #DEBUG
-            #$buildResponse = Invoke-WebRequest -Username $Username -password $password -account $account -ProjectName $teamproject -ApiUrl "_apis/build/definitions/$($definition.id)?api-version=4.0"
             Write-Verbose "DEFINITION RESPONSE: $buildResponse"
             return $buildResponse
-            
            
         }
         if ($null -eq $definition ) {
             Write-Verbose "Failed to find the specified definition $buildDefName."
         }
-    }
-    if($null -eq $response){
+    } else {
         Write-Verbose "Failed to retrieve list of build definitions from $tfsuri"
     }
 }
@@ -150,4 +155,3 @@ Write-Verbose "localVariable = [$localVariable]"
 Write-Verbose ("Getting the variable from specified definition.")
 Update-CurrentScopeVariable -tfsuri $collectionUrl -teamproject $teamproject -builddefname $builddefinitionname -variable $variable -localVariable $localVariable -usedefaultcreds $usedefaultcreds -token $token
 
-s

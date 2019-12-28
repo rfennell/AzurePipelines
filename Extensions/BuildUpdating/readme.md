@@ -1,4 +1,7 @@
-A set of tasks to manage builds, it is assumed these tasks will usually be called from a release pipeline.
+A set of tasks to manage details of builds, it is assumed these tasks will usually be called from a release pipeline.
+
+- V1 - was Windows only
+- V2 - are cross platform (released Dec 2019)
 
 ## Included Tasks
 ### Build Retension Task
