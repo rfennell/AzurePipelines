@@ -26,7 +26,7 @@ function Get-WebClient
         $webclient.UseDefaultCredentials = $true
     } else {
         Write-Verbose "Using SystemVssConnection personal access token"
-        $webclient.Headers.Add("Authorization" ,"Bearer$token")
+        $webclient.Headers.Add("Authorization" ,"Bearer $token")
     }
 
     $webclient.Encoding = [System.Text.Encoding]::UTF8
@@ -55,16 +55,15 @@ function Get-BuildDefinition
 
     $apiVersion = "4.0"
     write-verbose "Checking API version available"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions?api-version=$apiVersion"
 
     try {
-        $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions?api-version=$apiVersion"
         Write-Verbose "Initiating GET Request to URI: $uri"
         $definitionsResponse = $webclient.DownloadString($uri) | ConvertFrom-Json
     } catch {
         # to provide TFS2017 support
         $apiVersion = "2.0"
-        $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions?api-version=$apiVersion"
-        Write-Verbose "Initiating GET Request to URI: $uri"
+        Write-Verbose "Legacy: Initiating GET Request to URI: $uri"
         $definitionsResponse = $webclient.DownloadString($uri) | ConvertFrom-Json
     }
     write-verbose "API Version is $apiversion"
