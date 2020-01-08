@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+<PropertyGroup Label="Globals">
+  <SccProjectName>SAK</SccProjectName>
+  <SccProvider>SAK</SccProvider>
+  <SccAuxPath>SAK</SccAuxPath>
+  <SccLocalPath>SAK</SccLocalPath>
+  <Platforms>AnyCPU;x64;x86</Platforms>
+</PropertyGroup>
+
+<PropertyGroup>
+  <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
+</PropertyGroup>
+
+<PropertyGroup>
+  <Version>2.1.1.67</Version>
+  <EnableDefaultContentItems>true</EnableDefaultContentItems>
+  <TargetFramework>net461</TargetFramework>
+</PropertyGroup>
