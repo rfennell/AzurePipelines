@@ -25,7 +25,7 @@ steps:
     rootDirectory: '$(ExtensionRoot)'
     targetFiles: '**\task.json'
 
-- task: richardfennellBM.BM-VSTS-PesterRunner-Task-DEV.Pester-Task.Pester@8
+- task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
   displayName: 'DACPac Versioning Pester Test Runner'
   inputs:
     scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionDacpacTask\test'
