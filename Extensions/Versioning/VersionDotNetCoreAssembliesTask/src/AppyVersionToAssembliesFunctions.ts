@@ -95,16 +95,29 @@ function UpdateSingleField(file, field, newVersion) {
     fs.chmodSync(file, "600");
 
     console.log (`Getting just the PropertyGroup that contains the single version fields`);
-    const propertyGroupRegex = new RegExp(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi);
-    var propertyGroupMatches = propertyGroupRegex.exec(content);
-    // we assume the first property group we find is the correct one
+    var propertyGroupMatches = content.match(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi);
+
     if (propertyGroupMatches === null) {
         console.log(`Cannot find any <PropertyGroup> blocks so adding one`);
         var insertPropertyGroupText = `<PropertyGroup><${field}>${newVersion}<\/${field}></PropertyGroup></Project>`;
         fs.writeFileSync(file, filecontent.toString().replace("</Project>", insertPropertyGroupText));
     } else {
-        console.log(`Found <PropertyGroup> block`);
+        console.log(`Found <PropertyGroup> [${propertyGroupMatches.length}] blocks`);
         var propertyGroupText = propertyGroupMatches[0];
+
+        // set a default of the first match incase we can't find a better one
+        propertyGroupText = "";
+        propertyGroupMatches.forEach(group => {
+            const csprojVersionRegex = `(<${field}>)(.*)(<\/${field}>)`;
+            var regexp = new RegExp(csprojVersionRegex, "gmi");
+            if (regexp.test(group)) {
+                propertyGroupText = group;
+            }
+        });
+        if (propertyGroupText === "") {
+            propertyGroupText = propertyGroupMatches[0];
+        }
+
         var tmpField = `<${field}>`;
         var newPropertyGroupText = "";
         if (propertyGroupText.toString().toLowerCase().indexOf(tmpField.toLowerCase()) === -1) {
@@ -154,19 +167,35 @@ export function ProcessFile(file, field, newVersion, addDefault = false) {
         var filecontent = fs.readFileSync(file);
         let content: string = filecontent.toString();
         fs.chmodSync(file, "600");
+
+        // set some defaults
+        var propertyGroupText = "<PropertyGroup></PropertyGroup>";
+        let versionFields = ["Version", "VersionPrefix", "AssemblyVersion"];
+
         // We only need to consider the following fields in the main PropertyGroup block
         console.log (`Getting just the PropertyGroup that contains the version fields`);
-        const propertyGroupRegex = new RegExp(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi);
-        var matches = propertyGroupRegex.exec(content);
-        // we assume the first property group we find is the correct one
-        var propertyGroupText = "<PropertyGroup></PropertyGroup>";
+        var matches = content.match(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi);
+
         if (matches === null) {
             console.log(`Cannot find any <PropertyGroup> blocks so adding one`);
         } else {
-            console.log(`Found <PropertyGroup> block`);
-            propertyGroupText = matches[0];
+            console.log(`Found <PropertyGroup> [${matches.length}] block`);
+            console.log(`Scanning for existing version fields`);
+            // set a default of the first match incase we can't find a better one
+            propertyGroupText = "";
+            matches.forEach(group => {
+                versionFields.forEach(element => {
+                    const csprojVersionRegex = `(<${element}>)(.*)(<\/${element}>)`;
+                    var regexp = new RegExp(csprojVersionRegex, "gmi");
+                    if (regexp.test(group)) {
+                        propertyGroupText = group;
+                    }
+                 });
+            });
+            if (propertyGroupText === "") {
+                propertyGroupText = matches[0];
+            }
         }
-        let versionFields = ["Version", "VersionPrefix", "AssemblyVersion"];
         var hasUpdateFields: any = false;
         var newPropertyGroupText = propertyGroupText;
         versionFields.forEach(element => {

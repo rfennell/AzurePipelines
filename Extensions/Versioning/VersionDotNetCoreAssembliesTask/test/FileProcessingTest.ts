@@ -265,3 +265,49 @@ describe("Test the 346 directory.build.props", () => {
   });
 
 });
+
+describe("Test the 589 add missing propertygroup", () => {
+  before(function() {
+    // make a copy we can overwrite without breaking test data
+    copyFileSync("test/testdata/core589.csproj.initial", "test/testdata/core.csproj");
+  });
+
+  it("should be able to edit all version field in a file", () => {
+    var file = "test/testdata/core.csproj";
+    ProcessFile(file, "", "9.9.9.9", true);
+
+    var editedfilecontent = fs.readFileSync(file);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/core589.csproj.expected`);
+
+    expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
+  });
+
+  after(function() {
+    // remove the file if created
+    del.sync("test/testdata/*.csproj");
+  });
+
+});
+
+describe("Test the 589 add missing propertygroup", () => {
+  before(function() {
+    // make a copy we can overwrite without breaking test data
+    copyFileSync("test/testdata/core589.csproj.initial", "test/testdata/core.csproj");
+  });
+
+  it("should be able to edit version field in a file", () => {
+    var file = "test/testdata/core.csproj";
+    ProcessFile(file, "Version", "9.9.9.9", true);
+
+    var editedfilecontent = fs.readFileSync(file);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/core589.csproj.expected`);
+
+    expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
+  });
+
+  after(function() {
+    // remove the file if created
+    del.sync("test/testdata/*.csproj");
+  });
+
+});
