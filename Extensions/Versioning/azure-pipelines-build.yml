@@ -40,7 +40,7 @@ steps:
     testResultsFiles: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
     testRunTitle: 'DACPac Pester Tests'
 
-- task: richardfennellBM.BM-VSTS-PesterRunner-Task-DEV.Pester-Task.Pester@8
+- task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
   displayName: 'PowerShellModule Versioning Tests'
   inputs:
     scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionPowerShellModule\test'
