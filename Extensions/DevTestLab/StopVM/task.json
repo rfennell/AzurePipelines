@@ -1,6 +1,6 @@
 {
   "id": "aedfa360-b2a1-4dae-9c0d-19d6e9571949",
-  "name": "DevTestLabsStartVm",
+  "name": "DevTestLabsStopVm",
   "friendlyName": "Stop a DevTest Labs VM",
   "description": "Stop a DevTest Labs VM",
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/DevTestLabs/)",

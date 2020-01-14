@@ -43,6 +43,7 @@ steps:
     Contents: |
      readme.md
      vss-extension.json
+     **\task.json
     TargetFolder: '$(Build.ArtifactStagingDirectory)\vsix'
 
 - task: PublishBuildArtifacts@1
