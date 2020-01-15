@@ -205,7 +205,7 @@ function Update-SqlProjVersion
         $SqlProj = $SqlProj -replace "<Name>", "<DacVersion>$VersionNumber</DacVersion><Name>"
     }
 
-    Set-Content -Path $Path -Value $SqlProj
+    Set-Content -Path $Path -Value $SqlProj -Encoding UTF8
 }
 
 $Path = Get-VstsInput -Name "Path"
