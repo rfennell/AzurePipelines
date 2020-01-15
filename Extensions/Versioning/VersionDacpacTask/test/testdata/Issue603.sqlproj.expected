@@ -1,0 +1,1272 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>SymetriaFI.DB</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{ba98acf7-e445-4e26-a7ea-653735922f2f}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql120DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>SymetriaFI.DB</RootNamespace>
+    <AssemblyName>SymetriaFI.DB</AssemblyName>
+    <ModelCollation>1033,CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+    <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+    <GenerateCreateScript>True</GenerateCreateScript>
+    <PageVerify>CHECKSUM</PageVerify>
+    <Recovery>FULL</Recovery>
+    <DacVersion>9.9.9.9</DacVersion>
+    <DacApplicationName>SymetriaFI.DB</DacApplicationName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>0</WarningLevel>
+    <SuppressTSqlWarnings>
+    </SuppressTSqlWarnings>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="batch\" />
+    <Folder Include="batch\Tables\" />
+    <Folder Include="Security\" />
+    <Folder Include="batch\Stored Procedures\" />
+    <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="dbo\Functions\" />
+    <Folder Include="Scripts" />
+    <Folder Include="dbo\Views\" />
+    <Folder Include="auth\" />
+    <Folder Include="auth\Tables\" />
+    <Folder Include="remote\" />
+    <Folder Include="remote\Synonyms\" />
+    <Folder Include="remote\Views\" />
+    <Folder Include="rpt\" />
+    <Folder Include="rpt\Stored Procedures\" />
+    <Folder Include="Scripts\1stInstall" />
+    <Folder Include="Scripts\Core" />
+    <Folder Include="rpt\Tables\" />
+    <Folder Include="cot\" />
+    <Folder Include="cot\Tables\" />
+    <Folder Include="cob\" />
+    <Folder Include="cob\Tables\" />
+    <Folder Include="bcb\" />
+    <Folder Include="bcb\Tables\" />
+    <Folder Include="cot\Stored Procedures\" />
+    <Folder Include="bop\" />
+    <Folder Include="bop\Tables\" />
+    <Folder Include="bcb\Stored Procedures\" />
+    <Folder Include="rpt\Functions\" />
+    <Folder Include="bop\Stored Procedures\" />
+    <Folder Include="psp\" />
+    <Folder Include="psp\Tables\" />
+    <Folder Include="psp\Stored Procedures\" />
+    <Folder Include="shs\" />
+    <Folder Include="shs\Tables\" />
+    <Folder Include="shs\Stored Procedures\" />
+    <Folder Include="Scripts\GeneratedMipScripts" />
+    <Folder Include="taeg\" />
+    <Folder Include="taeg\Tables\" />
+    <Folder Include="rur\" />
+    <Folder Include="rur\Tables\" />
+    <Folder Include="taeg\Stored Procedures\" />
+    <Folder Include="rur\Stored Procedures\" />
+    <Folder Include="persi\" />
+    <Folder Include="persi\Tables\" />
+    <Folder Include="persi\Stored Procedures\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="azure2project.scmp" />
+    <None Include="SymetriaFI.DB.dev.publish.xml" />
+    <None Include="SymetriaFI.DB.qua.publish.xml" />
+    <None Include="SymetriaFI.DB.rls.publish.xml" />
+    <None Include="Scripts\FIX_ApagarClaimStatistikBank.sql" />
+    <None Include="Scripts\Fix_DimensionsInstComplementsql.sql" />
+    <None Include="Scripts\FIX_FicheirosComplemento.sql" />
+    <None Include="Scripts\FIX-ScheduleTasks.sql" />
+    <None Include="MIP.PostDeployment.sql.vsspell" />
+    <None Include="Scripts\FIX-PreDeployment-CleanInconsistencies.sql" />
+    <None Include="SymetriaFI.DB.publish.xml" />
+    <None Include="Scripts\PSP_ConfigureScheduledTasks.sql" />
+    <None Include="Scripts\CRC_ClearExpositionNullFromQueue.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\LanguagesTranslation.sql" />
+    <Build Include="dbo\Tables\Languages.sql" />
+    <Build Include="dbo\Tables\FileTypesTranslation.sql" />
+    <Build Include="dbo\Tables\DomainsTranslation.sql" />
+    <Build Include="dbo\Tables\Domains.sql" />
+    <Build Include="dbo\Tables\DimensionsTranslation.sql" />
+    <Build Include="dbo\Tables\Dimensions.sql" />
+    <Build Include="dbo\Tables\Configurations.sql" />
+    <Build Include="dbo\Tables\ComunicationDirectionsTranslation.sql" />
+    <Build Include="dbo\Tables\BatchStatesTranslation.sql" />
+    <Build Include="batch\Tables\ScheduledTasksHistory.sql" />
+    <Build Include="batch\Tables\ScheduledTasksConfig.sql" />
+    <Build Include="batch\Tables\ScheduledTasks.sql" />
+    <Build Include="batch\Tables\Notifications.sql" />
+    <Build Include="batch\Tables\NotificationQueueDetails.sql" />
+    <Build Include="batch\Tables\NotificationQueue.sql" />
+    <Build Include="batch\Tables\NotificationParameters.sql" />
+    <Build Include="batch\Tables\NotificationAddressees.sql" />
+    <Build Include="batch\Tables\FlattenXmlTableMapping.sql" />
+    <Build Include="batch\Tables\FlattenCsvTableMapping.sql" />
+    <Build Include="batch\Tables\FileTypes.sql" />
+    <Build Include="batch\Tables\FilesHistory.sql" />
+    <Build Include="batch\Tables\FilesConfig.sql" />
+    <Build Include="batch\Tables\Files.sql" />
+    <Build Include="batch\Tables\FileImportMessages.sql" />
+    <Build Include="batch\Tables\ComunicationDirections.sql" />
+    <Build Include="batch\Tables\BatchStates.sql" />
+    <Build Include="batch\Stored Procedures\Purge.sql" />
+    <Build Include="batch\Stored Procedures\InsertScheduleTask.sql" />
+    <Build Include="batch\Stored Procedures\FileImportCleanUp.sql" />
+    <Build Include="Security\batch.sql" />
+    <Build Include="dbo\Tables\FileImportPSGEN.sql" />
+    <Build Include="dbo\Tables\FileImportISSIN.sql" />
+    <Build Include="dbo\Tables\FileImportISLIN.sql" />
+    <Build Include="dbo\Tables\FileImportISGEN.sql" />
+    <Build Include="dbo\Tables\FileImportISCAR.sql" />
+    <Build Include="dbo\Tables\FileImportIMFIN.sql" />
+    <Build Include="dbo\Tables\FileImportETREL.sql" />
+    <Build Include="dbo\Tables\FileImportESGEN.sql" />
+    <Build Include="dbo\Tables\FileImportESGEC.sql" />
+    <Build Include="dbo\Tables\FileImportESDOC.sql" />
+    <Build Include="dbo\Tables\FileImportEMRIS.sql" />
+    <Build Include="dbo\Tables\FileImportITRIS.sql" />
+    <Build Include="dbo\Tables\FileImportITPRR.sql" />
+    <Build Include="dbo\Tables\FileImportITCON.sql" />
+    <Build Include="dbo\Tables\FileImportIMRES.sql" />
+    <Build Include="dbo\Tables\FileImportIMPRO.sql" />
+    <Build Include="dbo\Tables\ReportingPeriod.sql" />
+    <Build Include="dbo\Tables\ProtectionsFIHistory.sql" />
+    <Build Include="dbo\Tables\ProtectionsFI.sql" />
+    <Build Include="dbo\Tables\Protections.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskFI.sql" />
+    <Build Include="batch\Stored Procedures\PrepareGroupFilesImport.sql" />
+    <Build Include="dbo\Tables\EntitiesFI.sql" />
+    <Build Include="dbo\Tables\Entities.sql" />
+    <Build Include="dbo\Tables\EntityFinancialGroupsFI.sql" />
+    <Build Include="dbo\Tables\EntityFinancialGroups.sql" />
+    <Build Include="dbo\Tables\EntityDocumentsFI.sql" />
+    <Build Include="dbo\Tables\EntityDocuments.sql" />
+    <Build Include="dbo\Tables\RisksFI.sql" />
+    <Build Include="dbo\Tables\Risks.sql" />
+    <Build Include="dbo\Tables\Protections2ImportQueue.sql" />
+    <Build Include="dbo\Tables\Instruments2ImportQueue.sql" />
+    <Build Include="dbo\Tables\InstrumentRisk.sql" />
+    <Build Include="dbo\Tables\InstrumentAccounting2ImportQueue.sql" />
+    <Build Include="dbo\Tables\FileImportISRIS.sql" />
+    <Build Include="dbo\Tables\FileImportEVDIAI.sql" />
+    <Build Include="dbo\Tables\FileImportEVDIAE.sql" />
+    <Build Include="dbo\Tables\EntityDailyDefaultsFI.sql" />
+    <Build Include="dbo\Tables\EntityDailyDefaults.sql" />
+    <Build Include="dbo\Tables\EntityAdvancedInfoFI.sql" />
+    <Build Include="dbo\Tables\EntityAdvancedInfo.sql" />
+    <Build Include="dbo\Tables\Entities2ImportQueue.sql" />
+    <Build Include="dbo\Tables\ApplicationSources.sql" />
+    <Build Include="dbo\Stored Procedures\ImportProtectionsFI2Final.sql" />
+    <Build Include="dbo\Stored Procedures\ImportProtectionFilesFI.sql" />
+    <Build Include="dbo\Stored Procedures\ImportInstrumentsFI2Final.sql" />
+    <Build Include="dbo\Stored Procedures\ImportInstrumentFilesFI.sql" />
+    <Build Include="dbo\Stored Procedures\ImportInstrumentAccountingFilesFI2Final.sql" />
+    <Build Include="dbo\Stored Procedures\ImportInstrumentAccountingFilesFI.sql" />
+    <Build Include="dbo\Stored Procedures\ImportEntitiesFilesFI.sql" />
+    <Build Include="dbo\Stored Procedures\ImportEntitiesFI2Final.sql" />
+    <Build Include="dbo\Tables\Participants.sql" />
+    <Build Include="dbo\Tables\MenusTranslation.sql" />
+    <Build Include="dbo\Tables\InstrumentsFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskProtectionsFI.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskProtections.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskInformation2ImportQueue.sql" />
+    <Build Include="dbo\Tables\EntityToEntities2ImportQueue.sql" />
+    <Build Include="dbo\Tables\EntityDocumentsFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityDailyDefaultsFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityDailyDefaults2ImportQueue.sql" />
+    <Build Include="dbo\Tables\EntityAdvancedInfoFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityAdvancedInfo2ImportQueue.sql" />
+    <Build Include="dbo\Tables\EntitiesFIHistory.sql" />
+    <Build Include="dbo\Stored Procedures\ImportInstrumentRiskInformationFilesFI.sql" />
+    <Build Include="dbo\Stored Procedures\ImportEntityToEntitiesFilesFI2Final.sql" />
+    <Build Include="dbo\Stored Procedures\ImportEntityToEntitiesFilesFI.sql" />
+    <Build Include="dbo\Stored Procedures\ImportEntityDailyEventsFilesFI2Final.sql" />
+    <Build Include="dbo\Stored Procedures\ImportEntityDailyEventsFilesFI.sql" />
+    <Build Include="dbo\Stored Procedures\ImportEntityAdvancedInfoFilesFI2Final.sql" />
+    <Build Include="dbo\Stored Procedures\ImportEntityAdvancedInfoFilesFI.sql" />
+    <Build Include="dbo\Tables\SyndicatedEntitiesFIHistory.sql" />
+    <Build Include="dbo\Tables\SpecialCharacteristicsFIHistory.sql" />
+    <Build Include="dbo\Tables\RisksFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentOriginalInstrumentLinkFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentFinancialFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentAccountingFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityFinancialGroupsFIHistory.sql" />
+    <Build Include="dbo\Stored Procedures\ImportInstrumentRiskInformationFilesFI2Final.sql" />
+    <Build Include="dbo\Tables\InstrumentFinancial2ImportQueue.sql" />
+    <Build Include="dbo\Stored Procedures\ImportInstrumentFinancialInformationFilesFI2Final.sql" />
+    <Build Include="dbo\Stored Procedures\ImportInstrumentFinancialInformationFilesFI.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskProtectionsFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentProtectionsFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityToEntitiesFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityRisk2ImportQueue.sql" />
+    <Build Include="dbo\Tables\EntityJointLiabilitiesFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityDefaultsFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityDefaultsFI.sql" />
+    <Build Include="dbo\Tables\EntityDefaults.sql" />
+    <Build Include="dbo\Tables\EntityDefaultRiskFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityDefaultRiskFI.sql" />
+    <Build Include="dbo\Tables\EntityDefaultRisk.sql" />
+    <Build Include="dbo\Stored Procedures\ImportEntityRiskFilesFI.sql" />
+    <Build Include="dbo\Tables\SyndicatedEntitiesHistory.sql" />
+    <Build Include="dbo\Tables\SpecialCharacteristicsHistory.sql" />
+    <Build Include="dbo\Tables\RisksHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentsHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskProtectionsHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentProtectionsHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentOriginalInstrumentLinkHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentFinancialHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentAccountingHistory.sql" />
+    <Build Include="dbo\Tables\EntityToEntitiesHistory.sql" />
+    <Build Include="dbo\Tables\EntityJointLiabilitiesHistory.sql" />
+    <Build Include="dbo\Tables\EntityFinancialGroupsHistory.sql" />
+    <Build Include="dbo\Tables\EntityDocumentsHistory.sql" />
+    <Build Include="dbo\Tables\EntityDefaultsHistory.sql" />
+    <Build Include="dbo\Tables\EntityDefaultRiskHistory.sql" />
+    <Build Include="dbo\Tables\EntityDailyDefaultsHistory.sql" />
+    <Build Include="dbo\Tables\EntityAdvancedInfoHistory.sql" />
+    <Build Include="dbo\Tables\EntitiesHistory.sql" />
+    <Build Include="dbo\Tables\CreditResponsabilityEntities.sql" />
+    <Build Include="dbo\Stored Procedures\ImportEntityRiskFilesFI2Final.sql" />
+    <Build Include="dbo\Tables\CreditResponsabilityJudicialLitigations.sql" />
+    <Build Include="dbo\Tables\CreditResponsabilityInstrumentProtections.sql" />
+    <Build Include="dbo\Tables\CreditResponsabilityInstallments.sql" />
+    <Build Include="dbo\Tables\CreditResponsabilityAdvancedInformation.sql" />
+    <Build Include="dbo\Tables\EntityFinancialGroups2ImportQueue.sql" />
+    <Build Include="dbo\Stored Procedures\ImportEntityFinancialGroupsFilesFI.sql" />
+    <Build Include="dbo\Stored Procedures\ImportEntityFinancialGroupsFI2Final.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCPRT.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCENT.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCIND.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCCIN.sql" />
+    <Build Include="Security\auth.sql" />
+    <Build Include="dbo\Tables\ThemesTranslation.sql" />
+    <Build Include="dbo\Tables\ClaimsTranslation.sql" />
+    <Build Include="dbo\Tables\ClaimGroupsTranslation.sql" />
+    <Build Include="auth\Tables\UserRoles.sql" />
+    <Build Include="auth\Tables\Themes.sql" />
+    <Build Include="auth\Tables\RolesHistory.sql" />
+    <Build Include="auth\Tables\Roles.sql" />
+    <Build Include="auth\Tables\RoleClaims.sql" />
+    <Build Include="auth\Tables\Claims.sql" />
+    <Build Include="auth\Tables\ClaimGroups.sql" />
+    <Build Include="auth\Tables\Users.sql" />
+    <Build Include="auth\Tables\Menus.sql" />
+    <Build Include="dbo\Tables\CentralizationProtectionsQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationInstrumentsQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationInstrumentRiskInformationQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationInstrumentFinancialQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationInstrumentAccountingQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationEntityToEntitiesQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationEntityRiskQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationEntityFinancialGroupsQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationEntityDailyDefaultsQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationEntityAdvancedInfoQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationEntitiesQueue.sql" />
+    <Build Include="auth\Tables\UserParticipants.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateReportingYear.sql" />
+    <Build Include="dbo\Tables\ReportTypes.sql" />
+    <Build Include="dbo\Tables\ReportTypeDescriptions.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileDissemination.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFilePIRC.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileDISS.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileDISC.sql" />
+    <Build Include="dbo\Tables\FileImportDISCDISSRIRC.sql" />
+    <Build Include="dbo\Views\vFileImportRIRCAdvancedInfo.sql" />
+    <Build Include="dbo\Views\vFileImportDISCDISSRIRCJudicialLitigations.sql" />
+    <Build Include="dbo\Views\vFileImportDISCDISSRIRCInstruments.sql" />
+    <None Include="dbo\Views\vFileImportDISCDISSRIRCInstrumentProtections.sql">
+      <SuppressTSqlWarnings>71501,71558</SuppressTSqlWarnings>
+    </None>
+    <Build Include="dbo\Views\vFileImportDISCDISSRIRCInstallments.sql" />
+    <Build Include="dbo\Views\vFileImportDISCDISSRIRCEntities.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileRIRC.sql" />
+    <Build Include="batch\Stored Procedures\RotateActivePeriod.sql" />
+    <Build Include="dbo\Tables\ThemesTranslation.sql" />
+    <Build Include="dbo\Tables\SyndicatedEntitiesHistory.sql" />
+    <Build Include="dbo\Tables\SyndicatedEntitiesFIHistory.sql" />
+    <Build Include="dbo\Tables\SyndicatedEntitiesFI.sql" />
+    <Build Include="dbo\Tables\SyndicatedEntities.sql" />
+    <Build Include="dbo\Tables\SpecialCharacteristicsHistory.sql" />
+    <Build Include="dbo\Tables\SpecialCharacteristicsFIHistory.sql" />
+    <Build Include="dbo\Tables\SpecialCharacteristicsFI.sql" />
+    <Build Include="dbo\Tables\SpecialCharacteristics.sql" />
+    <Build Include="dbo\Tables\RisksHistory.sql" />
+    <Build Include="dbo\Tables\RisksFIHistory.sql" />
+    <Build Include="dbo\Tables\RisksFI.sql" />
+    <Build Include="dbo\Tables\Risks.sql" />
+    <Build Include="dbo\Tables\ReportTypes.sql" />
+    <Build Include="dbo\Tables\ReportTypeDescriptions.sql" />
+    <Build Include="dbo\Tables\ProtectionsHistory.sql" />
+    <Build Include="dbo\Tables\ProtectionsFIHistory.sql" />
+    <Build Include="dbo\Tables\ProtectionsFI.sql" />
+    <Build Include="dbo\Tables\Protections2ImportQueue.sql" />
+    <Build Include="dbo\Tables\Protections.sql" />
+    <Build Include="dbo\Tables\Participants.sql" />
+    <Build Include="dbo\Tables\MenusTranslation.sql" />
+    <Build Include="dbo\Tables\LanguagesTranslation.sql" />
+    <Build Include="dbo\Tables\Languages.sql" />
+    <Build Include="dbo\Tables\InstrumentsHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentsFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentsFI.sql" />
+    <Build Include="dbo\Tables\Instruments2ImportQueue.sql" />
+    <Build Include="dbo\Tables\Instruments.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskProtectionsHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskProtectionsFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskProtectionsFI.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskProtections.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskInformation2ImportQueue.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskFI.sql" />
+    <Build Include="dbo\Tables\InstrumentRisk.sql" />
+    <Build Include="dbo\Tables\InstrumentProtectionsHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentProtectionsFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentProtectionsFI.sql" />
+    <Build Include="dbo\Tables\InstrumentProtections.sql" />
+    <Build Include="dbo\Tables\InstrumentOriginalInstrumentLinkHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentOriginalInstrumentLinkFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentOriginalInstrumentLinkFI.sql" />
+    <Build Include="dbo\Tables\InstrumentOriginalInstrumentLink.sql" />
+    <Build Include="dbo\Tables\InstrumentFinancialHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentFinancialFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentFinancialFI.sql" />
+    <Build Include="dbo\Tables\InstrumentFinancial.sql" />
+    <Build Include="dbo\Tables\InstrumentAccountingHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentAccountingFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentAccountingFI.sql" />
+    <Build Include="dbo\Tables\InstrumentAccounting2ImportQueue.sql" />
+    <Build Include="dbo\Tables\InstrumentAccounting.sql" />
+    <Build Include="dbo\Tables\FileTypesTranslation.sql" />
+    <Build Include="dbo\Tables\FileImportPSGEN.sql" />
+    <Build Include="dbo\Tables\FileImportITRIS.sql" />
+    <Build Include="dbo\Tables\FileImportITPRR.sql" />
+    <Build Include="dbo\Tables\FileImportITCON.sql" />
+    <Build Include="dbo\Tables\FileImportISSIN.sql" />
+    <Build Include="dbo\Tables\FileImportISRIS.sql" />
+    <Build Include="dbo\Tables\FileImportISLIN.sql" />
+    <Build Include="dbo\Tables\FileImportISGEN.sql" />
+    <Build Include="dbo\Tables\FileImportISCAR.sql" />
+    <Build Include="dbo\Tables\FileImportIMRES.sql" />
+    <Build Include="dbo\Tables\FileImportIMPRO.sql" />
+    <Build Include="dbo\Tables\FileImportIMFIN.sql" />
+    <Build Include="dbo\Tables\FileImportEVDIAI.sql" />
+    <Build Include="dbo\Tables\FileImportEVDIAE.sql" />
+    <Build Include="dbo\Tables\FileImportETREL.sql" />
+    <Build Include="dbo\Tables\FileImportESGEN.sql" />
+    <Build Include="dbo\Tables\FileImportESGEC.sql" />
+    <Build Include="dbo\Tables\FileImportESDOC.sql" />
+    <Build Include="dbo\Tables\FileImportEMRIS.sql" />
+    <Build Include="dbo\Tables\FileImportEMRAV.sql" />
+    <Build Include="dbo\Tables\FileImportAckReceipts.sql" />
+    <Build Include="dbo\Tables\EntityToEntitiesHistory.sql" />
+    <Build Include="dbo\Tables\EntityToEntitiesFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityToEntitiesFI.sql" />
+    <Build Include="dbo\Tables\EntityToEntities2ImportQueue.sql" />
+    <Build Include="dbo\Tables\EntityToEntities.sql" />
+    <Build Include="dbo\Tables\EntityRisk2ImportQueue.sql" />
+    <Build Include="dbo\Tables\EntityJointLiabilitiesHistory.sql" />
+    <Build Include="dbo\Tables\EntityJointLiabilitiesFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityJointLiabilitiesFI.sql" />
+    <Build Include="dbo\Tables\EntityJointLiabilities.sql" />
+    <Build Include="dbo\Tables\EntityFinancialGroupsHistory.sql" />
+    <Build Include="dbo\Tables\EntityFinancialGroupsFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityFinancialGroupsFI.sql" />
+    <Build Include="dbo\Tables\EntityFinancialGroups2ImportQueue.sql" />
+    <Build Include="dbo\Tables\EntityFinancialGroups.sql" />
+    <Build Include="dbo\Tables\EntityDocumentsHistory.sql" />
+    <Build Include="dbo\Tables\EntityDocumentsFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityDocumentsFI.sql" />
+    <Build Include="dbo\Tables\EntityDocuments.sql" />
+    <Build Include="dbo\Tables\EntityDefaultsHistory.sql" />
+    <Build Include="dbo\Tables\EntityDefaultsFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityDefaultsFI.sql" />
+    <Build Include="dbo\Tables\EntityDefaults.sql" />
+    <Build Include="dbo\Tables\EntityDefaultRiskFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityDefaultRiskFI.sql" />
+    <Build Include="dbo\Tables\EntityDefaultRisk.sql" />
+    <Build Include="dbo\Tables\EntityDailyDefaultsHistory.sql" />
+    <Build Include="dbo\Tables\EntityDailyDefaultsFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityDailyDefaults2ImportQueue.sql" />
+    <Build Include="dbo\Tables\EntityDailyDefaults.sql" />
+    <Build Include="dbo\Tables\EntityAdvancedInfoHistory.sql" />
+    <Build Include="dbo\Tables\EntityAdvancedInfoFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityAdvancedInfoFI.sql" />
+    <Build Include="dbo\Tables\EntityAdvancedInfo.sql" />
+    <Build Include="dbo\Tables\EntitiesHistory.sql" />
+    <Build Include="dbo\Tables\EntitiesFIHistory.sql" />
+    <Build Include="dbo\Tables\EntitiesFI.sql" />
+    <Build Include="dbo\Tables\Entities2ImportQueue.sql" />
+    <Build Include="dbo\Tables\Entities.sql" />
+    <Build Include="dbo\Tables\DimensionMappingsTranslationHistory.sql" />
+    <Build Include="dbo\Tables\DimensionMappingsTranslation.sql" />
+    <Build Include="dbo\Tables\DimensionMappingsHistory.sql" />
+    <Build Include="dbo\Tables\DimensionMappings.sql" />
+    <Build Include="dbo\Tables\CreditResponsabilityRequests.sql" />
+    <Build Include="dbo\Tables\CreditResponsabilityJudicialLitigations.sql" />
+    <Build Include="dbo\Tables\CreditResponsabilityInstallments.sql" />
+    <Build Include="dbo\Tables\CreditResponsabilityAdvancedInformation.sql" />
+    <Build Include="dbo\Tables\CreditResponsabilities.sql" />
+    <Build Include="dbo\Tables\Configurations.sql" />
+    <Build Include="dbo\Tables\ComunicationDirectionsTranslation.sql" />
+    <Build Include="dbo\Tables\ClaimsTranslation.sql" />
+    <Build Include="dbo\Tables\ClaimGroupsTranslation.sql" />
+    <Build Include="dbo\Tables\CentralizationProtectionsQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationInstrumentsQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationInstrumentRiskInformationQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationInstrumentAccountingQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationEntityToEntitiesQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationEntityRiskQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationEntityFinancialGroupsQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationEntityDailyDefaultsQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationEntityAdvancedInfoQueue.sql" />
+    <Build Include="dbo\Tables\CentralizationEntitiesQueue.sql" />
+    <Build Include="dbo\Tables\BatchStatesTranslation.sql" />
+    <Build Include="dbo\Tables\ApplicationSources.sql" />
+    <Build Include="dbo\Tables\CreditResponsabilities.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileAPRT.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileAIRC.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileAINP.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileAIND.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileAINA.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileAERP.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileAERA.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileAENT.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileACIN.sql" />
+    <Build Include="dbo\Tables\EntityToEntitiesCombinedPositionHistory.sql" />
+    <Build Include="dbo\Tables\EntityToEntitiesCombinedPosition.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskCombinedPositionHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskCombinedPositionFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskCombinedPositionFI.sql" />
+    <Build Include="dbo\Tables\InstrumentRiskCombinedPosition.sql" />
+    <Build Include="dbo\Views\vEntityCharts.sql" />
+    <Build Include="dbo\Views\vFinancialGroupTotals_SubTree.sql" />
+    <Build Include="dbo\Views\vFinancialGroupTotals_Individual.sql" />
+    <Build Include="dbo\Views\vFinancialGroupTotals_CreditResponsabilities_SubTree.sql" />
+    <Build Include="dbo\Views\vFinancialGroupTotals_CreditResponsabilities_Individual.sql" />
+    <Build Include="auth\Tables\UserSegments.sql" />
+    <Build Include="dbo\Tables\EntityKeyChange.sql" />
+    <Build Include="Security\SymetriaUsers.sql" />
+    <Build Include="Security\SymetriaBatch.sql" />
+    <Build Include="dbo\Functions\SplitToInt.sql" />
+    <Build Include="dbo\Stored Procedures\Notifications_UserWithMoreReq.sql" />
+    <Build Include="dbo\Stored Procedures\Notifications_RespRequestAnswer.sql" />
+    <Build Include="dbo\Stored Procedures\Notifications_MonthlyAmounts.sql" />
+    <Build Include="dbo\Stored Procedures\Notifications_FileError.sql" />
+    <Build Include="dbo\Stored Procedures\Notifications_AlertsAndErrors.sql" />
+    <Build Include="dbo\Stored Procedures\Graph_GetNumInstrumentsByType.sql" />
+    <Build Include="dbo\Stored Procedures\Graph_GetDefaultDistribution.sql" />
+    <Build Include="dbo\Stored Procedures\Graph_GetCreditDistribution.sql" />
+    <Build Include="batch\Tables\NotificationAddresseesDetails.sql" />
+    <Build Include="Security\RoleMemberships.sql" />
+    <Build Include="Security\Permissions.sql" />
+    <Build Include="dbo\Stored Procedures\Graph_GetAmountAllocProtByType.sql" />
+    <Build Include="dbo\Stored Procedures\FinancialGroups_GetRoot.sql" />
+    <Build Include="Security\remote.sql" />
+    <Build Include="dbo\Stored Procedures\Graph_GetAmountEvolutionEntity.sql" />
+    <Build Include="dbo\Tables\FileImportEVDIER.sql" />
+    <Build Include="dbo\Tables\EntityAdvancedInfoRelatedEntitiesHistory.sql" />
+    <Build Include="dbo\Tables\EntityAdvancedInfoRelatedEntitiesFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityAdvancedInfoRelatedEntitiesFI.sql" />
+    <Build Include="dbo\Tables\EntityAdvancedInfoRelatedEntities.sql" />
+    <Build Include="batch\Tables\FlattenFixedLengthTableMapping.sql" />
+    <Build Include="remote\Views\Files.sql" />
+    <Build Include="remote\Synonyms\FileTypes.sql" />
+    <Build Include="Security\rpt.sql" />
+    <Build Include="rpt\Stored Procedures\ReportGetSummaryResponsabilities.sql" />
+    <Build Include="rpt\Stored Procedures\ReportGetSummaryInstalements.sql" />
+    <Build Include="rpt\Stored Procedures\ReportGetResponsabilitiesBP.sql" />
+    <Build Include="rpt\Stored Procedures\ReportGetResponsabilitiesBC.sql" />
+    <Build Include="rpt\Stored Procedures\ReportGetResponsabilitiesAdvancedInfo.sql" />
+    <Build Include="rpt\Stored Procedures\ReportGetEntityLitigations.sql" />
+    <Build Include="rpt\Stored Procedures\ReportGetEntityInfo.sql" />
+    <Build Include="rpt\Stored Procedures\Report_ReportingPeriod.sql" />
+    <Build Include="rpt\Stored Procedures\Report_ObservedPerUser.sql" />
+    <Build Include="rpt\Stored Procedures\Report_ObservedLogo.sql" />
+    <Build Include="rpt\Stored Procedures\Report_MessageStatisticsGroupList.sql" />
+    <Build Include="rpt\Stored Procedures\Report_MessageStatisticsCountFiles.sql" />
+    <Build Include="rpt\Stored Procedures\Report_MessageStatistics.sql" />
+    <Build Include="rpt\Stored Procedures\Report_JudicialInformation.sql" />
+    <Build Include="rpt\Stored Procedures\Report_FileImportStatisticsTypesList.sql" />
+    <Build Include="rpt\Stored Procedures\Report_FileImportStatisticsObserved.sql" />
+    <Build Include="rpt\Stored Procedures\Report_FileImportStatisticsAlertTable.sql" />
+    <Build Include="rpt\Stored Procedures\Report_FileImportStatisticsAlertGraph.sql" />
+    <Build Include="rpt\Stored Procedures\Report_EntityAuditRequestsUser.sql" />
+    <Build Include="rpt\Stored Procedures\Report_EntityAuditRequestsObserved.sql" />
+    <Build Include="rpt\Stored Procedures\Report_EntityAuditRequests_TotalRequestsUrgent.sql" />
+    <Build Include="rpt\Stored Procedures\Report_EntityAuditRequests_TotalRequestsNotUrgent.sql" />
+    <Build Include="rpt\Stored Procedures\Report_EntityAuditRequests_TotalRequestsLocal.sql" />
+    <Build Include="rpt\Stored Procedures\Report_EntityAuditRequests_EntityRequestsList.sql" />
+    <Build Include="rpt\Stored Procedures\Report_DefaultPaymentsTable.sql" />
+    <Build Include="rpt\Stored Procedures\Report_DefaultPaymentsCentralBankGraph.sql" />
+    <Build Include="rpt\Stored Procedures\Report_DefaultPaymentsBankGraph.sql" />
+    <Build Include="rpt\Stored Procedures\Report_DataAccessAuditTable.sql" />
+    <Build Include="rpt\Stored Procedures\Report_DataAccessAuditObserved.sql" />
+    <Build Include="rpt\Stored Procedures\Report_DataAccessAuditActionUsers.sql" />
+    <Build Include="rpt\Stored Procedures\Report_CreditResponsabilityRequests_Log.sql" />
+    <Build Include="rpt\Stored Procedures\GetGraphDataAmountEvolutionDashboard.sql" />
+    <Build Include="rpt\Stored Procedures\GetEntityGroups.sql" />
+    <Build Include="rpt\Stored Procedures\GetDashboardStatic.sql" />
+    <Build Include="rpt\Stored Procedures\GetDashboardReceivedInfoMesssages.sql" />
+    <Build Include="rpt\Stored Procedures\GetDashboardReceivedInfoFiles.sql" />
+    <Build Include="rpt\Stored Procedures\GetDashboardPeriodic.sql" />
+    <Build Include="rpt\Stored Procedures\GetDashboardMainErrors.sql" />
+    <Build Include="rpt\Stored Procedures\vFinancialGroup_Ascendants.sql" />
+    <Build Include="batch\Stored Procedures\StartNewScheduleTask.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileAINAAINP.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileAERAAERP.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCINPR.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCINPF.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCINPC.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCINAR.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCINAF.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCINAC.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCERPR.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCERPE.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCERAR.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCERAE.sql" />
+    <Build Include="dbo\Tables\Inconsistencies.sql" />
+    <Build Include="dbo\Tables\InconsistenciesConfig.sql" />
+    <Build Include="dbo\Tables\InconsistenciesConfigHistory.sql" />
+    <Build Include="dbo\Tables\InconsistenciesFileType.sql" />
+    <Build Include="dbo\Tables\InconsistenciesMatrix.sql" />
+    <Build Include="dbo\Stored Procedures\CalculateInconsistenciesEntities.sql" />
+    <Build Include="dbo\Stored Procedures\CalculateInconsistenciesInstruments.sql" />
+    <None Include="Scripts\1stInstall\config_files.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\Core\FixViewXML.sql" />
+    <None Include="Scripts\Core\PostDeployRestoreUsersAndRoles.sql" />
+    <None Include="Scripts\Core\PreDeploymentSaveUsersAndRoles.sql" />
+    <Build Include="batch\Tables\FlattenExcelFileTypeMapping.sql" />
+    <Build Include="remote\Views\CreditResponsabilityJudicialLitigations.sql" />
+    <Build Include="remote\Views\CreditResponsabilityInstrumentProtections.sql" />
+    <Build Include="remote\Views\CreditResponsabilityInstallments.sql" />
+    <Build Include="remote\Views\CreditResponsabilityEntitiesDISS.sql" />
+    <Build Include="remote\Views\CreditResponsabilities.sql" />
+    <Build Include="remote\Synonyms\ReportingPeriod.sql" />
+    <Build Include="dbo\Tables\EntityToEntitiesCombinedPositionFIHistory.sql" />
+    <Build Include="dbo\Tables\EntityToEntitiesCombinedPositionFI.sql" />
+    <Build Include="rpt\Stored Procedures\Report_InstrumentType.sql" />
+    <Build Include="cot\Tables\CentralizationTransactionsBaseQueue.sql" />
+    <Build Include="cot\Tables\FileImportTransactionsBase2ImportQueue.sql" />
+    <Build Include="cot\Tables\TransactionsEntitiesFI.sql" />
+    <Build Include="cot\Tables\TransactionsComplements.sql" />
+    <Build Include="cot\Tables\TransactionsBaseHistory.sql" />
+    <Build Include="cot\Tables\FileImportCOTTENT.sql" />
+    <Build Include="cot\Tables\TransactionsBase.sql" />
+    <Build Include="cot\Tables\TransactionsConnectionsHistory.sql" />
+    <Build Include="cot\Tables\TransactionsComplementsFI.sql" />
+    <Build Include="cot\Tables\FileImportCOTTCOM.sql" />
+    <Build Include="cot\Tables\TransactionsConnections.sql" />
+    <Build Include="cot\Tables\TransactionsConnectionsFIHistory.sql" />
+    <Build Include="cot\Tables\TransactionsDocumentsHistory.sql" />
+    <Build Include="cot\Tables\TransactionsConnectionsFI.sql" />
+    <Build Include="cot\Tables\TransactionsDocuments.sql" />
+    <Build Include="cot\Tables\FileImportCOTTCON.sql" />
+    <Build Include="cot\Tables\TransactionsDocumentsFIHistory.sql" />
+    <Build Include="cot\Tables\TransactionsBaseFIHistory.sql" />
+    <Build Include="cot\Tables\TransactionsDocumentsFI.sql" />
+    <Build Include="cot\Tables\FileImportCOTTDOC.sql" />
+    <Build Include="cot\Tables\TransactionsBaseFI.sql" />
+    <Build Include="cot\Tables\TransactionsBICHistory.sql" />
+    <Build Include="cot\Tables\FileImportCOTTBASE.sql" />
+    <Build Include="cot\Tables\OffshoreJurisditionsListHistory.sql" />
+    <Build Include="cot\Tables\TransactionsBIC.sql" />
+    <Build Include="cot\Tables\OffshoreJurisditionsList.sql" />
+    <Build Include="cot\Tables\OffshoreJurisditionsListFIHistory.sql" />
+    <Build Include="cot\Tables\TransactionsBICFIHistory.sql" />
+    <Build Include="cot\Tables\OffshoreJurisditionsListFI.sql" />
+    <Build Include="cot\Tables\FileImportCOTJOFF.sql" />
+    <Build Include="cot\Tables\TransactionsAddressFI.sql" />
+    <Build Include="cot\Tables\FileImportCOTTADD.sql" />
+    <Build Include="cot\Tables\TransactionsBICFI.sql" />
+    <Build Include="cot\Tables\FileImportCOTTBIC.sql" />
+    <Build Include="cob\Tables\SettlementsListFI.sql" />
+    <Build Include="cob\Tables\FileImportCOLLIQ.sql" />
+    <Build Include="cob\Tables\FinancialPositionsFI.sql" />
+    <Build Include="cob\Tables\FileImportCOPEPOS.sql" />
+    <Build Include="bcb\Tables\AccountLists.sql" />
+    <Build Include="bcb\Tables\FileImportBCBACC.sql" />
+    <Build Include="bcb\Tables\CentralizationAccountEntitiesQueue.sql" />
+    <Build Include="bcb\Tables\AccountEntitiesHistory.sql" />
+    <Build Include="bcb\Tables\AccountEntities.sql" />
+    <Build Include="bcb\Tables\AccountEntitiesFIHistory.sql" />
+    <Build Include="bcb\Tables\AccountEntitiesFI.sql" />
+    <Build Include="bcb\Tables\FileImportBCBENT.sql" />
+    <Build Include="Security\cot.sql" />
+    <Build Include="Security\bcb.sql" />
+    <Build Include="cot\Stored Procedures\ImportTransactionsBaseFI2Final.sql" />
+    <Build Include="cot\Stored Procedures\ImportTransactionsBaseFI.sql" />
+    <Build Include="cot\Tables\FileImportOffshoreJurisditionsList2ImportQueue.sql" />
+    <Build Include="cot\Tables\FileImportOFAC.sql" />
+    <Build Include="cot\Tables\CentralizationOffshoreJurisditionsListQueue.sql" />
+    <Build Include="bop\Tables\SettlementsList.sql" />
+    <Build Include="bop\Tables\SettlementsListFIHistory.sql" />
+    <Build Include="bop\Tables\SettlementsListFI.sql" />
+    <Build Include="bop\Tables\FileImportCOLLIQ.sql" />
+    <Build Include="bop\Tables\CentralizationFinancialPositionsQueue.sql" />
+    <Build Include="bop\Tables\FinancialPositionsHistory.sql" />
+    <Build Include="bop\Tables\FinancialPositions.sql" />
+    <Build Include="bop\Tables\FinancialPositionsFIHistory.sql" />
+    <Build Include="bop\Tables\FinancialPositionsFI.sql" />
+    <Build Include="bop\Tables\FileImportCOPEPOS.sql" />
+    <Build Include="bop\Tables\CentralizationSettlementsListQueue.sql" />
+    <Build Include="bop\Tables\SettlementsListHistory.sql" />
+    <Build Include="dbo\Functions\CalculatePercentageVariance.sql" />
+    <Build Include="Security\bop.sql" />
+    <None Include="dbo\Views\vStatistics.sql" />
+    <Build Include="remote\Views\SyndicatedEntities.sql" />
+    <Build Include="remote\Views\SpecialCharacteristics.sql" />
+    <Build Include="remote\Views\Protections.sql" />
+    <Build Include="remote\Views\Instruments.sql" />
+    <Build Include="remote\Views\InstrumentProtections.sql" />
+    <Build Include="remote\Views\InstrumentFinancial.sql" />
+    <Build Include="remote\Views\EntityJointLiabilities.sql" />
+    <Build Include="remote\Views\EntityDailyDefaults.sql" />
+    <Build Include="remote\Views\EntityAdvancedInfoRelatedEntities.sql" />
+    <Build Include="remote\Views\EntityAdvancedInfo.sql" />
+    <Build Include="remote\Views\Entities.sql" />
+    <Build Include="bcb\Tables\FileImportBCBREL.sql" />
+    <Build Include="bcb\Tables\EntityAccountsListHistory.sql" />
+    <Build Include="bcb\Tables\EntityAccountsListFIHistory.sql" />
+    <Build Include="bcb\Tables\EntityAccountsListFI.sql" />
+    <Build Include="bcb\Tables\EntityAccountsList.sql" />
+    <Build Include="bcb\Stored Procedures\ImportAccountEntitiesFI2Final.sql" />
+    <Build Include="dbo\Tables\Regulations.sql" />
+    <Build Include="rpt\Tables\StatisticsUpdateQueue.sql" />
+    <Build Include="rpt\Tables\StatisticsSpecialCharacteristics.sql" />
+    <Build Include="rpt\Tables\StatisticsProtections.sql" />
+    <Build Include="rpt\Tables\StatisticsInstruments.sql" />
+    <Build Include="rpt\Stored Procedures\Report_StatisticsProtections.sql" />
+    <Build Include="rpt\Stored Procedures\CalculateStatistics.sql" />
+    <Build Include="cot\Tables\TransactionsAggregationRelatedHistory.sql" />
+    <Build Include="cot\Tables\TransactionsAggregationRelatedFIHistory.sql" />
+    <Build Include="cot\Tables\TransactionsAggregationRelatedFI.sql" />
+    <Build Include="cot\Tables\TransactionsAggregationRelated.sql" />
+    <Build Include="cot\Tables\TransactionsAggregationHistory.sql" />
+    <Build Include="cot\Tables\TransactionsAggregationFIHistory.sql" />
+    <Build Include="cot\Tables\TransactionsAggregationFI.sql" />
+    <Build Include="cot\Tables\TransactionsAggregation.sql" />
+    <Build Include="cot\Tables\FileImportCOTTREL.sql" />
+    <Build Include="cot\Tables\FileImportCOTTAGG.sql" />
+    <Build Include="cot\Tables\CentralizationTransactionsAggregationQueue.sql" />
+    <Build Include="dbo\Functions\SplitToNumeric18.sql" />
+    <Build Include="rpt\Stored Procedures\Report_StatisticsSpecialCharacteristics.sql" />
+    <Build Include="rpt\Stored Procedures\Report_StatisticsInstruments_Amounts.sql" />
+    <Build Include="rpt\Stored Procedures\Report_StatisticsInstruments.sql" />
+    <Build Include="cot\Stored Procedures\ImportTransactionsAggregationFI2Final.sql" />
+    <Build Include="cot\Stored Procedures\ImportOffshoreJurisditionsListFI.sql" />
+    <Build Include="cot\Stored Procedures\GenerateFileOFCT.sql" />
+    <Build Include="Security\shs.sql" />
+    <Build Include="dbo\Stored Procedures\Notifications_Centralization.sql" />
+    <Build Include="dbo\Stored Procedures\CalenderizeFiles.sql" />
+    <Build Include="rpt\Stored Procedures\Report_ObservedPerUserInitial.sql" />
+    <None Include="Scripts\20180614_HotfixReports.sql" />
+    <None Include="Scripts\Fix_BDPReportingPeriod.sql" />
+    <None Include="Scripts\Fix_ClaimsReportStatistics.sql" />
+    <None Include="Scripts\FIx_MenuMultiregulação.sql" />
+    <None Include="Scripts\FIX_NewRole.sql" />
+    <None Include="Scripts\FIX_Notification.sql" />
+    <None Include="Scripts\FIX_reorganizacao_claims.sql" />
+    <None Include="Scripts\Fix-ObsoleteMenus.sql" />
+    <PostDeploy Include="Scripts\PostDeployment.sql" />
+    <PreDeploy Include="Scripts\PreDployment.sql" />
+    <Build Include="rpt\Functions\tfFinancialGroupAscendants.sql" />
+    <Build Include="dbo\Tables\DomainRegulations.sql" />
+    <Build Include="auth\Tables\UserRegulations.sql" />
+    <Build Include="bcb\Tables\CentralizationAccountsListsQueue.sql" />
+    <Build Include="bcb\Tables\AccountsListsHistory.sql" />
+    <Build Include="bcb\Tables\AccountsListsFIHistory.sql" />
+    <Build Include="bcb\Tables\AccountsListsFI.sql" />
+    <Build Include="bcb\Tables\AccountsLists2ImportQueue.sql" />
+    <Build Include="bcb\Tables\AccountsLists.sql" />
+    <Build Include="bcb\Tables\AccountEntities2ImportQueue.sql" />
+    <Build Include="bcb\Stored Procedures\ImportAccountsListsFI2Final.sql" />
+    <Build Include="bcb\Stored Procedures\ImportAccountListsFilesFI.sql" />
+    <Build Include="bcb\Stored Procedures\ImportAccountEntityFilesFI.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementProtectionsHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementProtectionsFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementProtectionsFI.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementProtections.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementJustificativeHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementJustificativeFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementJustificativeFI.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementJustificative.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementFI.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementEntitiesHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementEntitiesFIHistory.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementEntitiesFI.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplementEntities.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplement2ImportQueue.sql" />
+    <Build Include="dbo\Tables\InstrumentsComplement.sql" />
+    <Build Include="dbo\Tables\FileImportCCPROT.sql" />
+    <Build Include="dbo\Tables\FileImportCCJUST.sql" />
+    <Build Include="dbo\Tables\FileImportCCINST.sql" />
+    <Build Include="dbo\Tables\FileImportCCENT.sql" />
+    <Build Include="dbo\Tables\CentralizationInstrumentsComplementQueue.sql" />
+    <Build Include="dbo\Stored Procedures\ImportInstrumentsComplementFI2Final.sql" />
+    <Build Include="dbo\Stored Procedures\ImportInstrumentComplementFilesFI.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateFileCICC.sql" />
+    <Build Include="cot\Tables\TransactionsAggregation2ImportQueue.sql" />
+    <Build Include="cot\Stored Procedures\ImportTransactionAggregationFilesFI.sql" />
+    <None Include="Scripts\FIx_Installments.sql" />
+    <Build Include="bcb\Stored Procedures\GenerateFileCCNTA.sql" />
+    <Build Include="dbo\Views\vFinancialGroupLiabilities.sql" />
+    <Build Include="dbo\Views\vFinancialGroupDescendants.sql" />
+    <Build Include="dbo\Views\vFinancialGroupCreditResponsabilities.sql" />
+    <Build Include="dbo\Views\vFinancialGroupAscendants.sql" />
+    <Build Include="bcb\Stored Procedures\GenerateFileCCNTP.sql" />
+    <Build Include="cot\Stored Procedures\ImportOffshoreJurisditionsListFI2Final.sql" />
+    <Build Include="cot\Stored Procedures\ImportFileOFAC.sql" />
+    <Build Include="cot\Stored Procedures\GenerateFileOFCTJ.sql" />
+    <Build Include="remote\Views\ReportingPeriods.sql" />
+    <Build Include="remote\Views\Participant.sql" />
+    <Build Include="remote\Views\CreditResponsabilityEntitiesCB.sql" />
+    <Build Include="bcb\Stored Procedures\ImportFileRSPC.sql" />
+    <Build Include="rpt\Stored Procedures\WSCloneResponseOnly.sql" />
+    <Build Include="dbo\Stored Procedures\Notifications_Inconsistencies_2.sql" />
+    <Build Include="dbo\Stored Procedures\CalculateInconsistencies_2.sql" />
+    <Build Include="bop\Tables\SettlementsList2ImportQueue.sql" />
+    <Build Include="bop\Tables\ReportingPeriodBOP.sql" />
+    <Build Include="bop\Tables\FinancialPositions2ImportQueue.sql" />
+    <Build Include="bop\Stored Procedures\ImportSettlementsListFI2Final.sql" />
+    <Build Include="bop\Stored Procedures\ImportSettlementListFilesFI.sql" />
+    <Build Include="bop\Stored Procedures\ImportFinancialPositionsFI2Final.sql" />
+    <Build Include="bop\Stored Procedures\ImportFinancialPositionFilesFI.sql" />
+    <Build Include="remote\Synonyms\FileImportMessages.sql" />
+    <Build Include="cot\Tables\ReportingPeriodCOT.sql" />
+    <Build Include="bop\Stored Procedures\GenerateReportingYear.sql" />
+    <Build Include="bcb\Tables\ReportingPeriodBCB.sql" />
+    <Build Include="bcb\Stored Procedures\GenerateReportingYear.sql" />
+    <Build Include="bop\Stored Procedures\GenerateFileBOPCOPEP.sql" />
+    <Build Include="bop\Stored Procedures\GenerateFileBOPCOPEA.sql" />
+    <Build Include="bop\Stored Procedures\ImportFileABOPCOPE.sql" />
+    <None Include="Scripts\Fix_CloneRquest.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileAICC.sql" />
+    <Build Include="rpt\Stored Procedures\Report_InconsistenciesStatistics.sql" />
+    <None Include="Scripts\FIX_Claims_RemoveUnnecessary.sql" />
+    <None Include="Scripts\FIX_Claims_RenameClaim_EditAdvanceinformFI.sql" />
+    <Build Include="bcb\Stored Procedures\RotateActivePeriod.sql" />
+    <None Include="Scripts\FIX_ReportCustom_NotTranselatedReports.sql" />
+    <Build Include="bop\Stored Procedures\RotateActivePeriod.sql" />
+    <Build Include="dbo\Functions\SYM_STRING_SPLIT.sql" />
+    <Build Include="dbo\Tables\Pricing.sql" />
+    <Build Include="rpt\Stored Procedures\Report_Pricing.sql" />
+    <Build Include="dbo\Stored Procedures\PricingCalculator_StaticInfoUpdateNoChanges.sql" />
+    <Build Include="dbo\Stored Procedures\PricingCalculator_StaticFinancialInformationComunicationWithError.sql" />
+    <Build Include="dbo\Stored Procedures\PricingCalculator_AccessCentralizedInformation.sql" />
+    <Build Include="dbo\Stored Procedures\PricingCalculator.sql" />
+    <Build Include="psp\Tables\PaymentCards.sql" />
+    <Build Include="psp\Tables\AggPaymentCardRegister.sql" />
+    <Build Include="psp\Tables\PaymentCardOperations.sql" />
+    <Build Include="psp\Tables\PaymentCardsFI.sql" />
+    <Build Include="psp\Tables\FileImportPSPPC.sql" />
+    <Build Include="psp\Tables\ReportingPeriodPSP.sql" />
+    <Build Include="psp\Tables\EntitiesPSP.sql" />
+    <Build Include="psp\Tables\EntitiesPSPFI.sql" />
+    <Build Include="psp\Tables\FileImportPSPE.sql" />
+    <Build Include="Security\psp.sql" />
+    <Build Include="psp\Tables\AggPaymentCardRegisterFamily.sql" />
+    <Build Include="psp\Tables\AggPaymentCardNumbers.sql" />
+    <Build Include="psp\Tables\AggPaymentCardOperations.sql" />
+    <Build Include="dbo\Stored Procedures\PricingCalculator_FinancialInformationComunication.sql" />
+    <Build Include="psp\Tables\ParticipantReportInstruments.sql" />
+    <Build Include="psp\Tables\AggPaymentCardFrauds.sql" />
+    <Build Include="psp\Tables\AggPaymentCardRegisterHistory.sql" />
+    <Build Include="psp\Tables\AggPaymentCardRegisterFamilyHistory.sql" />
+    <Build Include="psp\Tables\AggPaymentCardOperationsHistory.sql" />
+    <Build Include="psp\Tables\AggPaymentCardNumbersHistory.sql" />
+    <Build Include="psp\Tables\AggPaymentCardFraudsHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardRegistersHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardRegistersFIHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardRegistersFI.sql" />
+    <Build Include="psp\Tables\PaymentCardRegisterSchemesHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardRegisterSchemesFIHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardRegisterSchemesFI.sql" />
+    <Build Include="psp\Tables\PaymentCardRegisterSchemes.sql" />
+    <Build Include="psp\Tables\PaymentCardRegisters2ImportQueue.sql" />
+    <Build Include="psp\Tables\PaymentCardRegisters.sql" />
+    <Build Include="psp\Tables\PaymentCardNumbersHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardNumbersFIHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardNumbersFI.sql" />
+    <Build Include="psp\Tables\PaymentCardNumbers2ImportQueue.sql" />
+    <Build Include="psp\Tables\PaymentCardNumbers.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerOperationsHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerOperationsFIHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerOperationsFI.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerOperations2ImportQueue.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerOperations.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerLossesHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerLossesFIHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerLossesFI.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerLosses2ImportQueue.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerLosses.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerFraudsHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerFraudsFIHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerFraudsFI.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerFrauds2ImportQueue.sql" />
+    <Build Include="psp\Tables\PaymentCardIssuerFrauds.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerOperationsHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerOperationsFIHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerOperationsFI.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerOperations2ImportQueue.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerOperations.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerLossesHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerLossesFIHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerLossesFI.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerLosses2ImportQueue.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerLosses.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerFraudsHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerFraudsFIHistory.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerFraudsFI.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerFrauds2ImportQueue.sql" />
+    <Build Include="psp\Tables\PaymentCardAcquirerFrauds.sql" />
+    <Build Include="psp\Tables\FileImportPSPPPCR.sql" />
+    <Build Include="psp\Tables\FileImportPSPPPCOA.sql" />
+    <Build Include="psp\Tables\FileImportPSPPPCO.sql" />
+    <Build Include="psp\Tables\FileImportPSPPPCN.sql" />
+    <Build Include="psp\Tables\FileImportPSPPCCRS.sql" />
+    <Build Include="psp\Tables\FileImportPSPLPCA.sql" />
+    <Build Include="psp\Tables\FileImportPSPLPC.sql" />
+    <Build Include="psp\Tables\FileImportPSPFPCA.sql" />
+    <Build Include="psp\Tables\FileImportPSPFPC.sql" />
+    <Build Include="psp\Tables\FileImportMessagesPSP.sql" />
+    <Build Include="psp\Tables\CentralizationPaymentCardRegistersQueue.sql" />
+    <Build Include="psp\Tables\CentralizationPaymentCardNumbersQueue.sql" />
+    <Build Include="psp\Tables\CentralizationPaymentCardIssuerOperationsQueue.sql" />
+    <Build Include="psp\Tables\CentralizationPaymentCardIssuerLossesQueue.sql" />
+    <Build Include="psp\Tables\CentralizationPaymentCardIssuerFraudsQueue.sql" />
+    <Build Include="psp\Tables\CentralizationPaymentCardAcquirerOperationsQueue.sql" />
+    <Build Include="psp\Tables\CentralizationPaymentCardAcquirerLossesQueue.sql" />
+    <Build Include="psp\Tables\CentralizationPaymentCardAcquirerFraudsQueue.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardRegistersFI2Final.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardRegisterFilesFI.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardNumbersFI2Final.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardNumberFilesFI.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardIssuerOperationsFI2Final.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardIssuerOperationFilesFI.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardIssuerLossFilesFI.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardIssuerLossesFI2Final.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardIssuerFraudsFI2Final.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardIssuerFraudFilesFI.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardAcquirerOperationsFI2Final.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardAcquirerOperationFilesFI.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardAcquirerLossFilesFI.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardAcquirerLossesFI2Final.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardAcquirerFraudsFI2Final.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentCardAcquirerFraudFilesFI.sql" />
+    <Build Include="psp\Stored Procedures\ImportFileBPResp.sql" />
+    <Build Include="psp\Tables\InstrumentThemes.sql" />
+    <None Include="Scripts\FIX_AddColumn_FromADFS.sql" />
+    <Build Include="psp\Stored Procedures\RotateActivePeriodPSP.sql" />
+    <Build Include="psp\Stored Procedures\CheckActivePeriodPSP.sql" />
+    <Build Include="rpt\Functions\AUX_UserSegments.sql" />
+    <Build Include="psp\Tables\FileImportIPSYSPSPTA.sql" />
+    <Build Include="psp\Stored Procedures\GenerateFileIPSYS_PSP.sql" />
+    <Build Include="psp\Stored Procedures\ImportFileIPSYS_PSP_TA.sql" />
+    <Build Include="rpt\Stored Procedures\ReportingGetMsgCreditResponsabilities.sql" />
+    <Build Include="rpt\Stored Procedures\ReportGetIds.sql" />
+    <Build Include="rpt\Stored Procedures\AUX_UserHasClaim.sql" />
+    <None Include="Scripts\FIX_ReportingPeriodDeadlines_CRC_2019.sql" />
+    <Build Include="psp\Stored Procedures\GenerateFileIPSYS_PSP_RFP.sql" />
+    <Build Include="psp\Tables\FileImportPSPDDC.sql" />
+    <Build Include="psp\Tables\DirectDebitsCreditorHistory.sql" />
+    <Build Include="psp\Tables\DirectDebitsCreditorFIHistory.sql" />
+    <Build Include="psp\Tables\DirectDebitsCreditorFI.sql" />
+    <Build Include="psp\Tables\DirectDebitsCreditor2ImportQueue.sql" />
+    <Build Include="psp\Tables\DirectDebitsCreditor.sql" />
+    <Build Include="psp\Tables\CentralizationDirectDebitsCreditorQueue.sql" />
+    <Build Include="psp\Stored Procedures\ImportDirectDebitCreditorFilesFI.sql" />
+    <None Include="Scripts\FIX_FileImportMessagesPSP.sql" />
+    <Build Include="dbo\Tables\FileImportPRESQ.sql" />
+    <Build Include="dbo\Stored Procedures\ImportPRESQFiles.sql" />
+    <None Include="Scripts\Insert_FileMessages_Regulacao.sql" />
+    <None Include="Scripts\FIX_PSP_RemoveClaim_OldMessages.sql" />
+    <Build Include="cot\Tables\FileImportMessagesCOT.sql" />
+    <Build Include="bop\Tables\FileImportMessagesBOP.sql" />
+    <Build Include="bcb\Tables\FileImportMessagesBCB.sql" />
+    <Build Include="dbo\Stored Procedures\ImportFileRPAT.sql" />
+    <None Include="Scripts\BCB_ConfigureScheduledTask_RotareActivePeriods.sql" />
+    <None Include="Scripts\FIX_FicheirosPRESQ.sql" />
+    <None Include="Scripts\FIX_FicheirosRPAT.sql" />
+    <Build Include="bcb\Stored Procedures\CheckActivePeriodBCB.sql" />
+    <Build Include="psp\Tables\PaymentTerminalPOSRegistersHistory.sql" />
+    <Build Include="psp\Tables\PaymentTerminalPOSRegistersFIHistory.sql" />
+    <Build Include="psp\Tables\PaymentTerminalPOSRegistersFI.sql" />
+    <Build Include="psp\Tables\PaymentTerminalPOSRegisters2ImportQueue.sql" />
+    <Build Include="psp\Tables\PaymentTerminalPOSRegisters.sql" />
+    <Build Include="psp\Tables\PaymentTerminalPOSOperationsHistory.sql" />
+    <Build Include="psp\Tables\PaymentTerminalPOSOperationsFIHistory.sql" />
+    <Build Include="psp\Tables\PaymentTerminalPOSOperationsFI.sql" />
+    <Build Include="psp\Tables\PaymentTerminalPOSOperations2ImportQueue.sql" />
+    <Build Include="psp\Tables\PaymentTerminalPOSOperations.sql" />
+    <Build Include="psp\Tables\PaymentTerminalATMRegistersHistory.sql" />
+    <Build Include="psp\Tables\PaymentTerminalATMRegistersFIHistory.sql" />
+    <Build Include="psp\Tables\PaymentTerminalATMRegistersFI.sql" />
+    <Build Include="psp\Tables\PaymentTerminalATMRegisters2ImportQueue.sql" />
+    <Build Include="psp\Tables\PaymentTerminalATMRegisters.sql" />
+    <Build Include="psp\Tables\PaymentTerminalATMOperationsHistory.sql" />
+    <Build Include="psp\Tables\PaymentTerminalATMOperationsFIHistory.sql" />
+    <Build Include="psp\Tables\PaymentTerminalATMOperationsFI.sql" />
+    <Build Include="psp\Tables\PaymentTerminalATMOperations2ImportQueue.sql" />
+    <Build Include="psp\Tables\PaymentTerminalATMOperations.sql" />
+    <Build Include="psp\Tables\FileImportPSPPTPOSR.sql" />
+    <Build Include="psp\Tables\FileImportPSPPTPOSO.sql" />
+    <Build Include="psp\Tables\FileImportPSPPTATMR.sql" />
+    <Build Include="psp\Tables\FileImportPSPPTATMO.sql" />
+    <Build Include="psp\Tables\CentralizationPaymentTerminalPOSRegistersQueue.sql" />
+    <Build Include="psp\Tables\CentralizationPaymentTerminalPOSOperationsQueue.sql" />
+    <Build Include="psp\Tables\CentralizationPaymentTerminalATMRegistersQueue.sql" />
+    <Build Include="psp\Tables\CentralizationPaymentTerminalATMOperationsQueue.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentTerminalPOSRegistersFI2Final.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentTerminalPOSRegisterFilesFI.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentTerminalPOSOperationsFI2Final.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentTerminalPOSOperationFilesFI.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentTerminalATMRegistersFI2Final.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentTerminalATMRegisterFilesFI.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentTerminalATMOperationsFI2Final.sql" />
+    <Build Include="psp\Stored Procedures\ImportPaymentTerminalATMOperationFilesFI.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioNISINsHistory.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioNISINsFIHistory.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioNISINsFI.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioNISINs2ImportQueue.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioNISINs.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioISINsHistory.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioISINsFIHistory.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioISINsFI.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioISINs2ImportQueue.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioISINs.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioGroupsHistory.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioGroupsFIHistory.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioGroupsFI.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioGroups2ImportQueue.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioGroups.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioEntitiesHistory.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioEntitiesFIHistory.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioEntitiesFI.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioEntities2ImportQueue.sql" />
+    <Build Include="shs\Tables\SecuritiesPortfolioEntities.sql" />
+    <Build Include="shs\Tables\ReportingPeriodSHS.sql" />
+    <Build Include="shs\Tables\FileImportSHSNISIN.sql" />
+    <Build Include="shs\Tables\FileImportSHSISIN.sql" />
+    <Build Include="shs\Tables\FileImportSHSGRP.sql" />
+    <Build Include="shs\Tables\FileImportSHSENT.sql" />
+    <Build Include="shs\Tables\CentralizationSecuritiesPortfolioNISINsQueue.sql" />
+    <Build Include="shs\Tables\CentralizationSecuritiesPortfolioISINsQueue.sql" />
+    <Build Include="shs\Tables\CentralizationSecuritiesPortfolioGroupsQueue.sql" />
+    <Build Include="shs\Tables\CentralizationSecuritiesPortfolioEntitiesQueue.sql" />
+    <Build Include="shs\Stored Procedures\ImportSecuritiesPortfolioNISINsFI2Final.sql" />
+    <Build Include="shs\Stored Procedures\ImportSecuritiesPortfolioNISINFilesFI.sql" />
+    <Build Include="shs\Stored Procedures\ImportSecuritiesPortfolioISINsFI2Final.sql" />
+    <Build Include="shs\Stored Procedures\ImportSecuritiesPortfolioISINFilesFI.sql" />
+    <Build Include="shs\Stored Procedures\ImportSecuritiesPortfolioGroupsFI2Final.sql" />
+    <Build Include="shs\Stored Procedures\ImportSecuritiesPortfolioGroupFilesFI.sql" />
+    <Build Include="shs\Stored Procedures\ImportSecuritiesPortfolioEntitiesFI2Final.sql" />
+    <Build Include="shs\Stored Procedures\ImportSecuritiesPortfolioEntityFilesFI.sql" />
+    <Build Include="psp\Tables\FileImportAckReceiptsPSP.sql" />
+    <Build Include="cot\Tables\FileImportAckReceiptCOT.sql" />
+    <Build Include="bop\Tables\FileImportAckReceiptsBOP.sql" />
+    <Build Include="bcb\Tables\FileImportAckReceiptsBCB.sql" />
+    <Build Include="shs\Tables\FileImportMessagesSHS.sql" />
+    <Build Include="rpt\Functions\tfStatisticsSpecialCharacteristicsResults.sql" />
+    <Build Include="rpt\Functions\tfStatisticsProtectionsResults.sql" />
+    <Build Include="rpt\Functions\tfStatisticsInstrumentsResults.sql" />
+    <None Include="Scripts\FIX-ScheduleTasks_em_exec.sql" />
+    <None Include="Scripts\SHS_ConfigureScheduledTasks.sql" />
+    <Build Include="shs\Tables\FileImportAckReceiptsSHS.sql" />
+    <Build Include="shs\Stored Procedures\RotateActivePeriodSHS.sql" />
+    <Build Include="shs\Stored Procedures\CheckActivePeriodSHS.sql" />
+    <Build Include="shs\Stored Procedures\ImportFileARGF.sql" />
+    <Build Include="shs\Stored Procedures\GenerateFileRGF.sql" />
+    <Build Include="rpt\Functions\IndividualBankLoans.sql" />
+    <Build Include="shs\Stored Procedures\CleanUpTablesSHS.sql" />
+    <None Include="Scripts\GeneratedMipScripts\_ScriptsExecutor.sql" />
+    <None Include="Scripts\GeneratedMipScripts\AuthenticationData.sql" />
+    <None Include="Scripts\GeneratedMipScripts\BcbData.sql" />
+    <None Include="Scripts\GeneratedMipScripts\BopData.sql" />
+    <None Include="Scripts\GeneratedMipScripts\CotData.sql" />
+    <None Include="Scripts\GeneratedMipScripts\CrcData.sql" />
+    <None Include="Scripts\GeneratedMipScripts\PspData.sql" />
+    <None Include="Scripts\GeneratedMipScripts\SymetriaData.sql" />
+    <Build Include="Security\taeg.sql" />
+    <Build Include="Security\rur.sql" />
+    <Build Include="Security\taeg.sql" />
+    <Build Include="Security\rur.sql" />
+    <Build Include="taeg\Tables\ReportingPeriodTAEG.sql" />
+    <Build Include="rur\Tables\ReportingPeriodRUR.sql" />
+    <Build Include="taeg\Stored Procedures\RotateActivePeriodTAEG.sql" />
+    <Build Include="taeg\Stored Procedures\CheckActivePeriodTAEG.sql" />
+    <Build Include="rur\Stored Procedures\RotateActivePeriodRUR.sql" />
+    <Build Include="rur\Stored Procedures\CheckActivePeriodRUR.sql" />
+    <None Include="Scripts\GeneratedMipScripts\TaegData.sql" />
+    <None Include="Scripts\GeneratedMipScripts\RurData.sql" />
+    <None Include="Scripts\GeneratedMipScripts\ShsData.sql" />
+    <Build Include="cot\Stored Procedures\RotateActivePeriodCOT.sql" />
+    <Build Include="cot\Stored Procedures\CheckActivePeriodCOT.sql" />
+    <Build Include="taeg\Tables\ReportingPeriodTAEG.sql" />
+    <Build Include="taeg\Tables\FileImportMessagesTAEG.sql" />
+    <Build Include="taeg\Tables\FileImportIMCC.sql" />
+    <Build Include="taeg\Tables\ConsumerCreditsHistory.sql" />
+    <Build Include="taeg\Tables\ConsumerCreditsFIHistory.sql" />
+    <Build Include="taeg\Tables\ConsumerCreditsFI.sql" />
+    <Build Include="taeg\Tables\ConsumerCredits2ImportQueue.sql" />
+    <Build Include="taeg\Tables\ConsumerCredits.sql" />
+    <Build Include="taeg\Tables\CentralizationConsumerCreditsQueue.sql" />
+    <Build Include="taeg\Stored Procedures\RotateActivePeriodTAEG.sql" />
+    <Build Include="taeg\Stored Procedures\ImportConsumerCreditsFI2Final.sql" />
+    <Build Include="taeg\Stored Procedures\ImportConsumerCreditFilesFI.sql" />
+    <Build Include="taeg\Stored Procedures\CheckActivePeriodTAEG.sql" />
+    <None Include="Scripts\GeneratedMipScripts\SymetriaTranslationsData.sql" />
+    <None Include="Scripts\GeneratedMipScripts\PersiData.sql" />
+    <Build Include="taeg\Tables\ReportingPeriodTAEG.sql" />
+    <Build Include="taeg\Tables\FileImportMessagesTAEG.sql" />
+    <Build Include="taeg\Tables\FileImportIMCC.sql" />
+    <Build Include="taeg\Tables\ConsumerCreditsHistory.sql" />
+    <Build Include="taeg\Tables\ConsumerCreditsFIHistory.sql" />
+    <Build Include="taeg\Tables\ConsumerCreditsFI.sql" />
+    <Build Include="taeg\Tables\ConsumerCredits2ImportQueue.sql" />
+    <Build Include="taeg\Tables\ConsumerCredits.sql" />
+    <Build Include="taeg\Tables\CentralizationConsumerCreditsQueue.sql" />
+    <Build Include="rur\Tables\ReportingPeriodRUR.sql" />
+    <Build Include="rur\Tables\ReferenceUnitInformationsHistory.sql" />
+    <Build Include="rur\Tables\ReferenceUnitInformationsFIHistory.sql" />
+    <Build Include="rur\Tables\ReferenceUnitInformationsFI.sql" />
+    <Build Include="rur\Tables\ReferenceUnitInformations2ImportQueue.sql" />
+    <Build Include="rur\Tables\ReferenceUnitInformations.sql" />
+    <Build Include="rur\Tables\FileImportRUR.sql" />
+    <Build Include="rur\Tables\FileImportMessagesRUR.sql" />
+    <Build Include="rur\Tables\CentralizationReferenceUnitInformationsQueue.sql" />
+    <Build Include="taeg\Stored Procedures\RotateActivePeriodTAEG.sql" />
+    <Build Include="taeg\Stored Procedures\ImportConsumerCreditsFI2Final.sql" />
+    <Build Include="taeg\Stored Procedures\ImportConsumerCreditFilesFI.sql" />
+    <Build Include="taeg\Stored Procedures\CheckActivePeriodTAEG.sql" />
+    <Build Include="rur\Stored Procedures\RotateActivePeriodRUR.sql" />
+    <Build Include="rur\Stored Procedures\ImportReferenceUnitInformationsFI2Final.sql" />
+    <Build Include="rur\Stored Procedures\ImportReferenceUnitInformationFilesFI.sql" />
+    <Build Include="rur\Stored Procedures\CheckActivePeriodRUR.sql" />
+    <Build Include="taeg\Tables\ReportingPeriodTAEG.sql" />
+    <Build Include="taeg\Tables\FileImportMessagesTAEG.sql" />
+    <Build Include="taeg\Tables\FileImportIMCC.sql" />
+    <Build Include="taeg\Tables\ConsumerCreditsHistory.sql" />
+    <Build Include="taeg\Tables\ConsumerCreditsFIHistory.sql" />
+    <Build Include="taeg\Tables\ConsumerCreditsFI.sql" />
+    <Build Include="taeg\Tables\ConsumerCredits2ImportQueue.sql" />
+    <Build Include="taeg\Tables\ConsumerCredits.sql" />
+    <Build Include="taeg\Tables\CentralizationConsumerCreditsQueue.sql" />
+    <Build Include="rur\Tables\ReportingPeriodRUR.sql" />
+    <Build Include="rur\Tables\ReferenceUnitInformationsHistory.sql" />
+    <Build Include="rur\Tables\ReferenceUnitInformationsFIHistory.sql" />
+    <Build Include="rur\Tables\ReferenceUnitInformationsFI.sql" />
+    <Build Include="rur\Tables\ReferenceUnitInformations2ImportQueue.sql" />
+    <Build Include="rur\Tables\ReferenceUnitInformations.sql" />
+    <Build Include="rur\Tables\FileImportRUR.sql" />
+    <Build Include="rur\Tables\FileImportMessagesRUR.sql" />
+    <Build Include="rur\Tables\CentralizationReferenceUnitInformationsQueue.sql" />
+    <Build Include="taeg\Stored Procedures\RotateActivePeriodTAEG.sql" />
+    <Build Include="taeg\Stored Procedures\ImportConsumerCreditsFI2Final.sql" />
+    <Build Include="taeg\Stored Procedures\ImportConsumerCreditFilesFI.sql" />
+    <Build Include="taeg\Stored Procedures\GenerateFileTAEG.sql" />
+    <Build Include="taeg\Stored Procedures\CheckActivePeriodTAEG.sql" />
+    <Build Include="rur\Stored Procedures\RotateActivePeriodRUR.sql" />
+    <Build Include="rur\Stored Procedures\ImportReferenceUnitInformationsFI2Final.sql" />
+    <Build Include="rur\Stored Procedures\ImportReferenceUnitInformationFilesFI.sql" />
+    <Build Include="rur\Stored Procedures\GenerateFileUR.sql" />
+    <Build Include="rur\Stored Procedures\CheckActivePeriodRUR.sql" />
+    <Build Include="persi\Tables\CentralizationAggregatedCreditsQueue.sql" />
+    <Build Include="persi\Tables\ConsolidatedCreditContracts.sql" />
+    <Build Include="persi\Tables\AggregatedCreditsHistory.sql" />
+    <Build Include="persi\Tables\CentralizationConsolidatedCreditsQueue.sql" />
+    <Build Include="persi\Tables\CentralizationGenericCreditInfosQueue.sql" />
+    <Build Include="persi\Tables\FileImportMessagesPERSI.sql" />
+    <Build Include="persi\Tables\AggregatedCredits.sql" />
+    <Build Include="persi\Tables\ConsolidatedCreditsHistory.sql" />
+    <Build Include="persi\Tables\GenericCreditInfosHistory.sql" />
+    <Build Include="persi\Tables\AggregatedCredits2ImportQueue.sql" />
+    <Build Include="persi\Tables\CentralizationRenegotiatedCreditsQueue.sql" />
+    <Build Include="persi\Tables\AggregatedCreditsFIHistory.sql" />
+    <Build Include="persi\Tables\ConsolidatedCredits.sql" />
+    <Build Include="persi\Tables\RenegotiatedCreditsHistory.sql" />
+    <Build Include="persi\Tables\GenericCreditInfos.sql" />
+    <Build Include="persi\Tables\ConsolidatedCreditContractsFIHistory.sql" />
+    <Build Include="persi\Tables\GenericCreditInfos2ImportQueue.sql" />
+    <Build Include="persi\Tables\AggregatedCreditsFI.sql" />
+    <Build Include="persi\Tables\FileImportIMAC.sql" />
+    <Build Include="persi\Tables\GenericCreditInfosFIHistory.sql" />
+    <Build Include="persi\Tables\ConsolidatedCreditContractsFI.sql" />
+    <Build Include="persi\Tables\RenegotiatedCredits.sql" />
+    <Build Include="persi\Tables\ConsolidatedCredits2ImportQueue.sql" />
+    <Build Include="persi\Tables\RenegotiatedCredits2ImportQueue.sql" />
+    <Build Include="persi\Tables\CentralizationAdditionalCreditsQueue.sql" />
+    <Build Include="persi\Tables\GenericCreditInfosFI.sql" />
+    <Build Include="persi\Tables\ConsolidatedCreditsFIHistory.sql" />
+    <Build Include="persi\Tables\FileImportIMGC.sql" />
+    <Build Include="persi\Tables\RenegotiatedCreditsFIHistory.sql" />
+    <Build Include="persi\Tables\AdditionalCreditsHistory.sql" />
+    <Build Include="persi\Tables\ConsolidatedCreditsFI.sql" />
+    <Build Include="persi\Tables\CentralizationCreditExtinctionsQueue.sql" />
+    <Build Include="persi\Tables\RenegotiatedCreditsFI.sql" />
+    <Build Include="persi\Tables\FileImportIMCCB.sql" />
+    <Build Include="persi\Tables\FileImportIMCR.sql" />
+    <Build Include="persi\Tables\FileImportIMCCA.sql" />
+    <Build Include="persi\Tables\CreditExtinctionsHistory.sql" />
+    <Build Include="persi\Tables\AdditionalCredits.sql" />
+    <Build Include="persi\Tables\ReportingPeriodPERSI.sql" />
+    <Build Include="persi\Tables\CentralizationAggregatedCreditCategoriesQueue.sql" />
+    <Build Include="persi\Tables\AdditionalCredits2ImportQueue.sql" />
+    <Build Include="persi\Tables\CentralizationRefinancedCreditsQueue.sql" />
+    <Build Include="persi\Tables\AdditionalCreditsFIHistory.sql" />
+    <Build Include="persi\Tables\AggregatedCreditCategoriesHistory.sql" />
+    <Build Include="persi\Tables\CreditExtinctions.sql" />
+    <Build Include="persi\Tables\RefinancedCreditsHistory.sql" />
+    <Build Include="persi\Tables\CreditExtinctions2ImportQueue.sql" />
+    <Build Include="persi\Tables\AdditionalCreditsFI.sql" />
+    <Build Include="persi\Tables\CreditExtinctionsFIHistory.sql" />
+    <Build Include="persi\Tables\FileImportIMCA.sql" />
+    <Build Include="persi\Tables\AggregatedCreditCategories.sql" />
+    <Build Include="persi\Tables\RefinancedCredits.sql" />
+    <Build Include="persi\Tables\AggregatedCreditCategories2ImportQueue.sql" />
+    <Build Include="persi\Tables\CreditExtinctionsFI.sql" />
+    <Build Include="persi\Tables\RefinancedCredits2ImportQueue.sql" />
+    <Build Include="persi\Tables\FileImportIMTP.sql" />
+    <Build Include="persi\Tables\AggregatedCreditCategoriesFIHistory.sql" />
+    <Build Include="persi\Tables\RefinancedCreditsFIHistory.sql" />
+    <Build Include="persi\Tables\AggregatedCreditCategoriesFI.sql" />
+    <Build Include="persi\Tables\ConsolidatedCreditContractsHistory.sql" />
+    <Build Include="persi\Tables\FileImportIMACC.sql" />
+    <Build Include="persi\Tables\RefinancedCreditsFI.sql" />
+    <Build Include="persi\Tables\FileImportIMRC.sql" />
+    <Build Include="persi\Stored Procedures\ImportRenegotiatedCreditFilesFI.sql" />
+    <Build Include="persi\Stored Procedures\ImportAdditionalCreditFilesFI.sql" />
+    <Build Include="persi\Stored Procedures\ImportAdditionalCreditsFI2Final.sql" />
+    <Build Include="persi\Stored Procedures\ImportCreditExtinctionFilesFI.sql" />
+    <Build Include="persi\Stored Procedures\ImportCreditExtinctionsFI2Final.sql" />
+    <Build Include="persi\Stored Procedures\ImportRefinancedCreditFilesFI.sql" />
+    <Build Include="persi\Stored Procedures\ImportAggregatedCreditCategoryFilesFI.sql" />
+    <Build Include="persi\Stored Procedures\ImportRefinancedCreditsFI2Final.sql" />
+    <Build Include="persi\Stored Procedures\ImportAggregatedCreditCategoriesFI2Final.sql" />
+    <Build Include="persi\Stored Procedures\CheckActivePeriodPERSI.sql" />
+    <Build Include="persi\Stored Procedures\RotateActivePeriodPERSI.sql" />
+    <Build Include="persi\Stored Procedures\GenerateFileINCUMP.sql" />
+    <Build Include="persi\Stored Procedures\ImportConsolidatedCreditFilesFI.sql" />
+    <Build Include="persi\Stored Procedures\ImportConsolidatedCreditsFI2Final.sql" />
+    <Build Include="persi\Stored Procedures\ImportRenegotiatedCreditsFI2Final.sql" />
+    <Build Include="persi\Stored Procedures\ImportAggregatedCreditFilesFI.sql" />
+    <Build Include="persi\Stored Procedures\ImportAggregatedCreditsFI2Final.sql" />
+    <Build Include="persi\Stored Procedures\ImportGenericCreditInfoFilesFI.sql" />
+    <Build Include="persi\Stored Procedures\ImportGenericCreditInfosFI2Final.sql" />
+    <Build Include="Security\persi.sql" />
+    <None Include="Scripts\Fix_FicheirosTAEG.sql" />
+    <None Include="Scripts\Fix_FicheirosRUR.sql" />
+    <None Include="Scripts\Fix_FicheirosPersi.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="SymetriaFI.DB.refactorlog" />
+  </ItemGroup>
+</Project>
