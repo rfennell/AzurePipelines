@@ -135,6 +135,15 @@
       "required": false,
       "helpMarkDown": "If true will sort work items by type, if false then it will leave the work items in default order",
       "groupName":"advanced"
+     },
+     {
+      "name": "showOnlyPrimary",
+      "type": "boolean",
+      "label": "Show Primary only",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true only show WI/CS associated with primary release artifact",
+      "groupName":"advanced"
      }
 
    ],

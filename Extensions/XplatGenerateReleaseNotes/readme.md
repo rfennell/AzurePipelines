@@ -129,6 +129,7 @@ The task takes the following parameters
 * (Advanced V2 only) Delimiter for the tag separation in the WI Loop, defaults to colon ':'
 * (Advanced V2 only) Equality symbol for the equivalents in field filters in the WI Loop, defaults to equals '='
 * (Advanced V2 only) Do not generate release notes of a re-deploy. If this is set, and a re-deploy occurs the task will succeeds with a warning
+* (Advanced V2 only) Primary Only. If this is set only WI and CS associated with primary artifact are listed, default is false so all artifacts scanned.
 * (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.
 
 ### Output location ###

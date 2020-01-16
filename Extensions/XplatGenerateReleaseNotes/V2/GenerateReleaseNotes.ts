@@ -30,6 +30,7 @@ async function run(): Promise<number>  {
             var outputVariableName = tl.getInput("outputVariableName");
             var emptyDataset = tl.getInput("emptySetText");
             var delimiter = tl.getInput("delimiter");
+            var showOnlyPrimary = tl.getBoolInput("showOnlyPrimary");
             if (delimiter === null) {
                 agentApi.logInfo(`No delimiter passed, setting a default of :`);
                 delimiter = ":";
@@ -82,6 +83,8 @@ async function run(): Promise<number>  {
                 agentApi.logInfo("Getting the current release details");
                 currentRelease = await releaseApi.getRelease(teamProject, releaseId);
 
+                agentApi.logInfo(`Show associated items for primary artifact only is set to ${showOnlyPrimary}`);
+
                 // check of redeploy
                 if (stopOnRedeploy === true) {
                     if ( util.getDeploymentCount(currentRelease.environments, environmentName) > 1) {
@@ -127,74 +130,79 @@ async function run(): Promise<number>  {
                     agentApi.logInfo(`Artifact type [${artifactInThisRelease.artifactType}]`);
                     agentApi.logInfo(`Build Definition ID [${artifactInThisRelease.buildDefinitionId}]`);
                     agentApi.logInfo(`Build Number: [${artifactInThisRelease.buildNumber}]`);
+                    agentApi.logInfo(`Is Primary: [${artifactInThisRelease.isPrimary}]`);
 
-                    if (arifactsInMostRecentRelease.length > 0) {
-                        if (artifactInThisRelease.artifactType === "Build") {
-                            agentApi.logInfo(`Looking for the [${artifactInThisRelease.artifactAlias}] in the most recent successful release [${mostRecentSuccessfulDeploymentName}]`);
-                            for (var artifactInMostRecentRelease of arifactsInMostRecentRelease) {
-                                if (artifactInThisRelease.artifactAlias.toLowerCase() === artifactInMostRecentRelease.artifactAlias.toLowerCase()) {
-                                    agentApi.logInfo(`Found artifact [${artifactInMostRecentRelease.artifactAlias}] with build number [${artifactInMostRecentRelease.buildNumber}] in release [${mostRecentSuccessfulDeploymentName}]`);
+                    if ((showOnlyPrimary === false) || (showOnlyPrimary === true && artifactInThisRelease.isPrimary === true)) {
+                        if (arifactsInMostRecentRelease.length > 0) {
+                            if (artifactInThisRelease.artifactType === "Build") {
+                                agentApi.logInfo(`Looking for the [${artifactInThisRelease.artifactAlias}] in the most recent successful release [${mostRecentSuccessfulDeploymentName}]`);
+                                for (var artifactInMostRecentRelease of arifactsInMostRecentRelease) {
+                                    if (artifactInThisRelease.artifactAlias.toLowerCase() === artifactInMostRecentRelease.artifactAlias.toLowerCase()) {
+                                        agentApi.logInfo(`Found artifact [${artifactInMostRecentRelease.artifactAlias}] with build number [${artifactInMostRecentRelease.buildNumber}] in release [${mostRecentSuccessfulDeploymentName}]`);
 
-                                    var commits: Change[];
-                                    var workitems: ResourceRef[];
+                                        var commits: Change[];
+                                        var workitems: ResourceRef[];
 
-                                    // Only get the commits and workitems if the builds are different
-                                    if (isInitialRelease) {
-                                        agentApi.logInfo(`This is the first release so checking what commits and workitems are associated with artifacts`);
-                                        commits = await buildApi.getBuildChanges(teamProject, parseInt(artifactInThisRelease.buildId));
-                                        workitems = await buildApi.getBuildWorkItemsRefs(teamProject, parseInt(artifactInThisRelease.buildId));
-                                    } else if (artifactInMostRecentRelease.buildId !== artifactInThisRelease.buildId) {
-                                        agentApi.logInfo(`Checking what commits and workitems have changed from [${artifactInMostRecentRelease.buildNumber}][ID ${artifactInMostRecentRelease.buildId}] => [${artifactInThisRelease.buildNumber}] [ID ${artifactInThisRelease.buildId}]`);
+                                        // Only get the commits and workitems if the builds are different
+                                        if (isInitialRelease) {
+                                            agentApi.logInfo(`This is the first release so checking what commits and workitems are associated with artifacts`);
+                                            commits = await buildApi.getBuildChanges(teamProject, parseInt(artifactInThisRelease.buildId));
+                                            workitems = await buildApi.getBuildWorkItemsRefs(teamProject, parseInt(artifactInThisRelease.buildId));
+                                        } else if (artifactInMostRecentRelease.buildId !== artifactInThisRelease.buildId) {
+                                            agentApi.logInfo(`Checking what commits and workitems have changed from [${artifactInMostRecentRelease.buildNumber}][ID ${artifactInMostRecentRelease.buildId}] => [${artifactInThisRelease.buildNumber}] [ID ${artifactInThisRelease.buildId}]`);
 
-                                        // Check if workaround for issue #349 should be used
-                                        let activateFix = tl.getVariable("ReleaseNotes.Fix349");
-                                        if (!activateFix) {
-                                            agentApi.logInfo("Defaulting on the workaround for build API limitation (see issue #349 set 'ReleaseNotes.Fix349=false' to disable)");
-                                            activateFix = "true";
-                                        }
-                                        if (activateFix && activateFix.toLowerCase() === "true") {
-                                            agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
-                                            let baseBuild = await buildApi.getBuild(parseInt(artifactInMostRecentRelease.buildId));
-                                            // There is only a workaround for Git but not for TFVC :(
-                                            if (baseBuild.repository.type === "TfsGit") {
-                                                let currentBuild = await buildApi.getBuild(parseInt(artifactInThisRelease.buildId));
-                                                let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(vsts, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
-                                                commits = commitInfo.commits;
-                                                workitems = commitInfo.workItems;
+                                            // Check if workaround for issue #349 should be used
+                                            let activateFix = tl.getVariable("ReleaseNotes.Fix349");
+                                            if (!activateFix) {
+                                                agentApi.logInfo("Defaulting on the workaround for build API limitation (see issue #349 set 'ReleaseNotes.Fix349=false' to disable)");
+                                                activateFix = "true";
+                                            }
+                                            if (activateFix && activateFix.toLowerCase() === "true") {
+                                                agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
+                                                let baseBuild = await buildApi.getBuild(parseInt(artifactInMostRecentRelease.buildId));
+                                                // There is only a workaround for Git but not for TFVC :(
+                                                if (baseBuild.repository.type === "TfsGit") {
+                                                    let currentBuild = await buildApi.getBuild(parseInt(artifactInThisRelease.buildId));
+                                                    let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(vsts, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
+                                                    commits = commitInfo.commits;
+                                                    workitems = commitInfo.workItems;
+                                                } else {
+                                                    // Fall back to original behavior
+                                                    commits = await buildApi.getChangesBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                                    workitems = await buildApi.getWorkItemsBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                                }
                                             } else {
-                                                // Fall back to original behavior
+                                                // Issue #349: These APIs are affected by the build API limitation and only return the latest 200 changes and work items associated to those changes
                                                 commits = await buildApi.getChangesBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                                 workitems = await buildApi.getWorkItemsBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                             }
                                         } else {
-                                            // Issue #349: These APIs are affected by the build API limitation and only return the latest 200 changes and work items associated to those changes
-                                            commits = await buildApi.getChangesBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
-                                            workitems = await buildApi.getWorkItemsBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                            agentApi.logInfo(`Build for artifact [${artifactInThisRelease.artifactAlias}] has not changed.  Nothing to do`);
                                         }
-                                    } else {
-                                        agentApi.logInfo(`Build for artifact [${artifactInThisRelease.artifactAlias}] has not changed.  Nothing to do`);
+
+                                        var commitCount: number = 0;
+                                        var workItemCount: number = 0;
+
+                                        if (commits) {
+                                            commitCount = commits.length;
+                                            globalCommits = globalCommits.concat(commits);
+                                        }
+
+                                        if (workitems) {
+                                            workItemCount = workitems.length;
+                                            globalWorkItems = globalWorkItems.concat(workitems);
+                                        }
+
+                                        agentApi.logInfo(`Detected ${commitCount} commits/changesets and ${workItemCount} workitems between the builds.`);
+
                                     }
-
-                                    var commitCount: number = 0;
-                                    var workItemCount: number = 0;
-
-                                    if (commits) {
-                                        commitCount = commits.length;
-                                        globalCommits = globalCommits.concat(commits);
-                                    }
-
-                                    if (workitems) {
-                                        workItemCount = workitems.length;
-                                        globalWorkItems = globalWorkItems.concat(workitems);
-                                    }
-
-                                    agentApi.logInfo(`Detected ${commitCount} commits/changesets and ${workItemCount} workitems between the builds.`);
-
                                 }
+                            } else {
+                                agentApi.logInfo(`Skipping artifact as cannot get WI and commits/changesets details`);
                             }
-                        } else {
-                            agentApi.logInfo(`Skipping artifact as cannot get WI and commits/changesets details`);
                         }
+                    } else {
+                        agentApi.logInfo(`Skipping artifact as only primary artifact required`);
                     }
                     agentApi.logInfo(``);
                 }
