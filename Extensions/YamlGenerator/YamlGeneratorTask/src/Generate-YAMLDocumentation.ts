@@ -66,7 +66,7 @@ function GetTask(filePath) {
             }
         });
 
-        if (task.group) {
+        if (task.groups) {
             // Check for custom groups
             task.groups.forEach(group => {
                 logInfo (`   Argument Group ${group.displayName}`);
