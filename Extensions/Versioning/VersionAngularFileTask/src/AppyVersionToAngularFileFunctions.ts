@@ -99,7 +99,7 @@ export function ProcessFile(file, field, newVersion) {
     } else {
         if (field && field.length > 0) {
             console.log (`Updating the field '${field}' version`);
-            const versionRegex = `(${field}:.*')(.*)(')`;
+            const versionRegex = `(${field}:.*["'])(.*)(["'])`;
             var regexp = new RegExp(versionRegex, "gmi");
             let content: string = filecontent.toString();
             let matches;
