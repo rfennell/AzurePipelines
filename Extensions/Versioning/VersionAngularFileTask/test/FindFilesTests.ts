@@ -10,7 +10,7 @@ describe ("Find files tests", () => {
 
     it ("should be able to find one file", () => {
         var filelist = findFiles ("test/testdata", "environment.ts.initial" , filelist);
-        expect(filelist.length).to.equal(1);
+        expect(filelist.length).to.equal(2);
     });
 
     it ("should be able to use a wildcard to find two files", () => {
