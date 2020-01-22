@@ -11,7 +11,7 @@ This can be used with both Azure DevOps and GitHub hosted WIKIs
 Add the task to a build or release
 
 #### Required Parameters
-- Repo - The repo URL to update e.g **dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki** (see 'Azure DevOps WIKIs' section below for details on how to find this URL)
+- Repo - The repo URL to update e.g in the form **dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki** (see the URL section below)
 - Filename - The file (page to save/update), must end in .md else it will not appear on the WIKI e.g. page.md
 - DataIsFile - If true will upload a file, if false the upload is the content provided
 - Contents - If DataIsFile is false, this text to save in the file, can be the output from another task passed as pipeline variable
@@ -27,13 +27,13 @@ Add the task to a build or release
 #### Advanced
 
 - LocalPath - The path used to clone the repo to for updating. Defaults to $(System.DefaultWorkingDirectory)\\repo
-- UseAgentToken - If true the task will use the built in agent OAUTH token, if false you need to provide username & password/PAT". **Note** for use of the OAUTH token to work you must allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) and grant _contribute_ access to target Azure DevOps WIKI to the _Project Collection Build Service_ user (assuming this is the account the pipeline is running as). The default is _false_
-- Username - The username to autneticate with the repo (see below)
-- Passsword - The password or PAT to autneticate with the repo (see below) _Recommended stored as secret variable_
+- UseAgentToken - If true the task will use the built in agent OAUTH token, if false you need to provide username & password/PAT". **Note** for use of the OAUTH token to work you must allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) and grant _contribute_ access on the target Azure DevOps WIKI to the _Project Collection Build Service_ user (assuming this is the account the pipeline is running as). The default is _false_
+- Username - The username to authenticate with the repo (see below)
+- Password - The password or PAT to authenticate with the repo (see below) _Recommended that this is stored as secret variable_
 
 For more authentication parameters see 'Authentication' section below
 
-### URL to clone a WIKI repo
+### URL required to clone a WIKI repo
 
 #### Azure DevOps WIKIs
 
@@ -46,34 +46,50 @@ https://dev.azure.com/richardfennell/Git%20project/_wiki/wikis/Git-project.wiki/
 
 SO DON'T USE THIS FORM
 ```
-To find the URL to clone the repo
+To find the correct URL to clone the repo
 
-1. Load the WIKI in a brower
-2. At the top of the menu pane there is a menu (click the elipsis ...)
+1. Load the WIKI in a browser
+2. At the top of the menu pane there is a menu (click the ellipsis ...)
 3. Select the 'Clone repo' option
-4. You will get a URL in the form https://richardfennell@dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. This is the URL needed in the repo parameter of this task
+4. You will get a URL in the form https://richardfennell@dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. This is the URL needed. The part you need to add as the repo parameter for this task is everything after the @
 
 #### GitHub
 
 The URL to clone a GitHb WIKI also is not the one shown in the browser when the WIKI is viewed.
 
-However, it is more obvious to find the correct URL, it is shown in lower right of all WIKI pages 
+```
+THIS IS NOT THE ONE YOU WANT
+
+https://github.com/rfennell/AzurePipelines/wiki
+
+SO DON'T USE IT
+```
+
+However, it is more obvious to find the correct URL, it is shown in lower right of all WIKI pages. It will be in the form
+
+```
+https://github.com/rfennell/AzurePipelines.wiki.git
+```
 
 ### Authentication
 
-The URL used for autneticated connection to a repo is in the form
+The URL used for authenticated connection to a repo is in the form
 
 ```
 const remote = `https://${user}:${password}@${repo}`;
 ```
 
-If using the OAUTH token then the **${user}** and the **${password}** are managed by the task. However they can be manually managed.
+#### Automated authentication OAUTH to Azure DevOps hosted Repos
+If using the OAUTH token then the **${user}** and the **${password}** are managed by the task. 
 
-#### GitHub
+#### Manual Management of Authentication
+However they can be manually managed.
 
-For GitHub if using 2FA then the **${user}** is you Git account name and the **${password}** is your [PAT](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
+##### GitHub
 
-#### Azure DevOps
+For GitHub then the **${user}** is you Git account name and the **${password}** is your [PAT](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
+
+##### Azure DevOps
 
 For Azure DevOps then the **${user}** is you organisation account name and the **${password}** is your [PAT](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=vsts)
 
