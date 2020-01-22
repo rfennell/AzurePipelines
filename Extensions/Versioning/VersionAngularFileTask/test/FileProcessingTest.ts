@@ -89,7 +89,7 @@ describe("Test the version extraction", () => {
 describe("Test for Issue 615 double quotes", () => {
   before(function() {
     // make a copy we can overright with breaking test data
-    copyFileSync("$PSScriptRoot/test/testdata/issue615-environment.ts.initial", "$PSScriptRoot/test/testdata/environment.ts");
+    copyFileSync("test/testdata/issue615-environment.ts.initial", "test/testdata/environment.ts");
   });
 
   it("should be able to update a version in a file", () => {
@@ -97,7 +97,7 @@ describe("Test for Issue 615 double quotes", () => {
     ProcessFile(file, "version", "1.2.3.4");
 
     var editedfilecontent = fs.readFileSync(file);
-    var expectedfilecontent = fs.readFileSync(`$PSScriptRoot/test/testdata/issue615-environment.ts.expected`);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/issue615-environment.ts.expected`);
 
     expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
   });
