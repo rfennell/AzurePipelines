@@ -14,14 +14,14 @@ import-module "$PSScriptRoot\..\src\Update-DacPacVersionNumber.ps1"
 
 Describe "Issue 603 - Encoding of SQLproj files" {
 
-    $file = "testdata\Issue603.sqlproj"
+    $file = "$PSScriptRoot\testdata\Issue603.sqlproj"
     BeforeEach {
-        Copy-Item "testdata\Issue603.sqlproj.initial" $file
+        Copy-Item "$PSScriptRoot\testdata\Issue603.sqlproj.initial" $file
     }
 
     It "Update Version" {
         Update-SqlProjVersion -Path $file -VersionNumber "9.9.9.9" -regexpattern "\d+\.\d+\.\d+\.\d+"
-        $expected = get-content "testdata\Issue603.sqlproj.expected" -Encoding UTF8
+        $expected = get-content "$PSScriptRoot\testdata\Issue603.sqlproj.expected" -Encoding UTF8
         $actual = get-content $file -Encoding UTF8
         $expected | Should -Be $actual
     }
