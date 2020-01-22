@@ -85,3 +85,26 @@ describe("Test the version extraction", () => {
   });
 
 });
+
+describe("Test for Issue 615 double quotes", () => {
+  before(function() {
+    // make a copy we can overright with breaking test data
+    copyFileSync("test/testdata/issue615-environment.ts.initial", "test/testdata/environment.ts");
+  });
+
+  it("should be able to update a version in a file", () => {
+    var file = "test/testdata/environment.ts";
+    ProcessFile(file, "version", "1.2.3.4");
+
+    var editedfilecontent = fs.readFileSync(file);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/issue615-environment.ts.expected`);
+
+    expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
+  });
+
+  after(function() {
+    // remove the file if created
+    del.sync("test/testdata/environment.ts");
+  });
+}
+);
