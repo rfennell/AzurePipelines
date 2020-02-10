@@ -104,7 +104,15 @@ export async function expandTruncatedCommitMessages(restClient: restm.RestClient
             for (var change of globalCommits) {
                 if (change.messageTruncated) {
                     agentApi.logDebug(`Expanding commit [${change.id}]`);
-                    let res: restm.IRestResponse<GitCommit> = await restClient.get<GitCommit>(change.location);
+                    let res: restm.IRestResponse<GitCommit>;
+                    if (change.location.startsWith("https://api.github.com/")) {
+                        // handling for GitHub need to use a dedicated  REST client with no creds
+                        agentApi.logDebug(`Need to expand details from GitHub`);
+                        let rc = new restm.RestClient("rest-client");
+                        res = await rc.get<GitCommit>(change.location);
+                    } else {
+                        res = await restClient.get<GitCommit>(change.location);
+                    }
 
                     if (res.statusCode === 200) {
                         change.message = res.result.comment;
