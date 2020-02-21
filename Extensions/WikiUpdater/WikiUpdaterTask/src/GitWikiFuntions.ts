@@ -92,6 +92,7 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
 
         var extraHeaders = [];
         if (injectExtraHeader) {
+            logInfo(`Adding the parameter '-c http.extraheader="AUTHORIZATION: bearer ***"' to clone operations`);
             extraHeaders = [`-c http.extraheader="AUTHORIZATION: bearer ${password}"`];
         }
 
