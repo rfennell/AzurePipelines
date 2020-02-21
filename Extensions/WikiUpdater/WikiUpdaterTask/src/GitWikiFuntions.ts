@@ -77,7 +77,8 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
     if (injectExtraHeader) {
         remote = `https://${repo}`;
         logremote = remote;
-        extraHeaders = [`-c http.extraheader="AUTHORIZATION: bearer ${password}"`];
+        extraHeaders = [`-c http.extraheader='AUTHORIZATION: bearer ${password}'`];
+        logInfo (`Injecting the authentication via the clone command using paramter -c http.extraheader='AUTHORIZATION: bearer ***'`);
     } else {
         if (password === null) {
             remote = `https://${repo}`;
