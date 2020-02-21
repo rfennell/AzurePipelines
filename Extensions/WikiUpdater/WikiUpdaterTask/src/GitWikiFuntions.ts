@@ -67,7 +67,7 @@ export function GetWorkingFile(filename, logInfo): any {
     return name;
 }
 
-export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag) {
+export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader) {
     const git = simplegit();
 
     let remote = "";
@@ -90,7 +90,12 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
         }
         logInfo(`Cleaned ${localpath}`);
 
-        await git.silent(true).clone(remote, localpath);
+        var extraHeaders = [];
+        if (injectExtraHeader) {
+            extraHeaders = [`-c http.extraheader="AUTHORIZATION: bearer ${password}"`];
+        }
+
+        await git.silent(true).clone(remote, localpath, extraHeaders);
         logInfo(`Cloned ${repo} to ${localpath}`);
 
         await git.cwd(localpath);

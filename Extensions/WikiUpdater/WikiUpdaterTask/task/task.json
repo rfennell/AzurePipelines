@@ -167,6 +167,15 @@
       "required": true,
       "helpMarkDown": "Path to clone into",
       "groupName": "advanced"
+    },
+    {
+      "name": "injectExtraHeader",
+      "type": "boolean",
+      "label": "Inject an extraHeaders value into clones",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "To address #613 injects extraHeader value into all clone operations",
+      "groupName": "advanced"
     }
   ],
   "instanceNameFormat": "Git based WIKI Updater",
