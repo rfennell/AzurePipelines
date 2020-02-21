@@ -71,17 +71,32 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
     const git = simplegit();
 
     let remote = "";
-    let logremote = ""; // make sure we hide the password
-    if (password === null) {
+    let logremote = ""; // used to make sure we hide the password in logs
+    var extraHeaders = [];  // Add handling for #613
+
+    if (injectExtraHeader) {
         remote = `https://${repo}`;
         logremote = remote;
-    } else if (user === null) {
-        remote = `https://${password}@${repo}`;
-        logremote = `https://***@${repo}`;
+        if (user === null) {
+            extraHeaders = [`-c http.extraheader="AUTHORIZATION: bearer ${password}"`];
+            logInfo(`Adding the parameter '-c http.extraheader="AUTHORIZATION: bearer ***"' to clone operations`);
+        } else {
+            extraHeaders = [`-c http.extraheader="AUTHORIZATION: bearer ${user}:${password}"`];
+            logInfo(`Adding the parameter '-c http.extraheader="AUTHORIZATION: bearer ${user}:***"' to clone operations`);
+        }
     } else {
-        remote = `https://${user}:${password}@${repo}`;
-        logremote = `https://${user}:***@${repo}`;
+        if (password === null) {
+            remote = `https://${repo}`;
+            logremote = remote;
+        } else if (user === null) {
+            remote = `https://${password}@${repo}`;
+            logremote = `https://***@${repo}`;
+        } else {
+            remote = `https://${user}:${password}@${repo}`;
+            logremote = `https://${user}:***@${repo}`;
+        }
     }
+
     logInfo(`URL used ${logremote}`);
 
     try {
@@ -89,12 +104,6 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
             await rimrafPromise(localpath);
         }
         logInfo(`Cleaned ${localpath}`);
-
-        var extraHeaders = [];
-        if (injectExtraHeader) {
-            logInfo(`Adding the parameter '-c http.extraheader="AUTHORIZATION: bearer ***"' to clone operations`);
-            extraHeaders = [`-c http.extraheader="AUTHORIZATION: bearer ${password}"`];
-        }
 
         await git.silent(true).clone(remote, localpath, extraHeaders);
         logInfo(`Cloned ${repo} to ${localpath}`);
