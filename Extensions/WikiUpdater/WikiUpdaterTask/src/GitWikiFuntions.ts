@@ -67,21 +67,31 @@ export function GetWorkingFile(filename, logInfo): any {
     return name;
 }
 
-export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag) {
+export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader) {
     const git = simplegit();
 
     let remote = "";
-    let logremote = ""; // make sure we hide the password
-    if (password === null) {
+    let logremote = ""; // used to make sure we hide the password in logs
+    var extraHeaders = [];  // Add handling for #613
+
+    if (injectExtraHeader) {
         remote = `https://${repo}`;
         logremote = remote;
-    } else if (user === null) {
-        remote = `https://${password}@${repo}`;
-        logremote = `https://***@${repo}`;
+        extraHeaders = [`-c http.extraheader=AUTHORIZATION: bearer ${password}`];
+        logInfo (`Injecting the authentication via the clone command using paramter -c http.extraheader='AUTHORIZATION: bearer ***'`);
     } else {
-        remote = `https://${user}:${password}@${repo}`;
-        logremote = `https://${user}:***@${repo}`;
+        if (password === null) {
+            remote = `https://${repo}`;
+            logremote = remote;
+        } else if (user === null) {
+            remote = `https://${password}@${repo}`;
+            logremote = `https://***@${repo}`;
+        } else {
+            remote = `https://${user}:${password}@${repo}`;
+            logremote = `https://${user}:***@${repo}`;
+        }
     }
+
     logInfo(`URL used ${logremote}`);
 
     try {
@@ -90,7 +100,7 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
         }
         logInfo(`Cleaned ${localpath}`);
 
-        await git.silent(true).clone(remote, localpath);
+        await git.silent(true).clone(remote, localpath, extraHeaders);
         logInfo(`Cloned ${repo} to ${localpath}`);
 
         await git.cwd(localpath);
