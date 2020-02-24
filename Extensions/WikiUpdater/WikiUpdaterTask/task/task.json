@@ -171,10 +171,10 @@
     {
       "name": "injectExtraHeader",
       "type": "boolean",
-      "label": "Inject an extraHeaders value into clones",
+      "label": "Inject credentials via Headers",
       "defaultValue": "False",
       "required": false,
-      "helpMarkDown": "To address #613 injects extraHeader value into all clone operations",
+      "helpMarkDown": "If set to true, credentials are passed as a header value. If false, the default, they are passed in te URL. To address #613 which is seen on some on-prem instances",
       "groupName": "advanced"
     }
   ],

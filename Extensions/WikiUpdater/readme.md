@@ -30,7 +30,7 @@ Add the task to a build or release
 - UseAgentToken - If true the task will use the built in agent OAUTH token, if false you need to provide username & password/PAT". **Note** for use of the OAUTH token to work you must allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) and grant _contribute_ access on the target Azure DevOps WIKI to the _Project Collection Build Service_ user (assuming this is the account the pipeline is running as). The default is _false_
 - Username - The username to authenticate with the repo (see below)
 - Password - The password or PAT to authenticate with the repo (see below) _Recommended that this is stored as secret variable_
-- InjectExtraHeader - To address [#613](https://github.com/rfennell/AzurePipelines/issues/6130) injects extraHeader value into all clone operations",
+- InjectExtraHeader -  If set to true, credentials are passed as a header value. If false, the default, they are passed in te URL. To address [#613](https://github.com/rfennell/AzurePipelines/issues/6130)  which is seen on some on-prem instances,
 
 
 For more authentication parameters see 'Authentication' section below
