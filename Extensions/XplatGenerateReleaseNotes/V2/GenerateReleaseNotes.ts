@@ -146,8 +146,17 @@ async function run(): Promise<number>  {
                                         // Only get the commits and workitems if the builds are different
                                         if (isInitialRelease) {
                                             agentApi.logInfo(`This is the first release so checking what commits and workitems are associated with artifacts`);
-                                            commits = await buildApi.getBuildChanges(teamProject, parseInt(artifactInThisRelease.buildId));
-                                            workitems = await buildApi.getBuildWorkItemsRefs(teamProject, parseInt(artifactInThisRelease.buildId));
+                                            var builds = await buildApi.getBuilds(teamProject, [parseInt(artifactInThisRelease.buildDefinitionId)]);
+                                            commits = [];
+                                            workitems = [];
+
+                                            for (var build of builds) {
+                                                agentApi.logInfo(`Getting the details of ${build.id}`);
+                                                var buildCommits = await buildApi.getBuildChanges(teamProject, build.id);
+                                                commits.push(...buildCommits);
+                                                var buildWorkitems = await buildApi.getBuildWorkItemsRefs(teamProject, build.id);
+                                                workitems.push(...buildWorkitems);
+                                            }
                                         } else if (artifactInMostRecentRelease.buildId !== artifactInThisRelease.buildId) {
                                             agentApi.logInfo(`Checking what commits and workitems have changed from [${artifactInMostRecentRelease.buildNumber}][ID ${artifactInMostRecentRelease.buildId}] => [${artifactInThisRelease.buildNumber}] [ID ${artifactInThisRelease.buildId}]`);
 
