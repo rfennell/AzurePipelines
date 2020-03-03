@@ -481,5 +481,10 @@ export function addSpace (indent): string {
 export function fixline (line: string ): string {
     // we can't use simple string replace as it only replaces the first instance
     // could use the regex form but think this is easier to read in the future
-    return  "\"" + line.trim().split("${").join("\" + ").split("}").join(" + \"") + "\"";
+    if (line.includes("${")) {
+        return "\"" + line.trim().split("${").join("\" + ").split("}").join(" + \"") + "\"";
+    } else {
+        // we only expand the line if the ${ in it. This fixes problems with incorrectly expand {}
+        return "\"" + line.trim() + "\"";
+    }
 }
