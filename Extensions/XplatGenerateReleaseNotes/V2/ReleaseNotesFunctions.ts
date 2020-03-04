@@ -334,18 +334,16 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                             var regexp = new RegExp(csFilter);
                             agentApi.logDebug(`${addSpace(modeStack.length + 1)} Regex filter '${csFilter}' used to filter CS`);
                             commits.forEach(cs => {
-                                agentApi.logDebug(`${addSpace(modeStack.length + 1)} Regex test against '${cs.message}'`);
-                                var commentToCheck = "";
-                                if (csdetail.type.toLowerCase() === "tfsgit") {
-                                    commentToCheck = cs.message;
+                                if (cs.message.length >0 ) {
+                                    agentApi.logDebug(`${addSpace(modeStack.length + 1)} Regex test against '${cs.message}'`);
+                                    if (regexp.test(cs.message)) {
+                                        agentApi.logDebug(`${addSpace(modeStack.length + 1)} Match found adding`);
+                                        filterArray.push(cs);
+                                    } else {
+                                        agentApi.logDebug(`${addSpace(modeStack.length + 1)} No match found, not adding`);
+                                    }
                                 } else {
-                                    commentToCheck = cs.comment;
-                                }
-                                if (regexp.test(commentToCheck)) {
-                                    agentApi.logDebug(`${addSpace(modeStack.length + 1)} Match found adding`);
-                                    filterArray.push(cs);
-                                } else {
-                                    agentApi.logDebug(`${addSpace(modeStack.length + 1)} No match found, not adding`);
+                                    agentApi.logDebug(`${addSpace(modeStack.length + 1)} Cannot to regex test as no commit message`);
                                 }
                             });
                             // store the block and load the first item
