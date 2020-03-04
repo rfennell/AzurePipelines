@@ -46,7 +46,7 @@ The `@@..@@` markers are special loop control flags, they should be used in pair
 The `@@..@@` marker options are as follow
 
    - `@@CSLOOP@@` should wrapper the block to be performed for all changesets/commits. This marker can accept a regex based filter to be applied to the commit message.
-      - `@@CSLOOP[^Merged PR #.+]@@` match only commits with a Git commit message in the form 'Merged PR #1234' 
+      - `@@CSLOOP[^Merged PR #.+]@@` match only commits/changesets with a commit message in the form 'Merged PR #1234' 
    - `@@WILOOP@@` should wrapper the block to be performed for all work items. This marker can accept a list of tags and field options that can be used as a filter on the work items. The general format is `@@WILOOP[ALL|ANY]:TAG:Fieldname=value:...@@`, there can be any number of parameters e.g.
       - `@@WILOOP:TAG1:TAG2@@` matches work items that have all tags (legacy behaviour for backwards compatability)
       - `@@WILOOP[ALL]:TAG1:TAG2@@` matches work items that have all tags (equivalent to legacy behaviour)
