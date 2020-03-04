@@ -4,7 +4,7 @@ Generates release notes for a build or release. the file can be a format of your
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
 * 2.17.x onwards supports operation in a build whether YAML or legacy, getting the commits/changesets associated with the build. 
 * 2.0.x onwards supports tag filtering in the work items listed in a report. A report can have many WILOOPs with different filters. 2.18.x & 2.19.x add support for advanced work item filtering
-* The Azure DevOps REST APIs have a limitation that by default they only return 200 items. As a release could include more Work Items or ChangeSets/Commits. A workaround for this has been added [#349](https://github.com/rfennell/AzurePipelines/issues/349). Since version 2.12.x this feature has been defaulted on. To disable it set the variable 'ReleaseNotes.Fix349' to 'false'
+* The Azure DevOps REST APIs have a limitation that by default they only return 200 items. As a release could include more Work Items or ChangeSets/Commits. A workaround for this has been added [#349](https://github.com/rfennell/AzurePipelines/issues/349). Since version 2.12.x this feature has been defaulted on. To disable it set the variable `ReleaseNotes.Fix349` to `false`
 
 **IMPORTANT** - There have been two major versions of this extension, this is because
 * V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs. This version is not longer shipped in extension download from [GitHub](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9)
@@ -45,7 +45,8 @@ The `@@..@@` markers are special loop control flags, they should be used in pair
 
 The `@@..@@` marker options are as follow
 
-   - `@@CSLOOP@@` should wrapper the block to be performed for all changesets/commits
+   - `@@CSLOOP@@` should wrapper the block to be performed for all changesets/commits. This marker can accept a regex based filter to be applied to the commit message.
+      - `@@CSLOOP[^Merged PR #.+]@@` match only commits with a Git commit message or TFVC changeset comment in the form 'Merged PR #1234' 
    - `@@WILOOP@@` should wrapper the block to be performed for all work items. This marker can accept a list of tags and field options that can be used as a filter on the work items. The general format is `@@WILOOP[ALL|ANY]:TAG:Fieldname=value:...@@`, there can be any number of parameters e.g.
       - `@@WILOOP:TAG1:TAG2@@` matches work items that have all tags (legacy behaviour for backwards compatability)
       - `@@WILOOP[ALL]:TAG1:TAG2@@` matches work items that have all tags (equivalent to legacy behaviour)
@@ -96,6 +97,12 @@ An example template to run within a Release for GIT or TFVC Azure DevOps build b
 @@CSLOOP@@
 * **ID ${csdetail.id} ** ${csdetail.message}
 @@CSLOOP@@
+
+### Associated commits with regex filter in form 'Merged PR #1234'
+@@CSLOOP[^Merged PR #.+]@@
+* **ID ${csdetail.id} ** ${csdetail.message}
+@@CSLOOP[^Merged PR  #.+]@@
+
 ```
 
 ## Template Objects ##
@@ -106,11 +113,11 @@ What is done behind the scenes is that each `${properties}` block in the templat
 * **widetail** – the details of a given work item within the `@@WILOOP@@@` block.
 * **csdetail** – the details of a given Git commit or TFVC changeset inside the `@@CSLOOP@@@` block
 
-### Release objects (only availble in a release) ###
+### Release objects (only available in a release) ###
 * **releaseDetails** – the release details of the release that the task was triggered for.
 * **compareReleaseDetails** - the the previous successful release that comparisons are bein made against
 
-### Build objects (only availble in a build) ###
+### Build objects (only available in a build) ###
 * **buildDetails** – the build details of the build that the task was triggered from.
 
 ## Usage
