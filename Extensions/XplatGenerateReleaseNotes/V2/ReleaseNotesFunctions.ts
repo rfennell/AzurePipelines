@@ -187,7 +187,8 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
            // agentApi.logDebug("Line: " + line);
            // get the line mode (if any)
            var mode = getMode(line);
-           var wiFilter = getModeTags(line, delimiter, fieldEquality);
+           var wiFilter = getWIModeTags(line, delimiter, fieldEquality);
+           var csFilter = getCSFilter(line);
 
            if (mode !== Mode.BODY) {
                // is there a mode block change
@@ -239,7 +240,7 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                             var parts;
                             var okToAdd;
                             workItems.forEach(wi => {
-                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} witht tags '${wi.fields["System.Tags"]}' against tags '${wiFilter.tags.sort().join("; ")}' and fields '${wiFilter.fields.sort().join("; ")}' using comparison filter '${wiFilter.modifier}'`);
+                                agentApi.logDebug (`${addSpace(modeStack.length + 2)} Checking WI ${wi.id} with tags '${wi.fields["System.Tags"]}' against tags '${wiFilter.tags.sort().join("; ")}' and fields '${wiFilter.fields.sort().join("; ")}' using comparison filter '${wiFilter.modifier}'`);
                                 switch (wiFilter.modifier) {
                                     case Modifier.All:
                                         agentApi.logDebug (`${addSpace(modeStack.length + 4)} Using ALL filter`);
@@ -328,8 +329,31 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                         }
                         break;
                       case Mode.CS:
-                        // store the block and load the first item
-                        addStackItem (commits, modeStack, line, index);
+                        var filterArray = [];
+                        if (csFilter.trim().length > 0) {
+                            var regexp = new RegExp(csFilter);
+                            agentApi.logDebug(`${addSpace(modeStack.length + 1)} Regex filter '${csFilter}' used to filter CS`);
+                            commits.forEach(cs => {
+                                if (cs.message.length > 0 ) {
+                                    agentApi.logDebug(`${addSpace(modeStack.length + 1)} Regex test against '${cs.message}'`);
+                                    if (regexp.test(cs.message)) {
+                                        agentApi.logDebug(`${addSpace(modeStack.length + 1)} Match found adding`);
+                                        filterArray.push(cs);
+                                    } else {
+                                        agentApi.logDebug(`${addSpace(modeStack.length + 1)} No match found, not adding`);
+                                    }
+                                } else {
+                                    agentApi.logDebug(`${addSpace(modeStack.length + 1)} Cannot do regex test as empty commit message`);
+                                }
+                            });
+                            // store the block and load the first item
+                            agentApi.logDebug (`${addSpace(modeStack.length + 1)} There are ${filterArray.length} matched CS out of ${commits.length} to add`);
+                            addStackItem (filterArray, modeStack, line, index);
+                        } else {
+                            agentApi.logDebug(`${addSpace(modeStack.length + 1)} No regex filter used to filter CS`);
+                            // store the block and load the first item
+                            addStackItem (commits, modeStack, line, index);
+                        }
                         // now we have stack item we can get the first item
                         if (modeStack[modeStack.length - 1].BlockQueue.length > 0) {
                              csdetail = modeStack[modeStack.length - 1].BlockQueue.shift();
@@ -412,21 +436,33 @@ export function getMode (line): string {
         if (line.startsWith("@@WILOOP") && line.endsWith("@@")) {
             mode = Mode.WI;
         }
-        if (line.startsWith("@@CSLOOP@@") &&
-            line.endsWith("@@") ) {
+        if (line.startsWith("@@CSLOOP") && line.endsWith("@@") ) {
             mode = Mode.CS;
         }
     }
     return mode;
 }
 
-export function getModeTags (line, tagDelimiter, fieldEquivalent): WiFilter {
+export function getCSFilter (line): string {
+    line = line.trim();
+    var filter = "";
+    if (line.startsWith("@@CS") && line.endsWith("@@") ) {
+        line = line.replace(/@@/g, ""); // have to use regex form of replace else only first replaced
+        var match = line.match(/(\[.*?\])/g);
+        if (match !== null) {
+            filter = match.toString().substring(1, match.toString().length - 1);
+        }
+    }
+    return filter;
+}
+
+export function getWIModeTags (line, tagDelimiter, fieldEquivalent): WiFilter {
     line = line.trim();
     var filter = new WiFilter();
     filter.modifier = Modifier.All;
     filter.tags = [];
     filter.fields = [];
-    if (line.startsWith("@@") && line.endsWith("@@") ) {
+    if (line.startsWith("@@WI") && line.endsWith("@@") ) {
         line = line.replace(/@@/g, ""); // have to use regex form of replace else only first replaced
         var match = line.match(/(\[.*?\])/g);
         if (match !== null && match.toString().toUpperCase() === "[ANY]") {
