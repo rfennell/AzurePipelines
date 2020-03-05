@@ -30,6 +30,7 @@ async function run(): Promise<number>  {
             var outputVariableName = tl.getInput("outputVariableName");
             var emptyDataset = tl.getInput("emptySetText");
             var delimiter = tl.getInput("delimiter");
+            var anyFieldContent = tl.getInput("anyFieldContent");
             var showOnlyPrimary = tl.getBoolInput("showOnlyPrimary");
             if (delimiter === null) {
                 agentApi.logInfo(`No delimiter passed, setting a default of :`);
@@ -269,7 +270,7 @@ async function run(): Promise<number>  {
             }
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
-            var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentBuild, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset, delimiter, fieldEquality);
+            var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentBuild, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset, delimiter, fieldEquality, anyFieldContent);
             util.writeFile(outputfile, outputString);
 
             agentApi.writeVariable(outputVariableName, outputString.toString());
