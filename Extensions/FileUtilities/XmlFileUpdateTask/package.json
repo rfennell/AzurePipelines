@@ -11,7 +11,6 @@
     "test-no-logger": "mocha -r ts-node/register ./test/*.ts "
   },
   "dependencies": {
-    "@types/node": "^7.0.46",
     "@types/q": "^1.0.6",
     "@types/xmldom": "^0.1.29",
     "Buffer": "^0.0.0",
@@ -19,25 +18,25 @@
     "fs": "0.0.1-security",
     "fs-copy-file-sync": "^1.0.1",
     "ncp": "^2.0.0",
-    "request": "^2.80.0",
+    "request": "^2.88.2",
     "tsd": "^0.7.4",
     "vsts-task-lib": "^1.1.0",
-    "xmldom": "^0.1.27",
+    "xmldom": "^0.1.31",
     "xpath": "0.0.24"
   },
   "devDependencies": {
-    "@types/chai": "^4.0.4",
-    "@types/mocha": "^2.2.44",
-    "@types/node": "^7.0.18",
+    "@types/chai": "^4.2.10",
+    "@types/mocha": "^2.2.48",
+    "@types/node": "^7.10.9",
     "chai": "^3.5.0",
     "mocha": "^3.5.3",
-    "mocha-junit-reporter": "^1.15.0",
-    "rimraf": "^2.6.2",
+    "mocha-junit-reporter": "^1.23.3",
+    "rimraf": "^2.7.1",
     "sinon": "^2.2.0",
     "ts-loader": "^2.0.3",
     "ts-node": "^3.3.0",
-    "tslint": "^5.2.0",
-    "typescript": "^2.6.1",
+    "tslint": "^5.20.1",
+    "typescript": "^2.9.2",
     "typings": "^2.1.1"
   }
 }
