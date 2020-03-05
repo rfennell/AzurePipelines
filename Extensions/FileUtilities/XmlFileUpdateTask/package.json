@@ -16,6 +16,7 @@
     "@types/xmldom": "^0.1.29",
     "Buffer": "^0.0.0",
     "del": "^3.0.0",
+    "dot-prop": "^5.2.0",
     "fs": "0.0.1-security",
     "fs-copy-file-sync": "^1.0.1",
     "ncp": "^2.0.0",
