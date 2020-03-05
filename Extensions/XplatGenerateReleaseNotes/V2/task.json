@@ -109,6 +109,16 @@
     "groupName":"advanced"
   }
 ,
+{
+  "name": "anyFieldContent",
+  "type": "string",
+  "label": "Symbol for 'any field value'",
+  "defaultValue": "*",
+  "required": true,
+  "helpMarkDown": "The value to put in WILOOP constructs to match any contents e.g. @@WILOOP:System.Title=*@@. The default is *",
+  "groupName":"advanced"
+}
+,
     {
       "name": "overrideStageName",
       "type": "string",

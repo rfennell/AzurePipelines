@@ -53,6 +53,7 @@ The `@@..@@` marker options are as follow
       - `@@WILOOP[ANY]:TAG1:TAG2@@` matches work items that have any of the tags 
       - `@@WILOOP[ALL]:TAG1:System.Title=Exact match to title@@` matches work items that have both the named tag and the field  
       - `@@WILOOP[ANY]:TAG1:System.Title=Exact match to title@@` matches work items that have either the named tag or the field  
+      - `@@WILOOP[ANY]:TAG1:Custom.Field=*@@` matches any work items that has a field called Custom.Field irrespective of the value in the field  (matches against the `anyFieldContent` value as a wildcard symbol)
 - The `${properties}` blocks inside the `@@..@@` markers are the fields to be expanded from properties in the JSON response objects returned from the Azure DevOps REST API. 
 
 **Note:** To dump all possible values use the form `${JSON.stringify(propertyToDump)}`
@@ -135,6 +136,7 @@ The task takes the following parameters
 * (Advanced) Name of the release stage to look for the last successful release in, defaults to empty value so uses the current stage of the release that the task is running in.
 * (Advanced V2 only) Delimiter for the tag separation in the WI Loop, defaults to colon ':'
 * (Advanced V2 only) Equality symbol for the equivalents in field filters in the WI Loop, defaults to equals '='
+* (Advanced V2 only) anyFieldContent symbol to represent any value when match field in the WI Loop, defaults to equals '*'
 * (Advanced V2 only) Do not generate release notes of a re-deploy. If this is set, and a re-deploy occurs the task will succeeds with a warning
 * (Advanced V2 only) Primary Only. If this is set only WI and CS associated with primary artifact are listed, default is false so all artifacts scanned.
 * (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.

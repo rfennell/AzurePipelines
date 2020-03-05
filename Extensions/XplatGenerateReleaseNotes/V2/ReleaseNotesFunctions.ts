@@ -164,7 +164,7 @@ export function getTemplate(
 }
 
 // The Argument compareReleaseDetails is used in the template processing.  Renaming or removing will break the templates
-export function processTemplate(template, workItems: WorkItem[], commits: Change[], buildDetails: Build, releaseDetails: Release, compareReleaseDetails: Release, emptySetText, delimiter, fieldEquality): string {
+export function processTemplate(template, workItems: WorkItem[], commits: Change[], buildDetails: Build, releaseDetails: Release, compareReleaseDetails: Release, emptySetText, delimiter, fieldEquality, anyFieldContent): string {
 
     var widetail = undefined;
     var csdetail = undefined;
@@ -261,7 +261,16 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                             for (let field of wiFilter.fields) {
                                                 parts = field.split("=");
                                                 agentApi.logDebug (`${addSpace(modeStack.length + 4)} Comparing field '${parts[0]}' contents '${wi.fields[parts[0]]}' to '${parts[1]}'`);
-                                                if (wi.fields[parts[0]] !== parts[1]) {
+                                                if (parts[1] === anyFieldContent) {
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 4)} The contents match is the 'any data value`);
+                                                    if (wi.fields[parts[0]] === undefined) {
+                                                        agentApi.logDebug (`${addSpace(modeStack.length + 4)} Field does not exist`);
+                                                        okToAdd = false;
+                                                        break;
+                                                    } else {
+                                                        agentApi.logDebug (`${addSpace(modeStack.length + 4)} Field exists`);
+                                                    }
+                                                } else if (wi.fields[parts[0]] !== parts[1]) {
                                                     agentApi.logDebug (`${addSpace(modeStack.length + 4)} Field does not match`);
                                                     okToAdd = false;
                                                     break;
@@ -296,7 +305,16 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                                             for (let field of wiFilter.fields) {
                                                 parts = field.split("=");
                                                 agentApi.logDebug (`${addSpace(modeStack.length + 4)} Comparing field '${parts[0]}' contents '${wi.fields[parts[0]]}' to '${parts[1]}'`);
-                                                if (wi.fields[parts[0]] !== undefined && wi.fields[parts[0]] === parts[1]) {
+                                                if (parts[1] === anyFieldContent) {
+                                                    agentApi.logDebug (`${addSpace(modeStack.length + 4)} The contents match is the 'any data value`);
+                                                    if (wi.fields[parts[0]] !== undefined) {
+                                                        agentApi.logDebug (`${addSpace(modeStack.length + 4)} Field exist`);
+                                                        okToAdd = true;
+                                                        break;
+                                                    } else {
+                                                        agentApi.logDebug (`${addSpace(modeStack.length + 4)} Field does not exist`);
+                                                    }
+                                                } else if (wi.fields[parts[0]] !== undefined && wi.fields[parts[0]] === parts[1]) {
                                                     agentApi.logDebug (`${addSpace(modeStack.length + 4)} Found match on field`);
                                                     okToAdd = true;
                                                     break;
