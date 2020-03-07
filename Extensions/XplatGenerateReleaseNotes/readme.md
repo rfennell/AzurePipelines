@@ -118,8 +118,8 @@ What is done behind the scenes is that each `${properties}` block in the templat
 * **releaseDetails** – the release details of the release that the task was triggered for.
 * **compareReleaseDetails** - the the previous successful release that comparisons are bein made against
 
-### Build objects (only available in a build) ###
-* **buildDetails** – the build details of the build that the task was triggered from.
+### Build objects ###
+* **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
 
 ## Usage
 Once the extension is added to your Azure DevOps Server (TFS) or Azure DevOps Services, the task should be available in the utilities section of 'add tasks'

@@ -269,6 +269,10 @@ async function run(): Promise<number>  {
                 agentApi.logInfo("Leaving WI in default order as returned by API");
             }
 
+            // to allow access to the PR details if any
+            let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
+            currentBuild = await buildApi.getBuild(buildId);
+
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
             var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentBuild, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset, delimiter, fieldEquality, anyFieldContent);
             util.writeFile(outputfile, outputString);
