@@ -2,6 +2,7 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 2.27.x onwards, thanks to the work of [KennethScott](https://github.com/KennethScott), adds support for [Handlbars](https://handlebarsjs.com/) based templates as well as the bespoke version used previously.
 * 2.17.x onwards supports operation in a build whether YAML or legacy, getting the commits/changesets associated with the build. 
 * 2.0.x onwards supports tag filtering in the work items listed in a report. A report can have many WILOOPs with different filters. 2.18.x & 2.19.x add support for advanced work item filtering
 * The Azure DevOps REST APIs have a limitation that by default they only return 200 items. As a release could include more Work Items or ChangeSets/Commits. A workaround for this has been added [#349](https://github.com/rfennell/AzurePipelines/issues/349). Since version 2.12.x this feature has been defaulted on. To disable it set the variable `ReleaseNotes.Fix349` to `false`
@@ -19,7 +20,12 @@ In the case of a Release, the data source for the generated Release Notes is the
 
 If used in the build the release notes are based on the current build only.
 
-If the template file is markdown (other formats are possible) the output report being something like the following:
+## The Template 
+
+There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes for both Git and TFVC based releases for both V1 and V2 formats. Most samples are in Markdown, but it is possible to generate any other format such as HTML
+
+### Use the original scripting model 
+Prior to 2.27.x a bespoke scripting language was used. A sample of this format is as follows
 
 ```
 # Release notes
@@ -34,10 +40,6 @@ If the template file is markdown (other formats are possible) the output report 
 ### Associated commits
 * **ID f5f964fe5ab27b1b312f6aa45ea1c5898d74358a ** Updated Readme.md #21
 ```
-
-## The Template
-
-There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes for both Git and TFVC based releases for both V1 and V2 formats. Most samples are in Markdown, but it is possible to generate any other format such as HTML
 
 The use of a template allows the user to define the format, layout and fields shown in the release notes document. It is basically a file, in the output format required, with `@@...@@` markers to denote the fields to be replaced when the tool generates the report file.
 
@@ -55,6 +57,19 @@ The `@@..@@` marker options are as follow
       - `@@WILOOP[ANY]:TAG1:System.Title=Exact match to title@@` matches work items that have either the named tag or the field  
       - `@@WILOOP[ANY]:TAG1:Custom.Field=*@@` matches any work items that has a field called Custom.Field irrespective of the value in the field  (matches against the `anyFieldContent` value as a wildcard symbol)
 - The `${properties}` blocks inside the `@@..@@` markers are the fields to be expanded from properties in the JSON response objects returned from the Azure DevOps REST API. 
+
+What is done behind the scenes is that each `${properties}` block in the template is evaluated as a line of Node.JS in turn. The property  objects available to get data from at runtime are:
+
+### Common objects ###
+* **widetail** – the details of a given work item within the `@@WILOOP@@@` block.
+* **csdetail** – the details of a given Git commit or TFVC changeset inside the `@@CSLOOP@@@` block
+
+### Release objects (only available in a release) ###
+* **releaseDetails** – the release details of the release that the task was triggered for.
+* **compareReleaseDetails** - the the previous successful release that comparisons are bein made against
+
+### Build objects ###
+* **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
 
 **Note:** To dump all possible values use the form `${JSON.stringify(propertyToDump)}`
 
@@ -106,13 +121,39 @@ An example template to run within a Release for GIT or TFVC Azure DevOps build b
 
 ```
 
-## Template Objects ##
+## Handlebar Templates
+Since 2.27.x it has been possible to create your templates using [Handlebars](https://handlebarsjs.com/) syntax. A template written in this format is as follows
 
-What is done behind the scenes is that each `${properties}` block in the template is evaluated as a line of Node.JS in turn. The property  objects available to get data from at runtime are:
+```
+## Notes for release  {{releaseDetails.releaseDefinition.name}}    
+**Release Number**  : {{releaseDetails.name}}
+**Release completed** : {{releaseDetails.modifiedOn}}     
+**Build Number**: {{buildDetails.id}}
+**Compared Release Number**  : {{compareReleaseDetails.name}}    
+
+### Associated Work Items ({{workItems.length}})
+
+{{#each workItems}}
+*  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+   - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
+   - **Tags** {{lookup this.fields 'System.Tags'}}
+{{/each}}
+
+### Associated commits ({{commits.length}})
+{{#each commits}}
+* ** ID{{this.id}}** 
+   -  **Message:** {{this.message}}
+   -  **Commited by:** {{this.author.displayName}} 
+{{/each}}
+
+```
+
+> **IMPORTANT** Handlebars based templates have different objects available to the original template.
+> What is done behind the scenes is that each `{{properties}}` block in > the template is expanded by Handlebars. The property objects > available to get data from at runtime are:
 
 ### Common objects ###
-* **widetail** – the details of a given work item within the `@@WILOOP@@@` block.
-* **csdetail** – the details of a given Git commit or TFVC changeset inside the `@@CSLOOP@@@` block
+* **workItems** – the array of work item associated with the release
+* **commits** – the array of commits associated with the release
 
 ### Release objects (only available in a release) ###
 * **releaseDetails** – the release details of the release that the task was triggered for.
@@ -141,7 +182,7 @@ The task takes the following parameters
 * (Advanced V2 only) Primary Only. If this is set only WI and CS associated with primary artifact are listed, default is false so all artifacts scanned.
 * (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.
 
-### Output location ###
+## Output location ##
 
 When using this task within a build then it is sensible to place the release notes files as a build artifacts.
 
