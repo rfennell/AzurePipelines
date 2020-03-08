@@ -153,7 +153,7 @@ export function getTemplate(
     ): Array<string> {
         agentApi.logDebug(`Using template mode ${templateLocation}`);
         var template;
-        const handlebarIndicator = '{{';
+        const handlebarIndicator = "{{";
         if (templateLocation === "File") {
             agentApi.logInfo (`Loading template file ${templatefile}`);
             template = fs.readFileSync(templatefile).toString();
@@ -431,16 +431,15 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
                     }
                 }
             }  // loop
-        }
-        else {
+        } else {
             // it is a handlebar template
             agentApi.logDebug("Processing handlebar template");
 
             // compile the template
             var handlebarsTemplate = Handlebars.compile(template);
             // execute the compiled template
-            output = handlebarsTemplate({ "workItems": workItems, "buildDetails": buildDetails, "releaseDetails": releaseDetails, "compareReleaseDetails": compareReleaseDetails });
-        }    
+            output = handlebarsTemplate({ "workItems": workItems, "commits": commits, "buildDetails": buildDetails, "releaseDetails": releaseDetails, "compareReleaseDetails": compareReleaseDetails });
+        }
         agentApi.logInfo( "Completed processing template");
     } else {
         agentApi.logError( `Cannot load template file [${template}] or it is empty`);
