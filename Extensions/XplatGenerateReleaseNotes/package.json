@@ -18,6 +18,7 @@
         "validator": "^9.4.1"
     },
     "dependencies": {
-        "child_process": "^1.0.2"
+        "child_process": "^1.0.2",
+        "handlebars": "^4.7.3"
     }
 }

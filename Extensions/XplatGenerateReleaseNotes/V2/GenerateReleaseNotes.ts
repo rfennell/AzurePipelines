@@ -43,7 +43,7 @@ async function run(): Promise<number>  {
             }
 
             if (fieldEquality === delimiter) {
-                agentApi.logError (`The delimiter and fieldequality parameters cannot be the same, plase change one. The usual defaults a : and = respectivally`);
+                agentApi.logError (`The delimiter and field equality parameters cannot be the same, please change one. The usual defaults a : and = respectively`);
             }
 
             var stopOnRedeploy = tl.getBoolInput("stopOnRedeploy");
