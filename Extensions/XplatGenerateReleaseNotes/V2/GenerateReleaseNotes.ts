@@ -48,6 +48,9 @@ async function run(): Promise<number>  {
 
             var stopOnRedeploy = tl.getBoolInput("stopOnRedeploy");
             var sortWi = tl.getBoolInput("SortWi");
+            var customHandlebarsExtensionCode = tl.getInput("customHandlebarsExtensionCode");
+            var customHandlebarsExtensionFile = tl.getInput("customHandlebarsExtensionFile");
+            var customHandlebarsExtensionFolder = tl.getInput("customHandlebarsExtensionFolder");
 
             let credentialHandler: vstsInterfaces.IRequestHandler = util.getCredentialHandler();
             let vsts = new webApi.WebApi(tpcUri, credentialHandler);
@@ -274,7 +277,19 @@ async function run(): Promise<number>  {
             currentBuild = await buildApi.getBuild(buildId);
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
-            var outputString = util.processTemplate(template, fullWorkItems, globalCommits, currentBuild, currentRelease, mostRecentSuccessfulDeploymentRelease, emptyDataset, delimiter, fieldEquality, anyFieldContent);
+            var outputString = util.processTemplate(
+                template,
+                fullWorkItems,
+                globalCommits,
+                currentBuild,
+                currentRelease,
+                mostRecentSuccessfulDeploymentRelease,
+                emptyDataset,
+                delimiter,
+                fieldEquality,
+                anyFieldContent,
+                customHandlebarsExtensionCode);
+
             util.writeFile(outputfile, outputString);
 
             agentApi.writeVariable(outputVariableName, outputString.toString());

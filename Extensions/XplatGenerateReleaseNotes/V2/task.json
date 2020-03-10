@@ -154,6 +154,15 @@
       "required": false,
       "helpMarkDown": "If true only show WI/CS associated with primary release artifact",
       "groupName":"advanced"
+     },
+     {
+      "name": "customHandlebarsExtensionCode",
+      "type": "string",
+      "label": "Custom Handlebars Extension",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};",
+      "groupName":"advanced"
      }
 
    ],
