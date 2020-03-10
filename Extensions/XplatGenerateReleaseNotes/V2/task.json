@@ -157,7 +157,7 @@
      },
      {
       "name": "customHandlebarsExtensionCode",
-      "type": "string",
+      "type": "multiLine",
       "label": "Custom Handlebars Extension",
       "defaultValue": "",
       "required": false,
