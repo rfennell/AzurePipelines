@@ -148,8 +148,16 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 
 ```
 
+With 2.28.x the [Handbars Helpers](https://github.com/helpers/handlebars-helpers) extension library is also pre-load, this provides over 120 useful extensions to aid in data manipulation when templating. They are used the form
+
+```
+## To confirm the handbars helpers is work
+The year is {{year}} 
+We can capitalize "foo bar baz" {{capitalizeAll "foo bar baz"}}
+```
+
 > **IMPORTANT** Handlebars based templates have different objects available to the original template.
-> What is done behind the scenes is that each `{{properties}}` block in > the template is expanded by Handlebars. The property objects > available to get data from at runtime are:
+> What is done behind the scenes is that each `{{properties}}` block in the template is expanded by Handlebars. The property objects available to get data from at runtime are:
 
 ### Common objects ###
 * **workItems** – the array of work item associated with the release
