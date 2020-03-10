@@ -455,7 +455,7 @@ export function processTemplate(
             var customHandlebarsExtensionFolder = process.env.Agent_TempDirectory;
             if (typeof customHandlebarsExtensionCode !== undefined && customHandlebarsExtensionCode && customHandlebarsExtensionCode.length > 0) {
                 agentApi.logInfo("Loading custom handlebars extension");
-                writeFile(`${customHandlebarsExtensionFile}.js`, customHandlebarsExtensionCode);
+                writeFile(`${customHandlebarsExtensionFolder}/${customHandlebarsExtensionFile}.js`, customHandlebarsExtensionCode);
                 var tools = require(`${customHandlebarsExtensionFolder}/${customHandlebarsExtensionFile}`);
                 handlebars.registerHelper(tools);
             }
