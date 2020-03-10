@@ -22,7 +22,6 @@ import { GitCommit } from "vso-node-api/interfaces/GitInterfaces";
 import { HttpClient } from "typed-rest-client/HttpClient";
 import { WorkItem } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
 import { type } from "os";
-const Handlebars = require("handlebars");
 
 let agentApi = new AgentSpecificApi();
 
@@ -434,13 +433,17 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
         } else {
             // it is a handlebar template
             agentApi.logDebug("Processing handlebar template");
+            const handlebars = require("handlebars");
             // load the extension library so it can be accessed in templates
-            var helpers = require("handlebars-helpers")();
+            const helpers = require("handlebars-helpers")({
+                handlebars: handlebars
+            });
 
             // compile the template
-            var handlebarsTemplate = Handlebars.compile(template);
+            var handlebarsTemplate = handlebars.compile(template);
+
             // execute the compiled template
-            output = handlebarsTemplate({ "workItems": workItems, "commits": commits, "buildDetails": buildDetails, "releaseDetails": releaseDetails, "compareReleaseDetails": compareReleaseDetails, "helpers": helpers });
+            output = handlebarsTemplate({ "workItems": workItems, "commits": commits, "buildDetails": buildDetails, "releaseDetails": releaseDetails, "compareReleaseDetails": compareReleaseDetails });
         }
         agentApi.logInfo( "Completed processing template");
     } else {
