@@ -434,11 +434,13 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
         } else {
             // it is a handlebar template
             agentApi.logDebug("Processing handlebar template");
+            // load the extension library so it can be accessed in templates
+            var helpers = require("handlebars-helpers")();
 
             // compile the template
             var handlebarsTemplate = Handlebars.compile(template);
             // execute the compiled template
-            output = handlebarsTemplate({ "workItems": workItems, "commits": commits, "buildDetails": buildDetails, "releaseDetails": releaseDetails, "compareReleaseDetails": compareReleaseDetails });
+            output = handlebarsTemplate({ "workItems": workItems, "commits": commits, "buildDetails": buildDetails, "releaseDetails": releaseDetails, "compareReleaseDetails": compareReleaseDetails, "helpers": helpers });
         }
         agentApi.logInfo( "Completed processing template");
     } else {
