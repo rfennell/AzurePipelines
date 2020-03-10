@@ -23,6 +23,11 @@
       "displayName": "Advanced",
       "isExpanded": false
     },
+    {
+      "name": "handlebars",
+      "displayName": "Handlebars",
+      "isExpanded": false
+    },
      {
       "name": "outputs",
       "displayName": "Outputs",
@@ -162,7 +167,7 @@
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};",
-      "groupName":"advanced"
+      "groupName":"handlebars"
      }
 
    ],
