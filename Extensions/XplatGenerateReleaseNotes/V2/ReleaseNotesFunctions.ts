@@ -22,7 +22,6 @@ import { GitCommit } from "vso-node-api/interfaces/GitInterfaces";
 import { HttpClient } from "typed-rest-client/HttpClient";
 import { WorkItem } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
 import { type } from "os";
-const Handlebars = require("handlebars");
 
 let agentApi = new AgentSpecificApi();
 
@@ -174,7 +173,18 @@ export function getTemplate(
 }
 
 // The Argument compareReleaseDetails is used in the template processing.  Renaming or removing will break the templates
-export function processTemplate(template, workItems: WorkItem[], commits: Change[], buildDetails: Build, releaseDetails: Release, compareReleaseDetails: Release, emptySetText, delimiter, fieldEquality, anyFieldContent): string {
+export function processTemplate(
+    template,
+    workItems: WorkItem[],
+    commits: Change[],
+    buildDetails: Build,
+    releaseDetails: Release,
+    compareReleaseDetails: Release,
+    emptySetText,
+    delimiter,
+    fieldEquality,
+    anyFieldContent,
+    customHandlebarsExtensionCode): string {
 
     var widetail = undefined;
     var csdetail = undefined;
@@ -434,9 +444,25 @@ export function processTemplate(template, workItems: WorkItem[], commits: Change
         } else {
             // it is a handlebar template
             agentApi.logDebug("Processing handlebar template");
+            const handlebars = require("handlebars");
+            // load the extension library so it can be accessed in templates
+            agentApi.logInfo("Loading handlebars-helpers extension");
+            const helpers = require("handlebars-helpers")({
+                handlebars: handlebars
+            });
+
+            var customHandlebarsExtensionFile = "customHandlebarsExtension";
+            var customHandlebarsExtensionFolder = process.env.Agent_TempDirectory;
+            if (typeof customHandlebarsExtensionCode !== undefined && customHandlebarsExtensionCode && customHandlebarsExtensionCode.length > 0) {
+                agentApi.logInfo("Loading custom handlebars extension");
+                writeFile(`${customHandlebarsExtensionFolder}/${customHandlebarsExtensionFile}.js`, customHandlebarsExtensionCode);
+                var tools = require(`${customHandlebarsExtensionFolder}/${customHandlebarsExtensionFile}`);
+                handlebars.registerHelper(tools);
+            }
 
             // compile the template
-            var handlebarsTemplate = Handlebars.compile(template);
+            var handlebarsTemplate = handlebars.compile(template);
+
             // execute the compiled template
             output = handlebarsTemplate({ "workItems": workItems, "commits": commits, "buildDetails": buildDetails, "releaseDetails": releaseDetails, "compareReleaseDetails": compareReleaseDetails });
         }

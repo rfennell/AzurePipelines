@@ -60,15 +60,15 @@ The `@@..@@` marker options are as follow
 
 What is done behind the scenes is that each `${properties}` block in the template is evaluated as a line of Node.JS in turn. The property  objects available to get data from at runtime are:
 
-### Common objects ###
+#### Common objects
 * **widetail** – the details of a given work item within the `@@WILOOP@@@` block.
 * **csdetail** – the details of a given Git commit or TFVC changeset inside the `@@CSLOOP@@@` block
 
-### Release objects (only available in a release) ###
+#### Release objects (only available in a release) 
 * **releaseDetails** – the release details of the release that the task was triggered for.
 * **compareReleaseDetails** - the the previous successful release that comparisons are bein made against
 
-### Build objects ###
+#### Build objects
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
 
 **Note:** To dump all possible values use the form `${JSON.stringify(propertyToDump)}`
@@ -121,7 +121,7 @@ An example template to run within a Release for GIT or TFVC Azure DevOps build b
 
 ```
 
-## Handlebar Templates
+### Handlebar Templates
 Since 2.27.x it has been possible to create your templates using [Handlebars](https://handlebarsjs.com/) syntax. A template written in this format is as follows
 
 ```
@@ -149,18 +149,41 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 ```
 
 > **IMPORTANT** Handlebars based templates have different objects available to the original template.
-> What is done behind the scenes is that each `{{properties}}` block in > the template is expanded by Handlebars. The property objects > available to get data from at runtime are:
+> What is done behind the scenes is that each `{{properties}}` block in the template is expanded by Handlebars. The property objects available to get data from at runtime are:
 
-### Common objects ###
+#### Common objects 
 * **workItems** – the array of work item associated with the release
 * **commits** – the array of commits associated with the release
 
-### Release objects (only available in a release) ###
+#### Release objects (only available in a release)
 * **releaseDetails** – the release details of the release that the task was triggered for.
 * **compareReleaseDetails** - the the previous successful release that comparisons are bein made against
 
-### Build objects ###
+#### Build objects
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
+
+#### Extensions
+With 2.28.x support was added for Handbars extensions in two ways:
+
+The [Handbars Helpers](https://github.com/helpers/handlebars-helpers) extension library is also pre-load, this provides over 120 useful extensions to aid in data manipulation when templating. They are used the form
+
+```
+## To confirm the handbars-helpers is work
+The year is {{year}} 
+We can capitalize "foo bar baz" {{capitalizeAll "foo bar baz"}}
+```
+
+Also there is support for custom extension libraries. These are provided via an Azure DevOps task parameter holding a block of JavaScript which is loaded into the Handlebars templating engine. The
+
+A sample extension code is in the form
+```
+module.exports = {foo: function () {return 'Returns foo';}};
+```
+And can be consumed in a template as shown below
+```
+## To confirm our custom extension works
+We can call our custom extension {{foo}}
+```
 
 ## Usage
 Once the extension is added to your Azure DevOps Server (TFS) or Azure DevOps Services, the task should be available in the utilities section of 'add tasks'
@@ -180,6 +203,7 @@ The task takes the following parameters
 * (Advanced V2 only) anyFieldContent symbol to represent any value when match field in the WI Loop, defaults to equals '*'
 * (Advanced V2 only) Do not generate release notes of a re-deploy. If this is set, and a re-deploy occurs the task will succeeds with a warning
 * (Advanced V2 only) Primary Only. If this is set only WI and CS associated with primary artifact are listed, default is false so all artifacts scanned.
+* (Handlebars V2 only) customHandlebarsExtensionCode. A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};
 * (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.
 
 ## Output location ##
