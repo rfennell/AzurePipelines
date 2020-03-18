@@ -56,7 +56,7 @@ async function run(): Promise<number>  {
             const options = {
                 allowRetries: true,
                 maxRetries: 20,
-                socketTimeout: 1000,
+                socketTimeout: 10000,
             } as vstsInterfaces.IRequestOptions;
             let vsts = new webApi.WebApi(tpcUri, credentialHandler, options);
             var releaseApi: IReleaseApi = await vsts.getReleaseApi();
