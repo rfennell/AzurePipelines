@@ -53,7 +53,11 @@ async function run(): Promise<number>  {
             var customHandlebarsExtensionFolder = tl.getInput("customHandlebarsExtensionFolder");
 
             let credentialHandler: vstsInterfaces.IRequestHandler = util.getCredentialHandler();
-            let vsts = new webApi.WebApi(tpcUri, credentialHandler);
+            const options = {
+                allowRetries: true,
+                maxRetries: 20,
+            } as vstsInterfaces.IRequestOptions;
+            let vsts = new webApi.WebApi(tpcUri, credentialHandler, options);
             var releaseApi: IReleaseApi = await vsts.getReleaseApi();
             var buildApi: IBuildApi = await vsts.getBuildApi();
 
@@ -155,7 +159,7 @@ async function run(): Promise<number>  {
                                             workitems = [];
 
                                             agentApi.logInfo(`Found ${builds.length} builds`);
-
+                                            
                                             for (var build of builds) {
                                                 agentApi.logInfo(`Getting the details of build with the ID ${build.id}`);
                                                 var buildCommits = await buildApi.getBuildChanges(teamProject, build.id);
