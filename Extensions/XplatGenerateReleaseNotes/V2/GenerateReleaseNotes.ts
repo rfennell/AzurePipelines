@@ -159,7 +159,7 @@ async function run(): Promise<number>  {
                                             workitems = [];
 
                                             agentApi.logInfo(`Found ${builds.length} builds`);
-                                            
+
                                             for (var build of builds) {
                                                 agentApi.logInfo(`Getting the details of build with the ID ${build.id}`);
                                                 var buildCommits = await buildApi.getBuildChanges(teamProject, build.id);
