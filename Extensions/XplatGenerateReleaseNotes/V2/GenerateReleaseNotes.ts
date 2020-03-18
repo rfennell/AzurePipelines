@@ -154,13 +154,15 @@ async function run(): Promise<number>  {
                                             commits = [];
                                             workitems = [];
 
+                                            agentApi.logInfo(`Found ${builds.length} builds`);
+
                                             for (var build of builds) {
                                                 agentApi.logInfo(`Getting the details of build with the ID ${build.id}`);
                                                 var buildCommits = await buildApi.getBuildChanges(teamProject, build.id);
-                                                agentApi.logInfo(`   found ${buildCommits.length} commits`);
+                                                agentApi.logDebug(`   found ${buildCommits.length} commits`);
                                                 commits.push(...buildCommits);
                                                 var buildWorkitems = await buildApi.getBuildWorkItemsRefs(teamProject, build.id);
-                                                agentApi.logInfo(`   found ${buildWorkitems.length} commits`);
+                                                agentApi.logDebug(`   found ${buildWorkitems.length} commits`);
                                                 workitems.push(...buildWorkitems);
                                             }
                                         } else if (artifactInMostRecentRelease.buildId !== artifactInThisRelease.buildId) {
