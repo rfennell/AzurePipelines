@@ -56,6 +56,7 @@ async function run(): Promise<number>  {
             const options = {
                 allowRetries: true,
                 maxRetries: 20,
+                socketTimeout: 1000,
             } as vstsInterfaces.IRequestOptions;
             let vsts = new webApi.WebApi(tpcUri, credentialHandler, options);
             var releaseApi: IReleaseApi = await vsts.getReleaseApi();
@@ -166,7 +167,7 @@ async function run(): Promise<number>  {
                                                 agentApi.logDebug(`   found ${buildCommits.length} commits`);
                                                 commits.push(...buildCommits);
                                                 var buildWorkitems = await buildApi.getBuildWorkItemsRefs(teamProject, build.id);
-                                                agentApi.logDebug(`   found ${buildWorkitems.length} commits`);
+                                                agentApi.logDebug(`   found ${buildWorkitems.length} workitems`);
                                                 workitems.push(...buildWorkitems);
                                             }
                                         } else if (artifactInMostRecentRelease.buildId !== artifactInThisRelease.buildId) {
