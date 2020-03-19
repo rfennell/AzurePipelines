@@ -1,9 +1,9 @@
-import * as tl from "vsts-task-lib";
-import { WebApi } from "vso-node-api/WebApi";
-import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
-import { GitQueryCommitsCriteria, GitVersionType } from "vso-node-api/interfaces/GitInterfaces";
-import { Change } from "vso-node-api/interfaces/BuildInterfaces";
-import { ArtifactUriQuery } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
+import * as tl from "azure-pipelines-task-lib";
+import { WebApi } from "azure-devops-node-api/WebApi";
+import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfaces";
+import { GitQueryCommitsCriteria, GitVersionType } from "azure-devops-node-api/interfaces/GitInterfaces";
+import { Change } from "azure-devops-node-api/interfaces/BuildInterfaces";
+import { ArtifactUriQuery } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 
 export async function getCommitsAndWorkItemsForGitRepo(vsts: WebApi, baseSourceVersion: string, currentSourceVersion: string, repositoryId: string): Promise<CommitInfo> {
     let maxCommits = tl.getVariable("ReleaseNotes.Fix349.MaxCommits") ? Number(tl.getVariable("ReleaseNotes.Fix349.MaxCommits")) : 5000;

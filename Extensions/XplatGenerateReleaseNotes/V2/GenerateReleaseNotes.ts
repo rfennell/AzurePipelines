@@ -1,16 +1,16 @@
-import tl = require("vsts-task-lib/task");
-import * as webApi from "vso-node-api/WebApi";
-import { IReleaseApi } from "vso-node-api/ReleaseApi";
-import * as vstsInterfaces from "vso-node-api/interfaces/common/VsoBaseInterfaces";
+import tl = require("azure-pipelines-task-lib/task");
+import * as webApi from "azure-devops-node-api/WebApi";
+import { IReleaseApi } from "azure-devops-node-api/ReleaseApi";
+import * as vstsInterfaces from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 
 import { AgentSpecificApi } from "./agentSpecific";
-import { Release } from "vso-node-api/interfaces/ReleaseInterfaces";
+import { Release } from "azure-devops-node-api/interfaces/ReleaseInterfaces";
 import * as util from "./ReleaseNotesFunctions";
-import { IBuildApi } from "vso-node-api/BuildApi";
-import { IWorkItemTrackingApi } from "vso-node-api/WorkItemTrackingApi";
-import { Build, Change } from "vso-node-api/interfaces/BuildInterfaces";
-import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
-import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
+import { IBuildApi } from "azure-devops-node-api/BuildApi";
+import { IWorkItemTrackingApi } from "azure-devops-node-api/WorkItemTrackingApi";
+import { Build, Change } from "azure-devops-node-api/interfaces/BuildInterfaces";
+import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfaces";
+import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import * as issue349 from "./Issue349Workaround";
 
 let agentApi = new AgentSpecificApi();
@@ -74,7 +74,7 @@ async function run(): Promise<number>  {
             if (tl.getVariable("Release.ReleaseId") === undefined) {
                 agentApi.logInfo("Getting the current build details");
                 let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
-                currentBuild = await buildApi.getBuild(buildId);
+                currentBuild = await buildApi.getBuild(teamProject, buildId);
 
                 if (!currentBuild) {
                     reject(`Unable to locate the current build with id ${buildId}`);
@@ -181,10 +181,10 @@ async function run(): Promise<number>  {
                                             }
                                             if (activateFix && activateFix.toLowerCase() === "true") {
                                                 agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
-                                                let baseBuild = await buildApi.getBuild(parseInt(artifactInMostRecentRelease.buildId));
+                                                let baseBuild = await buildApi.getBuild(teamProject, parseInt(artifactInMostRecentRelease.buildId));
                                                 // There is only a workaround for Git but not for TFVC :(
                                                 if (baseBuild.repository.type === "TfsGit") {
-                                                    let currentBuild = await buildApi.getBuild(parseInt(artifactInThisRelease.buildId));
+                                                    let currentBuild = await buildApi.getBuild(teamProject, parseInt(artifactInThisRelease.buildId));
                                                     let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(vsts, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
                                                     commits = commitInfo.commits;
                                                     workitems = commitInfo.workItems;
@@ -283,7 +283,7 @@ async function run(): Promise<number>  {
 
             // to allow access to the PR details if any
             let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
-            currentBuild = await buildApi.getBuild(buildId);
+            currentBuild = await buildApi.getBuild(teamProject, buildId);
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
             var outputString = util.processTemplate(
