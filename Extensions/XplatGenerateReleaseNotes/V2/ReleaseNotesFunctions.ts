@@ -8,19 +8,19 @@ export interface SimpleArtifact {
 }
 
 import * as restm from "typed-rest-client/RestClient";
-import tl = require("vsts-task-lib/task");
-import { ReleaseEnvironment, Artifact, Deployment, DeploymentStatus, Release } from "vso-node-api/interfaces/ReleaseInterfaces";
+import tl = require("azure-pipelines-task-lib/task");
+import { ReleaseEnvironment, Artifact, Deployment, DeploymentStatus, Release } from "azure-devops-node-api/interfaces/ReleaseInterfaces";
 import { IAgentSpecificApi, AgentSpecificApi } from "./agentSpecific";
-import { IReleaseApi } from "vso-node-api/ReleaseApi";
-import { IRequestHandler } from "vso-node-api/interfaces/common/VsoBaseInterfaces";
-import * as webApi from "vso-node-api/WebApi";
+import { IReleaseApi } from "azure-devops-node-api/ReleaseApi";
+import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
+import * as webApi from "azure-devops-node-api/WebApi";
 import fs  = require("fs");
-import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
-import { Build, Change } from "vso-node-api/interfaces/BuildInterfaces";
-import { IGitApi } from "vso-node-api/GitApi";
-import { GitCommit } from "vso-node-api/interfaces/GitInterfaces";
+import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfaces";
+import { Build, Change } from "azure-devops-node-api/interfaces/BuildInterfaces";
+import { IGitApi } from "azure-devops-node-api/GitApi";
+import { GitCommit } from "azure-devops-node-api/interfaces/GitInterfaces";
 import { HttpClient } from "typed-rest-client/HttpClient";
-import { WorkItem } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
+import { WorkItem } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import { type } from "os";
 
 let agentApi = new AgentSpecificApi();
