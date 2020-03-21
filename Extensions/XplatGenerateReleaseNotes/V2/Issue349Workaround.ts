@@ -26,6 +26,7 @@ export async function getCommitsAndWorkItemsForGitRepo(vsts: WebApi, baseSourceV
         commits.push(<Change>{
             id: c.commitId,
             message: c.comment,
+            messageTruncated: c.commentTruncated,
             type: "TfsGit",
             author: {
                 displayName: c.author.name,
