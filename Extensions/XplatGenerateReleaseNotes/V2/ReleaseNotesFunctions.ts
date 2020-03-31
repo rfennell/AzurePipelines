@@ -458,6 +458,11 @@ export function processTemplate(
             agentApi.logDebug(`BuildDirectory ${process.env.Agent_BuildDirectory}`);
             agentApi.logDebug(`__dirname ${__dirname}`);
 
+            var env = process.env;
+            Object.keys(env).forEach(function(key) {
+                agentApi.logDebug(`export ${key}=${env[key]}`);
+            });
+
             if (typeof customHandlebarsExtensionCode !== undefined && customHandlebarsExtensionCode && customHandlebarsExtensionCode.length > 0) {
                 agentApi.logInfo("Loading custom handlebars extension");
                 writeFile(`${customHandlebarsExtensionFolder}/${customHandlebarsExtensionFile}.js`, customHandlebarsExtensionCode);
