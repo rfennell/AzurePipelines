@@ -452,7 +452,9 @@ export function processTemplate(
             });
 
             var customHandlebarsExtensionFile = "customHandlebarsExtension";
-            var customHandlebarsExtensionFolder = process.env.Agent_TempDirectory;
+            // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
+            var customHandlebarsExtensionFolder = `${process.env.Agent_WorkFolder}/_temp`;
+            agentApi.logDebug(`Saving custom handles code to file in folder ${customHandlebarsExtensionFolder}`);
             if (typeof customHandlebarsExtensionCode !== undefined && customHandlebarsExtensionCode && customHandlebarsExtensionCode.length > 0) {
                 agentApi.logInfo("Loading custom handlebars extension");
                 writeFile(`${customHandlebarsExtensionFolder}/${customHandlebarsExtensionFile}.js`, customHandlebarsExtensionCode);

@@ -92,7 +92,7 @@ async function run(): Promise<number>  {
                 // check of redeploy
                 if (stopOnRedeploy === true) {
                     if ( util.getDeploymentCount(currentRelease.environments, environmentName) > 1) {
-                        agentApi.logWarn(`Skipping release note generation as this deploy is a re-reployment`);
+                        agentApi.logWarn(`Skipping release note generation as this deploy is a re-deployment`);
                         resolve(-1);
                         return promise;
                     }
