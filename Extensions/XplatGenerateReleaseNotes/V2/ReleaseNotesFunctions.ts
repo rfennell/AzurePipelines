@@ -481,7 +481,7 @@ export function processTemplate(
 export function writeFile(filename: string, data: string) {
     agentApi.logInfo(`Writing output file ${filename}`);
     fs.writeFileSync(filename, data);
-    agentApi.logInfo(`Finsihed writing output file ${filename}`);
+    agentApi.logInfo(`Finished writing output file ${filename}`);
 }
 
 // There is no WI in this list as they are dynamic as they can include tags
