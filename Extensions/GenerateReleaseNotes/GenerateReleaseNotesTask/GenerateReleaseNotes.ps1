@@ -173,8 +173,8 @@ if ( [string]::IsNullOrEmpty($releaseid))
     foreach ($artifact in  $currentRelease.artifacts)
     {
         
-        if (($generateForOnlyPrimary -eq $true -and $artifact.isPrimary -eq $true) -or `
-            (-and $artifact.alias -eq $currentRelease.triggeringArtifactAlias) -or `
+        if ((($generateForOnlyPrimary -eq $true) -and ($artifact.isPrimary -eq $true)) -or `
+            (($generateForOnlyTriggerArtifact -eq $true) -and ($artifact.alias -eq $currentRelease.triggeringArtifactAlias)) -or `
             (($generateForOnlyPrimary -eq $false) -and ($generateForOnlyTriggerArtifact -eq $false) ))
         {
             if ($artifact.type -eq 'Build')
