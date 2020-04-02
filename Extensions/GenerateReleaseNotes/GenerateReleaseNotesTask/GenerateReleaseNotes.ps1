@@ -167,6 +167,8 @@ if ( [string]::IsNullOrEmpty($releaseid))
     $currentRelease = @($releases)[0]
     $lastSuccessfulRelease = @($releases)[-1]
 
+    Write-Verbose "The trigger artifact for the current release is $($currentRelease.triggeringArtifactAlias)"
+
     # find the list of artifacts
     foreach ($artifact in  $currentRelease.artifacts)
     {
