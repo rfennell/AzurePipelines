@@ -54,6 +54,7 @@ $inlinetemplate = Get-VstsInput -Name "inlinetemplate"
 $templateLocation = Get-VstsInput -Name "templateLocation"
 $usedefaultcreds = Get-VstsInput -Name "usedefaultcreds"
 $generateForOnlyPrimary = Get-VstsInput -Name "generateForOnlyPrimary"
+$generateForOnlyTriggerArtifact = Get-VstsInput -Name "generateForOnlyTriggerArtifact"
 $generateForCurrentRelease = Get-VstsInput -Name "generateForCurrentRelease"
 $overrideStageName = Get-VstsInput -Name "overrideStageName"
 $emptySetText = Get-VstsInput -Name "emptySetText"
@@ -86,6 +87,7 @@ Write-Verbose "releasedefname = [$releasedefname]"
 Write-Verbose "buildnumber = [$buildnumber]"
 Write-Verbose "outputVariableName = [$outputvariablename]"
 Write-Verbose "generateForOnlyPrimary = [$generateForOnlyPrimary]"
+Write-Verbose "generateForOnlyTriggerArtifact = [$generateForOnlyTriggerArtifact]"
 Write-Verbose "generateForCurrentRelease = [$generateForCurrentRelease]"
 Write-Verbose "maxWi = [$maxWi]"
 Write-Verbose "maxChanges = [$maxChanges]"
@@ -168,7 +170,10 @@ if ( [string]::IsNullOrEmpty($releaseid))
     # find the list of artifacts
     foreach ($artifact in  $currentRelease.artifacts)
     {
-        if (($generateForOnlyPrimary -eq $true -and $artifact.isPrimary -eq $true) -or ($generateForOnlyPrimary -eq $false))
+        
+        if (($generateForOnlyPrimary -eq $true -and $artifact.isPrimary -eq $true) -or `
+            (-and $artifact.alias -eq $currentRelease.triggeringArtifactAlias) -or `
+            (($generateForOnlyPrimary -eq $false) -and ($generateForOnlyTriggerArtifact -eq $false) )
         {
             if ($artifact.type -eq 'Build')
             {

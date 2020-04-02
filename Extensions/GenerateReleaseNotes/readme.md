@@ -169,6 +169,7 @@ In this form the task takes three parameters
 * (Advanced) Use default credentials - default is false so the build services personal access token is automatically used. If true the credentials of local account the agent is running as are used (only usually used on-prem)
 * (Advanced) Empty set text - the text to place in the results file if there is no changeset/commit or WI content
 * (Advanced) Generate release notes for only primary release artifact, default is False (release mode only)
+* (Advanced) Generate release notes for only trigger release artifact, default is False (release mode only)
 * (Advanced) Generate release notes for only the release that contains the task, do not scan past releases, default is True (release mode only)
 * (Advanced) Name of the release stage to look for the last successful release in, default to empty value so uses the current stage of the release that the task is running in (release mode, when scanning past build only)
 * (Advanced) Maximum number of work items to show in report (default 50)

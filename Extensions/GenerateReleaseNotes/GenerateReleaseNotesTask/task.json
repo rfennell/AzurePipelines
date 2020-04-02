@@ -104,6 +104,15 @@
       "groupName": "advanced"
     },
     {
+      "name": "generateForOnlyTriggerArtifact",
+      "type": "boolean",
+      "label": "Generate for only the trigger artifact",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "If true will generate release notes for the trigger build artifact (Release usage only)",
+      "groupName": "advanced"
+    },
+    {
       "name": "generateForCurrentRelease",
       "type": "boolean",
       "label": "Generate for only this Release",
