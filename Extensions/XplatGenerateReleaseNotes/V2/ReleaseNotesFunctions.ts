@@ -18,7 +18,7 @@ import fs  = require("fs");
 import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
 import { Build, Change } from "vso-node-api/interfaces/BuildInterfaces";
 import { IGitApi } from "vso-node-api/GitApi";
-import { GitCommit } from "vso-node-api/interfaces/GitInterfaces";
+import { GitCommit, GitPullRequest } from "vso-node-api/interfaces/GitInterfaces";
 import { HttpClient } from "typed-rest-client/HttpClient";
 import { WorkItem } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
 import { type } from "os";
@@ -184,7 +184,8 @@ export function processTemplate(
     delimiter,
     fieldEquality,
     anyFieldContent,
-    customHandlebarsExtensionCode): string {
+    customHandlebarsExtensionCode,
+    prDetails: GitPullRequest): string {
 
     var widetail = undefined;
     var csdetail = undefined;

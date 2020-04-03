@@ -154,6 +154,7 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 #### Common objects 
 * **workItems** – the array of work item associated with the release
 * **commits** – the array of commits associated with the release
+* **prDetails** – the details of the PR (if any that triggered the pipeline)
 
 #### Release objects (only available in a release)
 * **releaseDetails** – the release details of the release that the task was triggered for.

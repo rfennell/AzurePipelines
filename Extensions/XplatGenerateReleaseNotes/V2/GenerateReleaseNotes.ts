@@ -7,11 +7,13 @@ import { AgentSpecificApi } from "./agentSpecific";
 import { Release } from "vso-node-api/interfaces/ReleaseInterfaces";
 import * as util from "./ReleaseNotesFunctions";
 import { IBuildApi } from "vso-node-api/BuildApi";
+import { IGitApi } from "vso-node-api/GitApi";
 import { IWorkItemTrackingApi } from "vso-node-api/WorkItemTrackingApi";
 import { Build, Change } from "vso-node-api/interfaces/BuildInterfaces";
 import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
 import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
 import * as issue349 from "./Issue349Workaround";
+import { GitPullRequest } from "vso-node-api/interfaces/GitInterfaces";
 
 let agentApi = new AgentSpecificApi();
 
@@ -56,6 +58,7 @@ async function run(): Promise<number>  {
             let vsts = new webApi.WebApi(tpcUri, credentialHandler);
             var releaseApi: IReleaseApi = await vsts.getReleaseApi();
             var buildApi: IBuildApi = await vsts.getBuildApi();
+            var gitApi: IGitApi = await vsts.getGitApi();
 
             // the result containers
             var globalCommits: Change[] = [];
@@ -65,6 +68,8 @@ async function run(): Promise<number>  {
 
             var currentRelease: Release;
             var currentBuild: Build;
+
+            var prDetails: GitPullRequest;
 
             if (tl.getVariable("Release.ReleaseId") === undefined) {
                 agentApi.logInfo("Getting the current build details");
@@ -275,6 +280,11 @@ async function run(): Promise<number>  {
             // to allow access to the PR details if any
             let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
             currentBuild = await buildApi.getBuild(buildId);
+            // and enhance the details if they can
+            if (currentBuild.triggerInfo["pr.number"]) {
+                agentApi.logInfo(`The build was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
+                prDetails = await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"]));
+            }
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
             var outputString = util.processTemplate(
@@ -288,7 +298,8 @@ async function run(): Promise<number>  {
                 delimiter,
                 fieldEquality,
                 anyFieldContent,
-                customHandlebarsExtensionCode);
+                customHandlebarsExtensionCode,
+                prDetails);
 
             util.writeFile(outputfile, outputString);
 
