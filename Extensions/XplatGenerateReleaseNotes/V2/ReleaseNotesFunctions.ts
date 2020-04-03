@@ -155,7 +155,7 @@ export function getTemplate(
         const handlebarIndicator = "{{";
         if (templateLocation === "File") {
             agentApi.logInfo (`Loading template file ${templatefile}`);
-            template = fs.readFileSync(templatefile).toString();
+            template = fs.readFileSync(templatefile, "utf8").toString();
         } else {
             agentApi.logInfo ("Using in-line template");
             template = inlinetemplate;
@@ -480,7 +480,7 @@ export function processTemplate(
 
 export function writeFile(filename: string, data: string) {
     agentApi.logInfo(`Writing output file ${filename}`);
-    fs.writeFileSync(filename, data);
+    fs.writeFileSync(filename, data, "utf8");
     agentApi.logInfo(`Finished writing output file ${filename}`);
 }
 
