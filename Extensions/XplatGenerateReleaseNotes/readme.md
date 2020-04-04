@@ -83,6 +83,8 @@ An example template to run within a Release for GIT or TFVC Azure DevOps build b
 **Release Number**  : ${releaseDetails.name}
 **Release completed** : ${releaseDetails.modifiedOn}
 **Compared Release Number**  : ${compareReleaseDetails.name}
+**Build Trigger PR Number**: ${buildDetails.triggerInfo['pr.number']}
+**PR Details Title **: ${prDetails.title}
 
 ### All associated work items
 @@WILOOP@@
@@ -130,6 +132,8 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 **Release completed** : {{releaseDetails.modifiedOn}}     
 **Build Number**: {{buildDetails.id}}
 **Compared Release Number**  : {{compareReleaseDetails.name}}    
+**Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
+**PR Details**: {{prDetails.title}}
 
 ### Associated Work Items ({{workItems.length}})
 
@@ -154,7 +158,7 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 #### Common objects 
 * **workItems** – the array of work item associated with the release
 * **commits** – the array of commits associated with the release
-* **prDetails** – the details of the PR (if any that triggered the pipeline)
+* **prDetails** – the details of the PR (only available for source repository hosted in Azure DevOps and pipelines triggered by a PR).
 
 #### Release objects (only available in a release)
 * **releaseDetails** – the release details of the release that the task was triggered for.

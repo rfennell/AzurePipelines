@@ -469,7 +469,14 @@ export function processTemplate(
             var handlebarsTemplate = handlebars.compile(template);
 
             // execute the compiled template
-            output = handlebarsTemplate({ "workItems": workItems, "commits": commits, "buildDetails": buildDetails, "releaseDetails": releaseDetails, "compareReleaseDetails": compareReleaseDetails });
+            output = handlebarsTemplate({
+                "workItems": workItems,
+                "commits": commits,
+                "buildDetails": buildDetails,
+                "releaseDetails": releaseDetails,
+                "compareReleaseDetails": compareReleaseDetails,
+                "prDetails": prDetails
+             });
         }
         agentApi.logInfo( "Completed processing template");
     } else {

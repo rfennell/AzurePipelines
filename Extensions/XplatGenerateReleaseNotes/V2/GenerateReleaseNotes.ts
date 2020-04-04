@@ -13,7 +13,7 @@ import { Build, Change } from "vso-node-api/interfaces/BuildInterfaces";
 import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
 import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
 import * as issue349 from "./Issue349Workaround";
-import { GitPullRequest } from "vso-node-api/interfaces/GitInterfaces";
+import { GitPullRequest, GitPullRequestQueryType } from "vso-node-api/interfaces/GitInterfaces";
 
 let agentApi = new AgentSpecificApi();
 
@@ -281,9 +281,13 @@ async function run(): Promise<number>  {
             let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
             currentBuild = await buildApi.getBuild(buildId);
             // and enhance the details if they can
-            if (currentBuild.triggerInfo["pr.number"]) {
-                agentApi.logInfo(`The build was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
+            if ((currentBuild.repository.type === "TfsGit") && (currentBuild.triggerInfo["pr.number"])) {
+                agentApi.logInfo(`The default artifact for the release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
                 prDetails = await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"]));
+            } else {
+                agentApi.logInfo(`The default artifact for the release was not linked to a Azure DevOps Git Repo Pull Request`);
+                // create an empty object to avoid undefined errors
+                prDetails = <GitPullRequest> {} ;
             }
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
