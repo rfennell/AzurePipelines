@@ -3,6 +3,8 @@
 **Release Number**  : ${releaseDetails.name} 
 **Release completed** : ${releaseDetails.modifiedOn} 
 **Compared Release Number**  : ${compareReleaseDetails.name} 
+**Build Trigger PR Number**: ${buildDetails.triggerInfo['pr.number']}
+**PR Title **: ${prDetails.title}
 
 ### Associated work items  
 @@WILOOP@@  
