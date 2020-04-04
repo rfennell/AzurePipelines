@@ -2,7 +2,10 @@
 **Release Number**  : {{releaseDetails.name}}
 **Release completed** : {{releaseDetails.modifiedOn}}     
 **Build Number**: {{buildDetails.id}}
-**Compared Release Number**  : {{compareReleaseDetails.name}}    
+**Compared Release Number**  : {{compareReleaseDetails.name}}  
+**Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
+**PR Details**: {{prDetails.title}}
+
 
 ### Associated Work Items ({{workItems.length}})
 
