@@ -174,7 +174,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
     {
         
         if ((($generateForOnlyPrimary -eq $true) -and ($artifact.isPrimary -eq $true)) -or `
-            (($generateForOnlyTriggerArtifact -eq $true) -and ($artifact.alias -eq $currentRelease.triggeringArtifactAlias)) -or `
+            (($generateForOnlyTriggerArtifact -eq $true) -and ($artifact.definitionReference.definition.name -eq $builddefname)) -or `
             (($generateForOnlyPrimary -eq $false) -and ($generateForOnlyTriggerArtifact -eq $false) ))
         {
             if ($artifact.type -eq 'Build')
@@ -185,6 +185,10 @@ if ( [string]::IsNullOrEmpty($releaseid))
             {
                 Write-Verbose "The artifact [$($artifact.alias)] is a [$($artifact.type)], will be skipped as has no associated commits/changesets and work items"
             }
+        } else {
+            Write-Verbose "Filtering on primary artifact only [$($generateForOnlyPrimary)]"
+            Write-Verbose "Filtering on trigger artifact only [$($generateForOnlyTriggerArtifact)]"
+            Write-Verbose "The artifact [$($artifact.alias)] is being skipped as it is either not the primary artifact or triggering artifact"
         }
     }
 
