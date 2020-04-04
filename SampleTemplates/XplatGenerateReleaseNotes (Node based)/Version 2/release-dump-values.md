@@ -1,15 +1,19 @@
-## Dump of all fields    
-**Release**  : ${JSON.stringify(releaseDetails)}     
-**Build**: $(JSON.stringify(Build))
-**Compared Release**  : ${JSON.stringify(compareReleaseDetails)}   
-**PR Title** : ${JSON.stringify(prDetails)}
 
-### All associated work items  
+# Notes for release dump    
+${JSON.stringify(releaseDetails)}    
+
+# The build dump
+${JSON.stringify(buildDetails)}    
+
+# The pr dump
+${JSON.stringify(prDetails)}    
+
+# All associated work items  
 @@WILOOP@@  
-* **${JSON.stringify(widetail)}  
+* ${JSON.stringify(widetail)}
 @@WILOOP@@  
  
-### Associated commits
+# Associated commits dump
 @@CSLOOP@@  
-* ${JSON.stringify(csdetail)}  
+* ${JSON.stringify(csdetail)} 
 @@CSLOOP@@
