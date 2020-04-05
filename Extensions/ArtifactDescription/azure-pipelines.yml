@@ -91,9 +91,7 @@ stages:
     jobs:
     - deployment: Private_Deployment
       timeoutInMinutes: 0
-      variables:
-      - group: 'VSTS Extension Gate'  
-      environment: 'Azure DevOps Marketplace (private)'
+      environment: 'Azure DevOps Marketplace (Private)'
       strategy:
         runOnce:
           deploy:
@@ -123,3 +121,17 @@ stages:
                 extensionTag: '-DEV'
                 updateTasksVersion: false
                 extensionVisibility: private
+
+  - stage: Test
+    jobs:
+    - deployment: Private_Test
+      timeoutInMinutes: 0
+      variables:
+      - group: 'VSTS Extension Gate'  
+      environment: 'Azure DevOps Marketplace (Test)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - bash: ""
+            
