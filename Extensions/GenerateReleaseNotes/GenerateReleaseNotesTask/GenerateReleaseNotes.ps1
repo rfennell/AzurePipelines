@@ -167,14 +167,18 @@ if ( [string]::IsNullOrEmpty($releaseid))
     $currentRelease = @($releases)[0]
     $lastSuccessfulRelease = @($releases)[-1]
 
-    Write-Verbose "The trigger artifact for the current release is $($currentRelease.triggeringArtifactAlias)"
-
     # find the list of artifacts
+    Write-Verbose "Found a potential list of $($currentRelease.artifacts.count) artifact"
+    Write-Verbose "Filtering on primary artifact only [$($generateForOnlyPrimary)]"
+    Write-Verbose "Filtering on trigger artifact only [$($generateForOnlyTriggerArtifact)]"
+
     foreach ($artifact in  $currentRelease.artifacts)
     {
+        Write-Verbose "If looking for trigger artifact the comparision will be '$($currentRelease.description)' to 'Triggered by $($artifact.definitionReference.definition.name) $($artifact.definitionReference.version.id).'"
         
+        #  the check for trigger build is nasty but the only means I can find
         if ((($generateForOnlyPrimary -eq $true) -and ($artifact.isPrimary -eq $true)) -or `
-            (($generateForOnlyTriggerArtifact -eq $true) -and ($artifact.definitionReference.definition.name -eq $builddefname)) -or `
+            (($generateForOnlyTriggerArtifact -eq $true) -and ($currentRelease.description -eq "Triggered by $($artifact.definitionReference.definition.name) $($artifact.definitionReference.version.id).")) -or `
             (($generateForOnlyPrimary -eq $false) -and ($generateForOnlyTriggerArtifact -eq $false) ))
         {
             if ($artifact.type -eq 'Build')
@@ -186,8 +190,6 @@ if ( [string]::IsNullOrEmpty($releaseid))
                 Write-Verbose "The artifact [$($artifact.alias)] is a [$($artifact.type)], will be skipped as has no associated commits/changesets and work items"
             }
         } else {
-            Write-Verbose "Filtering on primary artifact only [$($generateForOnlyPrimary)]"
-            Write-Verbose "Filtering on trigger artifact only [$($generateForOnlyTriggerArtifact)]"
             Write-Verbose "The artifact [$($artifact.alias)] is being skipped as it is either not the primary artifact or triggering artifact"
         }
     }
