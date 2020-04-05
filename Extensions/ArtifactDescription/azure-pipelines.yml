@@ -89,32 +89,37 @@ stages:
 
   - stage: Private
     jobs:
-    - job: Deploy
-      pool: 
-          name: 'Hosted VS2017'
-      steps:
-        - task: DownloadPipelineArtifact@0
-          inputs:
-            artifactName: 'vsix'
-            targetPath: $(System.DefaultWorkingDirectory)
+    - deployment: "Private Deployment"
+      timeoutInMinutes: 0
+      variables:
+      - group: 'VSTS Extension Gate'  
+      environment: 'Azure DevOps Marketplace (private)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: DownloadPipelineArtifact@0
+              inputs:
+                artifactName: 'vsix'
+                targetPath: $(System.DefaultWorkingDirectory)
 
-        - task: DownloadPipelineArtifact@0
-          inputs:
-            buildType: 'current'
-            downloadType: 'single'
-            artifactName: 'vsix'
-            downloadPath: $(System.DefaultWorkingDirectory)
+            - task: DownloadPipelineArtifact@0
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: 'vsix'
+                downloadPath: $(System.DefaultWorkingDirectory)
 
-        - task: TfxInstaller@1
-          inputs:
-            version: 'v0.6.x'
+            - task: TfxInstaller@1
+              inputs:
+                version: 'v0.6.x'
 
-        - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
-          displayName: 'Publish Extension'
-          inputs:
-            connectedServiceName: 'Azure DevOps Marketplace (Work MSA)'
-            fileType: vsix
-            vsixFile: '$(System.DefaultWorkingDirectory)\\richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-$(Build.BuildNumber).vsix'
-            extensionTag: '-DEV'
-            updateTasksVersion: false
-            extensionVisibility: private
+            - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
+              displayName: 'Publish Extension'
+              inputs:
+                connectedServiceName: 'Azure DevOps Marketplace (Work MSA)'
+                fileType: vsix
+                vsixFile: '$(System.DefaultWorkingDirectory)\\richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-$(Build.BuildNumber).vsix'
+                extensionTag: '-DEV'
+                updateTasksVersion: false
+                extensionVisibility: private
