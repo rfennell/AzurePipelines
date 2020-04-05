@@ -89,7 +89,7 @@ stages:
 
   - stage: Private
     jobs:
-    - deployment: "Private Deployment"
+    - deployment: Private_Deployment
       timeoutInMinutes: 0
       variables:
       - group: 'VSTS Extension Gate'  
