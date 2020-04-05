@@ -54,6 +54,7 @@ $inlinetemplate = Get-VstsInput -Name "inlinetemplate"
 $templateLocation = Get-VstsInput -Name "templateLocation"
 $usedefaultcreds = Get-VstsInput -Name "usedefaultcreds"
 $generateForOnlyPrimary = Get-VstsInput -Name "generateForOnlyPrimary"
+$generateForOnlyTriggerArtifact = Get-VstsInput -Name "generateForOnlyTriggerArtifact"
 $generateForCurrentRelease = Get-VstsInput -Name "generateForCurrentRelease"
 $overrideStageName = Get-VstsInput -Name "overrideStageName"
 $emptySetText = Get-VstsInput -Name "emptySetText"
@@ -86,6 +87,7 @@ Write-Verbose "releasedefname = [$releasedefname]"
 Write-Verbose "buildnumber = [$buildnumber]"
 Write-Verbose "outputVariableName = [$outputvariablename]"
 Write-Verbose "generateForOnlyPrimary = [$generateForOnlyPrimary]"
+Write-Verbose "generateForOnlyTriggerArtifact = [$generateForOnlyTriggerArtifact]"
 Write-Verbose "generateForCurrentRelease = [$generateForCurrentRelease]"
 Write-Verbose "maxWi = [$maxWi]"
 Write-Verbose "maxChanges = [$maxChanges]"
@@ -166,9 +168,18 @@ if ( [string]::IsNullOrEmpty($releaseid))
     $lastSuccessfulRelease = @($releases)[-1]
 
     # find the list of artifacts
+    Write-Verbose "Found a potential list of $($currentRelease.artifacts.count) artifact"
+    Write-Verbose "Filtering on primary artifact only [$($generateForOnlyPrimary)]"
+    Write-Verbose "Filtering on trigger artifact only [$($generateForOnlyTriggerArtifact)]"
+
     foreach ($artifact in  $currentRelease.artifacts)
     {
-        if (($generateForOnlyPrimary -eq $true -and $artifact.isPrimary -eq $true) -or ($generateForOnlyPrimary -eq $false))
+        Write-Verbose "If looking for trigger artifact the comparision will be '$($currentRelease.description)' to 'Triggered by $($artifact.definitionReference.definition.name) $($artifact.definitionReference.version.id).'"
+        
+        #  the check for trigger build is nasty but the only means I can find
+        if ((($generateForOnlyPrimary -eq $true) -and ($artifact.isPrimary -eq $true)) -or `
+            (($generateForOnlyTriggerArtifact -eq $true) -and ($currentRelease.description -eq "Triggered by $($artifact.definitionReference.definition.name) $($artifact.definitionReference.version.id).")) -or `
+            (($generateForOnlyPrimary -eq $false) -and ($generateForOnlyTriggerArtifact -eq $false) ))
         {
             if ($artifact.type -eq 'Build')
             {
@@ -178,6 +189,8 @@ if ( [string]::IsNullOrEmpty($releaseid))
             {
                 Write-Verbose "The artifact [$($artifact.alias)] is a [$($artifact.type)], will be skipped as has no associated commits/changesets and work items"
             }
+        } else {
+            Write-Verbose "The artifact [$($artifact.alias)] is being skipped as it is either not the primary artifact or triggering artifact"
         }
     }
 
