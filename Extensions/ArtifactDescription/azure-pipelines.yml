@@ -98,11 +98,6 @@ stages:
             steps:
             - task: DownloadPipelineArtifact@0
               inputs:
-                artifactName: 'vsix'
-                targetPath: $(System.DefaultWorkingDirectory)
-
-            - task: DownloadPipelineArtifact@0
-              inputs:
                 buildType: 'current'
                 downloadType: 'single'
                 artifactName: 'vsix'
