@@ -112,7 +112,7 @@ stages:
         - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
           displayName: 'Publish Extension'
           inputs:
-            connectedServiceName: 'Marketplace (6 Nov)'
+            connectedServiceName: 'Azure DevOps Marketplace (Work MSA)'
             fileType: vsix
             vsixFile: '$(System.DefaultWorkingDirectory)\\richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-$(Build.BuildNumber).vsix'
             extensionTag: '-DEV'
