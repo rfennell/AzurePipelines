@@ -9,23 +9,35 @@ steps:
   displayName: 'npm install for ${{parameters.taskName}}'
   inputs:
     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
+
+- task: SnykSecurityScan@0
+  inputs:
+    serviceConnectionEndpoint: 'Snyk (Apr2020)'
+    testType: 'app'
+    monitorOnBuild: true
+    failOnIssues: true
+    testDirectory: '${{parameters.extensionRoot}}'
+
 - task: Npm@0
   displayName: 'npm run build for ${{parameters.taskName}}'
   inputs:
     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
     command: run
     arguments: build
+
 - task: Npm@0
   displayName: 'npm run test for ${{parameters.taskName}}'
   inputs:
     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
     command: run
     arguments: test
+
 - task: PublishTestResults@2
   displayName: 'Publish Test Results for ${{parameters.taskName}}'
   inputs:
     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
     testRunTitle: '${{parameters.taskName}}'
+
 - task: Npm@0
   displayName: 'npm run package for ${{parameters.taskName}}'
   inputs:
