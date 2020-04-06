@@ -16,7 +16,7 @@ steps:
     testType: 'app'
     monitorOnBuild: true
     failOnIssues: true
-    testDirectory: '${{parameters.extensionRoot}}'
+    testDirectory: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
 
 - task: Npm@0
   displayName: 'npm run build for ${{parameters.taskName}}'
