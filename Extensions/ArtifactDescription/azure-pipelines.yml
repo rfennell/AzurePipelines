@@ -19,7 +19,8 @@ variables:
     #  ExtensionID
     #  vmImage
     #  artifactName
-
+    #  privateExtentionsTag
+    #  taskID
 stages:
   - stage: Build
     jobs:
@@ -78,26 +79,17 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (Private)'
       pool:
-        #vmImage: '$(vmImage)'
-        name: default
+        vmImage: '$(vmImage)'
       strategy:
         runOnce:
           deploy:
             steps:
             # we don't need to DownloadPipelineArtifact as this is done automatically
-            - task: TfxInstaller@1
-              inputs:
-                version: 'v0.6.x'
-
-            - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
-              displayName: 'Publish Extension'
-              inputs:
-                connectedServiceName: 'Azure DevOps Marketplace (Work MSA)'
-                fileType: vsix
-                vsixFile: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
-                extensionTag: '-DEV'
-                updateTasksVersion: false
-                extensionVisibility: private
+            - template: publish-task.yml
+              parameters:
+                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                 extensionTag: '$(privateExtentionsTag)' 
+                 extensionVisibility: private    
 
   - stage: Test
     dependsOn: Private 
@@ -118,7 +110,7 @@ stages:
     jobs:
     - job: Documentation
       steps:
-      - bash: ""
+      - bash: "Can runs tests here"
 
   - stage: Public
     dependsOn: Documentation  
@@ -133,4 +125,9 @@ stages:
         runOnce:
           deploy:
             steps:
-            - bash: ""
+              # we don't need to DownloadPipelineArtifact as this is done automatically
+              - template: publish-task.yml
+                parameters:
+                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                   extensionTag: '' 
+                   extensionVisibility: public    
