@@ -94,7 +94,7 @@ stages:
               inputs:
                 connectedServiceName: 'Azure DevOps Marketplace (Work MSA)'
                 fileType: vsix
-                vsixFile: '$(System.DefaultWorkingDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
+                vsixFile: '$(System.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
                 extensionTag: '-DEV'
                 updateTasksVersion: false
                 extensionVisibility: private
