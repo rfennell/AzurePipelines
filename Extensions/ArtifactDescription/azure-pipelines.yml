@@ -85,7 +85,7 @@ stages:
           deploy:
             steps:
             # we don't need to DownloadPipelineArtifact as this is done automatically
-            - template: publish-task.yml
+            - template: publish-extension.yml
               parameters:
                  vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
                  extensionTag: '$(privateExtentionsTag)' 
@@ -126,7 +126,7 @@ stages:
           deploy:
             steps:
               # we don't need to DownloadPipelineArtifact as this is done automatically
-              - template: publish-task.yml
+              - template: publish-extension.yml
                 parameters:
                    vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
                    extensionTag: '' 

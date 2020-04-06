@@ -12,11 +12,10 @@ steps:
   displayName: 'npm install for ${{parameters.taskName}}'
   inputs:
     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
-
     
 - task: TfxInstaller@1
   inputs:
-  version: 'v0.6.x'
+    version: 'v0.6.x'
 
 - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
   displayName: 'Publish Extension'
