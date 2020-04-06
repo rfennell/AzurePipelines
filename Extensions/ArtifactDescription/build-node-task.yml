@@ -5,37 +5,31 @@ parameters:
   type: string
 
 steps:  
-- task: qetza.replacetokens.replacetokens-task.replacetokens@3
-  displayName: 'Replace tokens in **\\task.json for ${{taskName}}'
-  inputs:
-    rootDirectory: '${{extensionRoot}}\\${{taskName}}'
-    targetFiles: '**\\task.json'
-
 - task: Npm@0
-  displayName: 'npm install for ${{taskName}}'
+  displayName: 'npm install for ${{parameters.taskName}}'
   inputs:
-    cwd: '${{extensionRoot}}\\${{taskName}}'
+    cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
 - task: Npm@0
-  displayName: 'npm run build for ${{taskName}}'
+  displayName: 'npm run build for ${{parameters.taskName}}'
   inputs:
-    cwd: '${{extensionRoot}}\\${{taskName}}'
+    cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
     command: run
     arguments: build
 - task: Npm@0
-  displayName: 'npm run test for ${{taskName}}'
+  displayName: 'npm run test for ${{parameters.taskName}}'
   inputs:
-    cwd: '${{extensionRoot}}\\${{taskName}}'
+    cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
     command: run
     arguments: test
 - task: PublishTestResults@2
-  displayName: 'Publish Test Results for ${{taskName}}'
+  displayName: 'Publish Test Results for ${{parameters.taskName}}'
   inputs:
-    testResultsFiles: '${{extensionRoot}}\\${{taskName}}\test-output\test-results.xml'
-    testRunTitle: '${{taskName}}'
+    cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
+    testRunTitle: '${{parameters.taskName}}'
 - task: Npm@0
-  displayName: 'npm run package for ${{taskName}}'
+  displayName: 'npm run package for ${{parameters.taskName}}'
   inputs:
-    cwd: '${{extensionRoot}}\\${{taskName}}'
+    cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
     command: run
     arguments: package
  

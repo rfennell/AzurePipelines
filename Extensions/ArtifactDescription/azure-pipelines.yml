@@ -23,7 +23,14 @@ stages:
         vmImage: 'windows-2019'
         demands: npm
       steps:
-
+      # version all the task in the extension
+      - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+        displayName: 'Setting the version for tasks in extension'
+        inputs:
+          rootDirectory: '$(ExtensionRoot)'
+          targetFiles: '**\\task.json'
+      
+      # for each Node based task we must transpile it
       - template: build-node-task.yml
         parameters:
           extensionRoot: '$(ExtensionRoot)'
