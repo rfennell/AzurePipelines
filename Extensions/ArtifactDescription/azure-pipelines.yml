@@ -120,7 +120,7 @@ stages:
       steps:
       # we need a download here as not in a deploygroup
       - task: DownloadPipelineArtifact@0
-        inputs:s
+        inputs:
           artifactName: 'vsix'
           targetPath: $(System.DefaultWorkingDirectory)
       
