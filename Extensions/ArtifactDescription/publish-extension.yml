@@ -7,12 +7,6 @@ parameters:
 - name: extensionVisibility
   type: string
 
-steps:  
-- task: Npm@0
-  displayName: 'npm install for ${{parameters.taskName}}'
-  inputs:
-    cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
-    
 - task: TfxInstaller@1
   inputs:
     version: 'v0.6.x'
@@ -25,5 +19,5 @@ steps:
     vsixFile: '${{parameters.vsixPath}}'
     extensionTag: '${{parameters.extensionTag}}'
     updateTasksVersion: false
-    extensionVisibility: ${{parameter.extensionVisibility}}    
+    extensionVisibility: ${{parameters.extensionVisibility}}    
  
