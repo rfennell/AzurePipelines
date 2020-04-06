@@ -1,5 +1,13 @@
 name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
+trigger: none # will disable CI build
+
+pr: # will trigger on PR
+  branches:
+    include: [ master ] # branch names which will trigger a build
+  paths:
+    include: [ Extensions/ArtifactDescription ] # file paths which must match to trigger a build, cannot be a variable
+
 variables:
   - group:  'ArtifactDescription Extension'
     # this group includes the following variablea  
@@ -7,14 +15,6 @@ variables:
     #  PublisherID
     #  ExtensionID
     #  vmImage
-
-trigger: none # will disable CI build
-
-pr: # will trigger on PR
-  branches:
-    include: [ master ] # branch names which will trigger a build
-  paths:
-    include: [ $(ExtensionRoot) ] # file paths which must match to trigger a build
 
 stages:
   - stage: Build
