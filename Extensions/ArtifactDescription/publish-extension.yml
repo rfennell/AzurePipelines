@@ -7,6 +7,7 @@ parameters:
 - name: extensionVisibility
   type: string
 
+steps:  
 - task: TfxInstaller@1
   inputs:
     version: 'v0.6.x'
