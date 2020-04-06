@@ -80,10 +80,9 @@ stages:
           deploy:
             steps:
             # we don't need to DownloadPipelineArtifact as this is done automatically
-            - bash: "ls -r"
             - task: Bash@3
               inputs:
-                workingDirectory: $(System.DefaultWorkingDirectory)
+                workingDirectory: $(Build.ArtifactStagingDirectory)
             - task: TfxInstaller@1
               inputs:
                 version: 'v0.6.x'
@@ -93,7 +92,7 @@ stages:
               inputs:
                 connectedServiceName: 'Azure DevOps Marketplace (Work MSA)'
                 fileType: vsix
-                vsixFile: '$(System.DefaultWorkingDirectory)\\richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-$(Build.BuildNumber).vsix'
+                vsixFile: '$(System.ArtifactStagingDirectory)\\richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-$(Build.BuildNumber).vsix'
                 extensionTag: '-DEV'
                 updateTasksVersion: false
                 extensionVisibility: private
