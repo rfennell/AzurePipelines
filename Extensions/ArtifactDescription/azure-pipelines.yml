@@ -1,24 +1,27 @@
 name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
+variables:
+  - group:  'ArtifactDescription Extension'
+    # group includes variable  
+    # ExtensionRoot
+    # PublisherID
+    # ExtensionID
+
 trigger: none # will disable CI build
 
 pr: # will trigger on PR
   branches:
     include: [ master ] # branch names which will trigger a build
   paths:
-    include: [ /Extensions/ArtifactDescription ] # file paths which must match to trigger a build
+    include: [ $(ExtensionRoot) ] # file paths which must match to trigger a build
 
 stages:
   - stage: Build
     jobs:
     - job: Build
       pool: 
-        name: 'Hosted VS2017'
+        vmImage: 'windows-2019'
         demands: npm
-      variables:
-        ExtensionRoot: 'Extensions/ArtifactDescription'
-        PublisherID: 'richardfennellBM'
-        ExtensionID: 'BM-VSTS-ArtifactDescription-Tasks'
       steps:
 
       - task: qetza.replacetokens.replacetokens-task.replacetokens@3
@@ -27,35 +30,10 @@ stages:
           rootDirectory: '$(ExtensionRoot)'
           targetFiles: '**\\task.json'
 
-      # standard block for Node
-      - task: Npm@0
-        displayName: 'npm install ArtifactDescriptionTask'
-        inputs:
-          cwd: '$(ExtensionRoot)\\ArtifactDescriptionTask'
-      - task: Npm@0
-        displayName: 'npm run build ArtifactDescriptionTask'
-        inputs:
-          cwd: '$(ExtensionRoot)\\ArtifactDescriptionTask'
-          command: run
-          arguments: build
-      - task: Npm@0
-        displayName: 'npm run test ArtifactDescriptionTask'
-        inputs:
-          cwd: '$(ExtensionRoot)\\ArtifactDescriptionTask'
-          command: run
-          arguments: test
-      - task: PublishTestResults@2
-        displayName: 'Publish Test Results  ArtifactDescriptionTask'
-        inputs:
-          testResultsFiles: '$(ExtensionRoot)\\ArtifactDescriptionTask\test-output\test-results.xml'
-          testRunTitle: 'ArtifactDescriptionTask'
-      - task: Npm@0
-        displayName: 'npm run package ArtifactDescriptionTask'
-        inputs:
-          cwd: '$(ExtensionRoot)\\ArtifactDescriptionTask'
-          command: run
-          arguments: package
-      # end node block
+      - template: buildnode.yml
+        parameters:
+          extensionRoot: $(ExtensionRoot)
+          taskname: ArtifactDescription
 
       - task: TfxInstaller@1
         inputs:

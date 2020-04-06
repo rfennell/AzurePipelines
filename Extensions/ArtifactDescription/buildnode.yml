@@ -1,0 +1,35 @@
+parameters:
+- name: extensionRoot
+  type: string
+- name: taskName
+  type: string
+
+steps:  
+- task: Npm@0
+  displayName: 'npm install ${{${{taskName}}}}'
+  inputs:
+    cwd: '${{extensionRoot}}\\${{taskName}}'
+- task: Npm@0
+  displayName: 'npm run build ${{taskName}}'
+  inputs:
+    cwd: '${{extensionRoot}}\\${{taskName}}'
+    command: run
+    arguments: build
+- task: Npm@0
+  displayName: 'npm run test '
+  inputs:
+    cwd: '${{extensionRoot}}\\${{taskName}}'
+    command: run
+    arguments: test
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results ${{taskName}}'
+  inputs:
+    testResultsFiles: '${{extensionRoot}}\\${{taskName}}\test-output\test-results.xml'
+    testRunTitle: '${{taskName}}'
+- task: Npm@0
+  displayName: 'npm run package ${{taskName}}'
+  inputs:
+    cwd: '${{extensionRoot}}\\${{taskName}}'
+    command: run
+    arguments: package
+ 
