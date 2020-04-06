@@ -6,6 +6,7 @@ variables:
     #  ExtensionRoot
     #  PublisherID
     #  ExtensionID
+    #  vmImage
 
 trigger: none # will disable CI build
 
@@ -13,14 +14,14 @@ pr: # will trigger on PR
   branches:
     include: [ master ] # branch names which will trigger a build
   paths:
-    include: [ Extensions/ArtifactDescription ] # file paths which must match to trigger a build
+    include: [ $(ExtensionRoot) ] # file paths which must match to trigger a build
 
 stages:
   - stage: Build
     jobs:
     - job: Build
       pool: 
-        vmImage: 'windows-2019'
+        vmImage: '$(vmImage)'
         demands: npm
       steps:
       # version all the task in the extension
