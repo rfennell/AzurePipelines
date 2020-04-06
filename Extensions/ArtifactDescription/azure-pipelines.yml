@@ -77,6 +77,8 @@ stages:
     - deployment: Private_Deployment
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (Private)'
+      variables:
+      - group: VSTS Extension Gate
       pool:
         #vmImage: '$(vmImage)'
         name: default
