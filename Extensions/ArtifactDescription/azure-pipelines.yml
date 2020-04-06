@@ -108,6 +108,7 @@ stages:
               displayName: 'Get Git Artifact PR Reason'
               inputs:
                 OutputText: 'OutputedText' 
+            - bash: "The reason is $(OutputedText)"
   
   - stage: Documentation
     dependsOn: Test 
@@ -136,7 +137,7 @@ stages:
         displayName: 'Git based WIKI Updater - Readme'
         inputs:
           repo: '$(repo)'
-          filename: '$(filename).md'
+          filename: '$(wikiFilename).md'
           dataIsFile: true
           sourceFile: '$(Agent.BuildDirectory)/$(artifactLocationName)/out/$(wikiFilename).md'
           message: 'Update the XPlat Release Notes Readme'
@@ -149,7 +150,7 @@ stages:
         displayName: 'Git based WIKI Updater - YAML '
         inputs:
           repo: '$(repo)'
-          filename: '$(filename)-YAML.md'
+          filename: '$(wikiFilename)-YAML.md'
           dataIsFile: true
           sourceFile: '$(Agent.BuildDirectory)/$(artifactLocationName)/out/$(wikiFilename)-YAML.md'
           message: 'Update the XPlat Release Notes YAML'
