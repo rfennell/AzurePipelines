@@ -80,7 +80,10 @@ stages:
           deploy:
             steps:
             # we don't need to DownloadPipelineArtifact as this is done automatically
-            - bash: "ls -r $(System.DefaultWorkingDirectory)"
+            - bash: "ls -r"
+            - task: Bash@3
+              inputs:
+                workingDirectory: $(System.DefaultWorkingDirectory)
             - task: TfxInstaller@1
               inputs:
                 version: 'v0.6.x'
