@@ -108,7 +108,7 @@ stages:
               displayName: 'Get Git Artifact PR Reason'
               inputs:
                 OutputText: 'OutputedText' 
-            - bash: "echo 'The reason message is [$(OutputedText)]''"
+            - bash: "echo 'The reason message is [$(OutputedText)]'"
   
   - stage: Documentation
     dependsOn: Test 
