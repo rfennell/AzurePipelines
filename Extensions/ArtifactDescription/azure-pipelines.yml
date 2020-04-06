@@ -104,8 +104,11 @@ stages:
         runOnce:
           deploy:
             steps:
-            - bash: "Can runs tests here"
-
+            - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
+              displayName: 'Get Git Artifact PR Reason'
+              inputs:
+                OutputText: 'OutputedText' 
+  
   - stage: Documentation
     dependsOn: Test 
     variables:
@@ -163,3 +166,19 @@ stages:
                    vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
                    extensionTag: '' 
                    extensionVisibility: public    
+              - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
+                displayName: 'Get Git Artifact PR Reason'
+                inputs:
+                  OutputText: 'OutputedText' 
+              - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Twitter.Xpirit-Vsts-Release-Twitter.Twitter@1
+                displayName: 'Twitter (Any other ID as as Richard)'
+                inputs:
+                  TwitterEndPoint: 'Twitter Richard'
+                  Message: 'I have just released Version $(Build.BuildNumber) of my Azure DevOps Pipeline $(Build.DefinitionName) http://bit.ly/VSTS-RF $(OutputedText) '
+              - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
+                displayName: 'Update Build Variable'
+                inputs:
+                  variable: Minor
+                  mode: Autoincrement
+                  usedefaultcreds: false
+                
