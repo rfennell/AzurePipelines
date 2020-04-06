@@ -2,10 +2,10 @@ name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
 variables:
   - group:  'ArtifactDescription Extension'
-    # group includes variable  
-    # ExtensionRoot
-    # PublisherID
-    # ExtensionID
+    # this group includes the following variablea  
+    #  ExtensionRoot
+    #  PublisherID
+    #  ExtensionID
 
 trigger: none # will disable CI build
 
@@ -24,18 +24,13 @@ stages:
         demands: npm
       steps:
 
-      - task: qetza.replacetokens.replacetokens-task.replacetokens@3
-        displayName: 'Replace tokens in **\\task.json'
-        inputs:
-          rootDirectory: '$(ExtensionRoot)'
-          targetFiles: '**\\task.json'
-
-      - template: buildnode.yml
+      - template: build-node-task.yml
         parameters:
-          extensionRoot: $(ExtensionRoot)
-          taskName: ArtifactDescription
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'ArtifactDescriptionTask'
 
       - task: TfxInstaller@1
+        displayName: 'Install Tfx Tool'
         inputs:
           version: 'v0.6.x'
 
