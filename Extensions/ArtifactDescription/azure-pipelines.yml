@@ -77,7 +77,8 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (Private)'
       pool:
-        vmImage: '$(vmImage)'
+        #vmImage: '$(vmImage)'
+        name: default
       strategy:
         runOnce:
           deploy:
