@@ -104,8 +104,6 @@ stages:
     jobs:
     - deployment: Private_Test
       timeoutInMinutes: 0
-      variables:
-      - group: 'VSTS Extension Gate'  
       environment: 'Azure DevOps Marketplace (Test)'
       pool:
         vmImage: '$(vmImage)'
