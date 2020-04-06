@@ -18,6 +18,7 @@ variables:
     #  PublisherID
     #  ExtensionID
     #  vmImage
+    #  artifactName
 
 stages:
   - stage: Build
@@ -49,7 +50,7 @@ stages:
         displayName: 'Package and Publish Extension as a PROD Package '
         inputs:
           rootFolder: '$(ExtensionRoot)'
-          outputPath: '$(Build.ArtifactStagingDirectory)\\vsix'
+          outputPath: '$(Build.ArtifactStagingDirectory)\\($artifactLocationName)'
           publisherId: '$(PublisherID)'
           extensionId: '$(ExtensionID)'
           extensionVersion: '$(Build.BuildNumber)'
@@ -64,12 +65,12 @@ stages:
             readme.md
             vss-extension.json
             **\task\task.json
-          TargetFolder: '$(Build.ArtifactStagingDirectory)\\vsix'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
 
       - task: PublishPipelineArtifact@0
         inputs:
           artifactName: 'vsix'
-          targetPath: '$(Build.ArtifactStagingDirectory)\\vsix'
+          targetPath: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
 
   - stage: Private
     jobs:
@@ -84,7 +85,6 @@ stages:
           deploy:
             steps:
             # we don't need to DownloadPipelineArtifact as this is done automatically
-            - bash: "ls -l /d/a/1/a"
             - task: TfxInstaller@1
               inputs:
                 version: 'v0.6.x'
@@ -94,7 +94,7 @@ stages:
               inputs:
                 connectedServiceName: 'Azure DevOps Marketplace (Work MSA)'
                 fileType: vsix
-                vsixFile: '$(System.ArtifactStagingDirectory)\\richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-$(Build.BuildNumber).vsix'
+                vsixFile: '$(System.WorkDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
                 extensionTag: '-DEV'
                 updateTasksVersion: false
                 extensionVisibility: private
