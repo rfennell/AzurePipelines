@@ -118,17 +118,9 @@ stages:
   - stage: Documentation
     dependsOn: Test  
     jobs:
-    - deployment: Documentation
-      timeoutInMinutes: 0
-      #variables:
-      #- group: 'VSTS Extension Gate'  
-      pool:
-        vmImage: '$(vmImage)'
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-            - bash: ""
+    - job: Documentation
+      steps:
+      - bash: ""
 
   - stage: Public
     dependsOn: Documentation  
