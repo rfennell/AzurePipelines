@@ -43,7 +43,7 @@ stages:
           version: 'v0.6.x'
 
       - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
-        displayName: 'Package and Publish VSTS Extension: PROD Package '
+        displayName: 'Package and Publish Extension as a PROD Package '
         inputs:
           rootFolder: '$(ExtensionRoot)'
           outputPath: '$(Build.ArtifactStagingDirectory)\\vsix'
@@ -60,7 +60,7 @@ stages:
           Contents: |
             readme.md
             vss-extension.json
-            ArtifactDescription\task\task.json
+            **\task\task.json
           TargetFolder: '$(Build.ArtifactStagingDirectory)\\vsix'
 
       - task: PublishPipelineArtifact@0
