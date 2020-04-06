@@ -21,6 +21,7 @@ variables:
     #  artifactName
     #  privateExtentionsTag
     #  taskID
+    #  wikiFilename
 stages:
   - stage: Build
     jobs:
@@ -103,15 +104,47 @@ stages:
         runOnce:
           deploy:
             steps:
-            - bash: ""
+            - bash: "Can runs tests here"
 
   - stage: Documentation
-    dependsOn: Test  
+    dependsOn: Test 
+    variables:
+    - group: 'WIKI Updater'
     jobs:
     - job: Documentation
       steps:
-      - bash: "Can runs tests here"
-
+      - task: richardfennellBM.BM-VSTS-YAMLGenerator-DEV.YamlGeneratorTask.GenerateYAMLTask@1
+        displayName: 'YAML Documentation Generator'
+        inputs:
+          inDir: '$(Agent.BuildDirectory)/$(artifactLocationName)'
+          outDir: '$(Agent.BuildDirectory)/$(artifactLocationName)/out'
+          filePrefix: '$(wikiFilename)'
+          copyReadme: true
+      - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+        displayName: 'Git based WIKI Updater - Readme'
+        inputs:
+          repo: '$(repo)'
+          filename: '$(filename).md'
+          dataIsFile: true
+          sourceFile: '$(Agent.BuildDirectory)/$(artifactLocationName)/out/$(wikiFilename).md'
+          message: 'Update the XPlat Release Notes Readme'
+          gitname: '$(GitName)'
+          gitemail: '$(GitEmail)'
+          user: '$(UserName)'
+          password: '$(GitHubPat)'
+      - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+        displayName: 'Git based WIKI Updater - YAML '
+        inputs:
+          repo: '$(repo)'
+          filename: '$(filename)-YAML.md'
+          dataIsFile: true
+          sourceFile: '$(Agent.BuildDirectory)/$(artifactLocationName)/out/$(wikiFilename)-YAML.md'
+          message: 'Update the XPlat Release Notes YAML'
+          gitname: '$(GitName)'
+          gitemail: '$(GitEmail)'
+          user: '$(UserName)'
+          password: '$(GitHubPat)'
+  
   - stage: Public
     dependsOn: Documentation  
     jobs:
@@ -119,8 +152,7 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (Public)'
       pool:
-        #vmImage: '$(vmImage)'
-        name: default
+        vmImage: '$(vmImage)'
       strategy:
         runOnce:
           deploy:
