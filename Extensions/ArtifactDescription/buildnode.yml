@@ -6,28 +6,28 @@ parameters:
 
 steps:  
 - task: Npm@0
-  displayName: 'npm install ${{${{taskName}}}}'
+  displayName: 'npm install for ${{taskName}}'
   inputs:
     cwd: '${{extensionRoot}}\\${{taskName}}'
 - task: Npm@0
-  displayName: 'npm run build ${{taskName}}'
+  displayName: 'npm run build for ${{taskName}}'
   inputs:
     cwd: '${{extensionRoot}}\\${{taskName}}'
     command: run
     arguments: build
 - task: Npm@0
-  displayName: 'npm run test '
+  displayName: 'npm run test for ${{taskName}}'
   inputs:
     cwd: '${{extensionRoot}}\\${{taskName}}'
     command: run
     arguments: test
 - task: PublishTestResults@2
-  displayName: 'Publish Test Results ${{taskName}}'
+  displayName: 'Publish Test Results for ${{taskName}}'
   inputs:
     testResultsFiles: '${{extensionRoot}}\\${{taskName}}\test-output\test-results.xml'
     testRunTitle: '${{taskName}}'
 - task: Npm@0
-  displayName: 'npm run package ${{taskName}}'
+  displayName: 'npm run package for ${{taskName}}'
   inputs:
     cwd: '${{extensionRoot}}\\${{taskName}}'
     command: run
