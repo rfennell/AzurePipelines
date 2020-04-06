@@ -13,7 +13,7 @@ pr: # will trigger on PR
   branches:
     include: [ master ] # branch names which will trigger a build
   paths:
-    include: [ $(ExtensionRoot) ] # file paths which must match to trigger a build
+    include: [ Extensions/ArtifactDescription ] # file paths which must match to trigger a build
 
 stages:
   - stage: Build
@@ -27,7 +27,7 @@ stages:
       - task: qetza.replacetokens.replacetokens-task.replacetokens@3
         displayName: 'Setting the version for tasks in extension'
         inputs:
-          rootDirectory: '$(ExtensionRoot)'
+          rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
           targetFiles: '**\\task.json'
       
       # for each Node based task we must transpile it
