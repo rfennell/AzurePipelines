@@ -73,17 +73,14 @@ stages:
     - deployment: Private_Deployment
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (Private)'
+      pool:
+        vmImage: '$(vmImage)'
       strategy:
         runOnce:
           deploy:
             steps:
-            - task: DownloadPipelineArtifact@0
-              inputs:
-                buildType: 'current'
-                downloadType: 'single'
-                artifactName: 'vsix'
-                downloadPath: $(System.DefaultWorkingDirectory)
-
+            # we don't need to DownloadPipelineArtifact as this is done automatically
+            - bash: "ls -r $(System.DefaultWorkingDirectory)"
             - task: TfxInstaller@1
               inputs:
                 version: 'v0.6.x'
@@ -105,6 +102,8 @@ stages:
       variables:
       - group: 'VSTS Extension Gate'  
       environment: 'Azure DevOps Marketplace (Test)'
+      pool:
+        vmImage: '$(vmImage)'
       strategy:
         runOnce:
           deploy:
