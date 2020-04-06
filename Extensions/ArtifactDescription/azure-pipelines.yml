@@ -33,7 +33,7 @@ stages:
       - template: buildnode.yml
         parameters:
           extensionRoot: $(ExtensionRoot)
-          taskname: ArtifactDescription
+          taskName: ArtifactDescription
 
       - task: TfxInstaller@1
         inputs:
