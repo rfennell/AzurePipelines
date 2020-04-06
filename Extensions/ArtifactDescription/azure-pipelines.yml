@@ -9,6 +9,9 @@ pr: # will trigger on PR
     include: [ Extensions/ArtifactDescription ] # file paths which must match to trigger a build, cannot be a variable
 
 variables:
+  # declared in the UI
+  # major
+  # minor
   - group:  'ArtifactDescription Extension'
     # this group includes the following variablea  
     #  ExtensionRoot
@@ -80,7 +83,7 @@ stages:
           deploy:
             steps:
             # we don't need to DownloadPipelineArtifact as this is done automatically
-            - bash: "ls -l $(Build.ArtifactStagingDirectory)"
+            - bash: "ls -l /d/a/1/a"
             - task: TfxInstaller@1
               inputs:
                 version: 'v0.6.x'
