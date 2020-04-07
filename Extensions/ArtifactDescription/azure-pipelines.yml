@@ -138,8 +138,8 @@ stages:
           repo: '$(repo)'
           gitname: '$(GitName)'
           gitemail: '$(GitEmail)'
-          user: '$(UserName)'
-          password: '$(GitHubPat)'
+          UserName: '$(UserName)'
+          GitHubPat: '$(GitHubPat)'
 
 
   - stage: Public
