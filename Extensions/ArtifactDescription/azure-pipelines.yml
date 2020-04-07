@@ -38,7 +38,7 @@ stages:
           targetFiles: '**\\task.json'
       
       # for each Node based task we must transpile it
-      - template: build-node-task.yml
+      - template: ..\..\YAMLTemplates\build-node-task.yml
         parameters:
           extensionRoot: '$(ExtensionRoot)'
           taskName: 'ArtifactDescriptionTask'
@@ -86,7 +86,7 @@ stages:
           deploy:
             steps:
             # we don't need to DownloadPipelineArtifact as this is done automatically
-            - template: publish-extension.yml
+            - template: ..\..\YAMLTemplates\publish-extension.yml
               parameters:
                  vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
                  extensionTag: '$(privateExtentionsTag)' 
@@ -172,7 +172,7 @@ stages:
           deploy:
             steps:
               # we don't need to DownloadPipelineArtifact as this is done automatically
-              - template: publish-extension.yml
+              - template: ..\..\YAMLTemplates\publish-extension.yml
                 parameters:
                    vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
                    extensionTag: '' 
