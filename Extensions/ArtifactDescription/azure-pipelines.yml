@@ -121,7 +121,7 @@ stages:
     #   gitName - used in the Git Config
     #   githubpat - used to authenticate to reop
     #   user - used to authenticate to reop
-    #   repo - url of repo (without HTPTPS://)
+    #   repo - url of repo (without HTTPS://)
     jobs:
     - job: Documentation
       steps:
