@@ -97,7 +97,7 @@ stages:
     jobs:
     - deployment: Private_Test
       timeoutInMinutes: 0
-      environment: 'Azure DevOps Marketplace (Test)'
+      environment: 'Azure DevOps Marketplace (ArtifactDescription)'
       pool:
         vmImage: '$(vmImage)'
       strategy:
