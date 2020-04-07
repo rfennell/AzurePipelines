@@ -39,7 +39,7 @@ steps:
 - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
   displayName: 'Git based WIKI Updater - YAML '
   inputs:
-     repo: '${{parameters.repo}}'
+    repo: '${{parameters.repo}}'
     filename: '${{parameters.wikiFilename}}-YAML.md'
     dataIsFile: true
     sourceFile: '${{parameters.workingDirectory}}/out/${{parameters.wikiFilename}}-YAML.md'
