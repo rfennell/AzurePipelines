@@ -6,66 +6,53 @@ pr: # will trigger on PR
   branches:
     include: [ master ] # branch names which will trigger a build
   paths:
-    include: [ /Extensions/ArtifactDescription ] # file paths which must match to trigger a build
+    include: [ Extensions/ArtifactDescription ] # file paths which must match to trigger a build, cannot be a variable
 
+variables:
+  # declared in the pipeline UI
+  #  major
+  #  minor
+  - group:  'ArtifactDescription Extension'
+    # this group includes the following variablea  
+    #  ExtensionRoot - working folder
+    #  PublisherID  - Marketplace publisher
+    #  ExtensionID - Marketplace extension id
+    #  vmImage - name of Azure DevOps pool to use
+    #  artifactLocationName -  folder the artifact to push is stored in
+    #  privateExtentionsTag - tag to show if private (else blank)
+    #  taskID - Marketplace ID of task
+    #  wikiFilename - name of generated docs files
 stages:
   - stage: Build
     jobs:
     - job: Build
       pool: 
-        name: 'Hosted VS2017'
+        vmImage: '$(vmImage)'
         demands: npm
-      variables:
-        ExtensionRoot: 'Extensions/ArtifactDescription'
-        PublisherID: 'richardfennellBM'
-        ExtensionID: 'BM-VSTS-ArtifactDescription-Tasks'
       steps:
-
+      # version all the task in the extension
       - task: qetza.replacetokens.replacetokens-task.replacetokens@3
-        displayName: 'Replace tokens in **\\task.json'
+        displayName: 'Setting the version for tasks in extension'
         inputs:
-          rootDirectory: '$(ExtensionRoot)'
+          rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
           targetFiles: '**\\task.json'
-
-      # standard block for Node
-      - task: Npm@0
-        displayName: 'npm install ArtifactDescriptionTask'
-        inputs:
-          cwd: '$(ExtensionRoot)\\ArtifactDescriptionTask'
-      - task: Npm@0
-        displayName: 'npm run build ArtifactDescriptionTask'
-        inputs:
-          cwd: '$(ExtensionRoot)\\ArtifactDescriptionTask'
-          command: run
-          arguments: build
-      - task: Npm@0
-        displayName: 'npm run test ArtifactDescriptionTask'
-        inputs:
-          cwd: '$(ExtensionRoot)\\ArtifactDescriptionTask'
-          command: run
-          arguments: test
-      - task: PublishTestResults@2
-        displayName: 'Publish Test Results  ArtifactDescriptionTask'
-        inputs:
-          testResultsFiles: '$(ExtensionRoot)\\ArtifactDescriptionTask\test-output\test-results.xml'
-          testRunTitle: 'ArtifactDescriptionTask'
-      - task: Npm@0
-        displayName: 'npm run package ArtifactDescriptionTask'
-        inputs:
-          cwd: '$(ExtensionRoot)\\ArtifactDescriptionTask'
-          command: run
-          arguments: package
-      # end node block
+      
+      # for each Node based task we must transpile it
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'ArtifactDescriptionTask'
 
       - task: TfxInstaller@1
+        displayName: 'Install Tfx Tool'
         inputs:
           version: 'v0.6.x'
 
       - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
-        displayName: 'Package and Publish VSTS Extension: PROD Package '
+        displayName: 'Package and Publish Extension as a PROD Package '
         inputs:
           rootFolder: '$(ExtensionRoot)'
-          outputPath: '$(Build.ArtifactStagingDirectory)\\vsix'
+          outputPath: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
           publisherId: '$(PublisherID)'
           extensionId: '$(ExtensionID)'
           extensionVersion: '$(Build.BuildNumber)'
@@ -79,42 +66,116 @@ stages:
           Contents: |
             readme.md
             vss-extension.json
-            ArtifactDescription\task\task.json
-          TargetFolder: '$(Build.ArtifactStagingDirectory)\\vsix'
+            **\task\task.json
+          TargetFolder: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
 
       - task: PublishPipelineArtifact@0
         inputs:
           artifactName: 'vsix'
-          targetPath: '$(Build.ArtifactStagingDirectory)\\vsix'
+          targetPath: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
 
   - stage: Private
     jobs:
-    - job: Deploy
-      pool: 
-          name: 'Hosted VS2017'
+    - deployment: Private_Deployment
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Private)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            # we don't need to DownloadPipelineArtifact as this is done automatically
+            - template: ..\..\YAMLTemplates\publish-extension.yml
+              parameters:
+                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                 extensionTag: '$(privateExtentionsTag)' 
+                 extensionVisibility: private    
+
+  - stage: Test
+    dependsOn: Private 
+    jobs:
+    - deployment: Private_Test
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (ArtifactDescription)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
+              displayName: 'Get Git Artifact PR Reason'
+              inputs:
+                OutputText: 'OutputedText' 
+            - bash: "echo 'The reason message is [$(OutputedText)]'"
+  
+  - stage: Documentation
+    dependsOn: Test 
+    pool:
+      name: 'default'
+    variables:
+    - group: 'WIKI Updater'
+    # provides the variable
+    #   gitemail - used in the Git Config
+    #   gitName - used in the Git Config
+    #   githubpat - used to authenticate to reop
+    #   user - used to authenticate to reop
+    #   repo - url of repo (without HTTPS://)
+    jobs:
+    - job: Documentation
       steps:
-        - task: DownloadPipelineArtifact@0
-          inputs:
-            artifactName: 'vsix'
-            targetPath: $(System.DefaultWorkingDirectory)
+      # we need a download here as not in a deploygroup
+      - task: DownloadPipelineArtifact@0
+        inputs:
+          artifactName: 'vsix'
+          targetPath: $(System.DefaultWorkingDirectory)
 
-        - task: DownloadPipelineArtifact@0
-          inputs:
-            buildType: 'current'
-            downloadType: 'single'
-            artifactName: 'vsix'
-            downloadPath: $(System.DefaultWorkingDirectory)
+      - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
+        parameters:
+          workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
+          wikiFilename: '$(wikiFilename)'
+          repo: '$(repo)'
+          gitname: '$(GitName)'
+          gitemail: '$(GitEmail)'
+          UserName: '$(UserName)'
+          GitHubPat: '$(GitHubPat)'
 
-        - task: TfxInstaller@1
-          inputs:
-            version: 'v0.6.x'
 
-        - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
-          displayName: 'Publish Extension'
-          inputs:
-            connectedServiceName: 'Marketplace (6 Nov)'
-            fileType: vsix
-            vsixFile: '$(System.DefaultWorkingDirectory)\\richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-$(Build.BuildNumber).vsix'
-            extensionTag: '-DEV'
-            updateTasksVersion: false
-            extensionVisibility: private
+  - stage: Public
+    dependsOn: Documentation  
+    jobs:
+    - deployment: Public_Deployment
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Public)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              # we don't need to DownloadPipelineArtifact as this is done automatically
+              - template: ..\..\YAMLTemplates\publish-extension.yml
+                parameters:
+                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                   extensionTag: '' 
+                   extensionVisibility: public    
+          
+              - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
+                displayName: 'Get Git Artifact PR Reason'
+                inputs:
+                  OutputText: 'OutputedText' 
+          
+              - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Twitter.Xpirit-Vsts-Release-Twitter.Twitter@1
+                displayName: 'Send Tweet about new release'
+                inputs:
+                  TwitterEndPoint: 'Twitter Richard'
+                  Message: 'I have just released Version $(Build.BuildNumber) of my Azure DevOps Pipeline $(Build.DefinitionName) http://bit.ly/VSTS-RF $(OutputedText) '
+          
+              - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
+                displayName: 'Update Build Variable'
+                inputs:
+                  variable: Minor
+                  mode: Autoincrement
+                  usedefaultcreds: false
+                

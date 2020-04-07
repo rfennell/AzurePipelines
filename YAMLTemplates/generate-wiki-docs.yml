@@ -1,0 +1,50 @@
+parameters:
+- name: workingDirectory    
+  type: string
+- name: wikiFilename           
+  type: string
+- name: repo                   
+  type: string
+- name: GitName                   
+  type: string
+- name: GitEmail                   
+  type: string
+- name: GitHubPat                   
+  type: string
+- name: UserName              
+  type: string
+
+steps:  
+- task: richardfennellBM.BM-VSTS-YAMLGenerator-DEV.YamlGeneratorTask.GenerateYAMLTask@1
+  displayName: 'YAML Documentation Generator'
+  inputs:
+    inDir: '${{parameters.workingDirectory}}'     
+    outDir: '${{parameters.workingDirectory}}/out'
+    filePrefix: '${{parameters.wikiFilename}}'    
+    copyReadme: true
+
+- task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+  displayName: 'Git based WIKI Updater - Readme'
+  inputs:
+    repo: '${{parameters.repo}}'
+    filename: '${{parameters.wikiFilename}}.md'
+    dataIsFile: true
+    sourceFile: '${{parameters.workingDirectory}}/out/${{parameters.wikiFilename}}.md'
+    message: 'Update the ${{parameters.wikiFilename}} Release Notes Readme'
+    gitname: '${{parameters.GitName}}'
+    gitemail: '${{parameters.GitEmail}}'
+    user: '${{parameters.UserName}}'
+    password: '${{parameters.GitHubPat}}'
+
+- task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+  displayName: 'Git based WIKI Updater - YAML '
+  inputs:
+    repo: '${{parameters.repo}}'
+    filename: '${{parameters.wikiFilename}}-YAML.md'
+    dataIsFile: true
+    sourceFile: '${{parameters.workingDirectory}}/out/${{parameters.wikiFilename}}-YAML.md'
+    message: 'Update the ${{parameters.wikiFilename}} Release Notes YAML'
+    gitname: '${{parameters.GitName}}'
+    gitemail: '${{parameters.GitEmail}}'
+    user: '${{parameters.UserName}}'
+    password: '${{parameters.GitHubPat}}'

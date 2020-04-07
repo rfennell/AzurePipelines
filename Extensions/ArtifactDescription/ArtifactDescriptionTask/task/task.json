@@ -31,7 +31,7 @@
       "label": "The PR Reason",
       "defaultValue": "OutputedText",
       "required": true,
-      "helpMarkDown": "The PR reason if present for the default artifact that triggerd the release.",
+      "helpMarkDown": "The PR title (if present) for the default artifact that triggered the release.",
       "groupName":"output"
     }
   ],

@@ -1,4 +1,4 @@
-import tl = require("vsts-task-lib/task");
+import tl = require("azure-pipelines-task-lib/task");
 import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 import * as webApi from "azure-devops-node-api/WebApi";
 import { IBuildApi } from "azure-devops-node-api/BuildApi";
