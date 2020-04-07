@@ -9,19 +9,19 @@ pr: # will trigger on PR
     include: [ Extensions/ArtifactDescription ] # file paths which must match to trigger a build, cannot be a variable
 
 variables:
-  # declared in the UI
-  # major
-  # minor
+  # declared in the pipeline UI
+  #  major
+  #  minor
   - group:  'ArtifactDescription Extension'
     # this group includes the following variablea  
-    #  ExtensionRoot
-    #  PublisherID
-    #  ExtensionID
-    #  vmImage
-    #  artifactName
-    #  privateExtentionsTag
-    #  taskID
-    #  wikiFilename
+    #  ExtensionRoot - working folder
+    #  PublisherID  - Marketplace publisher
+    #  ExtensionID - Marketplace extension id
+    #  vmImage - name of Azure DevOps pool to use
+    #  artifactLocationName -  folder the artifact to push is stored in
+    #  privateExtentionsTag - tag to show if private (else blank)
+    #  taskID - Marketplace ID of task
+    #  wikiFilename - name of generated docs files
 stages:
   - stage: Build
     jobs:
@@ -116,6 +116,12 @@ stages:
       name: 'default'
     variables:
     - group: 'WIKI Updater'
+    # provides the variable
+    #   gitemail - used in the Git Config
+    #   gitName - used in the Git Config
+    #   githubpat - used to authenticate to reop
+    #   user - used to authenticate to reop
+    #   repo - url of repo (without HTPTPS://)
     jobs:
     - job: Documentation
       steps:
