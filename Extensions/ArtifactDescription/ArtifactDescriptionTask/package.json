@@ -29,8 +29,7 @@
     "mocha-junit-reporter": "^1.23.3",
     "ts-node": "^3.3.0",
     "tslint": "^5.20.1",
-    "typescript": "^2.6.1",
-    "typings": "^2.1.1"
+    "typescript": "^3.6.4"
   },
   "author": "Richard Fennell",
   "license": "MIT"
