@@ -165,17 +165,22 @@ stages:
                 displayName: 'Get Git Artifact PR Reason'
                 inputs:
                   OutputText: 'OutputedText' 
-          
-              - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Twitter.Xpirit-Vsts-Release-Twitter.Twitter@1
-                displayName: 'Send Tweet about new release'
-                inputs:
-                  TwitterEndPoint: 'Twitter Richard'
-                  Message: 'I have just released Version $(Build.BuildNumber) of my Azure DevOps Pipeline $(Build.DefinitionName) http://bit.ly/VSTS-RF $(OutputedText) '
-          
-              - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
-                displayName: 'Update Build Variable'
-                inputs:
-                  variable: Minor
-                  mode: Autoincrement
-                  usedefaultcreds: false
+    
+    - job: Post_Publish
+      dependsOn: Public_Deployment 
+      pool:
+        vmImage: '$(vmImage)'
+      steps:
+      - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Twitter.Xpirit-Vsts-Release-Twitter.Twitter@1
+        displayName: 'Send Tweet about new release'
+        inputs:
+          TwitterEndPoint: 'Twitter Richard'
+          Message: 'I have just released Version $(Build.BuildNumber) of my Azure DevOps Pipeline $(Build.DefinitionName) http://bit.ly/VSTS-RF $(OutputedText) '
+  
+      - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
+        displayName: 'Update Build Variable'
+        inputs:
+          variable: Minor
+          mode: Autoincrement
+          usedefaultcreds: false
                 
