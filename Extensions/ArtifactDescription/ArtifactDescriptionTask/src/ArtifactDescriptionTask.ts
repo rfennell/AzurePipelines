@@ -48,7 +48,7 @@ export async function run() {
         } else {
             // if there is no triggerInfo it is probably a CI trigger off master or similar
             // Just try for the merge message
-            let cs = await buildApi.getBuildChanges("GitHub" , 5402);
+            let cs = await buildApi.getBuildChanges("GitHub" , parseInt(buildID));
             if (cs[0]) {
                 logInfo(`Writing message from the first changeset - '${cs[0].message}' to variable '${outputText}'`);
                 tl.setVariable(outputText, cs[0].message );
