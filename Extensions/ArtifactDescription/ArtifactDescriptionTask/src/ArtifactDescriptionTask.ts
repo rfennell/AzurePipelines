@@ -41,8 +41,19 @@ export async function run() {
         var buildApi: IBuildApi = await vsts.getBuildApi();
 
         let build = await buildApi.getBuild( project , parseInt(buildID));
-        logInfo(`Writing message '${build.triggerInfo["pr.title"]}' to variable '${outputText}'`);
-        tl.setVariable(outputText, build.triggerInfo["pr.title"] );
+        // look for PR triggerInfo first we get this is the build is triggered as part of a PR
+        if (build.triggerInfo["pr.title"]) {
+            logInfo(`Writing message from the TriggerInfo - '${build.triggerInfo["pr.title"]}' to variable '${outputText}'`);
+            tl.setVariable(outputText, build.triggerInfo["pr.title"] );
+        } else {
+            // if there is no triggerInfo it is probably a CI trigger off master or similar
+            // Just try for the merge message
+            let cs = await buildApi.getBuildChanges("GitHub" , 5402);
+            if (cs[0]) {
+                logInfo(`Writing message from the first changeset - '${cs[0].message}' to variable '${outputText}'`);
+                tl.setVariable(outputText, cs[0].message );
+            }
+        }
     }
     catch (err) {
         logError(err);
