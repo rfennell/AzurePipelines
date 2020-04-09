@@ -1,6 +1,6 @@
 Extension | Public Deployment Status
 ----------|------------------
-Artifact PR Description | [![Release Status](https://dev.azure.com/schema-net/Schema.NET/_apis/build/status/Schema.NET?branchName=master&stageName=Build&jobName=Build)](https://dev.azure.com/schema-net/Schema.NET/_build/latest?definitionId=79&branchName=master) 
+Artifact PR Description | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/ArtifactDescription?branchName=master)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=79) 
 Build Utils | [![Release Status - Build Utils Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/9/16)](https://richardfennell.visualstudio.com/GitHub/GitHub%20Team/_releases2?definitionId=9&view=mine&_a=releases) 
 DevTest Labs | [![Release Status - DevTest Labs Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/20/51)](https://richardfennell.visualstudio.com/GitHub/GitHub%20Team/_releases2?definitionId=20&view=mine&_a=releases)
 FileCopier Utils | [![Release Status - FileCopiers Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/2/3)](https://richardfennell.visualstudio.com/GitHub/GitHub%20Team/_releases2?definitionId=2&view=mine&_a=releases) 
