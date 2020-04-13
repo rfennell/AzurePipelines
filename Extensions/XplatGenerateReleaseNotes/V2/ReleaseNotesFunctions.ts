@@ -185,7 +185,8 @@ export function processTemplate(
     fieldEquality,
     anyFieldContent,
     customHandlebarsExtensionCode,
-    prDetails: GitPullRequest): string {
+    prDetails: GitPullRequest,
+    prs: GitPullRequest[]): string {
 
     var widetail = undefined;
     var csdetail = undefined;

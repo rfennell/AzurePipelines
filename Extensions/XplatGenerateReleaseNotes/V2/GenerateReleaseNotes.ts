@@ -63,13 +63,13 @@ async function run(): Promise<number>  {
             // the result containers
             var globalCommits: Change[] = [];
             var globalWorkItems: ResourceRef[] = [];
+            var globalPRs: GitPullRequest[] = [];
+
             var mostRecentSuccessfulDeploymentName: string = "";
             let mostRecentSuccessfulDeploymentRelease: Release;
 
             var currentRelease: Release;
             var currentBuild: Build;
-
-            var prDetails: GitPullRequest;
 
             if (tl.getVariable("Release.ReleaseId") === undefined) {
                 agentApi.logInfo("Getting the current build details");
@@ -282,12 +282,29 @@ async function run(): Promise<number>  {
             currentBuild = await buildApi.getBuild(buildId);
             // and enhance the details if they can
             if ((currentBuild.repository.type === "TfsGit") && (currentBuild.triggerInfo["pr.number"])) {
-                agentApi.logInfo(`The default artifact for the release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
-                prDetails = await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"]));
+                agentApi.logInfo(`The default artifact for the build/release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
+                globalPRs.push(await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"])));
             } else {
                 agentApi.logInfo(`The default artifact for the release was not linked to a Azure DevOps Git Repo Pull Request`);
-                // create an empty object to avoid undefined errors
-                prDetails = <GitPullRequest> {} ;
+            }
+
+            // get the PR details if possible
+            // can't use a foreach and an async
+            for (let index = 0; index < globalCommits.length; index++) {
+                var regexp = new RegExp("Merged PR [\d]+:");
+                if (globalCommits[index].type === "TfsGit" && regexp.test(globalCommits[index].message)) {
+                    agentApi.logInfo(`The commit ${globalCommits[index].id} has message that associates a PR ${globalCommits[index].message}, getting details`);
+                    var subString = regexp.exec(globalCommits[index].message);
+                    regexp =  new RegExp("[\d]+");
+                    var extractedId =  regexp.exec(subString[0]);
+                    agentApi.logInfo(`Getting details of PR ${extractedId}`);
+                    globalPRs.push(await gitApi.getPullRequestById (parseInt(extractedId[0])));
+                }
+            }
+
+            // make sure we have an empty value if there is no PR
+            if (globalPRs.length === 0) {
+                globalPRs.push(<GitPullRequest> {});
             }
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
@@ -303,7 +320,8 @@ async function run(): Promise<number>  {
                 fieldEquality,
                 anyFieldContent,
                 customHandlebarsExtensionCode,
-                prDetails);
+                globalPRs[0],
+                globalPRs);
 
             util.writeFile(outputfile, outputString);
 
