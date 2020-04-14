@@ -304,18 +304,18 @@ async function run(): Promise<number>  {
                 }
             });
 
-            // make sure we have an empty value if there is no PR
-            // this is for backwards compat.
-            if (globalPullRequests.length === 0) {
-                agentApi.logInfo(`No associated PRs, add emtpy object for backwards compat.`);
-                globalPullRequests.push(<GitPullRequest> {});
-            } else {
-                // remove duplicates
-                globalPullRequests = globalPullRequests.filter((thing, index, self) =>
+            // remove duplicates
+            globalPullRequests = globalPullRequests.filter((thing, index, self) =>
                 index === self.findIndex((t) => (
                 t.pullRequestId === thing.pullRequestId
                 ))
-               );
+            );
+
+            // make sure we have an empty value if there is no PR
+            // this is for backwards compat.
+            var prDetails = <GitPullRequest> {};
+            if (globalPullRequests.length > 0) {
+                prDetails = globalPullRequests[0];
             }
 
             agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
@@ -333,6 +333,7 @@ async function run(): Promise<number>  {
                 fieldEquality,
                 anyFieldContent,
                 customHandlebarsExtensionCode,
+                prDetails,
                 globalPullRequests);
 
             util.writeFile(outputfile, outputString);

@@ -207,13 +207,13 @@ export function processTemplate(
     fieldEquality,
     anyFieldContent,
     customHandlebarsExtensionCode,
+    prDetails: GitPullRequest,
     pullRequests: GitPullRequest[]): string {
 
     var widetail = undefined;
     var csdetail = undefined;
     var lastBlockStartIndex;
     var output = "";
-    var prDetails: GitPullRequest = pullRequests[0];
 
     if (template.length > 0) {
         agentApi.logDebug("Processing template");
@@ -498,10 +498,11 @@ export function processTemplate(
                 "buildDetails": buildDetails,
                 "releaseDetails": releaseDetails,
                 "compareReleaseDetails": compareReleaseDetails,
-                "prDetails": prDetails,
-                "pullRequests": pullRequests
+                "pullRequests": pullRequests,
+                "prDetails": prDetails
              });
         }
+
         agentApi.logInfo( "Completed processing template");
     } else {
         agentApi.logError( `Cannot load template file [${template}] or it is empty`);
