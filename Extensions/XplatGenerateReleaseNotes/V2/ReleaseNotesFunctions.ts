@@ -77,8 +77,16 @@ export async function getPullRequests(gitApi: GitApi, projectName: string): Prom
     return new Promise<GitPullRequest[]>(async (resolve, reject) => {
         let prList: GitPullRequest[];
         try {
-            var filter: GitPullRequestSearchCriteria;
-            filter.status = PullRequestStatus.Completed;
+            var filter: GitPullRequestSearchCriteria = {
+                creatorId: "",
+                includeLinks: true,
+                repositoryId: "",
+                reviewerId: "",
+                sourceRefName: "",
+                sourceRepositoryId: "",
+                status: PullRequestStatus.Completed,
+                targetRefName: ""
+            };
             prList = await gitApi.getPullRequestsByProject( projectName, filter);
             resolve(prList);
         } catch (err) {
@@ -490,7 +498,8 @@ export function processTemplate(
                 "buildDetails": buildDetails,
                 "releaseDetails": releaseDetails,
                 "compareReleaseDetails": compareReleaseDetails,
-                "prDetails": prDetails
+                "prDetails": prDetails,
+                "pullRequests": pullRequests
              });
         }
         agentApi.logInfo( "Completed processing template");

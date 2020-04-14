@@ -299,22 +299,23 @@ async function run(): Promise<number>  {
                     agentApi.logInfo(`Found the following matching for PRs for commit ${commit.id}`);
                     matches.forEach(pr => {
                         agentApi.logInfo(`   PR ${pr.pullRequestId} - ${pr.title}`);
+                        globalPullRequests.push(pr);
                     });
-                    globalPullRequests.concat(matches);
                 }
             });
-
-            // remove duplicates
-            globalPullRequests = globalPullRequests.filter((thing, index, self) =>
-                index === self.findIndex((t) => (
-                t.pullRequestId === thing.pullRequestId
-                ))
-            );
 
             // make sure we have an empty value if there is no PR
             // this is for backwards compat.
             if (globalPullRequests.length === 0) {
+                agentApi.logInfo(`No associated PRs, add emtpy object for backwards compat.`);
                 globalPullRequests.push(<GitPullRequest> {});
+            } else {
+                // remove duplicates
+                globalPullRequests = globalPullRequests.filter((thing, index, self) =>
+                index === self.findIndex((t) => (
+                t.pullRequestId === thing.pullRequestId
+                ))
+               );
             }
 
             agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
