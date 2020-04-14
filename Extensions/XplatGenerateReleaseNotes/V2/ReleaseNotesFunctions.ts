@@ -17,8 +17,8 @@ import * as webApi from "vso-node-api/WebApi";
 import fs  = require("fs");
 import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
 import { Build, Change } from "vso-node-api/interfaces/BuildInterfaces";
-import { IGitApi } from "vso-node-api/GitApi";
-import { GitCommit, GitPullRequest } from "vso-node-api/interfaces/GitInterfaces";
+import { IGitApi, GitApi } from "vso-node-api/GitApi";
+import { GitCommit, GitPullRequest, GitPullRequestQueryType, GitPullRequestSearchCriteria, PullRequestStatus } from "vso-node-api/interfaces/GitInterfaces";
 import { HttpClient } from "typed-rest-client/HttpClient";
 import { WorkItem } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
 import { type } from "os";
@@ -71,6 +71,20 @@ export function getSimpleArtifactArray(artifacts: Artifact[]): SimpleArtifact[] 
         );
     }
     return result;
+}
+
+export async function getPullRequests(gitApi: GitApi, projectName: string): Promise<GitPullRequest[]> {
+    return new Promise<GitPullRequest[]>(async (resolve, reject) => {
+        let prList: GitPullRequest[];
+        try {
+            var filter: GitPullRequestSearchCriteria;
+            filter.status = PullRequestStatus.Completed;
+            prList = await gitApi.getPullRequestsByProject( projectName, filter);
+            resolve(prList);
+        } catch (err) {
+            reject(err);
+        }
+    });
 }
 
 export async function getMostRecentSuccessfulDeployment(releaseApi: IReleaseApi, teamProject: string, releaseDefinitionId: number, environmentId: number): Promise<Deployment> {
@@ -185,13 +199,13 @@ export function processTemplate(
     fieldEquality,
     anyFieldContent,
     customHandlebarsExtensionCode,
-    prDetails: GitPullRequest,
-    prs: GitPullRequest[]): string {
+    pullRequests: GitPullRequest[]): string {
 
     var widetail = undefined;
     var csdetail = undefined;
     var lastBlockStartIndex;
     var output = "";
+    var prDetails: GitPullRequest = pullRequests[0];
 
     if (template.length > 0) {
         agentApi.logDebug("Processing template");

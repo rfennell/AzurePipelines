@@ -63,7 +63,7 @@ async function run(): Promise<number>  {
             // the result containers
             var globalCommits: Change[] = [];
             var globalWorkItems: ResourceRef[] = [];
-            var globalPRs: GitPullRequest[] = [];
+            var globalPullRequests: GitPullRequest[] = [];
 
             var mostRecentSuccessfulDeploymentName: string = "";
             let mostRecentSuccessfulDeploymentRelease: Release;
@@ -278,34 +278,46 @@ async function run(): Promise<number>  {
             }
 
             // to allow access to the PR details if any
+            // this was the original PR enrichment behaviour
+            // this only works for build triggered in PR validation
             let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
             currentBuild = await buildApi.getBuild(buildId);
             // and enhance the details if they can
             if ((currentBuild.repository.type === "TfsGit") && (currentBuild.triggerInfo["pr.number"])) {
                 agentApi.logInfo(`The default artifact for the build/release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
-                globalPRs.push(await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"])));
+                globalPullRequests.push(await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"])));
             } else {
                 agentApi.logInfo(`The default artifact for the release was not linked to a Azure DevOps Git Repo Pull Request`);
             }
 
-            // get the PR details if possible
-            // can't use a foreach and an async
-            for (let index = 0; index < globalCommits.length; index++) {
-                var regexp = new RegExp("Merged PR [\d]+:");
-                if (globalCommits[index].type === "TfsGit" && regexp.test(globalCommits[index].message)) {
-                    agentApi.logInfo(`The commit ${globalCommits[index].id} has message that associates a PR ${globalCommits[index].message}, getting details`);
-                    var subString = regexp.exec(globalCommits[index].message);
-                    regexp =  new RegExp("[\d]+");
-                    var extractedId =  regexp.exec(subString[0]);
-                    agentApi.logInfo(`Getting details of PR ${extractedId}`);
-                    globalPRs.push(await gitApi.getPullRequestById (parseInt(extractedId[0])));
+            // 2nd method aims to get the end of PR merges
+            var allPullRequests: GitPullRequest[] = await util.getPullRequests(gitApi, "");
+            globalCommits.forEach(commit => {
+                agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
+                var matches = allPullRequests.filter(pr => pr.lastMergeCommit.commitId === commit.id);
+                if (matches.length > 0) {
+                    agentApi.logInfo(`Found the following matching for PRs for commit ${commit.id}`);
+                    matches.forEach(pr => {
+                        agentApi.logInfo(`   PR ${pr.pullRequestId} - ${pr.title}`);
+                    });
+                    globalPullRequests.concat(matches);
                 }
-            }
+            });
+
+            // remove duplicates
+            globalPullRequests = globalPullRequests.filter((thing, index, self) =>
+                index === self.findIndex((t) => (
+                t.pullRequestId === thing.pullRequestId
+                ))
+            );
 
             // make sure we have an empty value if there is no PR
-            if (globalPRs.length === 0) {
-                globalPRs.push(<GitPullRequest> {});
+            // this is for backwards compat.
+            if (globalPullRequests.length === 0) {
+                globalPullRequests.push(<GitPullRequest> {});
             }
+
+            agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
             var outputString = util.processTemplate(
@@ -320,8 +332,7 @@ async function run(): Promise<number>  {
                 fieldEquality,
                 anyFieldContent,
                 customHandlebarsExtensionCode,
-                globalPRs[0],
-                globalPRs);
+                globalPullRequests);
 
             util.writeFile(outputfile, outputString);
 
