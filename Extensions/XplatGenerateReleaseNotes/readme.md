@@ -2,6 +2,8 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 2.34.x onwards, extends the PR functionality to check for any PRs associated with commits associated with the release - not this functionality is only usable using Handlebars based templates
+* 2.33.x onwards, allow limited functionality to list the PR associated with triggering of the build/release
 * 2.27.x onwards, thanks to the work of [KennethScott](https://github.com/KennethScott), adds support for [Handlbars](https://handlebarsjs.com/) based templates as well as the bespoke version used previously.
 * 2.17.x onwards supports operation in a build whether YAML or legacy, getting the commits/changesets associated with the build. 
 * 2.0.x onwards supports tag filtering in the work items listed in a report. A report can have many WILOOPs with different filters. 2.18.x & 2.19.x add support for advanced work item filtering
@@ -71,6 +73,9 @@ What is done behind the scenes is that each `${properties}` block in the templat
 #### Build objects
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
 
+#### Pull request objects 
+* **prDetails** – populated with the build artifacts trigger info, if available (only shown if build triggered as part of PR validation). 
+
 **Note:** To dump all possible values use the form `${JSON.stringify(propertyToDump)}`
 
 **Note:** This task differed from the older [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks) that used the format `$(properties)`, this task uses the format `${properties}` due to the move from PowerShell to Node within the task
@@ -133,22 +138,28 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 **Build Number**: {{buildDetails.id}}
 **Compared Release Number**  : {{compareReleaseDetails.name}}    
 **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
-**PR Details**: {{prDetails.title}}
 
-### Associated Work Items ({{workItems.length}})
+### Associated Pull Requests ({{pullRequests.length}})
 
-{{#each workItems}}
+{{#forEach pullRequests}}
+{{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
+*  **PR {{this.id}}**  {{this.title}}
+{{/forEach}}
+
+{{#forEach workItems}}
+{{#if isFirst}}### Associated Work Items (only shown if  WI) {{/if}}
 *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
    - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
    - **Tags** {{lookup this.fields 'System.Tags'}}
-{{/each}}
+{{/forEach}}
 
-### Associated commits ({{commits.length}})
-{{#each commits}}
+{{#forEach commits}}
+{{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
 * ** ID{{this.id}}** 
    -  **Message:** {{this.message}}
    -  **Commited by:** {{this.author.displayName}} 
-{{/each}}
+{{/forEach}}
+
 
 ```
 
@@ -158,11 +169,11 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 #### Common objects 
 * **workItems** – the array of work item associated with the release
 * **commits** – the array of commits associated with the release
-* **prDetails** – the details of the PR (only available for source repository hosted in Azure DevOps and pipelines triggered by a PR).
+* **pullRequests** - the array of PRs referenced by the commits in the release
 
 #### Release objects (only available in a release)
 * **releaseDetails** – the release details of the release that the task was triggered for.
-* **compareReleaseDetails** - the the previous successful release that comparisons are bein made against
+* **compareReleaseDetails** - the the previous successful release that comparisons are being made against
 
 #### Build objects
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 

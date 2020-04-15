@@ -63,13 +63,13 @@ async function run(): Promise<number>  {
             // the result containers
             var globalCommits: Change[] = [];
             var globalWorkItems: ResourceRef[] = [];
+            var globalPullRequests: GitPullRequest[] = [];
+
             var mostRecentSuccessfulDeploymentName: string = "";
             let mostRecentSuccessfulDeploymentRelease: Release;
 
             var currentRelease: Release;
             var currentBuild: Build;
-
-            var prDetails: GitPullRequest;
 
             if (tl.getVariable("Release.ReleaseId") === undefined) {
                 agentApi.logInfo("Getting the current build details");
@@ -278,17 +278,46 @@ async function run(): Promise<number>  {
             }
 
             // to allow access to the PR details if any
+            // this was the original PR enrichment behaviour
+            // this only works for build triggered in PR validation
+
+            // make sure we have an empty value if there is no PR
+            // this is for backwards compat.
+            var prDetails = <GitPullRequest> {};
+
             let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
             currentBuild = await buildApi.getBuild(buildId);
             // and enhance the details if they can
             if ((currentBuild.repository.type === "TfsGit") && (currentBuild.triggerInfo["pr.number"])) {
-                agentApi.logInfo(`The default artifact for the release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
+                agentApi.logInfo(`The default artifact for the build/release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
                 prDetails = await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"]));
+                globalPullRequests.push(prDetails);
             } else {
                 agentApi.logInfo(`The default artifact for the release was not linked to a Azure DevOps Git Repo Pull Request`);
-                // create an empty object to avoid undefined errors
-                prDetails = <GitPullRequest> {} ;
             }
+
+            // 2nd method aims to get the end of PR merges
+            var allPullRequests: GitPullRequest[] = await util.getPullRequests(gitApi, "");
+            globalCommits.forEach(commit => {
+                agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
+                var matches = allPullRequests.filter(pr => pr.lastMergeCommit.commitId === commit.id);
+                if (matches.length > 0) {
+                    agentApi.logInfo(`Found the following matching for PRs for commit ${commit.id}`);
+                    matches.forEach(pr => {
+                        agentApi.logInfo(`   PR ${pr.pullRequestId} - ${pr.title}`);
+                        globalPullRequests.push(pr);
+                    });
+                }
+            });
+
+            // remove duplicates
+            globalPullRequests = globalPullRequests.filter((thing, index, self) =>
+                index === self.findIndex((t) => (
+                t.pullRequestId === thing.pullRequestId
+                ))
+            );
+
+            agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
 
             var template = util.getTemplate (templateLocation, templateFile, inlineTemplate);
             var outputString = util.processTemplate(
@@ -303,7 +332,8 @@ async function run(): Promise<number>  {
                 fieldEquality,
                 anyFieldContent,
                 customHandlebarsExtensionCode,
-                prDetails);
+                prDetails,
+                globalPullRequests);
 
             util.writeFile(outputfile, outputString);
 

@@ -17,8 +17,8 @@ import * as webApi from "vso-node-api/WebApi";
 import fs  = require("fs");
 import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
 import { Build, Change } from "vso-node-api/interfaces/BuildInterfaces";
-import { IGitApi } from "vso-node-api/GitApi";
-import { GitCommit, GitPullRequest } from "vso-node-api/interfaces/GitInterfaces";
+import { IGitApi, GitApi } from "vso-node-api/GitApi";
+import { GitCommit, GitPullRequest, GitPullRequestQueryType, GitPullRequestSearchCriteria, PullRequestStatus } from "vso-node-api/interfaces/GitInterfaces";
 import { HttpClient } from "typed-rest-client/HttpClient";
 import { WorkItem } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
 import { type } from "os";
@@ -71,6 +71,28 @@ export function getSimpleArtifactArray(artifacts: Artifact[]): SimpleArtifact[] 
         );
     }
     return result;
+}
+
+export async function getPullRequests(gitApi: GitApi, projectName: string): Promise<GitPullRequest[]> {
+    return new Promise<GitPullRequest[]>(async (resolve, reject) => {
+        let prList: GitPullRequest[];
+        try {
+            var filter: GitPullRequestSearchCriteria = {
+                creatorId: "",
+                includeLinks: true,
+                repositoryId: "",
+                reviewerId: "",
+                sourceRefName: "",
+                sourceRepositoryId: "",
+                status: PullRequestStatus.Completed,
+                targetRefName: ""
+            };
+            prList = await gitApi.getPullRequestsByProject( projectName, filter);
+            resolve(prList);
+        } catch (err) {
+            reject(err);
+        }
+    });
 }
 
 export async function getMostRecentSuccessfulDeployment(releaseApi: IReleaseApi, teamProject: string, releaseDefinitionId: number, environmentId: number): Promise<Deployment> {
@@ -185,7 +207,8 @@ export function processTemplate(
     fieldEquality,
     anyFieldContent,
     customHandlebarsExtensionCode,
-    prDetails: GitPullRequest): string {
+    prDetails,
+    pullRequests: GitPullRequest[]): string {
 
     var widetail = undefined;
     var csdetail = undefined;
@@ -196,6 +219,7 @@ export function processTemplate(
         agentApi.logDebug("Processing template");
         agentApi.logDebug(`WI: ${workItems.length}`);
         agentApi.logDebug(`CS: ${commits.length}`);
+        agentApi.logDebug(`PR: ${pullRequests.length}`);
 
         // if it's an array, it's a legacy template
         if (Array.isArray(template)) {
@@ -475,9 +499,10 @@ export function processTemplate(
                 "buildDetails": buildDetails,
                 "releaseDetails": releaseDetails,
                 "compareReleaseDetails": compareReleaseDetails,
-                "prDetails": prDetails
+                "pullRequests": pullRequests
              });
         }
+
         agentApi.logInfo( "Completed processing template");
     } else {
         agentApi.logError( `Cannot load template file [${template}] or it is empty`);
