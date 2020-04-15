@@ -280,12 +280,18 @@ async function run(): Promise<number>  {
             // to allow access to the PR details if any
             // this was the original PR enrichment behaviour
             // this only works for build triggered in PR validation
+
+            // make sure we have an empty value if there is no PR
+            // this is for backwards compat.
+            var prDetails = <GitPullRequest> {};
+
             let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
             currentBuild = await buildApi.getBuild(buildId);
             // and enhance the details if they can
             if ((currentBuild.repository.type === "TfsGit") && (currentBuild.triggerInfo["pr.number"])) {
                 agentApi.logInfo(`The default artifact for the build/release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
-                globalPullRequests.push(await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"])));
+                prDetails = await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"]));
+                globalPullRequests.push(prDetails);
             } else {
                 agentApi.logInfo(`The default artifact for the release was not linked to a Azure DevOps Git Repo Pull Request`);
             }
@@ -310,13 +316,6 @@ async function run(): Promise<number>  {
                 t.pullRequestId === thing.pullRequestId
                 ))
             );
-
-            // make sure we have an empty value if there is no PR
-            // this is for backwards compat.
-            var prDetails = <GitPullRequest> {};
-            if (globalPullRequests.length > 0) {
-                prDetails = globalPullRequests[0];
-            }
 
             agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
 
