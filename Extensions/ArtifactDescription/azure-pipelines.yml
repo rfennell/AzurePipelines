@@ -162,17 +162,18 @@ stages:
                    vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
                    extensionTag: '' 
                    extensionVisibility: public    
-          
-              - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
-                displayName: 'Get Git Artifact PR Reason'
-                inputs:
-                  OutputText: 'OutputedText' 
-    
+
     - job: Post_Publish
       dependsOn: Public_Deployment 
       pool:
         vmImage: '$(vmImage)'
       steps:
+      
+      - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
+        displayName: 'Get Git Artifact PR Reason'
+        inputs:
+          OutputText: 'OutputedText'
+      
       - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Twitter.Xpirit-Vsts-Release-Twitter.Twitter@1
         displayName: 'Send Tweet about new release'
         inputs:
