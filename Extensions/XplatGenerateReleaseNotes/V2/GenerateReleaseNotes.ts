@@ -332,6 +332,7 @@ async function run(): Promise<number>  {
                 fieldEquality,
                 anyFieldContent,
                 customHandlebarsExtensionCode,
+                prDetails,
                 globalPullRequests);
 
             util.writeFile(outputfile, outputString);

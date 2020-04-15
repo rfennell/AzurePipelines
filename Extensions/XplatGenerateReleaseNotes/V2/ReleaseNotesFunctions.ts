@@ -207,6 +207,7 @@ export function processTemplate(
     fieldEquality,
     anyFieldContent,
     customHandlebarsExtensionCode,
+    prDetails,
     pullRequests: GitPullRequest[]): string {
 
     var widetail = undefined;
@@ -218,6 +219,7 @@ export function processTemplate(
         agentApi.logDebug("Processing template");
         agentApi.logDebug(`WI: ${workItems.length}`);
         agentApi.logDebug(`CS: ${commits.length}`);
+        agentApi.logDebug(`PR: ${pullRequests.length}`);
 
         // if it's an array, it's a legacy template
         if (Array.isArray(template)) {
