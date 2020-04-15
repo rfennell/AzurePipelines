@@ -207,7 +207,6 @@ export function processTemplate(
     fieldEquality,
     anyFieldContent,
     customHandlebarsExtensionCode,
-    prDetails: GitPullRequest,
     pullRequests: GitPullRequest[]): string {
 
     var widetail = undefined;
@@ -498,8 +497,7 @@ export function processTemplate(
                 "buildDetails": buildDetails,
                 "releaseDetails": releaseDetails,
                 "compareReleaseDetails": compareReleaseDetails,
-                "pullRequests": pullRequests,
-                "prDetails": prDetails
+                "pullRequests": pullRequests
              });
         }
 
