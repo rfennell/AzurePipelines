@@ -4,7 +4,12 @@
 **Build Number**: {{buildDetails.id}}
 **Compared Release Number**  : {{compareReleaseDetails.name}}    
 **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
-**PR Details**: {{prDetails.title}}
+
+### Associated Pull Requests ({{pullRequests.length}})
+{{#forEach pullRequests}}
+{{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
+*  **PR {{this.id}}**  {{this.title}}
+{{/forEach}}
 
 ##  All Associated Work Items ({{workItems.length}})
 {{#forEach workItems}}
