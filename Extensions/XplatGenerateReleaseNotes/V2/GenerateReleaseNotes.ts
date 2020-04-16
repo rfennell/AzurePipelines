@@ -14,6 +14,7 @@ import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
 import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
 import * as issue349 from "./Issue349Workaround";
 import { GitPullRequest, GitPullRequestQueryType } from "vso-node-api/interfaces/GitInterfaces";
+import { all } from "q";
 
 let agentApi = new AgentSpecificApi();
 
@@ -297,18 +298,27 @@ async function run(): Promise<number>  {
             }
 
             // 2nd method aims to get the end of PR merges
-            var allPullRequests: GitPullRequest[] = await util.getPullRequests(gitApi, "");
-            globalCommits.forEach(commit => {
-                agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
-                var matches = allPullRequests.filter(pr => pr.lastMergeCommit.commitId === commit.id);
-                if (matches.length > 0) {
-                    agentApi.logInfo(`Found the following matching for PRs for commit ${commit.id}`);
-                    matches.forEach(pr => {
-                        agentApi.logInfo(`   PR ${pr.pullRequestId} - ${pr.title}`);
-                        globalPullRequests.push(pr);
-                    });
-                }
-            });
+            agentApi.logInfo(`Checking to see if any commits are associated with Azure DevOps Git Repo Pull Request`);
+            var allPullRequests: GitPullRequest[] = await util.getPullRequests(gitApi, teamProject);
+            if (allPullRequests.length > 0) {
+                globalCommits.forEach(commit => {
+                    if (commit.type === "TfsGit") {
+                        agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
+                        var matches = allPullRequests.filter(pr => pr.lastMergeCommit.commitId === commit.id);
+                        if (matches.length > 0) {
+                            agentApi.logInfo(`Found the following matching for PRs for commit ${commit.id}`);
+                            matches.forEach(pr => {
+                                agentApi.logInfo(`   PR ${pr.pullRequestId} - ${pr.title}`);
+                                globalPullRequests.push(pr);
+                            });
+                        }
+                    } else {
+                        agentApi.logDebug(`Cannot check for associated PR as the commit ${commit.id} is not in an Azure DevOps repo`);
+                    }
+                });
+            } else {
+                agentApi.logDebug(`No completed Azure DevOps PRs found`);
+            }
 
             // remove duplicates
             globalPullRequests = globalPullRequests.filter((thing, index, self) =>
