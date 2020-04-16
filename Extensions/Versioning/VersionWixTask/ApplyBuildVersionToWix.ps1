@@ -22,7 +22,7 @@ $VersionNumber = Get-VstsInput -Name "VersionNumber"
 $InjectVersion = Get-VstsInput -Name "InjectVersion"
 $VersionRegex = Get-VstsInput -Name "VersionRegex"
 $outputversion = Get-VstsInput -Name "outputversion"
-
+$fieldsToMatch = Get-VstsInput -Name "FieldsToMatch"
 
 function ReplaceVersion {
     [CmdletBinding()]
@@ -41,6 +41,7 @@ function ReplaceVersion {
         $regex = "<\?define\s+{0}\s*=\s*\""\d+\.\d+\.\d+\.\d+\""\s+\?>"
     }
 
+    Write-Verbose "   updating value for $name with $value"
     return $contents -replace  [string]::Format($regex, $name),  [string]::Format("<?define {0} = ""{1}"" ?>", $name, $value)
 }
 
@@ -59,7 +60,21 @@ Write-Verbose "Target File $file"
 Write-Verbose "Version Number/Build Number: $VersionNumber"
 Write-Verbose "Inject Version: $InjectVersion"
 Write-Verbose "Version Filter: $VersionRegex"
+Write-Verbose "Fields to Match: $fieldsToMatch"
 Write-verbose "Output: Version Number Parameter Name: $outputversion"
+
+
+# validate we have the field names
+if ([String]::IsNullOrEmpty($fieldsToMatch)) {
+     Write-Error "No fields to match provided, expecting 5 part comma separated list."
+     exit 1
+} else {
+    $fieldNames = $fieldsToMatch.Split(",");
+    if ($fieldNames.Count -ne 5) {
+         Write-Error "Wrong number of fields to match provided, expecting 5 part comma separated list."
+         exit 1
+    }
+}
 
 # Get and validate the version data
 if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
@@ -82,8 +97,8 @@ if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
         }
     }
     # AppX will not allow leading zeros, so we strip them out
-    $extracted = [string]$VersionData[0]
-    $parts = $extracted.Split(".")
+    $NewVersion = [string]$VersionData[0]
+    $parts = $NewVersion.Split(".")
 
     if ($parts.Count -ne 4)
     {
@@ -91,9 +106,10 @@ if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
         exit 1
     }
 
-    $versionData = @{MajorVersion = [int]$parts[0]; MinorVersion = [int]$parts[1];BuildNumber = [int]$parts[2];Revision = [int]$parts[3];FullVersion =  [string]::Format("{0}.{1}.{2}.{3}" ,[int]$parts[0],[int]$parts[1],[int]$parts[2],[int]$parts[3])}
+    $versionData = @{$fieldNames[0] = [int]$parts[0]; $fieldNames[1] = [int]$parts[1];$fieldNames[2] = [int]$parts[2];$fieldNames[3] = [int]$parts[3];$fieldNames[4] =  [string]::Format("{0}.{1}.{2}.{3}" ,[int]$parts[0],[int]$parts[1],[int]$parts[2],[int]$parts[3])}
 }
-Write-Verbose "Version: $NewVersion"
+Write-Verbose "Will use the version: $NewVersion"
+
 
 # Apply the version to the assembly property files
 $files = gci $path -recurse -include $file 
@@ -103,6 +119,7 @@ if($files)
 
     foreach ($file in $files) {
         # I would like to treat this an XML file, but can't see to handle the XmlProcessingInstructions, so using simple replace
+        Write-Verbose "$file - applying version"
         $fileContents = Get-Content -path $file -raw
         attrib $file -r
 
@@ -112,7 +129,6 @@ if($files)
         }
     
         $fileContents | Set-Content($file)
-        Write-Verbose "$file - version applied"
     }
     Write-Verbose "Set the output variable '$outputversion' with the value $NewVersion"
     Write-Host "##vso[task.setvariable variable=$outputversion;]$NewVersion"

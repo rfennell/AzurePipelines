@@ -32,6 +32,9 @@ The .NET Core versioner also takes the following Advanced option
 * [Advanced] FilenamePattern: The filename pattern to update. Default to .csproj or can be directory.build.props
 * [Advanced] SDKNames: A comma separated list of SDK namespaces to use to match .csproj file. Ignored if filename pattern is directory.build.props
 
+The WIX versioner also takes the following Advanced options
+
+* [Advanced] FieldsToMatch: The list of five field names that will be updated in the wxi file, defaults to 'MajorVersion,MinorVersion,BuildNumber,Revision,FullVersion'
 
 The DACPAC versioner also takes the following Advanced option
 
