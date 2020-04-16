@@ -301,6 +301,7 @@ async function run(): Promise<number>  {
             agentApi.logInfo(`Checking to see if any commits are associated with Azure DevOps Git Repo Pull Request`);
             var allPullRequests: GitPullRequest[] = await util.getPullRequests(gitApi, teamProject);
             if (allPullRequests.length > 0) {
+                agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps for PRs for project ${teamProject}`);
                 globalCommits.forEach(commit => {
                     if (commit.type === "TfsGit") {
                         agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
