@@ -72,6 +72,15 @@
       "groupName":"advanced",
       "visibleRule": "InjectVersion = false"
     },
+    {
+      "name": "FieldsToMatch",
+      "type": "string",
+      "label": "Version fields to match",
+      "defaultValue": "MajorVersion,MinorVersion,BuildNumber,Revision,FullVersion",
+      "required": true,
+      "helpMarkDown": "The list of five field names that will be updated in the wxi file.",
+      "groupName":"advanced"
+    },
       {
       "name": "OutputVersion",
       "type": "string",
