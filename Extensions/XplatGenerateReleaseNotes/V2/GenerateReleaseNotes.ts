@@ -305,14 +305,18 @@ async function run(): Promise<number>  {
                 globalCommits.forEach(commit => {
                     if (commit.type === "TfsGit") {
                         agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
-                        var matches = allPullRequests.filter(pr => pr.lastMergeCommit.commitId === commit.id);
-                        if (matches.length > 0) {
-                            agentApi.logInfo(`Found the following matching for PRs for commit ${commit.id}`);
-                            matches.forEach(pr => {
-                                agentApi.logInfo(`   PR ${pr.pullRequestId} - ${pr.title}`);
-                                globalPullRequests.push(pr);
-                            });
-                        }
+
+                        allPullRequests.forEach(pr => {
+                            if (pr.lastMergeCommit) {
+                                if (pr.lastMergeCommit.commitId === commit.id) {
+                                    agentApi.logInfo(`- PR ${pr.pullRequestId} matches the commit ${commit.id}`);
+                                    globalPullRequests.push(pr);
+                                }
+                            } else {
+                                console.log(`- PR ${pr.pullRequestId} does not have a lastMergeCommit`);
+                            }
+                        });
+
                     } else {
                         agentApi.logDebug(`Cannot check for associated PR as the commit ${commit.id} is not in an Azure DevOps repo`);
                     }
