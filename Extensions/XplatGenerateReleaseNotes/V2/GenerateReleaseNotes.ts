@@ -35,6 +35,7 @@ async function run(): Promise<number>  {
             var delimiter = tl.getInput("delimiter");
             var anyFieldContent = tl.getInput("anyFieldContent");
             var showOnlyPrimary = tl.getBoolInput("showOnlyPrimary");
+            var searchCrossProjectForPRs = tl.getBoolInput("searchCrossProjectForPRs");
             if (delimiter === null) {
                 agentApi.logInfo(`No delimiter passed, setting a default of :`);
                 delimiter = ":";
@@ -298,10 +299,17 @@ async function run(): Promise<number>  {
             }
 
             // 2nd method aims to get the end of PR merges
-            agentApi.logInfo(`Checking to see if any commits are associated with Azure DevOps Git Repo Pull Request`);
-            var allPullRequests: GitPullRequest[] = await util.getPullRequests(gitApi, teamProject);
+            var prProjectFilter = "";
+            if (searchCrossProjectForPRs) {
+                agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs in the Organisation`);
+            } else {
+                agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs in the Team Project ${teamProject}`);
+                prProjectFilter = teamProject;
+            }
+
+            var allPullRequests: GitPullRequest[] = await util.getPullRequests(gitApi, prProjectFilter);
             if (allPullRequests.length > 0) {
-                agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps for PRs for project ${teamProject}`);
+                agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps for PRs`);
                 globalCommits.forEach(commit => {
                     if (commit.type === "TfsGit") {
                         agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);

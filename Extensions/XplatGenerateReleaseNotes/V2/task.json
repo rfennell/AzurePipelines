@@ -161,6 +161,15 @@
       "groupName":"advanced"
      },
      {
+      "name": "searchCrossProjectForPRs",
+      "type": "boolean",
+      "label": "Cross Project For PRs",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true will try to match commits to Azure DevOps PR cross project within the organisation, if false only searches the Team Project",
+      "groupName":"advanced"
+     },
+     {
       "name": "customHandlebarsExtensionCode",
       "type": "multiLine",
       "label": "Custom Handlebars Extension",
