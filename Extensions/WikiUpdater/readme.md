@@ -1,4 +1,4 @@
-This set of tasks perform WIKI management operations
+A task to update a page in Git based WIKI
 
 ## Update a WIKI Page
 
@@ -11,33 +11,33 @@ This can be used with both Azure DevOps and GitHub hosted WIKIs
 Add the task to a build or release
 
 #### Required Parameters
-- Repo - The repo URL to update e.g in the form **dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki** (see the URL section below)
+- Repo - The repo URL to update e.g in the form **dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki** (see the URL section below as to how to find this URL)
 - Filename - The file (page to save/update), must end in .md else it will not appear on the WIKI e.g. page.md
-- DataIsFile - If true will upload a file, if false the upload is the content provided
-- Contents - If DataIsFile is false, this text to save in the file, can be the output from another task passed as pipeline variable
-- SourceFile - If DataIsFile is true, this is the filename to upload, will be renamed to the value of the 'filename' parameter"
+- DataIsFile - If true will upload a file, if false the upload is the content provided as a string
+- Contents - If DataIsFile is false, this text to saved in the file set in the 'filename' parameter, can be the output from another task passed as pipeline variable
+- SourceFile - If DataIsFile is true, this is the filename to upload, will be renamed to the value of the 'filename' parameter
 - Message - The Git commit message
-- GitName - The name for the .gitatrributes file e.g. _builduser_
-- GitEmail - The email for the .gitatrributes file e.g. _builduser@domain_
-- Replace File - Replace the file in the WIKI defaults to True
-- Append to File - Only meaninfful if using the option to not replace the file. In this case, adds the contents to end of file if true, if false inserts at the start of the page defaults to True
-- Tag Repo - If true the tag set in the Tag parameter will be written to the repo
-- Tag - The tag to add to the repo
+- GitName - The name for the .gitatrributes file e.g. _builduser_ (not a critical value)
+- GitEmail - The email for the .gitatrributes file e.g. _builduser@domain_ (not a critical value)
+- Replace File - Replaces the page in the WIKI if set to True, if False will append or prepend to the page. Defaults to True
+- Append to File - Only meaningful if using the option to not replace the WIKI page. In this case, adds the contents to end of file if true, if false inserts at the new content start of the page. Defaults to True
+- Tag Repo - If true a Git Tag set in the value of 'Tag' parameter in the repo. Defaults to false
+- Tag - The tag to add to the repo, if the Tage repo flag is set to true
 
 #### Advanced
 
 - LocalPath - The path used to clone the repo to for updating. Defaults to $(System.DefaultWorkingDirectory)\\repo
-- UseAgentToken - If true the task will use the built in agent OAUTH token, if false you need to provide username & password/PAT". **Note** for use of the OAUTH token to work you must allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) and grant _contribute_ access on the target Azure DevOps WIKI to the _Project Collection Build Service_ user (assuming this is the account the pipeline is running as). The default is _false_
-- Username - The username to authenticate with the repo (see below)
-- Password - The password or PAT to authenticate with the repo (see below) _Recommended that this is stored as secret variable_
-- InjectExtraHeader -  If set to true, credentials are passed as a header value. If false, the default, they are passed in te URL. To address [#613](https://github.com/rfennell/AzurePipelines/issues/6130)  which is seen on some on-prem instances,
+- UseAgentToken - If true the task will use the built in agent OAUTH token, if false you need to provide username & password/PAT". **Note** for use of the OAUTH token to work you must allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) and grant _contribute_ access on the target Azure DevOps WIKI to the _Project Collection Build Service_ user (assuming this is the account the pipeline is running as). The default is _false_ (see Authentication below)
+- Username - The username to authenticate with the repo (see Authentication below)
+- Password - The password or PAT to authenticate with the repo (see Authentication below) _Recommended that this is stored as secret variable_
+- InjectExtraHeader -  If set to true, credentials are passed as a header value. If false, the default, they are passed in the URL. This option was added to address the issue [#613](https://github.com/rfennell/AzurePipelines/issues/613) which found that this means of authentication is required when working with an on-prem TFS/Azure DevOps Server
 
 
-For more authentication parameters see 'Authentication' section below
+_For more authentication parameters see 'Authentication' section below_
 
 ### URL required to clone a WIKI repo
 
-#### Azure DevOps WIKIs
+#### Azure DevOps Services & Azure DevOps Server (TFS) WIKIs
 
 The URL to clone a Azure DevOps WIKIs is not obvious. 
 
@@ -48,16 +48,17 @@ https://dev.azure.com/richardfennell/Git%20project/_wiki/wikis/Git-project.wiki/
 
 SO DON'T USE THIS FORM
 ```
-To find the correct URL to clone the repo
+To find the correct URL to clone the repo, and use as the parameter for this task
 
 1. Load the WIKI in a browser
-2. At the top of the menu pane there is a menu (click the ellipsis ...)
-3. Select the 'Clone repo' option
-4. You will get a URL in the form https://richardfennell@dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. This is the URL needed. The part you need to add as the repo parameter for this task is everything after the @
+1. At the top of the menu pane there is a menu (click the ellipsis ...)
+1. Select the 'Clone repo' option
+1. You will get a URL in the form https://richardfennell@dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. This is the full URL needed, but you only require part of it for this task. 
+1. The part you need to add as the repo parameter for this task is everything after the @ i.e dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki
 
 #### GitHub
 
-The URL to clone a GitHb WIKI also is not the one shown in the browser when the WIKI is viewed.
+Again, as with Azure DevOps, the URL to clone a GitHb WIKI also is not the one shown in the browser when the WIKI is viewed.
 
 ```
 THIS IS NOT THE ONE YOU WANT
@@ -67,33 +68,64 @@ https://github.com/rfennell/AzurePipelines/wiki
 SO DON'T USE IT
 ```
 
-However, it is more obvious to find the correct URL, it is shown in lower right of all WIKI pages. It will be in the form
+To find the correct URL
 
-```
-https://github.com/rfennell/AzurePipelines.wiki.git
-```
+1. Load the WIKI in a browser
+1. Look in lower right of any WIKI pages. It will be in the form https://github.com/rfennell/AzurePipelines.wiki.git. This is the full URL needed, but you only require part of it for this task. 
+1. The part you need to add as the repo parameter for this task is everything after the // i.e github.com/rfennell/AzurePipelines.wiki.git
 
 ### Authentication
 
-The URL used for authenticated connection to a repo is in the form
+There are two ways this task can authenticate, either using the URL where the credentials are passed as part of the URL in the form
 
 ```
 const remote = `https://${user}:${password}@${repo}`;
 ```
 
-#### Automated authentication OAUTH to Azure DevOps hosted Repos
-If using the OAUTH token then the **${user}** and the **${password}** are managed by the task. 
+or the Header in the form
 
-#### Manual Management of Authentication
-However they can be manually managed.
+```
+extraHeaders = [`-c http.extraheader=AUTHORIZATION: bearer ${password}`];
+```
 
-##### GitHub
+The former should be used for Azure DevOps Services and GitHub, for latter for Azure DevOps Server/TFS
 
-For GitHub then the **${user}** is you Git account name and the **${password}** is your [PAT](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
+The following are supported means to authenticate with different services
 
-##### Azure DevOps
+#### Authentication using OAUTH to Azure DevOps Services hosted Repos
+The recommended approach is to use the build agents OAUTH Token for authentication. To do this
 
-For Azure DevOps then the **${user}** is you organisation account name and the **${password}** is your [PAT](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=vsts)
+1. Allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) 
+1. Grant _contribute_ access on the target Azure DevOps WIKI to the _Project Collection Build Service_ user (assuming this is the account the pipeline is running as). 
+1. Set the task's `UseAgentToken` parameter to true
+
+Once this is set the `user` and the `password` parameters are managed by the task. 
+
+#### Authentication using Personal Access Tokens to Azure DevOps Services hosted Repos
+If you do not wish to use OAUTH then authentication can be done using Personal Access Tokens. To do this
+
+1. Grant _contribute_ access on the target Azure DevOps WIKI to the user who's PAT is to be used
+1. Generate PAT for the user with at least WIKI Read & Write access [see Azure Devops documentation](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page)
+
+For this usecase for Azure DevOps Services then the `user` parameter is your organisation account name and the `password` is your PAT
+
+#### Authentication using OAUTH to On premises Azure DevOps Server & TFS hosted Repos
+The recommended approach is to use for all on premises Azure DevOps Servers & TFS. To do this
+
+1. Allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) 
+1. Grant _contribute_ access on the target Azure DevOps WIKI to the _Project Collection Build Service_ user (assuming this is the account the pipeline is running as). 
+1. Set the task's `UseAgentToken` parameter to true
+1. Set the task's `InjectExtraHeader` parameter to true
+
+Once this is set the `user` and the `password` parameters are managed by the task. 
+
+#### Authentication using Personal Access Tokens to GitHub hosted Repos
+The supported means to authenticate to a GitHub repo is using a Personal Access Token
+
+1. For a user who has rights to update the WIKI, create [PAT](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
+
+Once this is create, for GitHub WIKIs, the `user` parmeter is you Git account name and the `password` is your PAT
+
 
 
 
