@@ -170,6 +170,11 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 * **workItems** – the array of work item associated with the release
 * **commits** – the array of commits associated with the release
 * **pullRequests** - the array of PRs referenced by the commits in the release
+* **builds** - the array of the build artifacts that CS and WI are associated with. Note that this is a object with three properties 
+    - **build**  - the build details
+    - **commits**  - the commits associated with this build
+    - **workitems**  - the work items associated with the build
+    
 
 #### Release objects (only available in a release)
 * **releaseDetails** – the release details of the release that the task was triggered for.

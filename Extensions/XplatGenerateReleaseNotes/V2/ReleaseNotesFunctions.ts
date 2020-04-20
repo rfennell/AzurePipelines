@@ -7,6 +7,17 @@ export interface SimpleArtifact {
     isPrimary: boolean;
 }
 
+export class UnifiedArtifactDetails {
+    build: Build;
+    commits: Change[];
+    workitems: ResourceRef[];
+    constructor ( build: Build, commits: Change[], workitems: ResourceRef[]) {
+        this.build = build;
+        this.commits = commits;
+        this.workitems = workitems;
+   }
+}
+
 import * as restm from "typed-rest-client/RestClient";
 import tl = require("vsts-task-lib/task");
 import { ReleaseEnvironment, Artifact, Deployment, DeploymentStatus, Release } from "vso-node-api/interfaces/ReleaseInterfaces";
@@ -208,7 +219,8 @@ export function processTemplate(
     anyFieldContent,
     customHandlebarsExtensionCode,
     prDetails,
-    pullRequests: GitPullRequest[]): string {
+    pullRequests: GitPullRequest[],
+    globalBuilds: UnifiedArtifactDetails[]): string {
 
     var widetail = undefined;
     var csdetail = undefined;
@@ -220,6 +232,7 @@ export function processTemplate(
         agentApi.logDebug(`WI: ${workItems.length}`);
         agentApi.logDebug(`CS: ${commits.length}`);
         agentApi.logDebug(`PR: ${pullRequests.length}`);
+        agentApi.logDebug(`B: ${globalBuilds.length}`);
 
         // if it's an array, it's a legacy template
         if (Array.isArray(template)) {
@@ -499,7 +512,8 @@ export function processTemplate(
                 "buildDetails": buildDetails,
                 "releaseDetails": releaseDetails,
                 "compareReleaseDetails": compareReleaseDetails,
-                "pullRequests": pullRequests
+                "pullRequests": pullRequests,
+                "builds": globalBuilds
              });
         }
 
