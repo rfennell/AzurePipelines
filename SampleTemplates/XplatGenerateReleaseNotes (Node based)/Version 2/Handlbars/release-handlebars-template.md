@@ -1,35 +1,39 @@
-## Notes for release  {{releaseDetails.releaseDefinition.name}}    
+# Notes for release  {{releaseDetails.releaseDefinition.name}}    
 **Release Number**  : {{releaseDetails.name}}
 **Release completed** : {{releaseDetails.modifiedOn}}     
 **Build Number**: {{buildDetails.id}}
 **Compared Release Number**  : {{compareReleaseDetails.name}}    
 **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
 
-### Associated Pull Requests ({{pullRequests.length}})
+# Associated Pull Requests ({{pullRequests.length}})
 {{#forEach pullRequests}}
 {{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
 *  **PR {{this.id}}**  {{this.title}}
 {{/forEach}}
 
-##  All Associated Work Items ({{workItems.length}})
+# Builds with associated WI/CS ({{builds.length}})
+{{#forEach builds}}
+{{#if isFirst}}## Builds {{/if}}
+##  Build {{this.build.buildNumber}}
+{{#forEach this.commits}}
+{{#if isFirst}}### Commits {{/if}}
+- CS {{this.id}}
+{{/forEach}}
+{{#forEach this.workitems}}
+{{#if isFirst}}### Workitems {{/if}}
+- WI {{this.id}}
+{{/forEach}} 
+{{/forEach}}
+
+# Global list of WI ({{workItems.length}})
 {{#forEach workItems}}
-{{#if isFirst}}### Associated Work Items (only shown if  WI) {{/if}}
+{{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
 *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
    - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
    - **Tags** {{lookup this.fields 'System.Tags'}}
 {{/forEach}}
 
-##  Associated Work Items with Tag1
-{{#forEach workItems}}
-{{#if (test (lookup this.fields 'System.Tags') (toRegex 'Tag 1')) }}
-*  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
-   - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
-   - **Tags** {{lookup this.fields 'System.Tags'}}
-{{/if }}
-{{/forEach}}
-
-
-## Associated commits  ({{commits.length}})
+# Global list of CS ({{commits.length}})
 {{#forEach commits}}
 {{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
 * ** ID{{this.id}}** 

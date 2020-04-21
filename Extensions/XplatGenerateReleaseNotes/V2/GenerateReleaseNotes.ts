@@ -66,6 +66,7 @@ async function run(): Promise<number>  {
             var globalCommits: Change[] = [];
             var globalWorkItems: ResourceRef[] = [];
             var globalPullRequests: GitPullRequest[] = [];
+            var globalBuilds: util.UnifiedArtifactDetails[] = [];
 
             var mostRecentSuccessfulDeploymentName: string = "";
             let mostRecentSuccessfulDeploymentRelease: Release;
@@ -196,9 +197,14 @@ async function run(): Promise<number>  {
                                                 commits = await buildApi.getChangesBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                                 workitems = await buildApi.getWorkItemsBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                             }
+
                                         } else {
                                             agentApi.logInfo(`Build for artifact [${artifactInThisRelease.artifactAlias}] has not changed.  Nothing to do`);
                                         }
+
+                                        // get artifact details for the unified output format
+                                        let artifact = await buildApi.getBuild(parseInt(artifactInMostRecentRelease.buildId));
+                                        globalBuilds.push(new util.UnifiedArtifactDetails(artifact, commits, workitems));
 
                                         var commitCount: number = 0;
                                         var workItemCount: number = 0;
@@ -268,6 +274,7 @@ async function run(): Promise<number>  {
                 }
             }
 
+            agentApi.logInfo(`Total build artifacts: [${globalBuilds.length}`);
             agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
             agentApi.logInfo(`Total workitems: [${fullWorkItems.length}]`);
 
@@ -356,7 +363,8 @@ async function run(): Promise<number>  {
                 anyFieldContent,
                 customHandlebarsExtensionCode,
                 prDetails,
-                globalPullRequests);
+                globalPullRequests,
+                globalBuilds);
 
             util.writeFile(outputfile, outputString);
 
