@@ -13,8 +13,16 @@ export class UnifiedArtifactDetails {
     workitems: ResourceRef[];
     constructor ( build: Build, commits: Change[], workitems: ResourceRef[]) {
         this.build = build;
-        this.commits = commits;
-        this.workitems = workitems;
+        if (commits) {
+            this.commits = commits;
+        } else {
+            this.commits = [];
+        }
+        if (workitems) {
+            this.workitems = workitems;
+        } else {
+            this.workitems = [];
+        }
    }
 }
 
@@ -487,6 +495,11 @@ export function processTemplate(
             agentApi.logInfo("Loading handlebars-helpers extension");
             const helpers = require("handlebars-helpers")({
                 handlebars: handlebars
+            });
+
+            // add a custom helper to expand json
+            handlebars.registerHelper("json", function(context) {
+                return JSON.stringify(context);
             });
 
             var customHandlebarsExtensionFile = "customHandlebarsExtension";

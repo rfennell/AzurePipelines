@@ -274,7 +274,7 @@ async function run(): Promise<number>  {
                 }
             }
 
-            agentApi.logInfo(`Total build artifacts: [${globalBuilds}`);
+            agentApi.logInfo(`Total build artifacts: [${globalBuilds.length}`);
             agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
             agentApi.logInfo(`Total workitems: [${fullWorkItems.length}]`);
 

@@ -26,6 +26,8 @@ If used in the build the release notes are based on the current build only.
 
 There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes for both Git and TFVC based releases for both V1 and V2 formats. Most samples are in Markdown, but it is possible to generate any other format such as HTML
 
+> **It is recommended that the newer Handlebars based templating model is use. It is more flexible and future enhancements will target it.**
+
 ### Use the original scripting model 
 Prior to 2.27.x a bespoke scripting language was used. A sample of this format is as follows
 
@@ -76,9 +78,9 @@ What is done behind the scenes is that each `${properties}` block in the templat
 #### Pull request objects 
 * **prDetails** – populated with the build artifacts trigger info, if available (only shown if build triggered as part of PR validation). 
 
-**Note:** To dump all possible values use the form `${JSON.stringify(propertyToDump)}`
+> **Note:** To dump all possible values use the form `${JSON.stringify(propertyToDump)}`
 
-**Note:** This task differed from the older [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks) that used the format `$(properties)`, this task uses the format `${properties}` due to the move from PowerShell to Node within the task
+> **Note:** This task differed from the older [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks) that used the format `$(properties)`, this task uses the format `${properties}` due to the move from PowerShell to Node within the task
 
 An example template to run within a Release for GIT or TFVC Azure DevOps build based artifacts could be
 
@@ -132,27 +134,42 @@ An example template to run within a Release for GIT or TFVC Azure DevOps build b
 Since 2.27.x it has been possible to create your templates using [Handlebars](https://handlebarsjs.com/) syntax. A template written in this format is as follows
 
 ```
-## Notes for release  {{releaseDetails.releaseDefinition.name}}    
+# Notes for release  {{releaseDetails.releaseDefinition.name}}    
 **Release Number**  : {{releaseDetails.name}}
 **Release completed** : {{releaseDetails.modifiedOn}}     
 **Build Number**: {{buildDetails.id}}
 **Compared Release Number**  : {{compareReleaseDetails.name}}    
 **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
 
-### Associated Pull Requests ({{pullRequests.length}})
-
+# Associated Pull Requests ({{pullRequests.length}})
 {{#forEach pullRequests}}
 {{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
 *  **PR {{this.id}}**  {{this.title}}
 {{/forEach}}
 
+# Builds with associated WI/CS ({{builds.length}})
+{{#forEach builds}}
+{{#if isFirst}}## Builds {{/if}}
+##  Build {{this.build.buildNumber}}
+{{#forEach this.commits}}
+{{#if isFirst}}### Commits {{/if}}
+- CS {{this.id}}
+{{/forEach}}
+{{#forEach this.workitems}}
+{{#if isFirst}}### Workitems {{/if}}
+- WI {{this.id}}
+{{/forEach}} 
+{{/forEach}}
+
+# Global list of WI ({{workItems.length}})
 {{#forEach workItems}}
-{{#if isFirst}}### Associated Work Items (only shown if  WI) {{/if}}
+{{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
 *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
    - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
    - **Tags** {{lookup this.fields 'System.Tags'}}
 {{/forEach}}
 
+# Global list of CS ({{commits.length}})
 {{#forEach commits}}
 {{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
 * ** ID{{this.id}}** 
@@ -182,6 +199,8 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 
 #### Build objects
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
+
+> **Note:** To dump all possible values use the form `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion
 
 #### Extensions
 With 2.28.x support was added for Handbars extensions in two ways:
