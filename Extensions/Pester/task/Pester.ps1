@@ -85,7 +85,13 @@ if ((Get-Module -Name PowerShellGet -ListAvailable) -and
     }
     $NewestPester = Find-Module -Name Pester | Sort-Object Version -Descending | Select-Object -First 1
     If ((Get-Module Pester -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
-        Install-Module -Name Pester -Scope CurrentUser -Force -Repository $NewestPester.Repository -SkipPublisherCheck
+        try {
+            Install-Module -Name Pester -Scope CurrentUser -Force -Repository $NewestPester.Repository -SkipPublisherCheck -MaximumVersion 4.99.99 -ErrorAction Stop
+        }
+        catch {
+            Write-Host "##vos[task.logissue type=warning]There was an issue downloading a new version of Pester so falling back to version of Pester shipped with extension."
+            Import-Module "$PSScriptRoot\4.6.0\Pester.psd1" -force
+        }
     }
     Import-Module -Name Pester
 }
