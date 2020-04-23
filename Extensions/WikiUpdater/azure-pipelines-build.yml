@@ -138,33 +138,33 @@ stages:
                 repo: github.com/rfennell/demorepo.wiki
                 filename: PageFromWikiUpdater.md
                 contents: |
-                Header
-                ---
-                $(OutputText)
-                ---
-                Footer
+                  Header
+                  ---
+                  $(OutputText)
+                  ---
+                  Footer
                 message: 'Update from Release - $(Release.ReleaseName)'
                 gitname: builduser
                 gitemail: 'build@demo'
                 user: rfennell
                 password: '$(githubPAT)'
                 localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater - GitHub append'
               inputs:
                 repo: github.com/rfennell/demorepo.wiki
                 filename: PageFromWikiUpdater.md
                 replaceFile: false
                 contents: |
-                ---
-                This is more test that has been added to the end of the file
-                message: 'Append from Release - $(Release.ReleaseName)'
+                  ---
+                  This is more test that has been added to the end of the file
+                  message: 'Append from Release - $(Release.ReleaseName)'
                 gitname: builduser
                 gitemail: 'build@demo'
                 user: rfennell
                 password: '$(githubPAT)'
                 localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater - GitHub prepend '
               inputs:
                 repo: github.com/rfennell/demorepo.wiki
@@ -172,9 +172,9 @@ stages:
                 replaceFile: false
                 appendToFile: false
                 contents: |
-                ---
-                This is more test that has been added to the end of the file
-                message: 'Append from Release - $(Release.ReleaseName)'
+                  ---
+                  This is more test that has been added to the end of the file
+                  message: 'Append from Release - $(Release.ReleaseName)'
                 gitname: builduser
                 gitemail: 'build@demo'
                 user: rfennell
@@ -186,12 +186,12 @@ stages:
                 repo: github.com/rfennell/demorepo.wiki
                 filename: TestFolder/PageFromWikiUpdater.md
                 contents: |
-                Header
-                ---
-                $(OutputText)
-                ---
-                Footer
-                message: 'Update from Release - $(Release.ReleaseName)'
+                  Header
+                  ---
+                  $(OutputText)
+                  ---
+                  Footer
+                  message: 'Update from Release - $(Release.ReleaseName)'
                 gitname: builduser
                 gitemail: 'build@demo'
                 user: rfennell
@@ -203,11 +203,11 @@ stages:
                 repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
                 filename: TestPageWithCreds.md
                 contents: |
-                Header
-                ---
-                $(OutputText)
-                ---
-                Footer
+                  Header
+                  ---
+                  $(OutputText)
+                  ---
+                  Footer
                 message: 'Update from Release - $(Release.ReleaseName) with Creds'
                 gitname: builduser
                 gitemail: 'build@demo'
@@ -220,11 +220,11 @@ stages:
                 repo: 'dev.azure.com/richardfennell/Git%20project/_git/WikiRepo'
                 filename: TestPageOnBranch.md
                 contents: |
-                Header on Branch
-                ---
-                $(OutputText)
-                ---
-                Footer
+                  Header on Branch
+                  ---
+                  $(OutputText)
+                  ---
+                  Footer
                 message: 'Update from Release - $(Release.ReleaseName) with Creds'
                 gitname: builduser
                 gitemail: 'build@demo'
@@ -238,11 +238,11 @@ stages:
                 repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
                 filename: subfolder/TestPageWithCredsInFolder.md
                 contents: |
-                Header
-                ---
-                $(OutputText)
-                ---
-                Footer
+                  Header
+                  ---
+                  $(OutputText)
+                  ---
+                  Footer
                 message: 'Update from Release - $(Release.ReleaseName) with Creds'
                 gitname: builduser
                 gitemail: 'build@demo'
@@ -255,11 +255,11 @@ stages:
                 repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 filename: TestPageForWikiUpdater.md
                 contents: |
-                Header
-                ---
-                $(OutputText)
-                ---
-                Footer
+                  Header
+                  ---
+                  $(OutputText)
+                  ---
+                  Footer
                 message: 'Update from Release - $(Release.ReleaseName) as Agent'
                 gitname: builduser
                 gitemail: 'build@demo'
