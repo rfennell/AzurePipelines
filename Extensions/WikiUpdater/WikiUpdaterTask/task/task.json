@@ -44,7 +44,7 @@
       "label": "Checkout Branch",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "The name of the pre-existing branch to checkout prior to committing the change, defaults to empty, so no checkout is done and commits are done to the default 'master' branch",
+      "helpMarkDown": "The name of the pre-existing branch to checkout prior to committing the change, defaults to empty, so no checkout is done and commits are done to the default 'master' branch"
     },
     {
       "name": "filename",
