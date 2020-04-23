@@ -177,7 +177,6 @@
       "helpMarkDown": "If set to true, credentials are passed as a header value. If false, the default, they are passed in te URL. To address #613 which is seen on some on-prem instances",
       "groupName": "advanced"
     },
-    ,
     {
       "name": "branch",
       "type": "string",
