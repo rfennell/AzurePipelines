@@ -39,6 +39,14 @@
       "helpMarkDown": "The repo URL to clone e.g dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. See documentation for more details https://github.com/rfennell/AzurePipelines/wiki/WIKI-Updater-Tasks"
     },
     {
+      "name": "branch",
+      "type": "string",
+      "label": "Checkout Branch",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The name of the pre-existing branch to checkout prior to committing the change, defaults to empty, so no checkout is done and commits are done to the default 'master' branch",
+    },
+    {
       "name": "filename",
       "type": "string",
       "label": "Name of the file/page",
@@ -175,15 +183,6 @@
       "defaultValue": "False",
       "required": false,
       "helpMarkDown": "If set to true, credentials are passed as a header value. If false, the default, they are passed in te URL. To address #613 which is seen on some on-prem instances",
-      "groupName": "advanced"
-    },
-    {
-      "name": "branch",
-      "type": "string",
-      "label": "Branch to commit on",
-      "defaultValue": "",
-      "required": false,
-      "helpMarkDown": "The name of the pre-existing branch to checkout prior to committing the change, defaults to empty, so no checkout is done and writes are done to the default master branch",
       "groupName": "advanced"
     }
   ],
