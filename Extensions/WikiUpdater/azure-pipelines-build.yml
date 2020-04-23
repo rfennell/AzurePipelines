@@ -118,10 +118,9 @@ stages:
                 templateLocation: InLine
                 inlinetemplate: |
                   # Release notes 
-                  ## Notes for release  ${releaseDetails.releaseDefinition.name}    
-                  **Release Number**  : ${releaseDetails.name}    
-                  **Release completed** : ${releaseDetails.modifiedOn}     
-                  **Compared Release Number**  : ${compareReleaseDetails.name}    
+                  **Build Number**  : ${buildDetails.buildNumber} 
+                  **Build started** : ${buildDetails.startTime}  
+                  **Source Branch** : ${buildDetails.sourceBranch}  
                   
                   ### Associated work items  
                   @@WILOOP@@  
