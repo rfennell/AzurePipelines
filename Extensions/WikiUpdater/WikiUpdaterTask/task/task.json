@@ -2,7 +2,7 @@
   "id": "e59c5ae6-3afd-479d-bc40-81cd6c541840",
   "name": "WikiUpdaterTask",
   "friendlyName": "Git based WIKI Updater from Black Marble",
-  "description": "A tools to update or create a WIKI based in a Git repo",
+  "description": "A tools to update or create a WIKI based in a Git repo ",
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-Updater-Task/)",
   "category": "Utility",
   "visibility": [
