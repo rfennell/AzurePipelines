@@ -16,7 +16,7 @@ variables:
   # declared in the pipeline UI
   #  major
   #  minor
-  - group:  'WIKIUpdater  Extension'
+  - group:  'WIKIUpdater Extension'
     # this group includes the following variables  
     #  ExtensionRoot - working folder
     #  PublisherID  - Marketplace publisher
