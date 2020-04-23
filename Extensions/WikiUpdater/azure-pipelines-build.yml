@@ -117,21 +117,21 @@ stages:
                 outputVariableName: OutputText
                 templateLocation: InLine
                 inlinetemplate: |
-                # Release notes 
-                ## Notes for release  ${releaseDetails.releaseDefinition.name}    
-                **Release Number**  : ${releaseDetails.name}    
-                **Release completed** : ${releaseDetails.modifiedOn}     
-                **Compared Release Number**  : ${compareReleaseDetails.name}    
-                
-                ### Associated work items  
-                @@WILOOP@@  
-                * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
-                @@WILOOP@@  
+                  # Release notes 
+                  ## Notes for release  ${releaseDetails.releaseDefinition.name}    
+                  **Release Number**  : ${releaseDetails.name}    
+                  **Release completed** : ${releaseDetails.modifiedOn}     
+                  **Compared Release Number**  : ${compareReleaseDetails.name}    
                   
-                ### Associated commits
-                @@CSLOOP@@  
-                * **ID ${csdetail.commitId} ** ${csdetail.comment}    
-                @@CSLOOP@@
+                  ### Associated work items  
+                  @@WILOOP@@  
+                  * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
+                  @@WILOOP@@  
+                    
+                  ### Associated commits
+                  @@CSLOOP@@  
+                  * **ID ${csdetail.commitId} ** ${csdetail.comment}    
+                  @@CSLOOP@@
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater - GitHub'
               inputs:
