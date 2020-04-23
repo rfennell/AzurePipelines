@@ -164,7 +164,7 @@ stages:
                 user: rfennell
                 password: '$(githubPAT)'
                 localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
-              - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater - GitHub prepend '
               inputs:
                 repo: github.com/rfennell/demorepo.wiki
