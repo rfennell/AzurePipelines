@@ -27,7 +27,7 @@ var dataIsFile = tl.getBoolInput("dataIsFile");
 var sourceFile = tl.getInput("sourceFile");
 var tagRepo = tl.getBoolInput("tagRepo");
 var tag = tl.getInput("tag");
-var branch = tl.getInput("tbranch");
+var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
 
 console.log(`Variable: Repo [${repo}]`);
