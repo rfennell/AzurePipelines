@@ -26,6 +26,7 @@ const replaceFile = true;
 const appendFile = true;
 const tagRepo = false;
 const tag = "";
+const branch = "";
 const injectExtraHeaders = false;
 
-UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders);
+UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch);

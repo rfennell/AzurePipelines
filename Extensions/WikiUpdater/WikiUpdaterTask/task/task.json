@@ -176,6 +176,16 @@
       "required": false,
       "helpMarkDown": "If set to true, credentials are passed as a header value. If false, the default, they are passed in te URL. To address #613 which is seen on some on-prem instances",
       "groupName": "advanced"
+    },
+    ,
+    {
+      "name": "branch",
+      "type": "string",
+      "label": "Branch to commit on",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The name of the pre-existing branch to checkout prior to committing the change, defaults to empty, so no checkout is done and writes are done to the default master branch",
+      "groupName": "advanced"
     }
   ],
   "instanceNameFormat": "Git based WIKI Updater",

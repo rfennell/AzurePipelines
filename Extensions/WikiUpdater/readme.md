@@ -22,7 +22,8 @@ Add the task to a build or release
 - Replace File - Replaces the page in the WIKI if set to True, if False will append or prepend to the page. Defaults to True
 - Append to File - Only meaningful if using the option to not replace the WIKI page. In this case, adds the contents to end of file if true, if false inserts at the new content start of the page. Defaults to True
 - Tag Repo - If true a Git Tag set in the value of 'Tag' parameter in the repo. Defaults to false
-- Tag - The tag to add to the repo, if the Tage repo flag is set to true
+- Tag - The tag to add to the repo, if the Tag repo flag is set to true
+- Branch - The name of the **pre-existing** branch to checkout prior to committing the change, defaults to empty, so no checkout is done and writes are done to the default master branch
 
 #### Advanced
 
