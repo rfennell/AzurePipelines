@@ -1,88 +1,345 @@
-resources:
-- repo: self
-
 name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
-trigger: none # will disable CI build
+trigger: 
+  branches:
+    include: [ master ] # branch names which will trigger a build
+  paths:
+    include: [ /Extensions/WikiUpdater ] # file paths which must match to trigger a build, cannot be a variable
 
 pr: # will trigger on PR
   branches:
     include: [ master ] # branch names which will trigger a build
   paths:
-    include: [ /Extensions/WikiUpdater ] # file paths which must match to trigger a build
-
-pool:
-  name: 'Hosted VS2017'
-  demands: npm
+    include: [ /Extensions/WikiUpdater ] # file paths which must match to trigger a build, cannot be a variable
 
 variables:
-  ExtensionRoot: 'Extensions/WikiUpdater'
+  # declared in the pipeline UI
+  #  major
+  #  minor
+  - group:  'WIKIUpdater  Extension'
+    # this group includes the following variables  
+    #  ExtensionRoot - working folder
+    #  PublisherID  - Marketplace publisher
+    #  ExtensionID - Marketplace extension id
+    #  vmImage - name of Azure DevOps pool to use
+    #  artifactLocationName -  folder the artifact to push is stored in
+    #  privateExtentionsTag - tag to show if private (else blank)
+    #  taskID - Marketplace ID of task
+    #  wikiFilename - name of generated docs files
+    #  githubPAT - for testing
+    # AzureDevOpsPAT - for testing
+stages:
+  - stage: Build
+    jobs:
+    - job: Build
+      pool: 
+        vmImage: '$(vmImage)'
+        demands: npm
+      steps:
+      # version all the task in the extension
+      - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+        displayName: 'Setting the version for tasks in extension'
+        inputs:
+          rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
+          targetFiles: '**\\task.json'
+      
+      # for each Node based task we must transpile it
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'ArtifactDescriptionTask'
 
-steps:
-- task: qetza.replacetokens.replacetokens-task.replacetokens@1
-  displayName: 'Replace tokens in **\task.json'
-  inputs:
-    rootDirectory: '$(ExtensionRoot)'
-    targetFiles: '**\task.json'
+      - task: TfxInstaller@1
+        displayName: 'Install Tfx Tool'
+        inputs:
+          version: 'v0.6.x'
 
-# standard block for Node
-- task: Npm@0
-  displayName: 'npm install $(TaskFolder)'
-  inputs:
-    cwd: '$(ExtensionRoot)\$(TaskFolder)'
+      - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+        displayName: 'Package and Publish Extension as a PROD Package '
+        inputs:
+          rootFolder: '$(ExtensionRoot)'
+          outputPath: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
+          publisherId: '$(PublisherID)'
+          extensionId: '$(ExtensionID)'
+          extensionVersion: '$(Build.BuildNumber)'
+          updateTasksVersion: true
+          extensionVisibility: public
 
-- task: Npm@0
-  displayName: 'npm run build $(TaskFolder)'
-  inputs:
-    cwd: '$(ExtensionRoot)\$(TaskFolder)'
-    command: run
-    arguments: build
+      - task: CopyFiles@2
+        displayName: 'Copy Docs'
+        inputs:
+          SourceFolder: Extensions/ArtifactDescription
+          Contents: |
+            readme.md
+            vss-extension.json
+            **\task\task.json
+          TargetFolder: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
 
-- task: Npm@0
-  displayName: 'npm run test $(TaskFolder)'
-  inputs:
-    cwd: '$(ExtensionRoot)\$(TaskFolder)'
-    command: run
-    arguments: test
+      - task: PublishPipelineArtifact@0
+        inputs:
+          artifactName: 'vsix'
+          targetPath: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
 
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results  $(TaskFolder)'
-  inputs:
-    testResultsFiles: '$(ExtensionRoot)\$(TaskFolder)\test-output\test-results.xml'
-    testRunTitle: '$(TaskFolder)'
+  - stage: Private
+    jobs:
+    - deployment: Private_Deployment
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Private)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            # we don't need to DownloadPipelineArtifact as this is done automatically
+            - template: ..\..\YAMLTemplates\publish-extension.yml
+              parameters:
+                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                 extensionTag: '$(privateExtentionsTag)' 
+                 extensionVisibility: private    
 
-- task: Npm@0
-  displayName: 'npm run package $(TaskFolder)'
-  inputs:
-    cwd: '$(ExtensionRoot)\$(TaskFolder)'
-    command: run
-    arguments: package
-# end node block
+  - stage: Test
+    dependsOn: Private 
+    jobs:
+    - deployment: Private_Test
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (WIKIUpdater)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@2
+              displayName: 'Generate Release Notes based on Release Comparision API'
+              inputs:
+                outputfile: '$(System.DefaultWorkingDirectory)\inline.md'
+                outputVariableName: OutputText
+                templateLocation: InLine
+                inlinetemplate: |
+                # Release notes 
+                ## Notes for release  ${releaseDetails.releaseDefinition.name}    
+                **Release Number**  : ${releaseDetails.name}    
+                **Release completed** : ${releaseDetails.modifiedOn}     
+                **Compared Release Number**  : ${compareReleaseDetails.name}    
+                
+                ### Associated work items  
+                @@WILOOP@@  
+                * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
+                @@WILOOP@@  
+                  
+                ### Associated commits
+                @@CSLOOP@@  
+                * **ID ${csdetail.commitId} ** ${csdetail.comment}    
+                @@CSLOOP@@
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              displayName: 'Git based WIKI Updater - GitHub'
+              inputs:
+                repo: github.com/rfennell/demorepo.wiki
+                filename: PageFromWikiUpdater.md
+                contents: |
+                Header
+                ---
+                $(OutputText)
+                ---
+                Footer
+                message: 'Update from Release - $(Release.ReleaseName)'
+                gitname: builduser
+                gitemail: 'build@demo'
+                user: rfennell
+                password: '$(githubPAT)'
+                localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              displayName: 'Git based WIKI Updater - GitHub append'
+              inputs:
+                repo: github.com/rfennell/demorepo.wiki
+                filename: PageFromWikiUpdater.md
+                replaceFile: false
+                contents: |
+                ---
+                This is more test that has been added to the end of the file
+                message: 'Append from Release - $(Release.ReleaseName)'
+                gitname: builduser
+                gitemail: 'build@demo'
+                user: rfennell
+                password: '$(githubPAT)'
+                localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              displayName: 'Git based WIKI Updater - GitHub prepend '
+              inputs:
+                repo: github.com/rfennell/demorepo.wiki
+                filename: PageFromWikiUpdater.md
+                replaceFile: false
+                appendToFile: false
+                contents: |
+                ---
+                This is more test that has been added to the end of the file
+                message: 'Append from Release - $(Release.ReleaseName)'
+                gitname: builduser
+                gitemail: 'build@demo'
+                user: rfennell
+                password: '$(githubPAT)'
+                localpath: '$(System.DefaultWorkingDirectory)\githubrepo'   
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              displayName: 'Git based WIKI Updater - GitHub folder'
+              inputs:
+                repo: github.com/rfennell/demorepo.wiki
+                filename: TestFolder/PageFromWikiUpdater.md
+                contents: |
+                Header
+                ---
+                $(OutputText)
+                ---
+                Footer
+                message: 'Update from Release - $(Release.ReleaseName)'
+                gitname: builduser
+                gitemail: 'build@demo'
+                user: rfennell
+                password: '$(githubPAT)'
+                localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              displayName: 'Git based WIKI Updater - Azure DevOps with Creds'
+              inputs:
+                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                filename: TestPageWithCreds.md
+                contents: |
+                Header
+                ---
+                $(OutputText)
+                ---
+                Footer
+                message: 'Update from Release - $(Release.ReleaseName) with Creds'
+                gitname: builduser
+                gitemail: 'build@demo'
+                user: richardfennell
+                password: '$(AzureDevOpsPAT)'
+                localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              displayName: 'Git based WIKI Updater - Azure DevOps in branch'
+              inputs:
+                repo: 'dev.azure.com/richardfennell/Git%20project/_git/WikiRepo'
+                filename: TestPageOnBranch.md
+                contents: |
+                Header on Branch
+                ---
+                $(OutputText)
+                ---
+                Footer
+                message: 'Update from Release - $(Release.ReleaseName) with Creds'
+                gitname: builduser
+                gitemail: 'build@demo'
+                user: richardfennell
+                password: '$(AzureDevOpsPAT)'
+                localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
+                branch: b1
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              displayName: 'Git based WIKI Updater - Azure DevOps into Folder'
+              inputs:
+                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                filename: subfolder/TestPageWithCredsInFolder.md
+                contents: |
+                Header
+                ---
+                $(OutputText)
+                ---
+                Footer
+                message: 'Update from Release - $(Release.ReleaseName) with Creds'
+                gitname: builduser
+                gitemail: 'build@demo'
+                user: richardfennell
+                password: '$(AzureDevOpsPAT)'
+                localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              displayName: 'Git based WIKI Updater - Azure DevOps as Agent'
+              inputs:
+                repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
+                filename: TestPageForWikiUpdater.md
+                contents: |
+                Header
+                ---
+                $(OutputText)
+                ---
+                Footer
+                message: 'Update from Release - $(Release.ReleaseName) as Agent'
+                gitname: builduser
+                gitemail: 'build@demo'
+                useAgentToken: true
+                localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagent'
 
-- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
-  displayName: 'Package and Publish VSTS Extension: PROD Package '
-  inputs:
-    rootFolder: '$(ExtensionRoot)'
-    outputPath: '$(Build.ArtifactStagingDirectory)\vsix'
-    publisherId: '$(PackageID)'
-    extensionId: '$(ExtensionID)'
-    extensionVersion: '$(Build.BuildNumber)'
-    updateTasksVersion: true
-    extensionVisibility: public
 
-- task: CopyFiles@2
-  displayName: 'Copy Docs'
-  inputs:
-    SourceFolder: Extensions/WikiUpdater
-    Contents: |
-     readme.md
-     vss-extension.json
-     WikiUpdaterTask\task\task.json
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\vsix'
+  - stage: Documentation
+    dependsOn: Test 
+    pool:
+      name: 'default'
+    variables:
+    - group: 'WIKI Updater'
+    # provides the variable
+    #   gitemail - used in the Git Config
+    #   gitName - used in the Git Config
+    #   githubpat - used to authenticate to reop
+    #   user - used to authenticate to reop
+    #   repo - url of repo (without HTTPS://)
+    jobs:
+    - job: Documentation
+      steps:
+      # we need a download here as not in a deploygroup
+      - task: DownloadPipelineArtifact@0
+        inputs:
+          artifactName: 'vsix'
+          targetPath: $(System.DefaultWorkingDirectory)
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: vsix'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
-    ArtifactName: vsix
+      - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
+        parameters:
+          workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
+          wikiFilename: '$(wikiFilename)'
+          repo: '$(repo)'
+          gitname: '$(GitName)'
+          gitemail: '$(GitEmail)'
+          UserName: '$(UserName)'
+          GitHubPat: '$(GitHubPat)'
 
+
+  - stage: Public
+    dependsOn: Documentation
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    jobs:
+    - deployment: Public_Deployment
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Public)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              # we don't need to DownloadPipelineArtifact as this is done automatically
+              - template: ..\..\YAMLTemplates\publish-extension.yml
+                parameters:
+                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                   extensionTag: '' 
+                   extensionVisibility: public    
+
+    - job: Post_Publish
+      dependsOn: Public_Deployment 
+      pool:
+        vmImage: '$(vmImage)'
+      steps:
+      
+      - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
+        displayName: 'Get Git Artifact PR Reason'
+        inputs:
+          OutputText: 'OutputedText'
+      
+      - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Twitter.Xpirit-Vsts-Release-Twitter.Twitter@1
+        displayName: 'Send Tweet about new release'
+        inputs:
+          TwitterEndPoint: 'Twitter Richard'
+          Message: 'I have just released Version $(Build.BuildNumber) of my Azure DevOps Pipeline $(Build.DefinitionName) http://bit.ly/VSTS-RF $(OutputedText) '
+  
+      - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
+        displayName: 'Update Build Variable'
+        inputs:
+          variable: Minor
+          mode: Autoincrement
+          usedefaultcreds: false
+                
