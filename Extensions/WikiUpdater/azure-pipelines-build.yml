@@ -68,7 +68,7 @@ stages:
       - task: CopyFiles@2
         displayName: 'Copy Docs'
         inputs:
-          SourceFolder: Extensions/ArtifactDescription
+          SourceFolder: $(ExtensionRoot)
           Contents: |
             readme.md
             vss-extension.json
@@ -269,7 +269,7 @@ stages:
   - stage: Documentation
     dependsOn: Test 
     pool:
-      name: 'default'
+      vmImage: '$(vmImage)'
     variables:
     - group: 'WIKI Updater'
     # provides the variable
