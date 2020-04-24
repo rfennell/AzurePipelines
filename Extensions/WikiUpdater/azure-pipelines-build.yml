@@ -27,7 +27,7 @@ variables:
     #  taskID - Marketplace ID of task
     #  wikiFilename - name of generated docs files
     #  githubPAT - for testing
-    # AzureDevOpsPAT - for testing
+    #  AzureDevOpsPAT - for testing
 stages:
   - stage: Build
     jobs:
@@ -270,7 +270,7 @@ stages:
     dependsOn: Test 
     pool:
       # vmImage: '$(vmImage)'
-      pool: default
+      name: default
     variables:
     - group: 'WIKI Updater'
     # provides the variable
@@ -285,7 +285,7 @@ stages:
       # we need a download here as not in a deploygroup
       - task: DownloadPipelineArtifact@0
         inputs:
-          artifactName: 'vsix'
+          artifactName: $(artifactLocationName)
           targetPath: $(System.DefaultWorkingDirectory)
 
       - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
