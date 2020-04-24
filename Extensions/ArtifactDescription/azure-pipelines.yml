@@ -66,7 +66,7 @@ stages:
       - task: CopyFiles@2
         displayName: 'Copy Docs'
         inputs:
-          SourceFolder: Extensions/ArtifactDescription
+          SourceFolder: $(ExtensionRoot)
           Contents: |
             readme.md
             vss-extension.json
@@ -114,37 +114,38 @@ stages:
                 OutputText: 'OutputedText' 
             - bash: "echo 'The reason message is [$(OutputedText)]'"
   
-  - stage: Documentation
+            - stage: Documentation
     dependsOn: Test 
     pool:
-      name: 'default'
+      # vmImage: '$(vmImage)'
+      name: default
     variables:
     - group: 'WIKI Updater'
     # provides the variable
     #   gitemail - used in the Git Config
     #   gitName - used in the Git Config
-    #   githubpat - used to authenticate to reop
-    #   user - used to authenticate to reop
+    #   githubpat - used to authenticate to repo
+    #   user - used to authenticate to repo
     #   repo - url of repo (without HTTPS://)
     jobs:
-    - job: Documentation
-      steps:
-      # we need a download here as not in a deploygroup
-      - task: DownloadPipelineArtifact@0
-        inputs:
-          artifactName: 'vsix'
-          targetPath: $(System.DefaultWorkingDirectory)
-
-      - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
-        parameters:
-          workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
-          wikiFilename: '$(wikiFilename)'
-          repo: '$(repo)'
-          gitname: '$(GitName)'
-          gitemail: '$(GitEmail)'
-          UserName: '$(UserName)'
-          GitHubPat: '$(GitHubPat)'
-
+    - deployment: Documentation
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Documentation)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:   
+            steps:
+              - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
+                parameters:
+                  workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
+                  wikiFilename: '$(wikiFilename)'
+                  repo: '$(repo)'
+                  gitname: '$(GitName)'
+                  gitemail: '$(GitEmail)'
+                  UserName: '$(UserName)'
+                  GitHubPat: '$(GitHubPat)'
 
   - stage: Public
     dependsOn: Documentation
