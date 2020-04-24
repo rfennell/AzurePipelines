@@ -1,0 +1,176 @@
+name: $(Major).$(Minor).$(rev:r)  # build numbering format
+
+trigger: 
+  branches:
+    include: [ master ] # branch names which will trigger a build
+  paths:
+    include: [ /Extensions/YamlGenerator ] # file paths which must match to trigger a build, cannot be a variable
+
+pr: # will trigger on PR
+  branches:
+    include: [ master ] # branch names which will trigger a build
+  paths:
+    include: [ /Extensions/YamlGenerator ] # file paths which must match to trigger a build, cannot be a variable
+
+variables:
+  # declared in the pipeline UI
+  #  major
+  #  minor
+  - group:  'WIKIUpdater Extension'
+    # this group includes the following variables  
+    #  ExtensionRoot - working folder
+    #  PublisherID  - Marketplace publisher
+    #  ExtensionID - Marketplace extension id
+    #  vmImage - name of Azure DevOps pool to use
+    #  artifactLocationName -  folder the artifact to push is stored in
+    #  privateExtentionsTag - tag to show if private (else blank)
+    #  taskID - Marketplace ID of task
+    #  wikiFilename - name of generated docs files
+    #  githubPAT - for testing
+    #  AzureDevOpsPAT - for testing
+stages:
+  - stage: Build
+    jobs:
+    - job: Build
+      pool: 
+        vmImage: '$(vmImage)'
+        demands: npm
+      steps:
+      # version all the task in the extension
+      - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+        displayName: 'Setting the version for tasks in extension'
+        inputs:
+          rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
+          targetFiles: '**\\task.json'
+      
+      # for each Node based task we must transpile it
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'WikiUpdaterTask'
+
+      - task: TfxInstaller@1
+        displayName: 'Install Tfx Tool'
+        inputs:
+          version: 'v0.6.x'
+
+      - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+        displayName: 'Package and Publish Extension as a PROD Package '
+        inputs:
+          rootFolder: '$(ExtensionRoot)'
+          outputPath: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
+          publisherId: '$(PublisherID)'
+          extensionId: '$(ExtensionID)'
+          extensionVersion: '$(Build.BuildNumber)'
+          updateTasksVersion: true
+          extensionVisibility: public
+
+      - task: CopyFiles@2
+        displayName: 'Copy Docs'
+        inputs:
+          SourceFolder: $(ExtensionRoot)
+          Contents: |
+            readme.md
+            vss-extension.json
+            **\task\task.json
+          TargetFolder: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
+
+      - task: PublishPipelineArtifact@0
+        inputs:
+          artifactName: 'vsix'
+          targetPath: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
+
+  - stage: Private
+    jobs:
+    - deployment: Private_Deployment
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Private)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            # we don't need to DownloadPipelineArtifact as this is done automatically
+            - template: ..\..\YAMLTemplates\publish-extension.yml
+              parameters:
+                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                 extensionTag: '$(privateExtentionsTag)' 
+                 extensionVisibility: private    
+
+  - stage: Documentation
+    dependsOn: Private 
+    pool:
+      vmImage: '$(vmImage)'
+    variables:
+    - group: 'WIKI Updater'
+    # provides the variable
+    #   gitemail - used in the Git Config
+    #   gitName - used in the Git Config
+    #   githubpat - used to authenticate to repo
+    #   user - used to authenticate to repo
+    #   repo - url of repo (without HTTPS://)
+    jobs:
+    - deployment: Documentation
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (YamlGenerator)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:   
+            steps:
+              - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
+                parameters:
+                  workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
+                  wikiFilename: '$(wikiFilename)'
+                  repo: '$(repo)'
+                  gitname: '$(GitName)'
+                  gitemail: '$(GitEmail)'
+                  UserName: '$(UserName)'
+                  GitHubPat: '$(GitHubPat)'
+
+  - stage: Public
+    dependsOn: Documentation
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    jobs:
+    - deployment: Public_Deployment
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Public)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              # we don't need to DownloadPipelineArtifact as this is done automatically
+              - template: ..\..\YAMLTemplates\publish-extension.yml
+                parameters:
+                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                   extensionTag: '' 
+                   extensionVisibility: public    
+
+    - job: Post_Publish
+      dependsOn: Public_Deployment 
+      pool:
+        vmImage: '$(vmImage)'
+      steps:
+      
+      - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
+        displayName: 'Get Git Artifact PR Reason'
+        inputs:
+          OutputText: 'OutputedText'
+      
+      - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Twitter.Xpirit-Vsts-Release-Twitter.Twitter@1
+        displayName: 'Send Tweet about new release'
+        inputs:
+          TwitterEndPoint: 'Twitter Richard'
+          Message: 'I have just released Version $(Build.BuildNumber) of my Azure DevOps Pipeline $(Build.DefinitionName) http://bit.ly/VSTS-RF $(OutputedText) '
+  
+      - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
+        displayName: 'Update Build Variable'
+        inputs:
+          variable: Minor
+          mode: Autoincrement
+          usedefaultcreds: false
+                
