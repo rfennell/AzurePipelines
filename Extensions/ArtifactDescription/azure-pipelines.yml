@@ -116,6 +116,14 @@ stages:
   
   - stage: Documentation
     dependsOn: Test 
+    variables:
+    - group: 'WIKI Updater'
+    # provides the variable
+    #   gitemail - used in the Git Config
+    #   gitName - used in the Git Config
+    #   githubpat - used to authenticate to repo
+    #   user - used to authenticate to repo
+    #   repo - url of repo (without HTTPS://)
     jobs:
     - deployment: Documentation
       timeoutInMinutes: 0
