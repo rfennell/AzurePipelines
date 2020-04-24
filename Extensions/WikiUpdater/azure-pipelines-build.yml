@@ -276,8 +276,8 @@ stages:
     # provides the variable
     #   gitemail - used in the Git Config
     #   gitName - used in the Git Config
-    #   githubpat - used to authenticate to reop
-    #   user - used to authenticate to reop
+    #   githubpat - used to authenticate to repo
+    #   user - used to authenticate to repo
     #   repo - url of repo (without HTTPS://)
     jobs:
     - job: Documentation
