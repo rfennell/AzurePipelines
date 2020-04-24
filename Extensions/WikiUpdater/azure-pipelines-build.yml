@@ -288,16 +288,16 @@ stages:
       strategy:
         runOnce:
           deploy:   
-      steps:
-        - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
-          parameters:
-            workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
-            wikiFilename: '$(wikiFilename)'
-            repo: '$(repo)'
-            gitname: '$(GitName)'
-            gitemail: '$(GitEmail)'
-            UserName: '$(UserName)'
-            GitHubPat: '$(GitHubPat)'
+            steps:
+              - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
+                parameters:
+                  workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
+                  wikiFilename: '$(wikiFilename)'
+                  repo: '$(repo)'
+                  gitname: '$(GitName)'
+                  gitemail: '$(GitEmail)'
+                  UserName: '$(UserName)'
+                  GitHubPat: '$(GitHubPat)'
 
   - stage: Public
     dependsOn: Documentation
