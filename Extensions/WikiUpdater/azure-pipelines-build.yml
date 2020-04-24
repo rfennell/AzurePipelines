@@ -269,7 +269,8 @@ stages:
   - stage: Documentation
     dependsOn: Test 
     pool:
-      vmImage: '$(vmImage)'
+      # vmImage: '$(vmImage)'
+      pool: default
     variables:
     - group: 'WIKI Updater'
     # provides the variable
