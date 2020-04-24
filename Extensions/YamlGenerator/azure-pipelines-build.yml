@@ -47,7 +47,7 @@ stages:
       - template: ..\..\YAMLTemplates\build-node-task.yml
         parameters:
           extensionRoot: '$(ExtensionRoot)'
-          taskName: 'WikiUpdaterTask'
+          taskName: 'YamlGeneratorTask'
 
       - task: TfxInstaller@1
         displayName: 'Install Tfx Tool'
