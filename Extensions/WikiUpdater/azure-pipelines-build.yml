@@ -280,24 +280,24 @@ stages:
     #   user - used to authenticate to repo
     #   repo - url of repo (without HTTPS://)
     jobs:
-    - job: Documentation
+    - deployment: Documentation
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Documentation)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:   
       steps:
-      # we need a download here as not in a deploygroup
-      - task: DownloadPipelineArtifact@0
-        inputs:
-          artifactName: $(artifactLocationName)
-          targetPath: $(System.DefaultWorkingDirectory)
-
-      - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
-        parameters:
-          workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
-          wikiFilename: '$(wikiFilename)'
-          repo: '$(repo)'
-          gitname: '$(GitName)'
-          gitemail: '$(GitEmail)'
-          UserName: '$(UserName)'
-          GitHubPat: '$(GitHubPat)'
-
+        - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
+          parameters:
+            workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
+            wikiFilename: '$(wikiFilename)'
+            repo: '$(repo)'
+            gitname: '$(GitName)'
+            gitemail: '$(GitEmail)'
+            UserName: '$(UserName)'
+            GitHubPat: '$(GitHubPat)'
 
   - stage: Public
     dependsOn: Documentation
