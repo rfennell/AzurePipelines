@@ -21,6 +21,4 @@ Add the task to a build or release
 - FilePrefix - The output filename prefix, if not set the extension ID will be used from the **vss-extension.json** file
 - CopyReadme - If true will also copy the **readme.md** for the extension with the same file prefix as the YAML
 
-## Releases
 
-- 1.0 Initial release
