@@ -27,6 +27,7 @@ var dataIsFile = tl.getBoolInput("dataIsFile");
 var sourceFile = tl.getInput("sourceFile");
 var tagRepo = tl.getBoolInput("tagRepo");
 var tag = tl.getInput("tag");
+var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
 
 console.log(`Variable: Repo [${repo}]`);
@@ -45,6 +46,7 @@ console.log(`Variable: Data Is File [${dataIsFile}]`);
 console.log(`Variable: SoureFile [${sourceFile}]`);
 console.log(`Variable: Tag Repo [${tagRepo}]`);
 console.log(`Variable: Tag [${tag}]`);
+console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
 
 if (useAgentToken === true) {
@@ -57,4 +59,4 @@ if (dataIsFile === true) {
     contents = fs.readFileSync(sourceFile, "utf8");
 }
 
-UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader);
+UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch);

@@ -4,6 +4,7 @@ import * as rimraf from "rimraf";
 import * as path from "path";
 import * as process from "process";
 import { logWarning } from "./agentSpecific";
+import { BranchSummary } from "simple-git/typings/response";
 
 // A wrapper to make sure that directory delete is handled in sync
 function rimrafPromise (localpath)  {
@@ -67,7 +68,24 @@ export function GetWorkingFile(filename, logInfo): any {
     return name;
 }
 
-export async function UpdateGitWikiFile(repo, localpath, user, password, name, email, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader) {
+export async function UpdateGitWikiFile(
+    repo,
+    localpath,
+    user,
+    password,
+    name,
+    email,
+    filename,
+    message,
+    contents,
+    logInfo,
+    logError,
+    replaceFile,
+    appendToFile,
+    tagRepo,
+    tag,
+    injectExtraHeader,
+    branch) {
     const git = simplegit();
 
     let remote = "";
@@ -111,6 +129,11 @@ export async function UpdateGitWikiFile(repo, localpath, user, password, name, e
         // move to the working folder
         var workingPath = GetWorkingFolder(localpath, filename, logInfo);
         process.chdir(workingPath);
+
+        if (branch) {
+            logInfo(`Checking out the requested branch ${branch}`);
+            await git.checkout(branch);
+        }
 
         // do git pull just in case the clone was slow and there have been updates since
         // this is to try to reduce concurrency issues

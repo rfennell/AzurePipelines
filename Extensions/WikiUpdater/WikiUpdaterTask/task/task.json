@@ -2,7 +2,7 @@
   "id": "e59c5ae6-3afd-479d-bc40-81cd6c541840",
   "name": "WikiUpdaterTask",
   "friendlyName": "Git based WIKI Updater from Black Marble",
-  "description": "A tools to update or create a WIKI based in a Git repo",
+  "description": "A tools to update or create a WIKI based in a Git repo ",
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-Updater-Task/)",
   "category": "Utility",
   "visibility": [
@@ -37,6 +37,14 @@
       "defaultValue": "",
       "required": true,
       "helpMarkDown": "The repo URL to clone e.g dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. See documentation for more details https://github.com/rfennell/AzurePipelines/wiki/WIKI-Updater-Tasks"
+    },
+    {
+      "name": "branch",
+      "type": "string",
+      "label": "Checkout Branch",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The name of the pre-existing branch to checkout prior to committing the change, defaults to empty, so no checkout is done and commits are done to the default 'master' branch"
     },
     {
       "name": "filename",
