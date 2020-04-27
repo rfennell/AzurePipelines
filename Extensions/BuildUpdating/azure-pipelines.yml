@@ -123,7 +123,7 @@ stages:
 
     - deployment: Private_Test
       timeoutInMinutes: 0
-      dependsOn: Test_Builds
+      dependsOn: Start_Lab_VM
       environment: 'Azure DevOps Marketplace (BuildUpdating)'
       pool:
         vmImage: '$(vmImage)'
