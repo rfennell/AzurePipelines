@@ -46,17 +46,17 @@ stages:
       # for each Node based task we must transpile it
       - template: ..\..\YAMLTemplates\build-node-task.yml
         parameters:
-          taskPath: '$(ExtensionRoot)\BuildVariableTask'
+          extensionRoot: '$(ExtensionRoot)'
           taskName: 'BuildVariableTask'
 
       - template: ..\..\YAMLTemplates\build-node-task.yml
         parameters:
-          taskPath: '$(ExtensionRoot)\BuildRetensionTask'
+          extensionRoot: '$(ExtensionRoot)'
           taskName: 'BuildRetensionTask'
 
       - template: ..\..\YAMLTemplates\build-node-task.yml
         parameters:
-          taskPath: '$(ExtensionRoot)\GetBuildDefinitionVariableValueTask'
+          extensionRoot: '$(ExtensionRoot)'
           taskName: 'GetBuildDefinitionVariableValueTask'
 
       - task: TfxInstaller@1
