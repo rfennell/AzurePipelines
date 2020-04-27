@@ -285,54 +285,43 @@ try {
 }
 write-verbose "API Version is $apiversion"
 
-if ( [string]::IsNullOrEmpty($releaseid))
+Write-Verbose "Running inside a release so updating asking which build(s) to update"
+if ($buildmode -eq "AllArtifacts")
 {
-    Write-Verbose "Running inside a build so updating current build $buildid"
-    	
-    write-Verbose "Using API-Verison $apiVersion"
-
-    $builddefid = $build.definition.id
-    Write-Verbose "Build has definition id of $builddefid"
-
+    Write-Verbose ("Updating all artifacts")
+    $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds --token $token
+    foreach($build in $builddefs)
+    {
+        Write-Verbose ("Updating artifact $build.name")
+        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $build.id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
+    }
+} elseif ($buildmode -eq "Prime")
+{
+    Write-Verbose ("Updating only primary artifact")
     Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
-} else {
-    Write-Verbose "Running inside a release so updating asking which build(s) to update"
-    if ($buildmode -eq "AllArtifacts")
-    {
-        Write-Verbose ("Updating all artifacts")
-        $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds --token $token
-        foreach($build in $builddefs)
-        {
-            Write-Verbose ("Updating artifact $build.name")
-            Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $build.id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
-        }
-    } elseif ($buildmode -eq "Prime")
-    {
-        Write-Verbose ("Updating only primary artifact")
-        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
-    } else 
-    {
-        Write-Verbose ("Updating only named artifacts")
-        if ([string]::IsNullOrEmpty($artifacts) -eq $true) {
-            Write-Error ("The artifacts list to update is empty")
-        } else {
-            $artifactsArray = $artifacts -split "," | foreach {$_.Trim()}
-            if ($artifactsArray -gt 0) {
-                $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds -token $token
-                Write-Verbose "$($builddefs.Count) builds found for release"
-                foreach($build in $builddefs)
-                {
-                    if ($artifactsArray -contains $build.name) {
-                        Write-Verbose ("Updating artifact $($build.name)")
-                        Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $build.id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
-                    } else {
-                        Write-Verbose ("Skipping artifact $($build.name) as not in named list")
-                    }
+} else 
+{
+    Write-Verbose ("Updating only named artifacts")
+    if ([string]::IsNullOrEmpty($artifacts) -eq $true) {
+        Write-Error ("The artifacts list to update is empty")
+    } else {
+        $artifactsArray = $artifacts -split "," | foreach {$_.Trim()}
+        if ($artifactsArray -gt 0) {
+            $builddefs = Get-BuildsDefsForRelease -tfsUri $collectionUrl -teamproject $teamproject -releaseid $releaseid -usedefaultcreds $usedefaultcreds -token $token
+            Write-Verbose "$($builddefs.Count) builds found for release"
+            foreach($build in $builddefs)
+            {
+                if ($artifactsArray -contains $build.name) {
+                    Write-Verbose ("Updating artifact $($build.name)")
+                    Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $build.id -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
+                } else {
+                    Write-Verbose ("Skipping artifact $($build.name) as not in named list")
                 }
-            } else {
-                Write-Error ("The artifacts list cannot be split") 
             }
+        } else {
+            Write-Error ("The artifacts list cannot be split") 
         }
     }
 }
+
 
