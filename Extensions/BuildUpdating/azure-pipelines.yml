@@ -131,6 +131,8 @@ stages:
         runOnce:
           deploy:
             steps:
+              - checkout: self # need for the oAuth
+                persistCredentials: true
               - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
                 displayName: 'Trigger a new build of Validate-BuildVariable Update'
                 inputs:
