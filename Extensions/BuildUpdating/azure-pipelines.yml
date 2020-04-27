@@ -113,7 +113,6 @@ stages:
     dependsOn: Private 
     jobs:
     - job: Start_Lab_VM
-      dependsOn: Public_Deployment 
       pool:
         vmImage: '$(vmImage)'
       steps:
@@ -124,6 +123,7 @@ stages:
 
     - deployment: Private_Test
       timeoutInMinutes: 0
+      dependsOn: Test_Builds
       environment: 'Azure DevOps Marketplace (BuildUpdating)'
       pool:
         vmImage: '$(vmImage)'
@@ -205,9 +205,9 @@ stages:
 
 
   - stage: Documentation
-    dependsOn: |
-      Test_Builds
-      Test_Release
+    dependsOn: 
+    - Test_Builds
+    - Test_Release
     pool:
       vmImage: '$(vmImage)'
     variables:
