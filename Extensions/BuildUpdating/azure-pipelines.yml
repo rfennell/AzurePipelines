@@ -125,8 +125,6 @@ stages:
       timeoutInMinutes: 0
       dependsOn: Start_Lab_VM
       environment: 'Azure DevOps Marketplace (BuildUpdating)'
-      variables:
-        SYSTEM_ACCESSTOKEN: $(System.AccessToken) # needed to get the OAUTH token
       pool:
         vmImage: '$(vmImage)'
       strategy:
@@ -141,6 +139,7 @@ stages:
                   branchToUse: master
                   waitForQueuedBuildsToFinish: true
                   authenticationMethod: 'OAuth Token'
+                  password: $(System.AccessToken)
               - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
                 displayName: 'Trigger a new build of Validate-BuildUtilsWithVariableGroup'
                 inputs:
@@ -149,6 +148,7 @@ stages:
                   branchToUse: master
                   waitForQueuedBuildsToFinish: true
                   authenticationMethod: 'OAuth Token'
+                  password: $(System.AccessToken)
 
   - stage: Test_Release
     displayName: "Tests - Release"
