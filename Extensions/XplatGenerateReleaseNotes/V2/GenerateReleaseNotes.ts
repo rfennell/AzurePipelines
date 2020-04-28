@@ -295,14 +295,20 @@ async function run(): Promise<number>  {
             var prDetails = <GitPullRequest> {};
 
             let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
-            currentBuild = await buildApi.getBuild(buildId);
+            let projectId = tl.getVariable("Build.ProjectId");
+            agentApi.logDebug(`Getting the details of build ${buildId} from project ${projectId}`);
+            currentBuild = await buildApi.getBuild(buildId, projectId);
             // and enhance the details if they can
-            if ((currentBuild.repository.type === "TfsGit") && (currentBuild.triggerInfo["pr.number"])) {
-                agentApi.logInfo(`The default artifact for the build/release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
-                prDetails = await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"]));
-                globalPullRequests.push(prDetails);
+            if (currentBuild) {
+                if ((currentBuild.repository.type === "TfsGit") && (currentBuild.triggerInfo["pr.number"])) {
+                    agentApi.logInfo(`The default artifact for the build/release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
+                    prDetails = await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"]));
+                    globalPullRequests.push(prDetails);
+                } else {
+                    agentApi.logInfo(`The default artifact for the release was not linked to a Azure DevOps Git Repo Pull Request`);
+                }
             } else {
-                agentApi.logInfo(`The default artifact for the release was not linked to a Azure DevOps Git Repo Pull Request`);
+                agentApi.logInfo(`Cannot find a current build associated with the release`);
             }
 
             // 2nd method aims to get the end of PR merges
