@@ -126,15 +126,13 @@ stages:
       dependsOn: Start_Lab_VM
       environment: 'Azure DevOps Marketplace (BuildUpdating)'
       variables:
-        system_accesstoken: $(System.AccessToken)
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken) # needed to get the OAUTH token
       pool:
         vmImage: '$(vmImage)'
       strategy:
         runOnce:
           deploy:
             steps:
-              - checkout: self # need for the oAuth
-                persistCredentials: true
               - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
                 displayName: 'Trigger a new build of Validate-BuildVariable Update'
                 inputs:
