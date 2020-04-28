@@ -186,7 +186,7 @@ stages:
     jobs:
     - deployment: Documentation
       timeoutInMinutes: 0
-      environment: 'Azure DevOps Marketplace (BuildUpdating)'
+      environment: 'Azure DevOps Marketplace (Documentation)'
       pool:
         vmImage: '$(vmImage)'
       strategy:
