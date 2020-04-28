@@ -163,48 +163,11 @@ stages:
         runOnce:
           deploy:
             steps:
-              - task: DownloadBuildArtifacts@0
-                inputs:
-                  buildType: 'specific'
-                  project: github
-                  definition: Validate-BuildUtils
-                  downloadType: 'single'
-                  artifactName: 'drop'
-                  downloadPath: '$(System.ArtifactsDirectory)'
-              - task: DownloadBuildArtifacts@0
-                inputs:
-                  buildType: 'specific'
-                  project: github
-                  definition: 'Validate-BuildUtils Duplicate'
-                  downloadType: 'single'
-                  artifactName: 'drop'
-                  downloadPath: '$(System.ArtifactsDirectory)'
-
-              - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildRetension-Task.BuildRetensionTask@2
-                displayName: 'Update Build Retension - Set'
-                inputs:
-                  mode: NamedArtifacts
-                  artifacts: 'Validate-BuildUtils, Validate-BuildUtils Duplicate'
-              - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@2
-                displayName: 'Update Build Variable'
-                inputs:
-                  buildmode: NamedArtifacts
-                  artifacts: 'Validate-BuildUtils, Validate-BuildUtils Duplicate'
-                  variable: Minor
-                  mode: Autoincrement
-              - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.GetBuildDefinitionVariableValueTask-Task.GetBuildDefinitionVariableValueTask@2
-                displayName: 'Get Build Definition Variable'
-                inputs:
-                  builddefinitionname: 'Validate-BuildVariable Update'
-                  variable: var1
-                  localVariable: toUpdate
-              - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildRetension-Task.BuildRetensionTask@2
-                displayName: 'Update Build Retension - Reset'
-                inputs:
-                  mode: NamedArtifacts
-                  artifacts: 'Validate-BuildUtils, Validate-BuildUtils Duplicate'
-                  keepForever: false
-
+            - task: dmitryserbin.release-orchestrator.release-orchestrator.releaseorchestrator@1
+              displayName: 'Release Orchestrator'
+              inputs:
+                TargetProject: '670b3a60-2021-47ab-a88b-d76ebd888a2f'
+                TargetDefinition: 43
 
   - stage: Documentation
     dependsOn: 

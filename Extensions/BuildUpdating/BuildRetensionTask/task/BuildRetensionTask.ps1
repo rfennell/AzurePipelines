@@ -114,6 +114,12 @@ Write-Verbose "artifacts = [$artifacts]"
 Write-Verbose "mode = [$mode]"
 Write-Verbose "keepForever = [$keepForever]"
 
+if([string]::IsNullOrEmpty($releaseid))
+{
+    Write-Host ("Running task within a build, only 'Prime' mode supported i.e. update the retension on the current build")
+    $mode = "Prime"
+}
+
 if ($mode -eq "AllArtifacts")
 {
     Write-Verbose ("Updating all artifacts")
