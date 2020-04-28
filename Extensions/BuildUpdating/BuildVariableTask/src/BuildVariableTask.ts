@@ -90,7 +90,7 @@ export async function run() {
 
         if (artifacts) {
             args.push("-artifacts");
-            args.push(`'${artifacts}`);
+            args.push(`'${artifacts}'`);
         }
 
         if (verbose) {
