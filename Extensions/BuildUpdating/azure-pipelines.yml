@@ -125,6 +125,8 @@ stages:
       timeoutInMinutes: 0
       dependsOn: Start_Lab_VM
       environment: 'Azure DevOps Marketplace (BuildUpdating)'
+      variables:
+        system_accesstoken: $(System.AccessToken)
       pool:
         vmImage: '$(vmImage)'
       strategy:
