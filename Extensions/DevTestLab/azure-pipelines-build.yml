@@ -102,12 +102,15 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
-              displayName: 'Get Git Artifact PR Reason'
+            - task: richardfennellBM.BM-VSTS-DevTestLab-DEV.DevTestLabsStartVm.DevTestLabsStartVm@1
+              displayName: 'Start a DevTest Labs VM'
               inputs:
-                OutputText: 'OutputedText' 
-            - bash: "echo 'The reason message is [$(OutputedText)]'"
-  
+                ConnectedServiceName: 'MVP Visual Studio Ultimate with MSDN (48b5a96e-e215-4db3-a0a9-8aba2c331922)'
+            - task: richardfennellBM.BM-VSTS-DevTestLab-DEV.DevTestLabsStopVm.DevTestLabsStopVm@1
+              displayName: 'Stop a DevTest Labs VM'
+              inputs:
+                ConnectedServiceName: 'MVP Visual Studio Ultimate with MSDN (48b5a96e-e215-4db3-a0a9-8aba2c331922)'
+
   - stage: Documentation
     dependsOn: Test 
     variables:
