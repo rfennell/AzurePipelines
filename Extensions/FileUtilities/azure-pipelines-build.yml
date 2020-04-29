@@ -1,109 +1,360 @@
-resources:
-- repo: self
-
 name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
-trigger: none # will disable CI build
+trigger: 
+  branches:
+    include: [ master ] # branch names which will trigger a build
+  paths:
+    include: [ Extensions/FileUtilities  ] # file paths which must match to trigger a build, cannot be a variable
 
 pr: # will trigger on PR
   branches:
     include: [ master ] # branch names which will trigger a build
   paths:
-    include: [ /Extensions/FileUtilities ] # file paths which must match to trigger a build
+    include: [ Extensions/FileUtilities  ] # file paths which must match to trigger a build, cannot be a variable
 
-pool:
-  name: Hosted VS2017
-  demands:
-  - npm
-  - node.js
-  - DotNetFramework
+resources:
+  repositories:
+  - repository: VSTSBuildTaskValidation
+    name: VSTSBuildTaskValidation
+    type: git
 
 variables:
-  ExtensionRoot: 'Extensions/FileUtilities'
+  # declared in the pipeline UI
+  #  major
+  #  minor
+  - group:  'FileUtilities Extension'
+    # this group includes the following variablea  
+    #  ExtensionRoot - working folder
+    #  PublisherID  - Marketplace publisher
+    #  ExtensionID - Marketplace extension id
+    #  vmImage - name of Azure DevOps pool to use
+    #  artifactLocationName -  folder the artifact to push is stored in
+    #  privateExtentionsTag - tag to show if private (else blank)
+    #  taskID - Marketplace ID of task
+    #  wikiFilename - name of generated docs files
+stages:
+  - stage: Build
+    jobs:
+    - job: Build
+      pool: 
+        vmImage: '$(vmImage)'
+        demands:
+        - npm
+        - node.js
+        - DotNetFramework
+      steps:
+      # version all the task in the extension
+      - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+        displayName: 'Setting the version for tasks in extension'
+        inputs:
+          rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
+          targetFiles: '**\\task.json'
+      
+      # for each Node based task we must transpile it
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'XmlFileUpdateTask'
 
-steps:
-- task: qetza.replacetokens.replacetokens-task.replacetokens@1
-  displayName: 'Replace tokens in **\*task.json'
-  inputs:
-    rootDirectory: '$(ExtensionRoot)'
-    targetFiles: '**\*task.json'
+      - task: PowerShell@1
+        displayName: 'PowerShell Script - fix spaces in path'
+        inputs:
+          scriptType: inlineScript
+          workingFolder: '$(ExtensionRoot)\XmlFileUpdateTask\task\node_modules'
+          inlineScript: |
+            dir -recurse | where {-Not $_.PsIscontainer -AND $_.name -match " "} | foreach { 
+            $New=$_.name.Replace(" ","_")
+            Rename-Item -path $_.Fullname -newname $New -passthru
+            }
 
-# standard block for Node
-- task: Npm@0
-  displayName: 'npm install XmlFileUpdateTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\XmlFileUpdateTask'
+      - task: TfxInstaller@1
+        displayName: 'Install Tfx Tool'
+        inputs:
+          version: 'v0.6.x'
 
-- task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
-  displayName: 'Scan for vulnerable package dependencies in XmlFileUpdateTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\XmlFileUpdateTask\'
-    file: package.json
-    monitor: true
-    endpoint: 'Snky (Github RFennell)'
+      - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+        displayName: 'Package and Publish Extension as a PROD Package '
+        inputs:
+          rootFolder: '$(ExtensionRoot)'
+          outputPath: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
+          publisherId: '$(PublisherID)'
+          extensionId: '$(ExtensionID)'
+          extensionVersion: '$(Build.BuildNumber)'
+          updateTasksVersion: true
+          extensionVisibility: public
 
-- task: Npm@0
-  displayName: 'npm run build XmlFileUpdateTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\XmlFileUpdateTask'
-    command: run
-    arguments: build
+      - task: CopyFiles@2
+        displayName: 'Copy Docs'
+        inputs:
+          SourceFolder: $(ExtensionRoot)
+          Contents: |
+            readme.md
+            vss-extension.json
+            **\task.json
+          TargetFolder: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
 
-- task: Npm@0
-  displayName: 'npm run test tNetCoreAssembliesTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\XmlFileUpdateTask'
-    command: run
-    arguments: test
+      - task: PublishPipelineArtifact@0
+        inputs:
+          artifactName: 'vsix'
+          targetPath: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
 
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results  XmlFileUpdateTask'
-  inputs:
-    testResultsFiles: '$(ExtensionRoot)\XmlFileUpdateTask\test-output\test-results.xml'
-    testRunTitle: 'XmlFileUpdateTask'
+  - stage: Private
+    jobs:
+    - deployment: Private_Deployment
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Private)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            # we don't need to DownloadPipelineArtifact as this is done automatically
+            - template: ..\..\YAMLTemplates\publish-extension.yml
+              parameters:
+                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                 extensionTag: '$(privateExtentionsTag)' 
+                 extensionVisibility: private    
 
-- task: Npm@0
-  displayName: 'npm run package XmlFileUpdateTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\XmlFileUpdateTask'
-    command: run
-    arguments: package
-# end node block
+  - stage: Test_Linux
+    dependsOn: Private 
+    jobs:
+    - deployment: Private_Test
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (FileUtilities)'
+      pool:
+        vmImage: 'ubuntu-18.04'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - checkout: VSTSBuildTaskValidation
+            - task: richardfennellBM.BM-VSTS-FileCopier-Tasks-DEV.XmlFileUpdateTask.XmlFileUpdateTask@3
+              displayName: 'XmlFileUpdateTask - Update node value recurse '
+              inputs:
+                filename: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/testdata/*.xml'
+                xpath: '/configuration/appSettings/add[@key=''Enabled'']'
+                value: true
+            - task: Npm@1
+              displayName: 'npm install'
+              inputs:
+                workingDir: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
+                verbose: false
+            - task: Npm@1
+              displayName: 'npm custom '
+              inputs:
+                command: custom
+                workingDir: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
+                verbose: false
+                customCommand: 'run test'
+            - task: PublishTestResults@2
+              displayName: 'Publish Test Results $(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests/test-output/test-results.xml '
+              inputs:
+                testResultsFiles: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests/test-output/test-results.xml'
+                searchFolder: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
+                testRunTitle: 'Functional Tests - Linux'
 
-- task: PowerShell@1
-  displayName: 'PowerShell Script - fix spaces in path'
-  inputs:
-    scriptType: inlineScript
-    workingFolder: '$(ExtensionRoot)\XmlFileUpdateTask\task\node_modules'
-    inlineScript: |
-     dir -recurse | where {-Not $_.PsIscontainer -AND $_.name -match " "} | foreach { 
-     $New=$_.name.Replace(" ","_")
-     Rename-Item -path $_.Fullname -newname $New -passthru
-     }
+  - stage: Test_Windows
+    dependsOn: Private 
+    jobs:
+    - deployment: Private_Test
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (FileUtilities)'
+      pool:
+        vmImage: 'windows-2019'
+        #name: default
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - checkout: VSTSBuildTaskValidation
+            - task: richardfennellBM.BM-VSTS-FileCopier-Tasks-DEV.XmlFileUpdateTask.XmlFileUpdateTask@3
+              displayName: 'XmlFileUpdateTask - Update node value recurse '
+              inputs:
+                filename: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/testdata/*.xml'
+                xpath: '/configuration/appSettings/add[@key=''Enabled'']'
+                value: true
+            - task: Npm@1
+              displayName: 'npm install'
+              inputs:
+                workingDir: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
+                verbose: false
+            - task: Npm@1
+              displayName: 'npm custom '
+              inputs:
+                command: custom
+                workingDir: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
+                verbose: false
+                customCommand: 'run test'
+            - task: PublishTestResults@2
+              displayName: 'Publish Test Results $(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests/test-output/test-results.xml '
+              inputs:
+                testResultsFiles: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests/test-output/test-results.xml'
+                searchFolder: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
+                testRunTitle: 'Functional Tests - Windows'
 
-- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
-  displayName: 'Package and Publish VSTS Extension: PROD'
-  inputs:
-    rootFolder: '$(ExtensionRoot)'
-    outputPath: '$(Build.ArtifactStagingDirectory)\vsix'
-    publisherId: '$(PackageID)'
-    extensionId: '$(ExtensionID)'
-    extensionVersion: '$(Build.BuildNumber)'
-    updateTasksVersion: true
-    extensionVisibility: public
+  - stage: Test_Mac
+    dependsOn: Private 
+    jobs:
+    - deployment: Private_Test
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (FileUtilities)'
+      pool:
+        vmImage: 'macOS-10.15'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - checkout: VSTSBuildTaskValidation
+            - task: richardfennellBM.BM-VSTS-FileCopier-Tasks-DEV.XmlFileUpdateTask.XmlFileUpdateTask@3
+              displayName: 'XmlFileUpdateTask - Update node value recurse '
+              inputs:
+                filename: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/testdata/*.xml'
+                xpath: '/configuration/appSettings/add[@key=''Enabled'']'
+                value: true
+            - task: Npm@1
+              displayName: 'npm install'
+              inputs:
+                workingDir: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
+                verbose: false
+            - task: Npm@1
+              displayName: 'npm custom '
+              inputs:
+                command: custom
+                workingDir: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
+                verbose: false
+                customCommand: 'run test'
+            - task: PublishTestResults@2
+              displayName: 'Publish Test Results $(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests/test-output/test-results.xml '
+              inputs:
+                testResultsFiles: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests/test-output/test-results.xml'
+                searchFolder: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
+                testRunTitle: 'Functional Tests - Linux'
 
-- task: CopyFiles@2
-  displayName: 'Copy Docs'
-  inputs:
-    SourceFolder: Extensions/FileUtilities
-    Contents: |
-     readme.md
-     vss-extension.json
-     **\task.json
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\vsix'
+  - stage: Test_PrivateAzure
+    dependsOn: Private 
+    jobs:
+    - job: Start_Lab_VM
+      pool:
+        vmImage: '$(vmImage)'
+      steps:
+        - task: richardfennellBM.BM-VSTS-DevTestLab-DEV.DevTestLabsStartVm.DevTestLabsStartVm@1
+          displayName: 'Start a DevTest Labs VM'
+          inputs:
+            ConnectedServiceName: 'MVP Visual Studio Ultimate with MSDN (48b5a96e-e215-4db3-a0a9-8aba2c331922)'
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: vsix'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
-    ArtifactName: vsix
+    - deployment: Private_Test
+      timeoutInMinutes: 0
+      dependsOn: Start_Lab_VM
+      environment: 'Azure DevOps Marketplace (FileUtilities)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
+                displayName: 'Trigger a new build of Validate-FileCopyTask'
+                inputs:
+                  buildDefinition: 'Validate-FileCopyTask'
+                  useSameBranch: false
+                  branchToUse: master
+                  waitForQueuedBuildsToFinish: true
+                  authenticationMethod: 'OAuth Token'
+                  password: $(System.AccessToken)
+
+  - stage: Test_Local
+    dependsOn: Private 
+    jobs:
+    - deployment: Private_Test
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (BuildUpdating Local)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - bash: "echo 'Should have a manual test where the UNC file drop is copied'"
+ 
+
+
+  - stage: Documentation
+    dependsOn:
+    - Test_Linux
+    - Test_Windows
+    - Test_Mac
+    - Test_PrivateAzure
+    - Test_Local
+    variables:
+    - group: 'WIKI Updater'
+    # provides the variable
+    #   gitemail - used in the Git Config
+    #   gitName - used in the Git Config
+    #   githubpat - used to authenticate to repo
+    #   user - used to authenticate to repo
+    #   repo - url of repo (without HTTPS://)
+    jobs:
+    - deployment: Documentation
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Documentation)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:   
+            steps:
+              - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
+                parameters:
+                  workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
+                  wikiFilename: '$(wikiFilename)'
+                  repo: '$(repo)'
+                  gitname: '$(GitName)'
+                  gitemail: '$(GitEmail)'
+                  UserName: '$(UserName)'
+                  GitHubPat: '$(GitHubPat)'
+
+  - stage: Public
+    dependsOn: Documentation
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    jobs:
+    - deployment: Public_Deployment
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Public)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              # we don't need to DownloadPipelineArtifact as this is done automatically
+              - template: ..\..\YAMLTemplates\publish-extension.yml
+                parameters:
+                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                   extensionTag: '' 
+                   extensionVisibility: public    
+
+    - job: Post_Publish
+      dependsOn: Public_Deployment 
+      pool:
+        vmImage: '$(vmImage)'
+      steps:
+      
+      - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
+        displayName: 'Get Git Artifact PR Reason'
+        inputs:
+          OutputText: 'OutputedText'
+      
+      - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Twitter.Xpirit-Vsts-Release-Twitter.Twitter@1
+        displayName: 'Send Tweet about new release'
+        inputs:
+          TwitterEndPoint: 'Twitter Richard'
+          Message: 'I have just released Version $(Build.BuildNumber) of my Azure DevOps Pipeline $(Build.DefinitionName) http://bit.ly/VSTS-RF $(OutputedText) '
+  
+      - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
+        displayName: 'Update Build Variable'
+        inputs:
+          variable: Minor
+          mode: Autoincrement
+          usedefaultcreds: false
+                
