@@ -161,8 +161,8 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (FileUtilities)'
       pool:
-        #vmImage: 'windows-2019'
-        name: default
+        vmImage: 'windows-2019'
+        #name: default
       strategy:
         runOnce:
           deploy:
@@ -275,7 +275,7 @@ stages:
         runOnce:
           deploy:
             steps:
-            - bash: "echo 'Should have a manual test where the UNC file drop is copied"
+            - bash: "echo 'Should have a manual test where the UNC file drop is copied'"
  
 
 
