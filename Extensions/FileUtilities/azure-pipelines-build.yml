@@ -12,6 +12,12 @@ pr: # will trigger on PR
   paths:
     include: [ Extensions/FileUtilities  ] # file paths which must match to trigger a build, cannot be a variable
 
+resources:
+  repositories:
+  - repository: VSTSBuildTaskValidation
+    name: VSTSBuildTaskValidation
+    type: git
+
 variables:
   # declared in the pipeline UI
   #  major
