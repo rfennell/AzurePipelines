@@ -56,10 +56,10 @@ stages:
           scriptType: inlineScript
           workingFolder: '$(ExtensionRoot)\XmlFileUpdateTask\task\node_modules'
           inlineScript: |
-          dir -recurse | where {-Not $_.PsIscontainer -AND $_.name -match " "} | foreach { 
-          $New=$_.name.Replace(" ","_")
-          Rename-Item -path $_.Fullname -newname $New -passthru
-          }
+            dir -recurse | where {-Not $_.PsIscontainer -AND $_.name -match " "} | foreach { 
+            $New=$_.name.Replace(" ","_")
+            Rename-Item -path $_.Fullname -newname $New -passthru
+            }
 
       - task: TfxInstaller@1
         displayName: 'Install Tfx Tool'
