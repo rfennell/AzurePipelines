@@ -138,20 +138,20 @@ stages:
             - task: Npm@1
               displayName: 'npm install'
               inputs:
-                workingDir: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests'
+                workingDir: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
                 verbose: false
             - task: Npm@1
               displayName: 'npm custom '
               inputs:
                 command: custom
-                workingDir: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests'
+                workingDir: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
                 verbose: false
                 customCommand: 'run test'
             - task: PublishTestResults@2
-              displayName: 'Publish Test Results $(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests/test-output/test-results.xml '
+              displayName: 'Publish Test Results $(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests/test-output/test-results.xml '
               inputs:
-                testResultsFiles: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests/test-output/test-results.xml'
-                searchFolder: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests'
+                testResultsFiles: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests/test-output/test-results.xml'
+                searchFolder: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
                 testRunTitle: 'Functional Tests - Linux'
 
   - stage: Test_Windows
@@ -177,20 +177,20 @@ stages:
             - task: Npm@1
               displayName: 'npm install'
               inputs:
-                workingDir: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests'
+                workingDir: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
                 verbose: false
             - task: Npm@1
               displayName: 'npm custom '
               inputs:
                 command: custom
-                workingDir: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests'
+                workingDir: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
                 verbose: false
                 customCommand: 'run test'
             - task: PublishTestResults@2
-              displayName: 'Publish Test Results $(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests/test-output/test-results.xml '
+              displayName: 'Publish Test Results $(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests/test-output/test-results.xml '
               inputs:
-                testResultsFiles: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests/test-output/test-results.xml'
-                searchFolder: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests'
+                testResultsFiles: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests/test-output/test-results.xml'
+                searchFolder: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
                 testRunTitle: 'Functional Tests - Windows'
 
   - stage: Test_Mac
@@ -215,20 +215,20 @@ stages:
             - task: Npm@1
               displayName: 'npm install'
               inputs:
-                workingDir: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests'
+                workingDir: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
                 verbose: false
             - task: Npm@1
               displayName: 'npm custom '
               inputs:
                 command: custom
-                workingDir: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests'
+                workingDir: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
                 verbose: false
                 customCommand: 'run test'
             - task: PublishTestResults@2
-              displayName: 'Publish Test Results $(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests/test-output/test-results.xml '
+              displayName: 'Publish Test Results $(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests/test-output/test-results.xml '
               inputs:
-                testResultsFiles: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests/test-output/test-results.xml'
-                searchFolder: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests'
+                testResultsFiles: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests/test-output/test-results.xml'
+                searchFolder: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/tests'
                 testRunTitle: 'Functional Tests - Linux'
 
   - stage: Test_PrivateAzure
