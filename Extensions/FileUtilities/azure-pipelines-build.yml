@@ -264,7 +264,7 @@ stages:
                   authenticationMethod: 'OAuth Token'
                   password: $(System.AccessToken)
 
-  - stage: Test_PrivateAzure
+  - stage: Test_Local
     displayName: "Tests - Builds"
     dependsOn: Private 
     jobs:
@@ -288,6 +288,7 @@ stages:
     - Test_Windows
     - Test_Mac
     - Test_PrivateAzure
+    - Test_Local
     variables:
     - group: 'WIKI Updater'
     # provides the variable
