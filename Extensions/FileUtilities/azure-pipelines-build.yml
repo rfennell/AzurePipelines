@@ -132,7 +132,7 @@ stages:
             - task: richardfennellBM.BM-VSTS-FileCopier-Tasks-DEV.XmlFileUpdateTask.XmlFileUpdateTask@3
               displayName: 'XmlFileUpdateTask - Update node value recurse '
               inputs:
-                filename: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/testdata/*.xml'
+                filename: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/testdata/*.xml'
                 xpath: '/configuration/appSettings/add[@key=''Enabled'']'
                 value: true
             - task: Npm@1
@@ -171,7 +171,7 @@ stages:
             - task: richardfennellBM.BM-VSTS-FileCopier-Tasks-DEV.XmlFileUpdateTask.XmlFileUpdateTask@3
               displayName: 'XmlFileUpdateTask - Update node value recurse '
               inputs:
-                filename: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/testdata/*.xml'
+                filename: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/testdata/*.xml'
                 xpath: '/configuration/appSettings/add[@key=''Enabled'']'
                 value: true
             - task: Npm@1
@@ -209,7 +209,7 @@ stages:
             - task: richardfennellBM.BM-VSTS-FileCopier-Tasks-DEV.XmlFileUpdateTask.XmlFileUpdateTask@3
               displayName: 'XmlFileUpdateTask - Update node value recurse '
               inputs:
-                filename: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/testdata/*.xml'
+                filename: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/testdata/*.xml'
                 xpath: '/configuration/appSettings/add[@key=''Enabled'']'
                 value: true
             - task: Npm@1
@@ -232,7 +232,6 @@ stages:
                 testRunTitle: 'Functional Tests - Linux'
 
   - stage: Test_PrivateAzure
-    displayName: "Tests - Builds"
     dependsOn: Private 
     jobs:
     - job: Start_Lab_VM
@@ -247,7 +246,7 @@ stages:
     - deployment: Private_Test
       timeoutInMinutes: 0
       dependsOn: Start_Lab_VM
-      environment: 'Azure DevOps Marketplace (BuildUpdating)'
+      environment: 'Azure DevOps Marketplace (FileUtilities)'
       pool:
         vmImage: '$(vmImage)'
       strategy:
@@ -265,7 +264,6 @@ stages:
                   password: $(System.AccessToken)
 
   - stage: Test_Local
-    displayName: "Tests - Builds"
     dependsOn: Private 
     jobs:
     - deployment: Private_Test
