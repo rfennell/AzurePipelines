@@ -295,10 +295,11 @@ async function run(): Promise<number>  {
             var prDetails = <GitPullRequest> {};
 
             let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
-            let projectId = tl.getVariable("Build.ProjectId");
-            if (projectId) {  // only try this if we have project ID #694
-                agentApi.logDebug(`Getting the details of build ${buildId} from project ${projectId}`);
-                currentBuild = await buildApi.getBuild(buildId, projectId);
+            if (isNaN(buildId)) {  // only try this if we have numeric build ID, not a GUID see #694
+                agentApi.logInfo(`Do not have an Azure DevOps numeric buildId, so skipping trying to get  any build PR trigger info`);
+            } else {
+                agentApi.logDebug(`Getting the details of build ${buildId} from default project`);
+                currentBuild = await buildApi.getBuild(buildId);
                 // and enhance the details if they can
                 if ((currentBuild.repository.type === "TfsGit") && (currentBuild.triggerInfo["pr.number"])) {
                     agentApi.logInfo(`The default artifact for the build/release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
@@ -307,8 +308,6 @@ async function run(): Promise<number>  {
                 } else {
                     agentApi.logInfo(`The default artifact for the release was not linked to a Azure DevOps Git Repo Pull Request`);
                 }
-            } else {
-                agentApi.logInfo(`Cannot find a current build associated with the release as have no project id`);
             }
 
             // 2nd method aims to get the end of PR merges
