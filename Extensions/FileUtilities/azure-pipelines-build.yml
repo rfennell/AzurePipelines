@@ -161,7 +161,8 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (FileUtilities)'
       pool:
-        vmImage: 'windows-2019'
+        #vmImage: 'windows-2019'
+        name: default
       strategy:
         runOnce:
           deploy:
@@ -230,6 +231,55 @@ stages:
                 searchFolder: '$(System.DefaultWorkingDirectory)/VSTSBuildTaskValidation/XMLFileUpdateValidation/tests'
                 testRunTitle: 'Functional Tests - Linux'
 
+  - stage: Test_PrivateAzure
+    displayName: "Tests - Builds"
+    dependsOn: Private 
+    jobs:
+    - job: Start_Lab_VM
+      pool:
+        vmImage: '$(vmImage)'
+      steps:
+        - task: richardfennellBM.BM-VSTS-DevTestLab-DEV.DevTestLabsStartVm.DevTestLabsStartVm@1
+          displayName: 'Start a DevTest Labs VM'
+          inputs:
+            ConnectedServiceName: 'MVP Visual Studio Ultimate with MSDN (48b5a96e-e215-4db3-a0a9-8aba2c331922)'
+
+    - deployment: Private_Test
+      timeoutInMinutes: 0
+      dependsOn: Start_Lab_VM
+      environment: 'Azure DevOps Marketplace (BuildUpdating)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
+                displayName: 'Trigger a new build of Validate-FileCopyTask'
+                inputs:
+                  buildDefinition: 'Validate-FileCopyTask'
+                  useSameBranch: false
+                  branchToUse: master
+                  waitForQueuedBuildsToFinish: true
+                  authenticationMethod: 'OAuth Token'
+                  password: $(System.AccessToken)
+
+  - stage: Test_PrivateAzure
+    displayName: "Tests - Builds"
+    dependsOn: Private 
+    jobs:
+    - deployment: Private_Test
+      timeoutInMinutes: 0
+      dependsOn: Start_Lab_VM
+      environment: 'Azure DevOps Marketplace (BuildUpdating Local)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - bash: "echo 'Should have a manual test where the UNC file drop is copied"
+ 
 
 
   - stage: Documentation
@@ -237,6 +287,7 @@ stages:
     - Test_Linux
     - Test_Windows
     - Test_Mac
+    - Test_PrivateAzure
     variables:
     - group: 'WIKI Updater'
     # provides the variable
