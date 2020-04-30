@@ -1,19 +1,19 @@
-import tl = require("vsts-task-lib/task");
-import * as webApi from "vso-node-api/WebApi";
-import { IReleaseApi } from "vso-node-api/ReleaseApi";
-import * as vstsInterfaces from "vso-node-api/interfaces/common/VsoBaseInterfaces";
+import tl = require("azure-pipelines-task-lib/task");
+import * as webApi from "azure-devops-node-api/WebApi";
+import { IReleaseApi } from "azure-devops-node-api/ReleaseApi";
+import * as vstsInterfaces from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 
 import { AgentSpecificApi } from "./agentSpecific";
-import { Release } from "vso-node-api/interfaces/ReleaseInterfaces";
+import { Release } from "azure-devops-node-api/interfaces/ReleaseInterfaces";
 import * as util from "./ReleaseNotesFunctions";
-import { IBuildApi } from "vso-node-api/BuildApi";
-import { IGitApi } from "vso-node-api/GitApi";
-import { IWorkItemTrackingApi } from "vso-node-api/WorkItemTrackingApi";
-import { Build, Change } from "vso-node-api/interfaces/BuildInterfaces";
-import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
-import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
+import { IBuildApi } from "azure-devops-node-api/BuildApi";
+import { IGitApi } from "azure-devops-node-api/GitApi";
+import { IWorkItemTrackingApi } from "azure-devops-node-api/WorkItemTrackingApi";
+import { Build, Change } from "azure-devops-node-api/interfaces/BuildInterfaces";
+import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfaces";
+import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import * as issue349 from "./Issue349Workaround";
-import { GitPullRequest, GitPullRequestQueryType } from "vso-node-api/interfaces/GitInterfaces";
+import { GitPullRequest, GitPullRequestQueryType } from "azure-devops-node-api/interfaces/GitInterfaces";
 import { all } from "q";
 
 let agentApi = new AgentSpecificApi();
@@ -77,10 +77,10 @@ async function run(): Promise<number>  {
             if (tl.getVariable("Release.ReleaseId") === undefined) {
                 agentApi.logInfo("Getting the current build details");
                 let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
-                currentBuild = await buildApi.getBuild(buildId);
+                currentBuild = await buildApi.getBuild(teamProject, buildId);
 
                 if (!currentBuild) {
-                    reject(`Unable to locate the current build with id ${buildId}`);
+                    reject(`Unable to locate the current build with id ${buildId} in the project ${teamProject}`);
                     return;
                 }
 
@@ -158,7 +158,7 @@ async function run(): Promise<number>  {
                                         // Only get the commits and workitems if the builds are different
                                         if (isInitialRelease) {
                                             agentApi.logInfo(`This is the first release so checking what commits and workitems are associated with artifacts`);
-                                            var builds = await buildApi.getBuilds(teamProject, [parseInt(artifactInThisRelease.buildDefinitionId)]);
+                                            var builds = await buildApi.getBuilds(artifactInThisRelease.sourceId, [parseInt(artifactInThisRelease.buildDefinitionId)]);
                                             commits = [];
                                             workitems = [];
 
@@ -180,22 +180,22 @@ async function run(): Promise<number>  {
                                             }
                                             if (activateFix && activateFix.toLowerCase() === "true") {
                                                 agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
-                                                let baseBuild = await buildApi.getBuild(parseInt(artifactInMostRecentRelease.buildId));
+                                                let baseBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId));
                                                 // There is only a workaround for Git but not for TFVC :(
                                                 if (baseBuild.repository.type === "TfsGit") {
-                                                    let currentBuild = await buildApi.getBuild(parseInt(artifactInThisRelease.buildId));
+                                                    let currentBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId));
                                                     let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(vsts, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
                                                     commits = commitInfo.commits;
                                                     workitems = commitInfo.workItems;
                                                 } else {
                                                     // Fall back to original behavior
-                                                    commits = await buildApi.getChangesBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
-                                                    workitems = await buildApi.getWorkItemsBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                                    commits = await buildApi.getChangesBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                                    workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                                 }
                                             } else {
                                                 // Issue #349: These APIs are affected by the build API limitation and only return the latest 200 changes and work items associated to those changes
-                                                commits = await buildApi.getChangesBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
-                                                workitems = await buildApi.getWorkItemsBetweenBuilds(teamProject, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                                commits = await buildApi.getChangesBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                                workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                             }
 
                                         } else {
@@ -203,7 +203,7 @@ async function run(): Promise<number>  {
                                         }
 
                                         // get artifact details for the unified output format
-                                        let artifact = await buildApi.getBuild(parseInt(artifactInMostRecentRelease.buildId));
+                                        let artifact = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId));
                                         globalBuilds.push(new util.UnifiedArtifactDetails(artifact, commits, workitems));
 
                                         var commitCount: number = 0;
@@ -247,7 +247,7 @@ async function run(): Promise<number>  {
                 ))
             );
 
-            let expandedGlobalCommits = await util.expandTruncatedCommitMessages(vsts.rest, globalCommits);
+            let expandedGlobalCommits = await util.expandTruncatedCommitMessages(vsts, globalCommits);
 
             if (!expandedGlobalCommits || expandedGlobalCommits.length !== globalCommits.length) {
                 reject("Failed to expand the global commits.");
@@ -274,7 +274,7 @@ async function run(): Promise<number>  {
                 }
             }
 
-            agentApi.logInfo(`Total build artifacts: [${globalBuilds.length}`);
+            agentApi.logInfo(`Total build artifacts: [${globalBuilds.length}]`);
             agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
             agentApi.logInfo(`Total workitems: [${fullWorkItems.length}]`);
 
@@ -294,15 +294,24 @@ async function run(): Promise<number>  {
             // this is for backwards compat.
             var prDetails = <GitPullRequest> {};
 
-            let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
-            currentBuild = await buildApi.getBuild(buildId);
-            // and enhance the details if they can
-            if ((currentBuild.repository.type === "TfsGit") && (currentBuild.triggerInfo["pr.number"])) {
-                agentApi.logInfo(`The default artifact for the build/release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
-                prDetails = await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"]));
-                globalPullRequests.push(prDetails);
-            } else {
-                agentApi.logInfo(`The default artifact for the release was not linked to a Azure DevOps Git Repo Pull Request`);
+            try {
+                let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
+                if (isNaN(buildId)) {  // only try this if we have numeric build ID, not a GUID see #694
+                    agentApi.logInfo(`Do not have an Azure DevOps numeric buildId, so skipping trying to get  any build PR trigger info`);
+                } else {
+                    agentApi.logDebug(`Getting the details of build ${buildId} from default project`);
+                    currentBuild = await buildApi.getBuild(teamProject, buildId);
+                    // and enhance the details if they can
+                    if ((currentBuild.repository.type === "TfsGit") && (currentBuild.triggerInfo["pr.number"])) {
+                        agentApi.logInfo(`The default artifact for the build/release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
+                        prDetails = await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"]));
+                        globalPullRequests.push(prDetails);
+                    } else {
+                        agentApi.logInfo(`The default artifact for the release was not linked to an Azure DevOps Git Repo Pull Request`);
+                    }
+                }
+            } catch (error) {
+                agentApi.logWarn(`Could not get details of Trigger PR an error was seen: ${error}`);
             }
 
             // 2nd method aims to get the end of PR merges

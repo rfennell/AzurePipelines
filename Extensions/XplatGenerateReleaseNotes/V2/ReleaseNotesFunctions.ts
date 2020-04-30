@@ -5,6 +5,7 @@ export interface SimpleArtifact {
     buildId: string;
     artifactType: string;
     isPrimary: boolean;
+    sourceId: string;
 }
 
 export class UnifiedArtifactDetails {
@@ -27,20 +28,20 @@ export class UnifiedArtifactDetails {
 }
 
 import * as restm from "typed-rest-client/RestClient";
-import tl = require("vsts-task-lib/task");
-import { ReleaseEnvironment, Artifact, Deployment, DeploymentStatus, Release } from "vso-node-api/interfaces/ReleaseInterfaces";
-import { IAgentSpecificApi, AgentSpecificApi } from "./agentSpecific";
-import { IReleaseApi } from "vso-node-api/ReleaseApi";
-import { IRequestHandler } from "vso-node-api/interfaces/common/VsoBaseInterfaces";
-import * as webApi from "vso-node-api/WebApi";
-import fs  = require("fs");
-import { ResourceRef } from "vso-node-api/interfaces/common/VSSInterfaces";
-import { Build, Change } from "vso-node-api/interfaces/BuildInterfaces";
-import { IGitApi, GitApi } from "vso-node-api/GitApi";
-import { GitCommit, GitPullRequest, GitPullRequestQueryType, GitPullRequestSearchCriteria, PullRequestStatus } from "vso-node-api/interfaces/GitInterfaces";
 import { HttpClient } from "typed-rest-client/HttpClient";
-import { WorkItem } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
-import { type } from "os";
+import tl = require("azure-pipelines-task-lib/task");
+import { ReleaseEnvironment, Artifact, Deployment, DeploymentStatus, Release } from "azure-devops-node-api/interfaces/ReleaseInterfaces";
+import { IAgentSpecificApi, AgentSpecificApi } from "./agentSpecific";
+import { IReleaseApi } from "azure-devops-node-api/ReleaseApi";
+import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
+import * as webApi from "azure-devops-node-api/WebApi";
+import fs  = require("fs");
+import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfaces";
+import { Build, Change } from "azure-devops-node-api/interfaces/BuildInterfaces";
+import { IGitApi, GitApi } from "azure-devops-node-api/GitApi";
+import { GitCommit, GitPullRequest, GitPullRequestQueryType, GitPullRequestSearchCriteria, PullRequestStatus } from "azure-devops-node-api/interfaces/GitInterfaces";
+import { WorkItem } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
+import { WebApi } from "azure-devops-node-api";
 
 let agentApi = new AgentSpecificApi();
 
@@ -85,7 +86,8 @@ export function getSimpleArtifactArray(artifacts: Artifact[]): SimpleArtifact[] 
                 "buildNumber": artifact.definitionReference.version.name,
                 "buildId": artifact.definitionReference.version.id,
                 "artifactType": artifact.type,
-                "isPrimary": artifact.isPrimary
+                "isPrimary": artifact.isPrimary,
+                "sourceId": artifact.sourceId.split(":")[0]
             }
         );
     }
@@ -137,7 +139,7 @@ export async function getMostRecentSuccessfulDeployment(releaseApi: IReleaseApi,
     });
 }
 
-export async function expandTruncatedCommitMessages(restClient: restm.RestClient, globalCommits: Change[]): Promise<Change[]> {
+export async function expandTruncatedCommitMessages(restClient: WebApi, globalCommits: Change[]): Promise<Change[]> {
     return new Promise<Change[]>(async (resolve, reject) => {
         try {
             var expanded: number = 0;
@@ -152,7 +154,13 @@ export async function expandTruncatedCommitMessages(restClient: restm.RestClient
                         let rc = new restm.RestClient("rest-client");
                         res = await rc.get<GitCommit>(change.location);
                     } else {
-                        res = await restClient.get<GitCommit>(change.location);
+                        let vstsRes = await restClient.rest.get<GitCommit>(change.location);
+                        // when we swapped to the newer API have to do this translation so we can use standard processing logic
+                        res = {
+                            statusCode: vstsRes.statusCode,
+                            result: vstsRes.result,
+                            headers: undefined
+                        };
                     }
 
                     if (res.statusCode === 200) {

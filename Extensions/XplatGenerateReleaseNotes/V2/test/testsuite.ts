@@ -1,6 +1,6 @@
 import { expect, assert } from "chai";
 import path = require("path");
-import ttm = require("vsts-task-lib/mock-test");
+import ttm = require("azure-pipelines-task-lib/mock-test");
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import "mocha";
 
