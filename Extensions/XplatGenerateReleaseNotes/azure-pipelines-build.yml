@@ -47,16 +47,16 @@ stages:
           scriptType: inlineScript
           arguments: '-Version $(Build.BuildNumber) -Path "$(Build.SourcesDirectory)\$(ExtensionRoot)\V2\task.json"'
           inlineScript: |
-          param ($version, $path)
-          $parts = $version.split('.')
-          $file = Get-ChildItem $path
-          $taskJson = ConvertFrom-Json (Get-Content $file -Raw)
-          $taskJson.Version.Major = $parts[0]
-          $taskJson.Version.Minor = $parts[1]
-          $taskJson.Version.Patch = $parts[2]
-          $output = $taskjson | ConvertTo-JSON -Depth 100
-          $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($False)
-          [System.IO.File]::WriteAllText($file, $output, $Utf8NoBomEncoding)    
+            param ($version, $path)
+            $parts = $version.split('.')
+            $file = Get-ChildItem $path
+            $taskJson = ConvertFrom-Json (Get-Content $file -Raw)
+            $taskJson.Version.Major = $parts[0]
+            $taskJson.Version.Minor = $parts[1]
+            $taskJson.Version.Patch = $parts[2]
+            $output = $taskjson | ConvertTo-JSON -Depth 100
+            $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($False)
+            [System.IO.File]::WriteAllText($file, $output, $Utf8NoBomEncoding)    
 
       - task: Npm@1
         displayName: 'npm install'
