@@ -150,22 +150,22 @@ stages:
                 outputVariableName: OutputText
                 templateLocation: InLine
                 inlinetemplate: |
-                # Release notes 
-                ## Notes for release  ${releaseDetails.releaseDefinition.name}    
-                **Release Number**  : ${releaseDetails.name}    
-                **Release completed** : ${releaseDetails.modifiedOn}     
-                **Compared Release Number**  : ${compareReleaseDetails.name}   
-                
-                ### Associated work items  
-                @@WILOOP@@  
-                * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
-                @@WILOOP@@  
+                  # Release notes 
+                  ## Notes for release  ${releaseDetails.releaseDefinition.name}    
+                  **Release Number**  : ${releaseDetails.name}    
+                  **Release completed** : ${releaseDetails.modifiedOn}     
+                  **Compared Release Number**  : ${compareReleaseDetails.name}   
                   
-                ### Associated commits
-                @@CSLOOP@@  
-                * **ID ${csdetail.commitId} ** ${csdetail.comment}    
-                @@CSLOOP@@
-            - task: rvo.SendEmailTask.send-email-build-task.SendEmail@1
+                  ### Associated work items  
+                  @@WILOOP@@  
+                  * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
+                  @@WILOOP@@  
+                    
+                  ### Associated commits
+                  @@CSLOOP@@  
+                  * **ID ${csdetail.commitId} ** ${csdetail.comment}    
+                  @@CSLOOP@@
+              - task: rvo.SendEmailTask.send-email-build-task.SendEmail@1
               displayName: 'Send an email with subject Release notes file from $(Agent.Name)'
               inputs:
                 To: 'richard.fennell@live.co.uk'
@@ -197,21 +197,21 @@ stages:
                 outputVariableName: OutputText
                 templateLocation: InLine
                 inlinetemplate: |
-                # Release notes 
-                ## Notes for release  ${releaseDetails.releaseDefinition.name}    
-                **Release Number**  : ${releaseDetails.name}    
-                **Release completed** : ${releaseDetails.modifiedOn}     
-                **Compared Release Number**  : ${compareReleaseDetails.name}   
-                
-                ### Associated work items  
-                @@WILOOP@@  
-                * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
-                @@WILOOP@@  
+                  # Release notes 
+                  ## Notes for release  ${releaseDetails.releaseDefinition.name}    
+                  **Release Number**  : ${releaseDetails.name}    
+                  **Release completed** : ${releaseDetails.modifiedOn}     
+                  **Compared Release Number**  : ${compareReleaseDetails.name}   
                   
-                ### Associated commits
-                @@CSLOOP@@  
-                * **ID ${csdetail.commitId} ** ${csdetail.comment}    
-                @@CSLOOP@@
+                  ### Associated work items  
+                  @@WILOOP@@  
+                  * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
+                  @@WILOOP@@  
+                    
+                  ### Associated commits
+                  @@CSLOOP@@  
+                  * **ID ${csdetail.commitId} ** ${csdetail.comment}    
+                  @@CSLOOP@@
 
 
   - stage: Test_Mac
@@ -233,21 +233,21 @@ stages:
                 outputVariableName: OutputText
                 templateLocation: InLine
                 inlinetemplate: |
-                # Release notes 
-                ## Notes for release  ${releaseDetails.releaseDefinition.name}    
-                **Release Number**  : ${releaseDetails.name}    
-                **Release completed** : ${releaseDetails.modifiedOn}     
-                **Compared Release Number**  : ${compareReleaseDetails.name}   
-                
-                ### Associated work items  
-                @@WILOOP@@  
-                * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
-                @@WILOOP@@  
+                  # Release notes 
+                  ## Notes for release  ${releaseDetails.releaseDefinition.name}    
+                  **Release Number**  : ${releaseDetails.name}    
+                  **Release completed** : ${releaseDetails.modifiedOn}     
+                  **Compared Release Number**  : ${compareReleaseDetails.name}   
                   
-                ### Associated commits
-                @@CSLOOP@@  
-                * **ID ${csdetail.commitId} ** ${csdetail.comment}    
-                @@CSLOOP@@
+                  ### Associated work items  
+                  @@WILOOP@@  
+                  * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
+                  @@WILOOP@@  
+                    
+                  ### Associated commits
+                  @@CSLOOP@@  
+                  * **ID ${csdetail.commitId} ** ${csdetail.comment}    
+                  @@CSLOOP@@
 
   - stage: Test_Manual
     dependsOn:  
