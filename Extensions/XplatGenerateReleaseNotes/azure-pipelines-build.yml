@@ -166,17 +166,17 @@ stages:
                   * **ID ${csdetail.commitId} ** ${csdetail.comment}    
                   @@CSLOOP@@
               - task: rvo.SendEmailTask.send-email-build-task.SendEmail@1
-              displayName: 'Send an email with subject Release notes file from $(Agent.Name)'
-              inputs:
-                To: 'richard.fennell@live.co.uk'
-                From: 'richard.fennell@live.co.uk'
-                Subject: 'Release notes file from $(Agent.Name) V2'
-                Body: '$(OutputText)'
-                AddAttachment: true
-                Attachment: '$(System.DefaultWorkingDirectory)\inline.md'
-                SmtpServer: smtp.sendgrid.net
-                SmtpUsername: apikey
-                SmtpPassword: '$(SendGridAPIKey)'
+                displayName: 'Send an email with subject Release notes file from $(Agent.Name)'
+                inputs:
+                  To: 'richard.fennell@live.co.uk'
+                  From: 'richard.fennell@live.co.uk'
+                  Subject: 'Release notes file from $(Agent.Name) V2'
+                  Body: '$(OutputText)'
+                  AddAttachment: true
+                  Attachment: '$(System.DefaultWorkingDirectory)\inline.md'
+                  SmtpServer: smtp.sendgrid.net
+                  SmtpUsername: apikey
+                  SmtpPassword: '$(SendGridAPIKey)'
 
   - stage: Test_Linux
     dependsOn: Private 
