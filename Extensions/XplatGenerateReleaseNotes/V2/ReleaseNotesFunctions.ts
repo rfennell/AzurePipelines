@@ -155,9 +155,12 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
                         res = await rc.get<GitCommit>(change.location);
                     } else {
                         let vstsRes = await restClient.rest.get<GitCommit>(change.location);
-                        // when we swapped to the newer API have to do this translation
-                        res.statusCode = vstsRes.statusCode;
-                        res.result = vstsRes.result;
+                        // when we swapped to the newer API have to do this translation so we can use standard processing logic
+                        res = {
+                            statusCode: vstsRes.statusCode,
+                            result: vstsRes.result,
+                            headers: undefined
+                        };
                     }
 
                     if (res.statusCode === 200) {
