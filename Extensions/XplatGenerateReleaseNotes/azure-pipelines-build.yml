@@ -150,33 +150,59 @@ stages:
                 outputVariableName: OutputText
                 templateLocation: InLine
                 inlinetemplate: |
-                  # Release notes 
-                  ## Notes for release  ${releaseDetails.releaseDefinition.name}    
-                  **Release Number**  : ${releaseDetails.name}    
-                  **Release completed** : ${releaseDetails.modifiedOn}     
-                  **Compared Release Number**  : ${compareReleaseDetails.name}   
-                  
-                  ### Associated work items  
-                  @@WILOOP@@  
-                  * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
-                  @@WILOOP@@  
-                    
-                  ### Associated commits
-                  @@CSLOOP@@  
-                  * **ID ${csdetail.commitId} ** ${csdetail.comment}    
-                  @@CSLOOP@@
-            - task: rvo.SendEmailTask.send-email-build-task.SendEmail@1
-              displayName: 'Send an email with subject Release notes file from $(Agent.Name)'
+                  # Notes for build 
+                  **Build Number**: {{buildDetails.id}}
+                  **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
+
+                  # Associated Pull Requests ({{pullRequests.length}})
+                  {{#forEach pullRequests}}
+                  {{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
+                  *  **PR {{this.id}}**  {{this.title}}
+                  {{/forEach}}
+
+                  # Builds with associated WI/CS ({{builds.length}})
+                  {{#forEach builds}}
+                  {{#if isFirst}}## Builds {{/if}}
+                  ##  Build {{this.build.buildNumber}}
+                  {{#forEach this.commits}}
+                  {{#if isFirst}}### Commits {{/if}}
+                  - CS {{this.id}}
+                  {{/forEach}}
+                  {{#forEach this.workitems}}
+                  {{#if isFirst}}### Workitems {{/if}}
+                  - WI {{this.id}}
+                  {{/forEach}} 
+                  {{/forEach}}
+
+                  # Global list of WI ({{workItems.length}})
+                  {{#forEach workItems}}
+                  {{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
+                  *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+                    - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
+                    - **Tags** {{lookup this.fields 'System.Tags'}}
+                  {{/forEach}}
+
+                  # Global list of CS ({{commits.length}})
+                  {{#forEach commits}}
+                  {{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
+                  * ** ID{{this.id}}** 
+                    -  **Message:** {{this.message}}
+                    -  **Commited by:** {{this.author.displayName}} 
+                  {{/forEach}}
+
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              displayName: 'Git based WIKI Updater'
               inputs:
-                To: 'richard.fennell@live.co.uk'
-                From: 'richard.fennell@live.co.uk'
-                Subject: 'Release notes file from $(Agent.Name) V2'
-                Body: '$(OutputText)'
-                AddAttachment: true
-                Attachment: '$(System.DefaultWorkingDirectory)\inline.md'
-                SmtpServer: smtp.sendgrid.net
-                SmtpUsername: apikey
-                SmtpPassword: '$(SendGridAPIKey)'
+                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                filename: 'xPlatReleaseNotes/build-Windows-handbars.md'
+                dataIsFile: true
+                sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
+                message: 'Update from Build'
+                gitname: builduser
+                gitemail: 'build@demo'
+                useAgentToken: false
+                user: richardfennell
+                password: '$(pat)'
 
   - stage: Test_Linux
     dependsOn: Private 
@@ -197,21 +223,59 @@ stages:
                 outputVariableName: OutputText
                 templateLocation: InLine
                 inlinetemplate: |
-                  # Release notes 
-                  ## Notes for release  ${releaseDetails.releaseDefinition.name}    
-                  **Release Number**  : ${releaseDetails.name}    
-                  **Release completed** : ${releaseDetails.modifiedOn}     
-                  **Compared Release Number**  : ${compareReleaseDetails.name}   
-                  
-                  ### Associated work items  
-                  @@WILOOP@@  
-                  * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
-                  @@WILOOP@@  
-                    
-                  ### Associated commits
-                  @@CSLOOP@@  
-                  * **ID ${csdetail.commitId} ** ${csdetail.comment}    
-                  @@CSLOOP@@
+                  # Notes for build 
+                  **Build Number**: {{buildDetails.id}}
+                  **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
+
+                  # Associated Pull Requests ({{pullRequests.length}})
+                  {{#forEach pullRequests}}
+                  {{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
+                  *  **PR {{this.id}}**  {{this.title}}
+                  {{/forEach}}
+
+                  # Builds with associated WI/CS ({{builds.length}})
+                  {{#forEach builds}}
+                  {{#if isFirst}}## Builds {{/if}}
+                  ##  Build {{this.build.buildNumber}}
+                  {{#forEach this.commits}}
+                  {{#if isFirst}}### Commits {{/if}}
+                  - CS {{this.id}}
+                  {{/forEach}}
+                  {{#forEach this.workitems}}
+                  {{#if isFirst}}### Workitems {{/if}}
+                  - WI {{this.id}}
+                  {{/forEach}} 
+                  {{/forEach}}
+
+                  # Global list of WI ({{workItems.length}})
+                  {{#forEach workItems}}
+                  {{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
+                  *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+                    - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
+                    - **Tags** {{lookup this.fields 'System.Tags'}}
+                  {{/forEach}}
+
+                  # Global list of CS ({{commits.length}})
+                  {{#forEach commits}}
+                  {{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
+                  * ** ID{{this.id}}** 
+                    -  **Message:** {{this.message}}
+                    -  **Commited by:** {{this.author.displayName}} 
+                  {{/forEach}}
+
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              displayName: 'Git based WIKI Updater'
+              inputs:
+                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                filename: 'xPlatReleaseNotes/build-Linux-handbars.md'
+                dataIsFile: true
+                sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
+                message: 'Update from Build'
+                gitname: builduser
+                gitemail: 'build@demo'
+                useAgentToken: false
+                user: richardfennell
+                password: '$(pat)'
 
 
   - stage: Test_Mac
@@ -233,21 +297,60 @@ stages:
                 outputVariableName: OutputText
                 templateLocation: InLine
                 inlinetemplate: |
-                  # Release notes 
-                  ## Notes for release  ${releaseDetails.releaseDefinition.name}    
-                  **Release Number**  : ${releaseDetails.name}    
-                  **Release completed** : ${releaseDetails.modifiedOn}     
-                  **Compared Release Number**  : ${compareReleaseDetails.name}   
-                  
-                  ### Associated work items  
-                  @@WILOOP@@  
-                  * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
-                  @@WILOOP@@  
-                    
-                  ### Associated commits
-                  @@CSLOOP@@  
-                  * **ID ${csdetail.commitId} ** ${csdetail.comment}    
-                  @@CSLOOP@@
+                  # Notes for build 
+                  **Build Number**: {{buildDetails.id}}
+                  **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
+
+                  # Associated Pull Requests ({{pullRequests.length}})
+                  {{#forEach pullRequests}}
+                  {{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
+                  *  **PR {{this.id}}**  {{this.title}}
+                  {{/forEach}}
+
+                  # Builds with associated WI/CS ({{builds.length}})
+                  {{#forEach builds}}
+                  {{#if isFirst}}## Builds {{/if}}
+                  ##  Build {{this.build.buildNumber}}
+                  {{#forEach this.commits}}
+                  {{#if isFirst}}### Commits {{/if}}
+                  - CS {{this.id}}
+                  {{/forEach}}
+                  {{#forEach this.workitems}}
+                  {{#if isFirst}}### Workitems {{/if}}
+                  - WI {{this.id}}
+                  {{/forEach}} 
+                  {{/forEach}}
+
+                  # Global list of WI ({{workItems.length}})
+                  {{#forEach workItems}}
+                  {{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
+                  *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+                    - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
+                    - **Tags** {{lookup this.fields 'System.Tags'}}
+                  {{/forEach}}
+
+                  # Global list of CS ({{commits.length}})
+                  {{#forEach commits}}
+                  {{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
+                  * ** ID{{this.id}}** 
+                    -  **Message:** {{this.message}}
+                    -  **Commited by:** {{this.author.displayName}} 
+                  {{/forEach}}
+
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              displayName: 'Git based WIKI Updater'
+              inputs:
+                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                filename: 'xPlatReleaseNotes/build-Mac-handbars.md'
+                dataIsFile: true
+                sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
+                message: 'Update from Build'
+                gitname: builduser
+                gitemail: 'build@demo'
+                useAgentToken: false
+                user: richardfennell
+                password: '$(pat)'
+
 
   - stage: Test_Manual
     dependsOn:  
