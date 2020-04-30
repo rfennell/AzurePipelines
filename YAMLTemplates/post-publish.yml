@@ -1,0 +1,24 @@
+parameters:
+- name: buildNumber
+  type: string
+- name: extensionName
+  type: string
+
+steps:  
+- task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
+  displayName: 'Get Git Artifact PR Reason'
+  inputs:
+    OutputText: 'OutputedText'
+
+- task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Twitter.Xpirit-Vsts-Release-Twitter.Twitter@1
+  displayName: 'Send Tweet about new release'
+  inputs:
+    TwitterEndPoint: 'Twitter Richard'
+    Message: 'I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText) '
+
+- task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
+  displayName: 'Update Build Variable'
+  inputs:
+    variable: Minor
+    mode: Autoincrement
+    usedefaultcreds: false

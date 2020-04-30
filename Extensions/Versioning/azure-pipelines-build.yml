@@ -1,252 +1,299 @@
-resources:
-- repo: self
-
 name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
-trigger: none # will disable CI build
+trigger: 
+  branches:
+    include: [ master ] # branch names which will trigger a build
+  paths:
+    include: [ Extensions/Versioning ] # file paths which must match to trigger a build, cannot be a variable
 
 pr: # will trigger on PR
   branches:
     include: [ master ] # branch names which will trigger a build
   paths:
-    include: [ /Extensions/Versioning ] # file paths which must match to trigger a build
-
-pool:
-  name: Hosted VS2017
-  demands: npm
+    include: [ Extensions/Versioning ] # file paths which must match to trigger a build, cannot be a variable
 
 variables:
-  ExtensionRoot: 'Extensions/Versioning'
+  # declared in the pipeline UI
+  #  major
+  #  minor
+  - group:  'Versioning Extension'
+    # this group includes the following variablea  
+    #  ExtensionRoot - working folder
+    #  PublisherID  - Marketplace publisher
+    #  ExtensionID - Marketplace extension id
+    #  vmImage - name of Azure DevOps pool to use
+    #  artifactLocationName -  folder the artifact to push is stored in
+    #  privateExtentionsTag - tag to show if private (else blank)
+    #  taskID - Marketplace ID of task
+    #  wikiFilename - name of generated docs files
+stages:
+  - stage: Build
+    jobs:
+    - job: Build
+      pool: 
+        vmImage: '$(vmImage)'
+        demands: npm
+      steps:
+      # version all the task in the extension
+      - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+        displayName: 'Setting the version for tasks in extension'
+        inputs:
+          rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
+          targetFiles: '**\\task.json'
 
-steps:
-- task: qetza.replacetokens.replacetokens-task.replacetokens@1
-  displayName: 'Replace tokens in **\task.json'
-  inputs:
-    rootDirectory: '$(ExtensionRoot)'
-    targetFiles: '**\task.json'
+      - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+        displayName: 'DACPac Versioning Pester Test Runner'
+        inputs:
+          scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionDacpacTask\test'
+          resultsFile: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
+          run32Bit: false
+        continueOnError: true
 
-- task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
-  displayName: 'DACPac Versioning Pester Test Runner'
-  inputs:
-    scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionDacpacTask\test'
-    resultsFile: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
-    run32Bit: false
-  continueOnError: true
+      - task: PublishTestResults@1
+        displayName: 'Publish Test Results $(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
+        inputs:
+          testRunner: NUnit
+          testResultsFiles: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
+          testRunTitle: 'DACPac Pester Tests'
 
-- task: PublishTestResults@1
-  displayName: 'Publish Test Results $(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
-  inputs:
-    testRunner: NUnit
-    testResultsFiles: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
-    testRunTitle: 'DACPac Pester Tests'
+      - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+        displayName: 'PowerShellModule Versioning Tests'
+        inputs:
+          scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionPowerShellModule\test'
+          resultsFile: '$(Build.SourcesDirectory)\Test-VersionPowerShellTaskPester.XML'
+          run32Bit: false
 
-- task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
-  displayName: 'PowerShellModule Versioning Tests'
-  inputs:
-    scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionPowerShellModule\test'
-    resultsFile: '$(Build.SourcesDirectory)\Test-VersionPowerShellTaskPester.XML'
-    run32Bit: false
+      - task: PublishTestResults@1
+        displayName: 'Publish Test Results $(Build.SourcesDirectory)\Test-VersionPowerShellTaskPester.XML'
+        inputs:
+          testRunner: NUnit
+          testResultsFiles: '$(Build.SourcesDirectory)\Test-VersionPowerShellTaskPester.XML'
+          testRunTitle: 'PowerShellModule Pester Tests'
+        condition: succeededOrFailed()
+     
+      # for each Node based task we must transpile it
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'VersionDotNetCoreAssembliesTask'
 
-- task: PublishTestResults@1
-  displayName: 'Publish Test Results $(Build.SourcesDirectory)\Test-VersionPowerShellTaskPester.XML'
-  inputs:
-    testRunner: NUnit
-    testResultsFiles: '$(Build.SourcesDirectory)\Test-VersionPowerShellTaskPester.XML'
-    testRunTitle: 'PowerShellModule Pester Tests'
-  condition: succeededOrFailed()
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'VersionJSONFileTask'
 
-# standard block for Node
-- task: Npm@0
-  displayName: 'npm install VersionDotNetCoreAssembliesTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionDotNetCoreAssembliesTask'
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'VersionAngularFileTask'
 
-- task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
-  displayName: 'Scan for vulnerable package dependencies in VersionDotNetCoreAssembliesTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionDotNetCoreAssembliesTask\'
-    file: package.json
-    monitor: true
-    endpoint: 'Snky (Github RFennell)'
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'VersionAndroidManifest'
 
-- task: Npm@0
-  displayName: 'npm run build VersionDotNetCoreAssembliesTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionDotNetCoreAssembliesTask'
-    command: run
-    arguments: build
+      - task: TfxInstaller@1
+        displayName: 'Install Tfx Tool'
+        inputs:
+          version: 'v0.6.x'
 
-- task: Npm@0
-  displayName: 'npm run test VersionDotNetCoreAssembliesTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionDotNetCoreAssembliesTask'
-    command: run
-    arguments: test
+      - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+        displayName: 'Package and Publish Extension as a PROD Package '
+        inputs:
+          rootFolder: '$(ExtensionRoot)'
+          outputPath: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
+          publisherId: '$(PublisherID)'
+          extensionId: '$(ExtensionID)'
+          extensionVersion: '$(Build.BuildNumber)'
+          updateTasksVersion: true
+          extensionVisibility: public
 
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results  VersionDotNetCoreAssembliesTask'
-  inputs:
-    testResultsFiles: '$(ExtensionRoot)\VersionDotNetCoreAssembliesTask\test-output\test-results.xml'
-    testRunTitle: 'VersionDotNetCoreAssembliesTask'
+      - task: CopyFiles@2
+        displayName: 'Copy Docs'
+        inputs:
+          SourceFolder: $(ExtensionRoot)
+          Contents: |
+            readme.md
+            vss-extension.json
+            **\task.json
+          TargetFolder: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
 
-- task: Npm@0
-  displayName: 'npm run package VersionDotNetCoreAssembliesTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionDotNetCoreAssembliesTask'
-    command: run
-    arguments: package
-# end node block
+      - task: PublishPipelineArtifact@0
+        inputs:
+          artifactName: 'vsix'
+          targetPath: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
 
-# standard block for Node
-- task: Npm@0
-  displayName: 'npm install VersionJSONFileTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionJSONFileTask'
+  - stage: Private
+    jobs:
+    - deployment: Private_Deployment
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Private)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            # we don't need to DownloadPipelineArtifact as this is done automatically
+            - template: ..\..\YAMLTemplates\publish-extension.yml
+              parameters:
+                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                 extensionTag: '$(privateExtentionsTag)' 
+                 extensionVisibility: private    
 
-- task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
-  displayName: 'Scan for vulnerable package dependencies in VersionJSONFileTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionJSONFileTask\'
-    file: package.json
-    monitor: true
-    endpoint: 'Snky (Github RFennell)'
+  - stage: Test_Windows
+    dependsOn: Private 
+    jobs:
+    - deployment: Private_Test
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Versioning)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
+                displayName: 'Trigger a new build of Validate-VersioningDOTNETCORE'
+                inputs:
+                  buildDefinition: 'Validate-VersioningDOTNETCORE'
+                  useSameBranch: false
+                  branchToUse: master
+                  waitForQueuedBuildsToFinish: true
+                  authenticationMethod: 'OAuth Token'
+                  password: $(System.AccessToken)
+              - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
+                displayName: 'Trigger a new build of Validate-VersioningTask.Android'
+                inputs:
+                  buildDefinition: 'Validate-VersioningTask.Android'
+                  useSameBranch: false
+                  branchToUse: master
+                  waitForQueuedBuildsToFinish: true
+                  authenticationMethod: 'OAuth Token'
+                  password: $(System.AccessToken)
+              - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
+                displayName: 'Trigger a new build of Validate-VersioningTask.Master'
+                inputs:
+                  buildDefinition: 'Validate-VersioningTask.Master'
+                  useSameBranch: false
+                  branchToUse: master
+                  waitForQueuedBuildsToFinish: true
+                  authenticationMethod: 'OAuth Token'
+                  password: $(System.AccessToken)
+              - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
+                displayName: 'Trigger a new build of Validate-VersioningTaskCoreStandard.Master'
+                inputs:
+                  buildDefinition: 'Validate-VersioningTaskCoreStandard.Master'
+                  useSameBranch: false
+                  branchToUse: master
+                  waitForQueuedBuildsToFinish: true
+                  authenticationMethod: 'OAuth Token'
+                  password: $(System.AccessToken)
 
-- task: Npm@0
-  displayName: 'npm run build VersionJSONFileTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionJSONFileTask'
-    command: run
-    arguments: build
+  - stage: Test_Linux
+    dependsOn: Private 
+    jobs:
+    - deployment: Private_Test
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Versioning)'
+      pool:
+        vmImage: 'ubuntu-18.04'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
+                displayName: 'Trigger a new build of Validate-VersioningTask.Android'
+                inputs:
+                  buildDefinition: 'Validate-VersioningTask.Android'
+                  useSameBranch: false
+                  branchToUse: master
+                  waitForQueuedBuildsToFinish: true
+                  authenticationMethod: 'OAuth Token'
+                  password: $(System.AccessToken)
 
-- task: Npm@0
-  displayName: 'npm run test VersionJSONFileTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionJSONFileTask'
-    command: run
-    arguments: test
+  - stage: Test_Mac
+    dependsOn: Private 
+    jobs:
+    - deployment: Private_Test
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Versioning)'
+      pool:
+        vmImage: 'macOS-10.15'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
+                displayName: 'Trigger a new build of Validate-VersioningTask.Android'
+                inputs:
+                  buildDefinition: 'Validate-VersioningTask.Android'
+                  useSameBranch: false
+                  branchToUse: master
+                  waitForQueuedBuildsToFinish: true
+                  authenticationMethod: 'OAuth Token'
+                  password: $(System.AccessToken)
 
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results  VersionJSONFileTask'
-  inputs:
-    testResultsFiles: '$(ExtensionRoot)\VersionJSONFileTask\test-output\test-results.xml'
-    testRunTitle: 'VersionJSONFileTask'
+  - stage: Documentation
+    dependsOn: 
+    - Test_Windows
+    - Test_Linux
+    - Test_Mac
+    variables:
+    - group: 'WIKI Updater'
+    # provides the variable
+    #   gitemail - used in the Git Config
+    #   gitName - used in the Git Config
+    #   githubpat - used to authenticate to repo
+    #   user - used to authenticate to repo
+    #   repo - url of repo (without HTTPS://)
+    jobs:
+    - deployment: Documentation
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Documentation)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:   
+            steps:
+              - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
+                parameters:
+                  workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
+                  wikiFilename: '$(wikiFilename)'
+                  repo: '$(repo)'
+                  gitname: '$(GitName)'
+                  gitemail: '$(GitEmail)'
+                  UserName: '$(UserName)'
+                  GitHubPat: '$(GitHubPat)'
 
-- task: Npm@0
-  displayName: 'npm run package VersionJSONFileTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionJSONFileTask'
-    command: run
-    arguments: package
-# end node block
+  - stage: Public
+    dependsOn: Documentation
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    jobs:
+    - deployment: Public_Deployment
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Public)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              # we don't need to DownloadPipelineArtifact as this is done automatically
+              - template: ..\..\YAMLTemplates\publish-extension.yml
+                parameters:
+                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                   extensionTag: '' 
+                   extensionVisibility: public    
 
-# standard block for Node
-- task: Npm@0
-  displayName: 'npm install VersionAngularFileTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionAngularFileTask'
-
-- task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
-  displayName: 'Scan for vulnerable package dependencies in VersionAngularFileTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionAngularFileTask\'
-    file: package.json
-    monitor: true
-    endpoint: 'Snky (Github RFennell)'
-
-- task: Npm@0
-  displayName: 'npm run build VersionAngularFileTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionAngularFileTask'
-    command: run
-    arguments: build
-
-- task: Npm@0
-  displayName: 'npm run test VersionAngularFileTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionAngularFileTask'
-    command: run
-    arguments: test
-
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results  VersionAngularFileTask'
-  inputs:
-    testResultsFiles: '$(ExtensionRoot)\VersionAngularFileTask\test-output\test-results.xml'
-    testRunTitle: 'VersionAngularFileTask'
-
-- task: Npm@0
-  displayName: 'npm run package VersionAngularFileTask'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionAngularFileTask'
-    command: run
-    arguments: package
-# end node block
-
-# standard block for Node
-- task: Npm@0
-  displayName: 'npm install VersionAndroidManifest'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionAndroidManifest'
-
-- task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
-  displayName: 'Scan for vulnerable package dependencies in VersionAndroidManifest'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionAndroidManifest\'
-    file: package.json
-    monitor: true
-    endpoint: 'Snky (Github RFennell)'
-
-- task: Npm@0
-  displayName: 'npm run build VersionAndroidManifest'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionAndroidManifest'
-    command: run
-    arguments: build
-
-- task: Npm@0
-  displayName: 'npm run test VersionAndroidManifest'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionAndroidManifest'
-    command: run
-    arguments: test
-
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results  VersionAndroidManifest'
-  inputs:
-    testResultsFiles: '$(ExtensionRoot)\VersionAndroidManifest\test-output\test-results.xml'
-    testRunTitle: 'VersionAndroidManifest'
-
-- task: Npm@0
-  displayName: 'npm run package VersionAndroidManifest'
-  inputs:
-    cwd: '$(ExtensionRoot)\VersionAndroidManifest'
-    command: run
-    arguments: package
-# end node block
-
-- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
-  displayName: 'Package Extension: PUBLIC'
-  inputs:
-    rootFolder: '$(ExtensionRoot)'
-    outputPath: '$(Build.ArtifactStagingDirectory)\vsix'
-    publisherId: '$(PublisherID)'
-    extensionId: '$(ExtensionID)'
-    extensionVersion: '$(Build.BuildNumber)'
-    updateTasksVersion: true
-    extensionVisibility: public
-
-- task: CopyFiles@2
-  displayName: 'Copy Docs'
-  inputs:
-    SourceFolder: Extensions/Versioning
-    Contents: |
-     readme.md
-     vss-extension.json
-     **\task.json
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\vsix'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: vsix'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
-    ArtifactName: vsix
-
+    - job: Post_Publish
+      dependsOn: Public_Deployment 
+      pool:
+        vmImage: '$(vmImage)'
+      steps:
+        - template: ..\..\YAMLTemplates\post-publish.yml
+          parameters:
+              buildNumber: $(Build.BuildNumber)  
+              extensionName: $(Build.DefinitionName)      
+                
