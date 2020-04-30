@@ -294,7 +294,7 @@ stages:
       steps:
       
       - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
-       displayName: 'Get Git Artifact PR Reason'
+        displayName: 'Get Git Artifact PR Reason'
         inputs:
           OutputText: 'OutputedText'
       
