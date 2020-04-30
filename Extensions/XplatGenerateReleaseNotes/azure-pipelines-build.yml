@@ -252,6 +252,8 @@ stages:
   - stage: Test_Manual
     dependsOn:  
     - Test_Windows
+    - Test_Mac
+    - Test_Linux
     jobs:
     - deployment: Private_Test
       timeoutInMinutes: 0
