@@ -146,7 +146,6 @@ stages:
     jobs:
     - deployment: Private_Test
       timeoutInMinutes: 0
-      dependsOn: Start_Lab_VM
       environment: 'Azure DevOps Marketplace (Versioning)'
       pool:
         vmImage: '$(vmImage)'
@@ -196,7 +195,6 @@ stages:
     jobs:
     - deployment: Private_Test
       timeoutInMinutes: 0
-      dependsOn: Start_Lab_VM
       environment: 'Azure DevOps Marketplace (Versioning)'
       pool:
         vmImage: 'ubuntu-18.04'
@@ -219,7 +217,6 @@ stages:
     jobs:
     - deployment: Private_Test
       timeoutInMinutes: 0
-      dependsOn: Start_Lab_VM
       environment: 'Azure DevOps Marketplace (Versioning)'
       pool:
         vmImage: 'macOS-10.15'
