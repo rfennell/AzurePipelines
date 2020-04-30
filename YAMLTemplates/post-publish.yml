@@ -14,7 +14,7 @@ steps:
   displayName: 'Send Tweet about new release'
   inputs:
     TwitterEndPoint: 'Twitter Richard'
-    Message: 'I have just released Version ${{buildNumber}} of my Azure DevOps Pipeline ${{extensionName}} http://bit.ly/VSTS-RF $(OutputedText) '
+    Message: 'I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText) '
 
 - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
   displayName: 'Update Build Variable'
