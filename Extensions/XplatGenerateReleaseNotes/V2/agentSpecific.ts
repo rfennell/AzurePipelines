@@ -1,6 +1,6 @@
-import tl = require("vsts-task-lib/task");
-require("vso-node-api");
-import * as vstsInterfaces from "vso-node-api/interfaces/common/VsoBaseInterfaces";
+import tl = require("azure-pipelines-task-lib/task");
+require("azure-devops-node-api");
+import * as vstsInterfaces from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 
 var taskJson = require("./task.json");
 const area: string = "XplatGenerateReleaseNotes";
