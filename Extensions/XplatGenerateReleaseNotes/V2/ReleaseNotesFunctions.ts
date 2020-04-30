@@ -141,42 +141,41 @@ export async function getMostRecentSuccessfulDeployment(releaseApi: IReleaseApi,
 
 export async function expandTruncatedCommitMessages(restClient: WebApi, globalCommits: Change[]): Promise<Change[]> {
     return new Promise<Change[]>(async (resolve, reject) => {
-        try {
             var expanded: number = 0;
             agentApi.logInfo(`Expanding the truncated commit messages...`);
             for (var change of globalCommits) {
                 if (change.messageTruncated) {
-                    agentApi.logDebug(`Expanding commit [${change.id}]`);
-                    let res: restm.IRestResponse<GitCommit>;
-                    if (change.location.startsWith("https://api.github.com/")) {
-                        // handling for GitHub need to use a dedicated  REST client with no creds
-                        agentApi.logDebug(`Need to expand details from GitHub`);
-                        let rc = new restm.RestClient("rest-client");
-                        res = await rc.get<GitCommit>(change.location);
-                    } else {
-                        let vstsRes = await restClient.rest.get<GitCommit>(change.location);
-                        // when we swapped to the newer API have to do this translation so we can use standard processing logic
-                        res = {
-                            statusCode: vstsRes.statusCode,
-                            result: vstsRes.result,
-                            headers: undefined
-                        };
-                    }
-
-                    if (res.statusCode === 200) {
-                        change.message = res.result.comment;
-                        change.messageTruncated = false;
-                        expanded++;
-                    } else {
-                        agentApi.logDebug(`Failed to get the full commit message for ${change.id}`);
+                    try {
+                        agentApi.logDebug(`Expanding commit [${change.id}]`);
+                        let res: restm.IRestResponse<GitCommit>;
+                        if (change.location.startsWith("https://api.github.com/")) {
+                            agentApi.logDebug(`Need to expand details from GitHub`);
+                            let rc = new restm.RestClient("rest-client");
+                            let res: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
+                            if (res.statusCode === 200) {
+                                change.message = res.result.commit.message;
+                                change.messageTruncated = false;
+                                expanded++;
+                            } else {
+                                agentApi.logWarn(`Cannot access API ${res.statusCode}`);
+                            }
+                        } else {
+                            agentApi.logDebug(`Need to expand details from Azure DevOps`);
+                            let vstsRes = await restClient.rest.get<GitCommit>(change.location);
+                            if (vstsRes.statusCode === 200) {
+                                change.message = res.result.comment;
+                                change.messageTruncated = false;
+                                expanded++;
+                            } else {
+                                agentApi.logWarn(`Cannot access API ${vstsRes.statusCode}`);
+                            }
+                        }
+                    } catch (err) {
+                        agentApi.logWarn(`Cannot expand message ${err}`);
                     }
                 }
             }
-            agentApi.logInfo(`Finished expanding [${expanded}] commits.`);
             resolve(globalCommits);
-        } catch (err) {
-            reject(err);
-        }
     });
 }
 
