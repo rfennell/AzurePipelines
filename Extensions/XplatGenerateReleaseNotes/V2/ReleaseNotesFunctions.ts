@@ -87,7 +87,7 @@ export function getSimpleArtifactArray(artifacts: Artifact[]): SimpleArtifact[] 
                 "buildId": artifact.definitionReference.version.id,
                 "artifactType": artifact.type,
                 "isPrimary": artifact.isPrimary,
-                "sourceId": artifact.sourceId
+                "sourceId": artifact.sourceId.split(":")[0]
             }
         );
     }
