@@ -151,27 +151,30 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
                         if (change.location.startsWith("https://api.github.com/")) {
                             agentApi.logDebug(`Need to expand details from GitHub`);
                             let rc = new restm.RestClient("rest-client");
-                            let res: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
-                            if (res.statusCode === 200) {
-                                change.message = res.result.commit.message;
+                            let gitHubRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
+                            if (gitHubRes.statusCode === 200) {
+                                change.message = gitHubRes.result.commit.message;
                                 change.messageTruncated = false;
                                 expanded++;
                             } else {
-                                agentApi.logWarn(`Cannot access API ${res.statusCode}`);
+                                agentApi.logWarn(`Cannot access API ${gitHubRes.statusCode}`);
+                                agentApi.logWarn(`Using ${change.location}`);
                             }
                         } else {
                             agentApi.logDebug(`Need to expand details from Azure DevOps`);
                             let vstsRes = await restClient.rest.get<GitCommit>(change.location);
                             if (vstsRes.statusCode === 200) {
-                                change.message = res.result.comment;
+                                change.message = vstsRes.result.comment;
                                 change.messageTruncated = false;
                                 expanded++;
                             } else {
                                 agentApi.logWarn(`Cannot access API ${vstsRes.statusCode}`);
+                                agentApi.logWarn(`Using ${change.location}`);
                             }
                         }
                     } catch (err) {
                         agentApi.logWarn(`Cannot expand message ${err}`);
+                        agentApi.logWarn(`Using ${change.location}`);
                     }
                 }
             }
