@@ -170,6 +170,16 @@
       "groupName":"advanced"
      },
      {
+      "name": "gitHubPat",
+      "type": "string",
+      "label": "GitHub PAT",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "To expand commit messages stored in a private GitHub repos a PAT needs to be provided, it is not required for repo stored in Azure DevOps or public GitHub repos",
+      "groupName":"advanced"
+     },
+
+     {
       "name": "customHandlebarsExtensionCode",
       "type": "multiLine",
       "label": "Custom Handlebars Extension",
