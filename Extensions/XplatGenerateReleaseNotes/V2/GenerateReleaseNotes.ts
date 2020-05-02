@@ -55,6 +55,7 @@ async function run(): Promise<number>  {
             var customHandlebarsExtensionCode = tl.getInput("customHandlebarsExtensionCode");
             var customHandlebarsExtensionFile = tl.getInput("customHandlebarsExtensionFile");
             var customHandlebarsExtensionFolder = tl.getInput("customHandlebarsExtensionFolder");
+            var gitHubPat = tl.getInput("gitHubPat");
 
             let credentialHandler: vstsInterfaces.IRequestHandler = util.getCredentialHandler();
             let vsts = new webApi.WebApi(tpcUri, credentialHandler);
@@ -247,7 +248,7 @@ async function run(): Promise<number>  {
                 ))
             );
 
-            let expandedGlobalCommits = await util.expandTruncatedCommitMessages(vsts, globalCommits);
+            let expandedGlobalCommits = await util.expandTruncatedCommitMessages(vsts, globalCommits, gitHubPat);
 
             if (!expandedGlobalCommits || expandedGlobalCommits.length !== globalCommits.length) {
                 reject("Failed to expand the global commits.");

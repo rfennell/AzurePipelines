@@ -28,7 +28,7 @@ export class UnifiedArtifactDetails {
 }
 
 import * as restm from "typed-rest-client/RestClient";
-import { HttpClient } from "typed-rest-client/HttpClient";
+import { PersonalAccessTokenCredentialHandler } from "typed-rest-client/Handlers";
 import tl = require("azure-pipelines-task-lib/task");
 import { ReleaseEnvironment, Artifact, Deployment, DeploymentStatus, Release } from "azure-devops-node-api/interfaces/ReleaseInterfaces";
 import { IAgentSpecificApi, AgentSpecificApi } from "./agentSpecific";
@@ -139,7 +139,7 @@ export async function getMostRecentSuccessfulDeployment(releaseApi: IReleaseApi,
     });
 }
 
-export async function expandTruncatedCommitMessages(restClient: WebApi, globalCommits: Change[]): Promise<Change[]> {
+export async function expandTruncatedCommitMessages(restClient: WebApi, globalCommits: Change[], pat: string): Promise<Change[]> {
     return new Promise<Change[]>(async (resolve, reject) => {
             var expanded: number = 0;
             agentApi.logInfo(`Expanding the truncated commit messages...`);
@@ -150,34 +150,42 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
                         let res: restm.IRestResponse<GitCommit>;
                         if (change.location.startsWith("https://api.github.com/")) {
                             agentApi.logDebug(`Need to expand details from GitHub`);
-                            let rc = new restm.RestClient("rest-client");
+                            // we build PAY auth object even if we have no token
+                            // this will still allow access to public repos
+                            // if we have a token it will allow access to private ones
+                            let auth = new PersonalAccessTokenCredentialHandler(pat);
+
+                            let rc = new restm.RestClient("rest-client", "", [auth], {});
                             let gitHubRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
                             if (gitHubRes.statusCode === 200) {
                                 change.message = gitHubRes.result.commit.message;
                                 change.messageTruncated = false;
                                 expanded++;
                             } else {
-                                agentApi.logWarn(`Cannot access API ${gitHubRes.statusCode}`);
-                                agentApi.logWarn(`Using ${change.location}`);
+                                agentApi.logWarn(`Cannot access API ${gitHubRes.statusCode} accessing ${change.location}`);
+                                agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
                             }
                         } else {
                             agentApi.logDebug(`Need to expand details from Azure DevOps`);
+                            // the REST client is already authorised with the agent token
                             let vstsRes = await restClient.rest.get<GitCommit>(change.location);
                             if (vstsRes.statusCode === 200) {
                                 change.message = vstsRes.result.comment;
                                 change.messageTruncated = false;
                                 expanded++;
                             } else {
-                                agentApi.logWarn(`Cannot access API ${vstsRes.statusCode}`);
-                                agentApi.logWarn(`Using ${change.location}`);
+                                agentApi.logWarn(`Cannot access API ${vstsRes.statusCode} accessing ${change.location}`);
+                                agentApi.logWarn(`The most common reason for this failure is that the account defined by the agent access token does not  have rights to read the required repo`);
                             }
                         }
                     } catch (err) {
                         agentApi.logWarn(`Cannot expand message ${err}`);
                         agentApi.logWarn(`Using ${change.location}`);
+                        agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
                     }
                 }
             }
+            agentApi.logWarn(`Expanded ${expanded}`);
             resolve(globalCommits);
     });
 }
