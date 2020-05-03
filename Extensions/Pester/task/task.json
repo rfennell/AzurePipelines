@@ -2,9 +2,10 @@
   "id": "31EF0033-64E3-4C55-B888-F446541474A6",
   "name": "Pester",
   "friendlyName": "Pester Test Runner from Black Marble",
-  "description": "Run Pester tests by either installing the latest version of Pester at run time (if possible) or using the version shipped with the task (4.3.1)",
+  "description": "Task is now deprecated. Please use the official Pester task. https://marketplace.visualstudio.com/items?itemName=Pester.PesterRunner",
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Pester-Task/)",
   "category": "Test",
+  "deprecated": true,
   "visibility": [
     "Build",
     "Release"

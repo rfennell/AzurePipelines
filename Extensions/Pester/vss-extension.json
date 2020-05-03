@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "name": "Pester Test Runner Build Task",
   "publisher": "richardfennellBM",
-  "description": "Run Pester tests without the need to install Pester in with the PMModule folder or in the source repo (Using Pester 3.4.3 or 4.3.1).",
+  "description": "Task now deprecated. Please use the offical Pester org task instead. https://marketplace.visualstudio.com/items?itemName=Pester.PesterRunner",
+  "deprecated": true,
   "CustomerQnASupport": {
     "enableqna":"true",
     "url": "https://github.com/rfennell/AzurePipelines/issues"
