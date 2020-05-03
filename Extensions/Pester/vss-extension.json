@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "name": "Pester Test Runner Build Task",
   "publisher": "richardfennellBM",
-  "description": "Task now deprecated. Please use the offical Pester org task instead.",
+  "description": "Task now deprecated. Please use the offical Pester org task instead. https://marketplace.visualstudio.com/items?itemName=Pester.PesterRunner",
   "deprecated": true,
   "CustomerQnASupport": {
     "enableqna":"true",

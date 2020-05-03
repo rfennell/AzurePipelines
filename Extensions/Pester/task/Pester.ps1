@@ -41,6 +41,7 @@ param
     [string]$ScriptBlock
 )
 
+Write-Host "##vso[task.logissue type=warning]This version of the Pester task runner is now deprecated. Please install the latest version from the Pester publisher for newer features and future support. https://marketplace.visualstudio.com/items?itemName=Pester.PesterRunner"
 Import-Module -Name "$PSScriptRoot\HelperModule.psm1" -Force
 
 if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
