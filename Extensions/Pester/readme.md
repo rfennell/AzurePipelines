@@ -1,3 +1,8 @@
+# THIS PROJECT IS NOT UNDER ACTIVE DEVELOPMENT 
+**As discussed in [this blog post](https://blogs.blackmarble.co.uk/rfennell/2020/05/03/announcing-the-deprecation-of-my-azure-devops-pester-extension-as-it-has-been-migrated-to-the-pester-project-and-republished-under-a-new-id/) this extension has been deprecated and it codebase migrated to a new home under the [Pester Project](https://github.com/pester/AzureDevOpsExtension). Please swap to using the new [updated cross-platform version of this extension](https://marketplace.visualstudio.com/items?itemName=Pester.PesterRunner) now published by the Pester Project**
+
+<hr>
+
 A task to install and run PowerShell Pester based tests
 The task takes five parameters
 

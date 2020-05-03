@@ -5,6 +5,7 @@
   "description": "Run Pester tests by either installing the latest version of Pester at run time (if possible) or using the version shipped with the task (4.3.1)",
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Pester-Task/)",
   "category": "Test",
+  "deprecated": true,
   "visibility": [
     "Build",
     "Release"
