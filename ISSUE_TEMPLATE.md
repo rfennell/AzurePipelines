@@ -12,3 +12,5 @@
 ### Expected behaviour and actual behaviour
 
 ### Steps to reproduce the problem
+*Please provide debug logs of the problem, remember you can get these by setting a build/release variable `system.debug=true`. If you don't provide detailed logs when you raise the issue it will almost certainly be the first request I make to diagnose the problem* 
+
