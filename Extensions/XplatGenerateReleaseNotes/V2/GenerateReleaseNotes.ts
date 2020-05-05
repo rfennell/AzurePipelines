@@ -324,30 +324,34 @@ async function run(): Promise<number>  {
                 prProjectFilter = teamProject;
             }
 
-            var allPullRequests: GitPullRequest[] = await util.getPullRequests(gitApi, prProjectFilter);
-            if (allPullRequests.length > 0) {
-                agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps for PRs`);
-                globalCommits.forEach(commit => {
-                    if (commit.type === "TfsGit") {
-                        agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
+            try {
+                var allPullRequests: GitPullRequest[] = await util.getPullRequests(gitApi, prProjectFilter);
+                if (allPullRequests && (allPullRequests.length > 0)) {
+                    agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps for PRs`);
+                    globalCommits.forEach(commit => {
+                        if (commit.type === "TfsGit") {
+                            agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
 
-                        allPullRequests.forEach(pr => {
-                            if (pr.lastMergeCommit) {
-                                if (pr.lastMergeCommit.commitId === commit.id) {
-                                    agentApi.logInfo(`- PR ${pr.pullRequestId} matches the commit ${commit.id}`);
-                                    globalPullRequests.push(pr);
+                            allPullRequests.forEach(pr => {
+                                if (pr.lastMergeCommit) {
+                                    if (pr.lastMergeCommit.commitId === commit.id) {
+                                        agentApi.logInfo(`- PR ${pr.pullRequestId} matches the commit ${commit.id}`);
+                                        globalPullRequests.push(pr);
+                                    }
+                                } else {
+                                    console.log(`- PR ${pr.pullRequestId} does not have a lastMergeCommit`);
                                 }
-                            } else {
-                                console.log(`- PR ${pr.pullRequestId} does not have a lastMergeCommit`);
-                            }
-                        });
+                            });
 
-                    } else {
-                        agentApi.logDebug(`Cannot check for associated PR as the commit ${commit.id} is not in an Azure DevOps repo`);
-                    }
-                });
-            } else {
-                agentApi.logDebug(`No completed Azure DevOps PRs found`);
+                        } else {
+                            agentApi.logDebug(`Cannot check for associated PR as the commit ${commit.id} is not in an Azure DevOps repo`);
+                        }
+                    });
+                } else {
+                    agentApi.logDebug(`No completed Azure DevOps PRs found`);
+                }
+            } catch (error) {
+                agentApi.logWarn(`Could not get details of any PR an error was seen: ${error}`);
             }
 
             // remove duplicates
