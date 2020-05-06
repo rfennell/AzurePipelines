@@ -33,6 +33,36 @@
    - **Tags** {{lookup this.fields 'System.Tags'}}
 {{/forEach}}
 
+# WI with 'Tag 1'
+{{#forEach this.workItems}}
+{{#if isFirst}}### WorkItems with 'Tag 1'{{/if}}
+{{#if (contains (lookup this.fields 'System.Tags') 'Tag 1')}}
+*  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+   - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
+   - **Tags** {{lookup this.fields 'System.Tags'}}
+{{/if}}
+{{/forEach}} 
+
+# WI with 'Tag 1' or 'TAG1'
+{{#forEach this.workItems}}
+{{#if isFirst}}### WorkItems with 'Tag 1' or 'TAG2'{{/if}}
+{{#if (or (contains (lookup this.fields 'System.Tags') 'Tag 1') (contains (lookup this.fields 'System.Tags') 'TAG2'))}}
+*  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+   - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
+   - **Tags** {{lookup this.fields 'System.Tags'}}
+{{/if}}
+{{/forEach}} 
+
+# WI with 'Tag 1' and 'TAG1'
+{{#forEach this.workItems}}
+{{#if isFirst}}### WorkItems with 'Tag 1' and 'TAG2'{{/if}}
+{{#if (and (contains (lookup this.fields 'System.Tags') 'Tag 1') (contains (lookup this.fields 'System.Tags') 'TAG2'))}}
+*  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+   - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
+   - **Tags** {{lookup this.fields 'System.Tags'}}
+{{/if}}
+{{/forEach}} 
+
 # Global list of CS ({{commits.length}})
 {{#forEach commits}}
 {{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
