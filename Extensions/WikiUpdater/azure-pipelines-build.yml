@@ -273,7 +273,7 @@ stages:
 
             - task: WikiFolderUpdaterTask@1
               inputs:
-                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 targetFolder: 'folder'
                 replaceFile: True
                 sourceFolder: '${build.sourcesdirectory)/$(ExtensionRoot)/WikiFolderUpdaterTask/testdata'
