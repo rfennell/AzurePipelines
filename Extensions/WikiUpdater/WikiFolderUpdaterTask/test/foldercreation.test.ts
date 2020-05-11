@@ -22,11 +22,4 @@ describe("Test on the target folder creation", () => {
       expect(GetWorkingFolder(".\\", "", logInfo)).to.equal(".\\");
   });
 
-  it("should be use filename only with a leading /", () => {
-    expect(GetWorkingFolder(".\\", "/file1.md", logInfo)).to.equal(".\\");
-  });
-
-  it("should be use filename only with a leading \\", () => {
-    expect(GetWorkingFolder(".\\", "\\file1.md", logInfo)).to.equal(".\\");
-  });
 });
