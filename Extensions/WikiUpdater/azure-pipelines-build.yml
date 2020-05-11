@@ -276,7 +276,7 @@ stages:
                 repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 targetFolder: 'folder'
                 replaceFile: True
-                sourceFolder: '${build.sourcesdirectory)/$(ExtensionRoot)/WikiFolderUpdaterTask/testdata'
+                sourceFolder: '${build.sourcesdirectory)'
                 Filter: '**/*.md'
                 message: 'Updated as a folder'
                 gitname: builduser
