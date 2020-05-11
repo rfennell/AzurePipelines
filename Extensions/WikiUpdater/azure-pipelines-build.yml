@@ -111,7 +111,8 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIUpdater)'
       pool:
-        vmImage: '$(vmImage)'
+        # vmImage: '$(vmImage)'
+        name: default
       strategy:
         runOnce:
           deploy:
@@ -287,8 +288,7 @@ stages:
   - stage: Documentation
     dependsOn: Test 
     pool:
-      # vmImage: '$(vmImage)'
-      name: default
+      vmImage: '$(vmImage)'
     variables:
     - group: 'WIKI Updater'
     # provides the variable
