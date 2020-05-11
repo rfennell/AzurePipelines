@@ -111,8 +111,8 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIUpdater)'
       pool:
-        # vmImage: '$(vmImage)'
-        name: default
+        vmImage: '$(vmImage)'
+        # name: default
       strategy:
         runOnce:
           deploy:
@@ -277,7 +277,7 @@ stages:
                 repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 targetFolder: 'folder'
                 replaceFile: True
-                sourceFolder: '$(build.sourcesdirectory)'
+                sourceFolder: '$(build.sourcesdirectory)/testdata'
                 Filter: '**/*.md'
                 message: 'Updated as a folder'
                 gitname: builduser
