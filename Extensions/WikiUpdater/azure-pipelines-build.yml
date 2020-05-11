@@ -49,6 +49,12 @@ stages:
           extensionRoot: '$(ExtensionRoot)'
           taskName: 'WikiUpdaterTask'
 
+      # for each Node based task we must transpile it
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'WikiFolderUpdaterTask'
+
       - task: TfxInstaller@1
         displayName: 'Install Tfx Tool'
         inputs:
@@ -105,7 +111,8 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIUpdater)'
       pool:
-        vmImage: '$(vmImage)'
+        #vmImage: '$(vmImage)'
+        name: default
       strategy:
         runOnce:
           deploy:
@@ -265,12 +272,23 @@ stages:
                 useAgentToken: true
                 localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagent'
 
+            - task: WikiFolderUpdaterTask@1
+              inputs:
+                repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
+                targetFolder: 'folder'
+                replaceFile: True
+                sourceFolder: '$(build.sourcesdirectory)/testdata'
+                Filter: '**/*.md'
+                message: 'Updated as a folder'
+                gitname: builduser
+                gitemail: 'build@demo'
+                useAgentToken: true
+                localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagentfolder'
 
   - stage: Documentation
     dependsOn: Test 
     pool:
-      # vmImage: '$(vmImage)'
-      name: default
+      vmImage: '$(vmImage)'
     variables:
     - group: 'WIKI Updater'
     # provides the variable
