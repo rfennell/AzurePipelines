@@ -49,6 +49,12 @@ stages:
           extensionRoot: '$(ExtensionRoot)'
           taskName: 'WikiUpdaterTask'
 
+      # for each Node based task we must transpile it
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'WikiFolderUpdaterTask'
+
       - task: TfxInstaller@1
         displayName: 'Install Tfx Tool'
         inputs:
