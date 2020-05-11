@@ -1,32 +1,46 @@
-A task to update a page in Git based WIKI
+The extension contains two tasks that can be used to update pages in Git based WIKIs
 
-## Update a WIKI Page
+## Update a single WIKI Page
 
-The WIKI Updater task allows the updating of a Git based WIKI using an inputted string as the file data. This can be usefully paired with my [Generate Release Notes Extension](https://marketplace.visualstudio.com/items?itemName=richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes)
+The WIKI Updater task allows the updating of a Git based WIKI using either an inputted string as the file contents data or a filename. This can be usefully paired with my [Generate Release Notes Extension](https://marketplace.visualstudio.com/items?itemName=richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes)
 
 This can be used with both Azure DevOps and GitHub hosted WIKIs
 
+## Update a WIKI with a set of pages defined by a wildcard 
+
+The WIKI Updater task that allows a set of files to be specified, using a wildcard, that will be committed to the Git repo. None that this task does not provided the option to rename the files as they are unloaded.
+
+This can be used with both Azure DevOps and GitHub hosted WIKIs
+
+
 ### Usage
 
-Add the task to a build or release
+Both tasks can be used a build or release
 
-#### Required Parameters
+#### Required Parameters (for both tasks)
 - Repo - The repo URL to update e.g in the form **dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki** (see the URL section below as to how to find this URL)
 - Filename - The file (page to save/update), must end in .md else it will not appear on the WIKI e.g. page.md
-- DataIsFile - If true will upload a file, if false the upload is the content provided as a string
-- Contents - If DataIsFile is false, this text to saved in the file set in the 'filename' parameter, can be the output from another task passed as pipeline variable
-- SourceFile - If DataIsFile is true, this is the filename to upload, will be renamed to the value of the 'filename' parameter
 - Message - The Git commit message
 - GitName - The name for the .gitatrributes file e.g. _builduser_ (not a critical value)
 - GitEmail - The email for the .gitatrributes file e.g. _builduser@domain_ (not a critical value)
-- Replace File - Replaces the page in the WIKI if set to True, if False will append or prepend to the page. Defaults to True
-- Append to File - Only meaningful if using the option to not replace the WIKI page. In this case, adds the contents to end of file if true, if false inserts at the new content start of the page. Defaults to True
+- Replace File(s) - Replaces the page in the WIKI if set to True, if False will append or prepend to the page. Defaults to True
+- Append to File(s) - Only meaningful if using the option to not replace the WIKI page. In this case, adds the contents to end of file if true, if false inserts at the new content start of the page. Defaults to True
 - Tag Repo - If true a Git Tag set in the value of 'Tag' parameter in the repo. Defaults to false
 - Tag - The tag to add to the repo, if the Tag repo flag is set to true
 - Branch - The name of the **pre-existing** branch to checkout prior to committing the change, defaults to empty, so no checkout is done and writes are done to the default master branch
 
-#### Advanced
+#### Required Parameters (Single File Task)
+- DataIsFile - If true will upload a file, if false the upload is the content provided as a string
+- Contents - If DataIsFile is false, this text to saved in the file set in the 'filename' parameter, can be the output from another task passed as pipeline variable
+- SourceFile - If DataIsFile is true, this is the filename to upload, will be renamed to the value of the 'filename' parameter
 
+#### Required Parameters (Multi File Task)
+- targetFolder - Any sub folder on the WIKI to place the files in
+- sourceFolder - The folder to scan for files to upload
+- filter - The file filter to scan the sourceFolder for defaults to `**/*.md`
+
+
+#### Advanced (for both tasks)
 - LocalPath - The path used to clone the repo to for updating. Defaults to $(System.DefaultWorkingDirectory)\\repo
 - UseAgentToken - If true the task will use the built in agent OAUTH token, if false you need to provide username & password/PAT". **Note** for use of the OAUTH token to work you must allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) and grant _contribute_ access on the target Azure DevOps WIKI to the _Project Collection Build Service_ user (assuming this is the account the pipeline is running as). The default is _false_ (see Authentication below)
 - Username - The username to authenticate with the repo (see Authentication below)
