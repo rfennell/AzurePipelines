@@ -1,7 +1,7 @@
 import { expect } from "chai";
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import "mocha";
-import { GetWorkingFolder } from "../src/GitWikiFuntions";
+import { GetWorkingFolder, GetFolder } from "../src/GitWikiFuntions";
 import { logInfo } from "../src/agentSpecific";
 import { existsSync, fstat } from "fs";
 import { pathToFileURL } from "url";
@@ -20,6 +20,21 @@ describe("Test on the target folder creation", () => {
 
     it("should be use filename only", () => {
       expect(GetWorkingFolder(".\\", "", logInfo)).to.equal(".\\");
+  });
+
+});
+
+describe("Check folder name extractions", () => {
+  it("should only return subfolder for \\", () => {
+    expect(GetFolder("C:\\test\\1\\2\\abc.md", "C:\\test")).to.equal("1\\2");
+  });
+
+  it("should only return subfolder for /", () => {
+    expect(GetFolder("C:/test/1/2/abc.md", "C:/test")).to.equal("1\\2");
+  });
+
+  it("should only return subfolder for mixed \\ /", () => {
+    expect(GetFolder("C:/test/1/2/abc.md", "C:\\test")).to.equal("1\\2");
   });
 
 });

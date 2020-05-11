@@ -68,7 +68,7 @@ export function GetFileName(filename): any {
 
 export function GetFolder(filename, sourceDir): any {
     var pathParts = path.parse(filename);
-    return pathParts.dir.replace(sourceDir, "");
+    return (path.relative(sourceDir, pathParts.dir));
 }
 
 export async function UpdateGitWikiFile(
