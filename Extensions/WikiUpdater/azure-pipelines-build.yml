@@ -290,7 +290,7 @@ stages:
             steps:
 
             - checkout: VSTSBuildTaskValidation  
-              clean: true
+              clean: false
               fetchDepth: 0
               lfs: false
 
@@ -299,7 +299,7 @@ stages:
                 repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 targetFolder: 'folder'
                 replaceFile: True
-                sourceFolder: 'VSTSBuildTaskValidation/testdata'
+                sourceFolder: '$(Build.SourcesDirectory)/testdata'
                 Filter: '**/*.md'
                 message: 'Updated as a folder'
                 gitname: builduser
