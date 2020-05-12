@@ -178,7 +178,7 @@
   ],
   "instanceNameFormat": "Git based WIKI Folder Updater",
   "execution": {
-    "Node": {
+    "Node10": {
       "target": "GitWikiTask.js",
       "argumentFormat": ""
     }
