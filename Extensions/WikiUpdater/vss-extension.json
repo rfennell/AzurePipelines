@@ -51,6 +51,9 @@
   "files": [
     {
       "path": "WikiUpdaterTask"
+    },
+    {
+      "path": "WikiFolderUpdaterTask"
     }
   ],
   "contributions": [
@@ -62,6 +65,16 @@
       ],
       "properties": {
         "name": "WikiUpdaterTask"
+      }
+    },
+    {
+      "id": "WikiFolderUpdaterTask",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "WikiFolderUpdaterTask"
       }
     }
   ]

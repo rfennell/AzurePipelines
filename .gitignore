@@ -264,6 +264,14 @@ Extensions/WikiUpdater/WikiUpdaterTask/node_modules
 Extensions/WikiUpdater/WikiUpdaterTask/dist
 Extensions/WikiUpdater/WikiUpdaterTask/repo
 
+Extensions/WikiUpdater/WikiFolderUpdaterTask/*.js
+Extensions/WikiUpdater/WikiFolderUpdaterTask/*.js.map
+Extensions/WikiUpdater/WikiFolderUpdaterTask/test/*.js
+Extensions/WikiUpdater/WikiFolderUpdaterTask/test/*.js.map
+Extensions/WikiUpdater/WikiFolderUpdaterTask/node_modules
+Extensions/WikiUpdater/WikiFolderUpdaterTask/dist
+Extensions/WikiUpdater/WikiFolderUpdaterTask/repo
+
 Extensions/YamlGenerator/YamlGeneratorTask/*.js
 Extensions/YamlGenerator/YamlGeneratorTask/*.js.map
 Extensions/YamlGenerator/YamlGeneratorTask/test/*.js
