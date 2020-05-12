@@ -14,6 +14,7 @@
   "main": "test.js",
   "dependencies": {
     "fs": "0.0.1-security",
+    "glob": "^7.1.6",
     "ncp": "^2.0.0",
     "process": "^0.11.10",
     "rimraf": "^2.6.2",
