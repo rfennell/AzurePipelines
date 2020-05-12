@@ -1,8 +1,8 @@
 {
-  "id": "e59c5ae6-3afd-479d-bc40-81cd6c541840",
-  "name": "WikiUpdaterTask",
-  "friendlyName": "Git based WIKI Single File Updater from Black Marble",
-  "description": "A tools to update or create a file in a WIKI based in a Git repo ",
+  "id": "2f22eed4-2ef7-407e-98d8-3b20ca0a5352",
+  "name": "WikiFolderUpdaterTask",
+  "friendlyName": "Git based WIKI Folder Updater from Black Marble",
+  "description": "A tools to update or create a set of files in a folder in WIKI based in a Git repo ",
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-Updater-Task/)",
   "category": "Utility",
   "visibility": [
@@ -47,12 +47,12 @@
       "helpMarkDown": "The name of the pre-existing branch to checkout prior to committing the change, defaults to empty, so no checkout is done and commits are done to the default 'master' branch"
     },
     {
-      "name": "filename",
+      "name": "targetFolder",
       "type": "string",
-      "label": "Name of the file/page",
+      "label": "Name of the folder to save files into",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The name of the file (page) that will be updated or created, must end in .md else it will not appear on the WIKI e.g. page.md"
+      "helpMarkDown": "The name of the folder that the files will be uploaded to"
     },
     {
       "name": "replaceFile",
@@ -72,32 +72,22 @@
       "visibleRule":"replaceFile = False"
     },
     {
-      "name": "dataIsFile",
-      "type": "boolean",
-      "label": "Data is a file",
-      "defaultValue": "False",
-      "required": false,
-      "helpMarkDown": "If true will upload a file, if false the upload is the content provided"
-    },
-    {
-      "name": "contents",
-      "type": "multiLine",
-      "label": "Contents",
-      "defaultValue": "",
-      "required": true,
-      "helpMarkDown": "If DataIsFile is false, this text to save in the file, can be the output from another task passed as pipeline variable",
-      "visibleRule": "dataIsFile = False"
-    },
-    {
-      "name": "sourceFile",
+      "name": "sourceFolder",
       "type": "string",
-      "label": "Source File",
-      "defaultValue": "",
+      "label": "Source Folder",
+      "defaultValue": "${build.sourcesdirectory)",
       "required": true,
-      "helpMarkDown": "If DataIsFile is true, this is the filename to upload, will be renamed to the value of the 'filename' parameter",
-      "visibleRule": "dataIsFile = True"
+      "helpMarkDown": "The source folder to copy from $(build.sourcesdirectory) "
     },
     {
+      "name": "Filter",
+      "type": "string",
+      "label": "File Filter",
+      "defaultValue": "**/*.md",
+      "required": true,
+      "helpMarkDown": "A wildcard expression for the files to upload e.g. **/*.md"
+    },
+      {
       "name": "message",
       "type": "string",
       "label": "Commit Message",
@@ -111,7 +101,7 @@
       "label": "Tag the commit",
       "defaultValue": "False",
       "required": false,
-      "helpMarkDown": "If true a tag will be commited to the repo"
+      "helpMarkDown": "If true a tag will be committed to the repo"
     },
     {
       "name": "tag",
@@ -186,9 +176,9 @@
       "groupName": "advanced"
     }
   ],
-  "instanceNameFormat": "Git based WIKI File Updater",
+  "instanceNameFormat": "Git based WIKI Folder Updater",
   "execution": {
-    "Node": {
+    "Node10": {
       "target": "GitWikiTask.js",
       "argumentFormat": ""
     }

@@ -12,6 +12,13 @@ pr: # will trigger on PR
   paths:
     include: [ /Extensions/WikiUpdater ] # file paths which must match to trigger a build, cannot be a variable
 
+resources:
+  repositories: # the test data
+    - repository: VSTSBuildTaskValidation
+      type: git
+      name: VSTSBuildTaskValidation
+      branch: master
+
 variables:
   # declared in the pipeline UI
   #  major
@@ -48,6 +55,12 @@ stages:
         parameters:
           extensionRoot: '$(ExtensionRoot)'
           taskName: 'WikiUpdaterTask'
+
+      # for each Node based task we must transpile it
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'WikiFolderUpdaterTask'
 
       - task: TfxInstaller@1
         displayName: 'Install Tfx Tool'
@@ -101,7 +114,7 @@ stages:
   - stage: Test
     dependsOn: Private 
     jobs:
-    - deployment: Private_Test
+    - deployment: Private_Test_Single_File
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIUpdater)'
       pool:
@@ -265,12 +278,39 @@ stages:
                 useAgentToken: true
                 localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagent'
 
+    - deployment: Private_Test_Multi_File
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (WIKIUpdater)'
+      pool:
+        #vmImage: '$(vmImage)'
+        name: default
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: VSTSBuildTaskValidation  
+              clean: false
+              fetchDepth: 0
+              lfs: false
+
+            - task: WikiFolderUpdaterTask@1
+              inputs:
+                repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
+                targetFolder: 'folder'
+                replaceFile: True
+                sourceFolder: '$(Build.SourcesDirectory)/testdata'
+                Filter: '**/*.md'
+                message: 'Updated as a folder'
+                gitname: builduser
+                gitemail: 'build@demo'
+                useAgentToken: true
+                localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagentfolder'
 
   - stage: Documentation
     dependsOn: Test 
     pool:
-      # vmImage: '$(vmImage)'
-      name: default
+      vmImage: '$(vmImage)'
     variables:
     - group: 'WIKI Updater'
     # provides the variable
