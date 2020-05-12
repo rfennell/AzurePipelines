@@ -158,8 +158,13 @@ export async function UpdateGitWikiFile(
             var workingPath = GetWorkingFolder(localpath, folder, logInfo);
             var targetFile = `${workingPath}/${fileName}`;
             if (replaceFile) {
-                fs.copyFileSync(files[index], targetFile);
                 logInfo(`Copying the ${files[index]} to ${targetFile}`);
+                // for some reason fs.copyFileSync fails on the build agent but works in a test
+                fs.copyFile(files[index], targetFile, (err) => {
+                    if (err) {
+                        logError(err);
+                    }
+                });
             } else {
                 var contents = fs.readFileSync(files[index], "utf8");
                 if (appendToFile) {
