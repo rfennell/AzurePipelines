@@ -16,8 +16,8 @@ resources:
   repositories: # the test data
     - repository: VSTSBuildTaskValidation
       type: git
-      name: YAMLTemplates
-      branch: VSTSBuildTaskValidation
+      name: VSTSBuildTaskValidation
+      branch: master
 
 variables:
   # declared in the pipeline UI
