@@ -1,4 +1,4 @@
-# Summary
+# Releases
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
@@ -14,21 +14,133 @@ Generates release notes for a build or release. the file can be a format of your
 * V2 was a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the Node Azure DevOps SDK, with minor but breaking changes in the template format and that oAuth needs enabling on the agent running the tasks .
 
 # Usage
-As with my original [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks), this task generates a release notes file based on a template passed into the tool.  
+As with my original [PowerShell based Release Notes task](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes--Tasks) which this releases, this task generates a release notes file based on a template passed into the tool.  
 
-In the case of a Release, the data source for the generated Release Notes is the Azure DevOps REST API's comparison calls that are also used by the Azure DevOps UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the Azure DevOps UI.
+This task can be using inside a UI based Build or Release or a Multistage YAML Pipeline.
+
+In the case of a Release, the data source for the generated Release Notes is the Azure DevOps REST API's comparison calls that are also used by the Azure DevOps UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the Azure DevOps UI. 
 
 **Note:** That this comparison is only done against the primary build artifact linked to the Release
 
-If used in the build the release notes are based on the current build only.
+If used in the build or YAML pipeline the release notes are based on the current build only.
 
 ## The Template 
 
-There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes for both Git and TFVC based releases for both V1 and V2 formats. Most samples are in Markdown, but it is possible to generate any other format such as HTML
+There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes for both Git and TFVC based releases in all available template formats. Most samples are for Markdown file generation, but it is possible to generate any other format such as HTML
 
-> **It is recommended that the newer Handlebars based templating model is use. It is more flexible and future enhancements will target it.**
+<hr/>
 
-### Use the original scripting model 
+**It is STRONGLY recommended that the newer Handlebars based templating model is use. It is more flexible and all future enhancements will target it.**
+
+**At some point in the future the legacy templating format will be deprecated and removed from the task.**
+<hr/>
+
+
+### Handlebar Templates
+Since 2.27.x it has been possible to create your templates using [Handlebars](https://handlebarsjs.com/) syntax. A template written in this format is as follows
+
+```
+# Notes for release  {{releaseDetails.releaseDefinition.name}}    
+**Release Number**  : {{releaseDetails.name}}
+**Release completed** : {{releaseDetails.modifiedOn}}     
+**Build Number**: {{buildDetails.id}}
+**Compared Release Number**  : {{compareReleaseDetails.name}}    
+**Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
+
+# Associated Pull Requests ({{pullRequests.length}})
+{{#forEach pullRequests}}
+{{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
+*  **PR {{this.id}}**  {{this.title}}
+{{/forEach}}
+
+# Builds with associated WI/CS ({{builds.length}})
+{{#forEach builds}}
+{{#if isFirst}}## Builds {{/if}}
+##  Build {{this.build.buildNumber}}
+{{#forEach this.commits}}
+{{#if isFirst}}### Commits {{/if}}
+- CS {{this.id}}
+{{/forEach}}
+{{#forEach this.workitems}}
+{{#if isFirst}}### Workitems {{/if}}
+- WI {{this.id}}
+{{/forEach}} 
+{{/forEach}}
+
+# Global list of WI ({{workItems.length}})
+{{#forEach workItems}}
+{{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
+*  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+   - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
+   - **Tags** {{lookup this.fields 'System.Tags'}}
+{{/forEach}}
+
+# Global list of CS ({{commits.length}})
+{{#forEach commits}}
+{{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
+* ** ID{{this.id}}** 
+   -  **Message:** {{this.message}}
+   -  **Commited by:** {{this.author.displayName}} 
+{{/forEach}}
+
+
+```
+
+**IMPORTANT** Handlebars based templates have different objects available to the original template.
+
+What is done behind the scenes is that each `{{properties}}` block in the template is expanded by Handlebars. The property objects available to get data from at runtime are:
+
+#### Common objects 
+* **workItems** – the array of work item associated with the release
+* **commits** – the array of commits associated with the release
+* **pullRequests** - the array of PRs referenced by the commits in the release
+* **builds** - the array of the build artifacts that CS and WI are associated with. Note that this is a object with three properties 
+    - **build**  - the build details
+    - **commits**  - the commits associated with this build
+    - **workitems**  - the work items associated with the build
+
+#### Release objects (only available in a release)
+* **releaseDetails** – the release details of the release that the task was triggered for.
+* **compareReleaseDetails** - the the previous successful release that comparisons are being made against
+
+#### Build objects
+* **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
+
+**Note:** To dump all possible values use the form `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion (See below)
+
+#### Handlebar Extensions
+With 2.28.x support was added for Handlebars extensions in a number of ways:
+
+ The [Handbars Helpers](https://github.com/helpers/handlebars-helpers) extension library is also pre-load, this provides over 120 useful extensions to aid in data manipulation when templating. They are used the form
+
+```
+## To confirm the handbars-helpers is work
+The year is {{year}} 
+We can capitalize "foo bar baz" {{capitalizeAll "foo bar baz"}}
+```
+
+In addition to the  [Handbars Helpers](https://github.com/helpers/handlebars-helpers) extension library, there is also a custom Helper `json' that will dump the contents of any object. This is useful when working out what can be displayed in a template.
+
+```
+## The contents of the build object
+{{json buildDetails}}
+```
+
+Also there is support for custom extension libraries. These are provided via an Azure DevOps task parameter holding a block of JavaScript which is loaded into the Handlebars templating engine. The
+
+A sample extension code is in the form
+```
+module.exports = {foo: function () {return 'Returns foo';}};
+```
+And can be consumed in a template as shown below
+```
+## To confirm our custom extension works
+We can call our custom extension {{foo}}
+```
+
+As custom modules allows any JavaScript logic to be inject for bespoke need they can be solution to your own bespoke filtering and sorting needs. You can find sample of custom modules [the the Handlebars section of the sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) e.g. to perform a sorted foreach.
+
+### The Legacy scripting model 
 Prior to 2.27.x a bespoke scripting language was used. A sample of this format is as follows
 
 ```
@@ -113,7 +225,7 @@ An example template to run within a Release for GIT or TFVC Azure DevOps build b
 * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}
 @@WILOOP[ANY]:Tag 1:Tag2@@
 
-### Associated work items that have the title 'This is a title' or the tag 'Tage'
+### Associated work items that have the title 'This is a title' or the tag 'Tag 1'
 @@WILOOP[ALL]:System.Title=This is a title:TAG 1@@  
 * **${widetail.fields['System.WorkItemType']} ${widetail.id}** ${widetail.fields['System.Title']}  
 @@WILOOP:TAG 1@@  
@@ -128,101 +240,6 @@ An example template to run within a Release for GIT or TFVC Azure DevOps build b
 * **ID ${csdetail.id} ** ${csdetail.message}
 @@CSLOOP[^Merged PR  #.+]@@
 
-```
-
-### Handlebar Templates
-Since 2.27.x it has been possible to create your templates using [Handlebars](https://handlebarsjs.com/) syntax. A template written in this format is as follows
-
-```
-# Notes for release  {{releaseDetails.releaseDefinition.name}}    
-**Release Number**  : {{releaseDetails.name}}
-**Release completed** : {{releaseDetails.modifiedOn}}     
-**Build Number**: {{buildDetails.id}}
-**Compared Release Number**  : {{compareReleaseDetails.name}}    
-**Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
-
-# Associated Pull Requests ({{pullRequests.length}})
-{{#forEach pullRequests}}
-{{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
-*  **PR {{this.id}}**  {{this.title}}
-{{/forEach}}
-
-# Builds with associated WI/CS ({{builds.length}})
-{{#forEach builds}}
-{{#if isFirst}}## Builds {{/if}}
-##  Build {{this.build.buildNumber}}
-{{#forEach this.commits}}
-{{#if isFirst}}### Commits {{/if}}
-- CS {{this.id}}
-{{/forEach}}
-{{#forEach this.workitems}}
-{{#if isFirst}}### Workitems {{/if}}
-- WI {{this.id}}
-{{/forEach}} 
-{{/forEach}}
-
-# Global list of WI ({{workItems.length}})
-{{#forEach workItems}}
-{{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
-*  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
-   - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
-   - **Tags** {{lookup this.fields 'System.Tags'}}
-{{/forEach}}
-
-# Global list of CS ({{commits.length}})
-{{#forEach commits}}
-{{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
-* ** ID{{this.id}}** 
-   -  **Message:** {{this.message}}
-   -  **Commited by:** {{this.author.displayName}} 
-{{/forEach}}
-
-
-```
-
-> **IMPORTANT** Handlebars based templates have different objects available to the original template.
-> What is done behind the scenes is that each `{{properties}}` block in the template is expanded by Handlebars. The property objects available to get data from at runtime are:
-
-#### Common objects 
-* **workItems** – the array of work item associated with the release
-* **commits** – the array of commits associated with the release
-* **pullRequests** - the array of PRs referenced by the commits in the release
-* **builds** - the array of the build artifacts that CS and WI are associated with. Note that this is a object with three properties 
-    - **build**  - the build details
-    - **commits**  - the commits associated with this build
-    - **workitems**  - the work items associated with the build
-    
-
-#### Release objects (only available in a release)
-* **releaseDetails** – the release details of the release that the task was triggered for.
-* **compareReleaseDetails** - the the previous successful release that comparisons are being made against
-
-#### Build objects
-* **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
-
-> **Note:** To dump all possible values use the form `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion
-
-#### Extensions
-With 2.28.x support was added for Handbars extensions in two ways:
-
-The [Handbars Helpers](https://github.com/helpers/handlebars-helpers) extension library is also pre-load, this provides over 120 useful extensions to aid in data manipulation when templating. They are used the form
-
-```
-## To confirm the handbars-helpers is work
-The year is {{year}} 
-We can capitalize "foo bar baz" {{capitalizeAll "foo bar baz"}}
-```
-
-Also there is support for custom extension libraries. These are provided via an Azure DevOps task parameter holding a block of JavaScript which is loaded into the Handlebars templating engine. The
-
-A sample extension code is in the form
-```
-module.exports = {foo: function () {return 'Returns foo';}};
-```
-And can be consumed in a template as shown below
-```
-## To confirm our custom extension works
-We can call our custom extension {{foo}}
 ```
 
 ## Usage
