@@ -89,6 +89,18 @@ async function run(): Promise<number>  {
                 globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
 
             } else {
+                console.log("start");
+                var xxx = await releaseApi.getReleaseWorkItemsRefs(teamProject, 2662);
+                if (xxx) {
+                   console.log(await xxx.length);
+                   xxx.forEach(element => {
+                      console.log (`${element.id} ${element.title}`);
+                   });
+                } else  {
+                    console.log("None found");
+                }
+                console.log("end");
+
                 let releaseId: number = parseInt(tl.getVariable("Release.ReleaseId"));
                 let releaseDefinitionId: number = parseInt(tl.getVariable("Release.DefinitionId"));
                 let environmentName: string = (tl.getInput("overrideStageName") || tl.getVariable("Release_EnvironmentName")).toLowerCase();
