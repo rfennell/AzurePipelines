@@ -12,7 +12,8 @@ export class UnifiedArtifactDetails {
     build: Build;
     commits: Change[];
     workitems: ResourceRef[];
-    constructor ( build: Build, commits: Change[], workitems: ResourceRef[]) {
+    tests: TestCaseResult[];
+    constructor ( build: Build, commits: Change[], workitems: ResourceRef[], tests: TestCaseResult[]) {
         this.build = build;
         if (commits) {
             this.commits = commits;
@@ -23,6 +24,11 @@ export class UnifiedArtifactDetails {
             this.workitems = workitems;
         } else {
             this.workitems = [];
+        }
+        if (tests) {
+            this.tests = tests;
+        } else {
+            this.tests = [];
         }
    }
 }
@@ -42,6 +48,9 @@ import { IGitApi, GitApi } from "azure-devops-node-api/GitApi";
 import { GitCommit, GitPullRequest, GitPullRequestQueryType, GitPullRequestSearchCriteria, PullRequestStatus } from "azure-devops-node-api/interfaces/GitInterfaces";
 import { WorkItem } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import { WebApi } from "azure-devops-node-api";
+import { TestApi } from "azure-devops-node-api/TestApi";
+import { timeout } from "q";
+import { TestCaseResult } from "azure-devops-node-api/interfaces/TestInterfaces";
 
 let agentApi = new AgentSpecificApi();
 
@@ -202,6 +211,37 @@ export function getCredentialHandler(): IRequestHandler {
         credHandler = webApi.getHandlerFromToken(accessToken);
     }
     return credHandler;
+
+}
+
+export async function getTestForBuild(
+    testAPI: TestApi,
+    teamProject: string,
+    buildId: number
+): Promise<TestCaseResult[]> {
+    return new Promise<TestCaseResult[]>(async (resolve, reject) => {
+        let testList: TestCaseResult[] = [];
+        try {
+            let bt = await testAPI.getTestResultsByBuild(teamProject, buildId);
+            if ( bt.length > 0 ) {
+                for (let index = 0; index < bt.length; index++) {
+                    const test = bt[index];
+                    if (testList.filter(e => e.testRun.id === `${test.runId}`).length === 0) {
+                        tl.debug(`Adding tests for test run ${test.runId}`);
+                        let run = await testAPI.getTestResults(teamProject, test.runId);
+                        testList.push(...run);
+                    } else {
+                        tl.debug(`Skipping adding tests for test run ${test.runId} as already added`);
+                    }
+                }
+            } else {
+                tl.debug(`No tests associated with build ${buildId}`);
+            }
+            resolve(testList);
+        } catch (err) {
+            reject(err);
+        }
+    });
 }
 
 export function getTemplate(
@@ -246,7 +286,8 @@ export function processTemplate(
     customHandlebarsExtensionCode,
     prDetails,
     pullRequests: GitPullRequest[],
-    globalBuilds: UnifiedArtifactDetails[]): string {
+    globalBuilds: UnifiedArtifactDetails[],
+    globalTests: TestCaseResult[]): string {
 
     var widetail = undefined;
     var csdetail = undefined;
@@ -258,7 +299,8 @@ export function processTemplate(
         agentApi.logDebug(`WI: ${workItems.length}`);
         agentApi.logDebug(`CS: ${commits.length}`);
         agentApi.logDebug(`PR: ${pullRequests.length}`);
-        agentApi.logDebug(`B: ${globalBuilds.length}`);
+        agentApi.logDebug(`BUILDS: ${globalBuilds.length}`);
+        agentApi.logDebug(`TEST: ${globalTests.length}`);
 
         // if it's an array, it's a legacy template
         if (Array.isArray(template)) {
@@ -544,7 +586,8 @@ export function processTemplate(
                 "releaseDetails": releaseDetails,
                 "compareReleaseDetails": compareReleaseDetails,
                 "pullRequests": pullRequests,
-                "builds": globalBuilds
+                "builds": globalBuilds,
+                "tests": globalTests
              });
         }
 

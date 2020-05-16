@@ -94,10 +94,12 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 * **workItems** – the array of work item associated with the release
 * **commits** – the array of commits associated with the release
 * **pullRequests** - the array of PRs referenced by the commits in the release
+* **tests** - the array of tests associated with all the builds 
 * **builds** - the array of the build artifacts that CS and WI are associated with. Note that this is a object with three properties 
     - **build**  - the build details
     - **commits**  - the commits associated with this build
     - **workitems**  - the work items associated with the build
+    - **tests**  - the work items associated with the build
 
 #### Release objects (only available in a release)
 * **releaseDetails** – the release details of the release that the task was triggered for.
