@@ -222,10 +222,10 @@ export async function getTestForBuild(
     return new Promise<TestCaseResult[]>(async (resolve, reject) => {
         let testList: TestCaseResult[] = [];
         try {
-            let bt = await testAPI.getTestResultsByBuild(teamProject, buildId);
-            if ( bt.length > 0 ) {
-                for (let index = 0; index < bt.length; index++) {
-                    const test = bt[index];
+            let builtTestResults = await testAPI.getTestResultsByBuild(teamProject, buildId);
+            if ( builtTestResults.length > 0 ) {
+                for (let index = 0; index < builtTestResults.length; index++) {
+                    const test = builtTestResults[index];
                     if (testList.filter(e => e.testRun.id === `${test.runId}`).length === 0) {
                         tl.debug(`Adding tests for test run ${test.runId}`);
                         let run = await testAPI.getTestResults(teamProject, test.runId);
@@ -236,6 +236,41 @@ export async function getTestForBuild(
                 }
             } else {
                 tl.debug(`No tests associated with build ${buildId}`);
+            }
+            resolve(testList);
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
+export async function getTestForRelease(
+    testAPI: TestApi,
+    teamProject: string,
+    release: Release
+): Promise<TestCaseResult[]> {
+    return new Promise<TestCaseResult[]>(async (resolve, reject) => {
+        let testList: TestCaseResult[] = [];
+        try {
+            for (let envIndex = 0; envIndex < release.environments.length; envIndex++) {
+                const env = release.environments[envIndex];
+                    let envTestResults = await testAPI.getTestResultDetailsForRelease(teamProject, release.id, env.id);
+                    if (envTestResults.resultsForGroup.length > 0) {
+                        // this might be double loop, but there are checks to make sure items only added once
+                        // this form does guarentee that a test is only added once and in the same format
+                        for (let index = 0; index < envTestResults.resultsForGroup[0].results.length; index++) {
+                            const test =  envTestResults.resultsForGroup[0].results[index];
+                            if (testList.filter(e => e.testRun.id === `${test.testRun.id}`).length === 0) {
+                                tl.debug(`Adding tests for test run ${test.testRun.id}`);
+                                let run = await testAPI.getTestResults(teamProject, parseInt(test.testRun.id));
+                                testList.push(...run);
+                            } else {
+                                tl.debug(`Skipping adding tests for test run ${test.testRun.id} as already added`);
+                            }
+                        }
+                    } else {
+                        tl.debug(`No tests associated with release ${release.id} environment ${env.name}`);
+                    }
             }
             resolve(testList);
         } catch (err) {

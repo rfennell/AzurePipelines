@@ -212,6 +212,9 @@ async function run(): Promise<number>  {
                                         agentApi.logInfo(`Getting test associated with the build [${artifactInMostRecentRelease.buildId}]`);
                                         let tests = await util.getTestForBuild(testApi, teamProject, parseInt(artifactInMostRecentRelease.buildId));
                                         if (tests) {
+                                            agentApi.logInfo(`Found ${tests.length} test associated with the build [${artifactInMostRecentRelease.buildId}] adding any not already in the global test list to the list`);
+                                            // we only want to add unique items
+                                            globalTests = globalTests.concat(tests.filter((item) => globalTests.indexOf(item) < 0));
                                             globalTests = globalTests.concat(tests);
                                         }
 
@@ -282,9 +285,15 @@ async function run(): Promise<number>  {
                 }
             }
 
+            // checking for test associated with the release
+            var releaseTests = await util.getTestForRelease(testApi, teamProject, currentRelease);
+            // we only want to add unique items
+            globalTests = globalTests.concat(releaseTests.filter((item) => globalTests.indexOf(item) < 0));
+
             agentApi.logInfo(`Total build artifacts: [${globalBuilds.length}]`);
             agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
             agentApi.logInfo(`Total workitems: [${fullWorkItems.length}]`);
+            agentApi.logInfo(`Total release tests: [${globalTests.length}]`);
 
             // by default order by ID, has the option to group by type
             if (sortWi) {
