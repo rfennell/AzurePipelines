@@ -2,6 +2,7 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 2.46.x onwards, adds tests to the list of items that can be displayed in Handlebar based templates
 * 2.34.x onwards, extends the PR functionality to check for any PRs associated with commits associated with the release - not this functionality is only usable using Handlebars based templates
 * 2.33.x onwards, allow limited functionality to list the PR associated with triggering of the build/release
 * 2.27.x onwards, thanks to the work of [KennethScott](https://github.com/KennethScott), adds support for [Handlbars](https://handlebarsjs.com/) based templates as well as the bespoke version used previously.
@@ -94,7 +95,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 * **workItems** – the array of work item associated with the release
 * **commits** – the array of commits associated with the release
 * **pullRequests** - the array of PRs referenced by the commits in the release
-* **tests** - the array of tests associated with all the builds 
+* **tests** - the array of unique tests associated with any of the builds linked to the release or the release itself  
 * **builds** - the array of the build artifacts that CS and WI are associated with. Note that this is a object with three properties 
     - **build**  - the build details
     - **commits**  - the commits associated with this build
@@ -104,6 +105,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 #### Release objects (only available in a release)
 * **releaseDetails** – the release details of the release that the task was triggered for.
 * **compareReleaseDetails** - the the previous successful release that comparisons are being made against
+* **releaseTest** - the list of test associated with the release e.g. integration tests
 
 #### Build objects
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 

@@ -42,15 +42,16 @@ import { IReleaseApi } from "azure-devops-node-api/ReleaseApi";
 import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 import * as webApi from "azure-devops-node-api/WebApi";
 import fs  = require("fs");
-import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfaces";
 import { Build, Change } from "azure-devops-node-api/interfaces/BuildInterfaces";
 import { IGitApi, GitApi } from "azure-devops-node-api/GitApi";
+import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfaces";
 import { GitCommit, GitPullRequest, GitPullRequestQueryType, GitPullRequestSearchCriteria, PullRequestStatus } from "azure-devops-node-api/interfaces/GitInterfaces";
-import { WorkItem } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import { WebApi } from "azure-devops-node-api";
 import { TestApi } from "azure-devops-node-api/TestApi";
 import { timeout } from "q";
 import { TestCaseResult } from "azure-devops-node-api/interfaces/TestInterfaces";
+import { IWorkItemTrackingApi } from "azure-devops-node-api/WorkItemTrackingApi";
+import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 
 let agentApi = new AgentSpecificApi();
 
@@ -214,7 +215,7 @@ export function getCredentialHandler(): IRequestHandler {
 
 }
 
-export async function getTestForBuild(
+export async function getTestsForBuild(
     testAPI: TestApi,
     teamProject: string,
     buildId: number
@@ -244,7 +245,19 @@ export async function getTestForBuild(
     });
 }
 
-export async function getTestForRelease(
+export function addUniqueTestToArray (
+    masterArray: TestCaseResult[],
+    newArray: TestCaseResult[]
+) {
+    newArray.forEach(test => {
+        if (masterArray.filter(e => e.testCaseReferenceId === test.testCaseReferenceId).length === 0) {
+            masterArray.push(test);
+        }
+    });
+    return masterArray;
+}
+
+export async function getTestsForRelease(
     testAPI: TestApi,
     teamProject: string,
     release: Release
@@ -256,8 +269,6 @@ export async function getTestForRelease(
                 const env = release.environments[envIndex];
                     let envTestResults = await testAPI.getTestResultDetailsForRelease(teamProject, release.id, env.id);
                     if (envTestResults.resultsForGroup.length > 0) {
-                        // this might be double loop, but there are checks to make sure items only added once
-                        // this form does guarentee that a test is only added once and in the same format
                         for (let index = 0; index < envTestResults.resultsForGroup[0].results.length; index++) {
                             const test =  envTestResults.resultsForGroup[0].results[index];
                             if (testList.filter(e => e.testRun.id === `${test.testRun.id}`).length === 0) {
@@ -306,6 +317,29 @@ export function getTemplate(
         return template;
 }
 
+export async function getFullWorkItemDetails (
+    workItemTrackingApi: IWorkItemTrackingApi,
+    workItemRefs: ResourceRef[]
+) {
+    var workItemIds = workItemRefs.map(wi => parseInt(wi.id));
+    let fullWorkItems: WorkItem[] = [];
+    agentApi.logInfo(`Get details of [${workItemIds.length}] WIs`);
+    if (workItemIds.length > 0) {
+        var indexStart = 0;
+        var indexEnd = (workItemIds.length > 200) ? 200 : workItemIds.length ;
+        while ((indexEnd <= workItemIds.length) && (indexStart !== indexEnd)) {
+            var subList = workItemIds.slice(indexStart, indexEnd);
+            agentApi.logInfo(`Getting full details of WI batch from index: [${indexStart}] to [${indexEnd}]`);
+            var subListDetails = await workItemTrackingApi.getWorkItems(subList, null, null, WorkItemExpand.Fields, null);
+            agentApi.logInfo(`Adding [${subListDetails.length}] items`);
+            fullWorkItems = fullWorkItems.concat(subListDetails);
+            indexStart = indexEnd;
+            indexEnd = ((workItemIds.length - indexEnd) > 200) ? indexEnd + 200 : workItemIds.length;
+        }
+    }
+    return fullWorkItems;
+}
+
 // The Argument compareReleaseDetails is used in the template processing.  Renaming or removing will break the templates
 export function processTemplate(
     template,
@@ -322,7 +356,9 @@ export function processTemplate(
     prDetails,
     pullRequests: GitPullRequest[],
     globalBuilds: UnifiedArtifactDetails[],
-    globalTests: TestCaseResult[]): string {
+    globalTests: TestCaseResult[],
+    releaseTests: TestCaseResult[]
+    ): string {
 
     var widetail = undefined;
     var csdetail = undefined;
@@ -331,11 +367,12 @@ export function processTemplate(
 
     if (template.length > 0) {
         agentApi.logDebug("Processing template");
-        agentApi.logDebug(`WI: ${workItems.length}`);
-        agentApi.logDebug(`CS: ${commits.length}`);
-        agentApi.logDebug(`PR: ${pullRequests.length}`);
-        agentApi.logDebug(`BUILDS: ${globalBuilds.length}`);
-        agentApi.logDebug(`TEST: ${globalTests.length}`);
+        agentApi.logDebug(`  WI: ${workItems.length}`);
+        agentApi.logDebug(`  CS: ${commits.length}`);
+        agentApi.logDebug(`  PR: ${pullRequests.length}`);
+        agentApi.logDebug(`  Builds: ${globalBuilds.length}`);
+        agentApi.logDebug(`  Global Tests: ${globalTests.length}`);
+        agentApi.logDebug(`  Release Test: ${releaseTests.length}`);
 
         // if it's an array, it's a legacy template
         if (Array.isArray(template)) {
@@ -622,7 +659,8 @@ export function processTemplate(
                 "compareReleaseDetails": compareReleaseDetails,
                 "pullRequests": pullRequests,
                 "builds": globalBuilds,
-                "tests": globalTests
+                "tests": globalTests,
+                "releaseTests": releaseTests
              });
         }
 

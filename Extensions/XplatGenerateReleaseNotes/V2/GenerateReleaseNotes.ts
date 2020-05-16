@@ -65,6 +65,7 @@ async function run(): Promise<number>  {
             var buildApi: IBuildApi = await vsts.getBuildApi();
             var gitApi: IGitApi = await vsts.getGitApi();
             var testApi: ITestApi = await vsts.getTestApi();
+            var workItemTrackingApi: IWorkItemTrackingApi = await vsts.getWorkItemTrackingApi();
 
             // the result containers
             var globalCommits: Change[] = [];
@@ -72,6 +73,7 @@ async function run(): Promise<number>  {
             var globalPullRequests: GitPullRequest[] = [];
             var globalBuilds: util.UnifiedArtifactDetails[] = [];
             var globalTests: TestCaseResult[] = [];
+            var releaseTests: TestCaseResult[] = [];
 
             var mostRecentSuccessfulDeploymentName: string = "";
             let mostRecentSuccessfulDeploymentRelease: Release;
@@ -91,7 +93,7 @@ async function run(): Promise<number>  {
 
                 globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
                 globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
-                globalTests = await util.getTestForBuild(testApi, teamProject, buildId);
+                globalTests = await util.getTestsForBuild(testApi, teamProject, buildId);
 
             } else {
                 let releaseId: number = parseInt(tl.getVariable("Release.ReleaseId"));
@@ -210,12 +212,11 @@ async function run(): Promise<number>  {
 
                                         // look for any test
                                         agentApi.logInfo(`Getting test associated with the build [${artifactInMostRecentRelease.buildId}]`);
-                                        let tests = await util.getTestForBuild(testApi, teamProject, parseInt(artifactInMostRecentRelease.buildId));
+                                        let tests = await util.getTestsForBuild(testApi, teamProject, parseInt(artifactInMostRecentRelease.buildId));
                                         if (tests) {
                                             agentApi.logInfo(`Found ${tests.length} test associated with the build [${artifactInMostRecentRelease.buildId}] adding any not already in the global test list to the list`);
                                             // we only want to add unique items
                                             globalTests = globalTests.concat(tests.filter((item) => globalTests.indexOf(item) < 0));
-                                            globalTests = globalTests.concat(tests);
                                         }
 
                                         // get artifact details for the unified output format
@@ -266,34 +267,18 @@ async function run(): Promise<number>  {
             }
 
             // get an array of workitem ids
-            var workItemIds = globalWorkItems.map(wi => parseInt(wi.id));
-            var workItemTrackingApi: IWorkItemTrackingApi = await vsts.getWorkItemTrackingApi();
-
-            let fullWorkItems = [];
-            agentApi.logInfo(`Get details of [${workItemIds.length}] WIs`);
-            if (workItemIds.length > 0) {
-                var indexStart = 0;
-                var indexEnd = (workItemIds.length > 200) ? 200 : workItemIds.length ;
-                while ((indexEnd <= workItemIds.length) && (indexStart !== indexEnd)) {
-                    var subList = workItemIds.slice(indexStart, indexEnd);
-                    agentApi.logInfo(`Getting full details of WI batch from index: [${indexStart}] to [${indexEnd}]`);
-                    var subListDetails = await workItemTrackingApi.getWorkItems(subList, null, null, WorkItemExpand.Fields, null);
-                    agentApi.logInfo(`Adding [${subListDetails.length}] items`);
-                    fullWorkItems = fullWorkItems.concat(subListDetails);
-                    indexStart = indexEnd;
-                    indexEnd = ((workItemIds.length - indexEnd) > 200) ? indexEnd + 200 : workItemIds.length;
-                }
-            }
+            let fullWorkItems = await util.getFullWorkItemDetails(workItemTrackingApi, globalWorkItems);
 
             // checking for test associated with the release
-            var releaseTests = await util.getTestForRelease(testApi, teamProject, currentRelease);
+            releaseTests = await util.getTestsForRelease(testApi, teamProject, currentRelease);
             // we only want to add unique items
-            globalTests = globalTests.concat(releaseTests.filter((item) => globalTests.indexOf(item) < 0));
+            globalTests = util.addUniqueTestToArray(globalTests, releaseTests);
 
             agentApi.logInfo(`Total build artifacts: [${globalBuilds.length}]`);
             agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
             agentApi.logInfo(`Total workitems: [${fullWorkItems.length}]`);
-            agentApi.logInfo(`Total release tests: [${globalTests.length}]`);
+            agentApi.logInfo(`Total release tests: [${releaseTests.length}]`);
+            agentApi.logInfo(`Total tests: [${globalTests.length}]`);
 
             // by default order by ID, has the option to group by type
             if (sortWi) {
@@ -395,7 +380,8 @@ async function run(): Promise<number>  {
                 prDetails,
                 globalPullRequests,
                 globalBuilds,
-                globalTests);
+                globalTests,
+                releaseTests);
 
             util.writeFile(outputfile, outputString);
 
