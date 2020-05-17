@@ -244,6 +244,12 @@ async function run(): Promise<number>  {
                     }
                     agentApi.logInfo(``);
                 }
+
+                // checking for test associated with the release
+                releaseTests = await util.getTestsForRelease(testApi, teamProject, currentRelease);
+                // we only want to add unique items
+                globalTests = util.addUniqueTestToArray(globalTests, releaseTests);
+
             }
 
             // remove duplicates
@@ -268,11 +274,6 @@ async function run(): Promise<number>  {
 
             // get an array of workitem ids
             let fullWorkItems = await util.getFullWorkItemDetails(workItemTrackingApi, globalWorkItems);
-
-            // checking for test associated with the release
-            releaseTests = await util.getTestsForRelease(testApi, teamProject, currentRelease);
-            // we only want to add unique items
-            globalTests = util.addUniqueTestToArray(globalTests, releaseTests);
 
             agentApi.logInfo(`Total build artifacts: [${globalBuilds.length}]`);
             agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
