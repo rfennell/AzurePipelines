@@ -125,6 +125,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
 
 **Note:** To dump all possible values use the form `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion (See below)
+**Note:** if a field contains escaped HTML encode data this can be returned its original format with triple {{{ `{{{lookup this.fields 'System.Description'}}}` 
 
 #### Handlebar Extensions
 With 2.28.x support was added for Handlebars extensions in a number of ways:
