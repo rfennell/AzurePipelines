@@ -12,7 +12,8 @@ export class UnifiedArtifactDetails {
     build: Build;
     commits: Change[];
     workitems: ResourceRef[];
-    constructor ( build: Build, commits: Change[], workitems: ResourceRef[]) {
+    tests: TestCaseResult[];
+    constructor ( build: Build, commits: Change[], workitems: ResourceRef[], tests: TestCaseResult[]) {
         this.build = build;
         if (commits) {
             this.commits = commits;
@@ -23,6 +24,11 @@ export class UnifiedArtifactDetails {
             this.workitems = workitems;
         } else {
             this.workitems = [];
+        }
+        if (tests) {
+            this.tests = tests;
+        } else {
+            this.tests = [];
         }
    }
 }
@@ -36,12 +42,16 @@ import { IReleaseApi } from "azure-devops-node-api/ReleaseApi";
 import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 import * as webApi from "azure-devops-node-api/WebApi";
 import fs  = require("fs");
-import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfaces";
 import { Build, Change } from "azure-devops-node-api/interfaces/BuildInterfaces";
 import { IGitApi, GitApi } from "azure-devops-node-api/GitApi";
+import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfaces";
 import { GitCommit, GitPullRequest, GitPullRequestQueryType, GitPullRequestSearchCriteria, PullRequestStatus } from "azure-devops-node-api/interfaces/GitInterfaces";
-import { WorkItem } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import { WebApi } from "azure-devops-node-api";
+import { TestApi } from "azure-devops-node-api/TestApi";
+import { timeout } from "q";
+import { TestCaseResult } from "azure-devops-node-api/interfaces/TestInterfaces";
+import { IWorkItemTrackingApi } from "azure-devops-node-api/WorkItemTrackingApi";
+import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 
 let agentApi = new AgentSpecificApi();
 
@@ -202,6 +212,89 @@ export function getCredentialHandler(): IRequestHandler {
         credHandler = webApi.getHandlerFromToken(accessToken);
     }
     return credHandler;
+
+}
+
+export async function getTestsForBuild(
+    testAPI: TestApi,
+    teamProject: string,
+    buildId: number
+): Promise<TestCaseResult[]> {
+    return new Promise<TestCaseResult[]>(async (resolve, reject) => {
+        let testList: TestCaseResult[] = [];
+        try {
+            let builtTestResults = await testAPI.getTestResultsByBuild(teamProject, buildId);
+            if ( builtTestResults.length > 0 ) {
+                for (let index = 0; index < builtTestResults.length; index++) {
+                    const test = builtTestResults[index];
+                    if (testList.filter(e => e.testRun.id === `${test.runId}`).length === 0) {
+                        tl.debug(`Adding tests for test run ${test.runId}`);
+                        let run = await testAPI.getTestResults(teamProject, test.runId);
+                        testList.push(...run);
+                    } else {
+                        tl.debug(`Skipping adding tests for test run ${test.runId} as already added`);
+                    }
+                }
+            } else {
+                tl.debug(`No tests associated with build ${buildId}`);
+            }
+            resolve(testList);
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
+export function addUniqueTestToArray (
+    masterArray: TestCaseResult[],
+    newArray: TestCaseResult[]
+) {
+    tl.debug(`The global test array contains ${masterArray.length} items`);
+    if (newArray.length > 0) {
+        newArray.forEach(test => {
+            if (masterArray.filter(e => e.testCaseReferenceId === test.testCaseReferenceId && e.testRun.id === test.testRun.id).length === 0) {
+                tl.debug(`Adding the test case ${test.testCaseReferenceId} for test run ${test.testRun.id} as not present in the master list`);
+                masterArray.push(test);
+            } else {
+                tl.debug(`Skipping the test case ${test.testCaseReferenceId} for test run ${test.testRun.id} as already present in the master list`);
+            }
+        });
+    }
+    tl.debug(`The updated global test array contains ${masterArray.length} items`);
+    return masterArray;
+}
+
+export async function getTestsForRelease(
+    testAPI: TestApi,
+    teamProject: string,
+    release: Release
+): Promise<TestCaseResult[]> {
+    return new Promise<TestCaseResult[]>(async (resolve, reject) => {
+        let testList: TestCaseResult[] = [];
+        try {
+            for (let envIndex = 0; envIndex < release.environments.length; envIndex++) {
+                const env = release.environments[envIndex];
+                    let envTestResults = await testAPI.getTestResultDetailsForRelease(teamProject, release.id, env.id);
+                    if (envTestResults.resultsForGroup.length > 0) {
+                        for (let index = 0; index < envTestResults.resultsForGroup[0].results.length; index++) {
+                            const test =  envTestResults.resultsForGroup[0].results[index];
+                            if (testList.filter(e => e.testRun.id === `${test.testRun.id}`).length === 0) {
+                                tl.debug(`Adding tests for test run ${test.testRun.id}`);
+                                let run = await testAPI.getTestResults(teamProject, parseInt(test.testRun.id));
+                                testList.push(...run);
+                            } else {
+                                tl.debug(`Skipping adding tests for test run ${test.testRun.id} as already added`);
+                            }
+                        }
+                    } else {
+                        tl.debug(`No tests associated with release ${release.id} environment ${env.name}`);
+                    }
+            }
+            resolve(testList);
+        } catch (err) {
+            reject(err);
+        }
+    });
 }
 
 export function getTemplate(
@@ -231,6 +324,29 @@ export function getTemplate(
         return template;
 }
 
+export async function getFullWorkItemDetails (
+    workItemTrackingApi: IWorkItemTrackingApi,
+    workItemRefs: ResourceRef[]
+) {
+    var workItemIds = workItemRefs.map(wi => parseInt(wi.id));
+    let fullWorkItems: WorkItem[] = [];
+    agentApi.logInfo(`Get details of [${workItemIds.length}] WIs`);
+    if (workItemIds.length > 0) {
+        var indexStart = 0;
+        var indexEnd = (workItemIds.length > 200) ? 200 : workItemIds.length ;
+        while ((indexEnd <= workItemIds.length) && (indexStart !== indexEnd)) {
+            var subList = workItemIds.slice(indexStart, indexEnd);
+            agentApi.logInfo(`Getting full details of WI batch from index: [${indexStart}] to [${indexEnd}]`);
+            var subListDetails = await workItemTrackingApi.getWorkItems(subList, null, null, WorkItemExpand.Fields, null);
+            agentApi.logInfo(`Adding [${subListDetails.length}] items`);
+            fullWorkItems = fullWorkItems.concat(subListDetails);
+            indexStart = indexEnd;
+            indexEnd = ((workItemIds.length - indexEnd) > 200) ? indexEnd + 200 : workItemIds.length;
+        }
+    }
+    return fullWorkItems;
+}
+
 // The Argument compareReleaseDetails is used in the template processing.  Renaming or removing will break the templates
 export function processTemplate(
     template,
@@ -246,7 +362,10 @@ export function processTemplate(
     customHandlebarsExtensionCode,
     prDetails,
     pullRequests: GitPullRequest[],
-    globalBuilds: UnifiedArtifactDetails[]): string {
+    globalBuilds: UnifiedArtifactDetails[],
+    globalTests: TestCaseResult[],
+    releaseTests: TestCaseResult[]
+    ): string {
 
     var widetail = undefined;
     var csdetail = undefined;
@@ -255,10 +374,12 @@ export function processTemplate(
 
     if (template.length > 0) {
         agentApi.logDebug("Processing template");
-        agentApi.logDebug(`WI: ${workItems.length}`);
-        agentApi.logDebug(`CS: ${commits.length}`);
-        agentApi.logDebug(`PR: ${pullRequests.length}`);
-        agentApi.logDebug(`B: ${globalBuilds.length}`);
+        agentApi.logDebug(`  WI: ${workItems.length}`);
+        agentApi.logDebug(`  CS: ${commits.length}`);
+        agentApi.logDebug(`  PR: ${pullRequests.length}`);
+        agentApi.logDebug(`  Builds: ${globalBuilds.length}`);
+        agentApi.logDebug(`  Global Tests: ${globalTests.length}`);
+        agentApi.logDebug(`  Release Tests: ${releaseTests.length}`);
 
         // if it's an array, it's a legacy template
         if (Array.isArray(template)) {
@@ -544,7 +665,9 @@ export function processTemplate(
                 "releaseDetails": releaseDetails,
                 "compareReleaseDetails": compareReleaseDetails,
                 "pullRequests": pullRequests,
-                "builds": globalBuilds
+                "builds": globalBuilds,
+                "tests": globalTests,
+                "releaseTests": releaseTests
              });
         }
 
