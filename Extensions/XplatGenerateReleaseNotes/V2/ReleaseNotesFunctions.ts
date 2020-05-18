@@ -252,11 +252,11 @@ export function addUniqueTestToArray (
     tl.debug(`The global test array contains ${masterArray.length} items`);
     if (newArray.length > 0) {
         newArray.forEach(test => {
-            if (masterArray.filter(e => e.testCaseReferenceId === test.testCaseReferenceId).length === 0) {
-                tl.debug(`Adding the test case ${test.testCaseReferenceId} as not present in the master list`);
+            if (masterArray.filter(e => e.testCaseReferenceId === test.testCaseReferenceId && e.testRun.id === test.testRun.id).length === 0) {
+                tl.debug(`Adding the test case ${test.testCaseReferenceId} for test run ${test.testRun.id} as not present in the master list`);
                 masterArray.push(test);
             } else {
-                tl.debug(`Skipping the test case ${test.testCaseReferenceId} as already present in the master list`);
+                tl.debug(`Skipping the test case ${test.testCaseReferenceId} for test run ${test.testRun.id} as already present in the master list`);
             }
         });
     }
