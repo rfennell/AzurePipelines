@@ -17,6 +17,7 @@ import * as issue349 from "./Issue349Workaround";
 import { GitPullRequest, GitPullRequestQueryType } from "azure-devops-node-api/interfaces/GitInterfaces";
 import { all } from "q";
 import { ITestApi } from "azure-devops-node-api/TestApi";
+import { X_OK } from "constants";
 
 let agentApi = new AgentSpecificApi();
 
@@ -162,6 +163,7 @@ async function run(): Promise<number>  {
 
                                         var commits: Change[];
                                         var workitems: ResourceRef[];
+                                        var tests: TestCaseResult[];
 
                                         // Only get the commits and workitems if the builds are different
                                         if (isInitialRelease) {
@@ -207,16 +209,19 @@ async function run(): Promise<number>  {
                                             }
 
                                         } else {
+                                            commits = [];
+                                            workitems = [];
                                             agentApi.logInfo(`Build for artifact [${artifactInThisRelease.artifactAlias}] has not changed.  Nothing to do`);
                                         }
 
-                                        // look for any test
-                                        agentApi.logInfo(`Getting test associated with the build [${artifactInMostRecentRelease.buildId}]`);
-                                        let tests = await util.getTestsForBuild(testApi, teamProject, parseInt(artifactInMostRecentRelease.buildId));
+                                        // look for any test in the current build
+                                        agentApi.logInfo(`Getting test associated with the latest build [${artifactInMostRecentRelease.buildId}]`);
+                                        tests = await util.getTestsForBuild(testApi, teamProject, parseInt(artifactInMostRecentRelease.buildId));
+
                                         if (tests) {
                                             agentApi.logInfo(`Found ${tests.length} test associated with the build [${artifactInMostRecentRelease.buildId}] adding any not already in the global test list to the list`);
                                             // we only want to add unique items
-                                            globalTests = globalTests.concat(tests.filter((item) => globalTests.indexOf(item) < 0));
+                                            globalTests = util.addUniqueTestToArray(globalTests, tests);
                                         }
 
                                         // get artifact details for the unified output format

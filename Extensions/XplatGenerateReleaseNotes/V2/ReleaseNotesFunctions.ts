@@ -249,11 +249,13 @@ export function addUniqueTestToArray (
     masterArray: TestCaseResult[],
     newArray: TestCaseResult[]
 ) {
-    newArray.forEach(test => {
-        if (masterArray.filter(e => e.testCaseReferenceId === test.testCaseReferenceId).length === 0) {
-            masterArray.push(test);
-        }
-    });
+    if (newArray.length > 0) {
+        newArray.forEach(test => {
+            if (masterArray.filter(e => e.testCaseReferenceId === test.testCaseReferenceId).length === 0) {
+                masterArray.push(test);
+            }
+        });
+    }
     return masterArray;
 }
 
