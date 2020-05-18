@@ -10,7 +10,7 @@
 # Associated Pull Requests 
 {{json pullRequests}}
 
-# Builds with associated WI/CS 
+# Builds with associated WI/CS/tests
 {{json builds}}
 
 # Global list of WI 
@@ -18,3 +18,9 @@
 
 # Global list of CS 
 {{json  commits}}
+
+# Global list of tests
+{{json  tests}}
+
+# List of release tests
+{{json  releaseTests}}

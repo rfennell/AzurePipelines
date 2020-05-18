@@ -54,7 +54,7 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 *  **PR {{this.id}}**  {{this.title}}
 {{/forEach}}
 
-# Builds with associated WI/CS ({{builds.length}})
+# Builds with associated WI/CS/Tests ({{builds.length}})
 {{#forEach builds}}
 {{#if isFirst}}## Builds {{/if}}
 ##  Build {{this.build.buildNumber}}
@@ -65,6 +65,12 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 {{#forEach this.workitems}}
 {{#if isFirst}}### Workitems {{/if}}
 - WI {{this.id}}
+{{/forEach}} 
+{{#forEach this.tests}}
+{{#if isFirst}}### Tests {{/if}}
+- Test {{this.id}} 
+   -  Name: {{this.testCase.name}}
+   -  Outcome: {{this.outcome}}
 {{/forEach}} 
 {{/forEach}}
 
@@ -82,6 +88,14 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 * ** ID{{this.id}}** 
    -  **Message:** {{this.message}}
    -  **Commited by:** {{this.author.displayName}} 
+{{/forEach}}
+
+# Global list of test ({{tests.length}})
+{{#forEach tests}}
+{{#if isFirst}}### Tests {{/if}}
+* ** ID{{this.id}}** 
+   -  Name: {{this.testCase.name}}
+   -  Outcome: {{this.outcome}}
 {{/forEach}}
 
 

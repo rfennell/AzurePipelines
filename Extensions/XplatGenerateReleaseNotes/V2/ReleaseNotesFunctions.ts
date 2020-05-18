@@ -249,13 +249,18 @@ export function addUniqueTestToArray (
     masterArray: TestCaseResult[],
     newArray: TestCaseResult[]
 ) {
+    tl.debug(`The global test array contains ${masterArray.length} items`);
     if (newArray.length > 0) {
         newArray.forEach(test => {
             if (masterArray.filter(e => e.testCaseReferenceId === test.testCaseReferenceId).length === 0) {
+                tl.debug(`Adding the test case ${test.testCaseReferenceId} as not present in the master list`);
                 masterArray.push(test);
+            } else {
+                tl.debug(`Skipping the test case ${test.testCaseReferenceId} as already present in the master list`);
             }
         });
     }
+    tl.debug(`The updated global test array contains ${masterArray.length} items`);
     return masterArray;
 }
 
@@ -374,7 +379,7 @@ export function processTemplate(
         agentApi.logDebug(`  PR: ${pullRequests.length}`);
         agentApi.logDebug(`  Builds: ${globalBuilds.length}`);
         agentApi.logDebug(`  Global Tests: ${globalTests.length}`);
-        agentApi.logDebug(`  Release Test: ${releaseTests.length}`);
+        agentApi.logDebug(`  Release Tests: ${releaseTests.length}`);
 
         // if it's an array, it's a legacy template
         if (Array.isArray(template)) {

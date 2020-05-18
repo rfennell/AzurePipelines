@@ -23,6 +23,12 @@
 {{#if isFirst}}### Workitems {{/if}}
 - WI {{this.id}}
 {{/forEach}} 
+{{#forEach this.tests}}
+{{#if isFirst}}### Tests {{/if}}
+- Test {{this.id}} 
+   -  Name: {{this.testCase.name}}
+   -  Outcome: {{this.outcome}}
+{{/forEach}} 
 {{/forEach}}
 
 # Global list of WI ({{workItems.length}})
@@ -69,4 +75,13 @@
 * ** ID{{this.id}}** 
    -  **Message:** {{this.message}}
    -  **Commited by:** {{this.author.displayName}} 
+{{/forEach}}
+
+
+# Global list of test ({{tests.length}})
+{{#forEach tests}}
+{{#if isFirst}}### Tests {{/if}}
+* ** ID{{this.id}}** 
+   -  Name: {{this.testCase.name}}
+   -  Outcome: {{this.outcome}}
 {{/forEach}}
