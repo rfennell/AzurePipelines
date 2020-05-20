@@ -18,6 +18,7 @@ import { GitPullRequest, GitPullRequestQueryType } from "azure-devops-node-api/i
 import { all } from "q";
 import { ITestApi } from "azure-devops-node-api/TestApi";
 import { X_OK } from "constants";
+import { ITfvcApi } from "azure-devops-node-api/TfvcApi";
 
 let agentApi = new AgentSpecificApi();
 
@@ -67,6 +68,7 @@ async function run(): Promise<number>  {
             var gitApi: IGitApi = await vsts.getGitApi();
             var testApi: ITestApi = await vsts.getTestApi();
             var workItemTrackingApi: IWorkItemTrackingApi = await vsts.getWorkItemTrackingApi();
+            var tfvcApi: ITfvcApi = await vsts.getTfvcApi();
 
             // the result containers
             var globalCommits: Change[] = [];
@@ -93,6 +95,7 @@ async function run(): Promise<number>  {
                 }
 
                 globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
+                globalCommits = await util.enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
                 globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
                 globalTests = await util.getTestsForBuild(testApi, teamProject, buildId);
 
@@ -229,6 +232,8 @@ async function run(): Promise<number>  {
                                         globalBuilds.push(new util.UnifiedArtifactDetails(artifact, commits, workitems, tests));
 
                                         if (commits) {
+                                            // enrich any commits found
+                                            commits = await util.enrichChangesWithFileDetails(gitApi, tfvcApi, commits, gitHubPat);
                                             globalCommits = globalCommits.concat(commits);
                                         }
 

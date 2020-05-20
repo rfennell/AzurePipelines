@@ -52,6 +52,7 @@ import { timeout } from "q";
 import { TestCaseResult } from "azure-devops-node-api/interfaces/TestInterfaces";
 import { IWorkItemTrackingApi } from "azure-devops-node-api/WorkItemTrackingApi";
 import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
+import { ITfvcApi } from "azure-devops-node-api/TfvcApi";
 
 let agentApi = new AgentSpecificApi();
 
@@ -160,7 +161,7 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
                         let res: restm.IRestResponse<GitCommit>;
                         if (change.location.startsWith("https://api.github.com/")) {
                             agentApi.logDebug(`Need to expand details from GitHub`);
-                            // we build PAY auth object even if we have no token
+                            // we build PAT auth object even if we have no token
                             // this will still allow access to public repos
                             // if we have a token it will allow access to private ones
                             let auth = new PersonalAccessTokenCredentialHandler(pat);
@@ -197,6 +198,64 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
             }
             agentApi.logWarn(`Expanded ${expanded}`);
             resolve(globalCommits);
+    });
+}
+
+export async function enrichChangesWithFileDetails(
+    gitApi: IGitApi,
+    tfvcApi: ITfvcApi,
+    changes: Change[],
+    gitHubPat: string
+): Promise<Change[]> {
+    return new Promise<Change[]>(async (resolve, reject) => {
+        try {
+            var extraDetail = [];
+            for (let index = 0; index < changes.length; index++) {
+                const change = changes[index];
+                agentApi.logInfo (`Enriched change ${change.id} of type ${change.type}`);
+                if (change.type === "TfsGit") {
+                    // we need the repository ID for the API call
+                    // the alternative is to take the basic location value and build a rest call form that
+                    // neither are that nice.
+                    var url = require("url");
+                    // split the url up, check it is the expected format and then get the ID
+                    var parts = url.parse(change.location);
+                    if (parts.host === "dev.azure.com") {
+                        let gitDetails = await gitApi.getChanges(change.id, parts.path.split("/")[5]);
+                        agentApi.logInfo (`Enriched with details of ${gitDetails.changes.length} files`);
+                        extraDetail = gitDetails.changes;
+                    } else  {
+                        agentApi.logInfo (`Cannot enriched as location URL not in dev.azure.com format`);
+                    }
+                } else if (change.type === "TfsVersionControl") {
+                    var tfvcDetail = await tfvcApi.getChangesetChanges(parseInt(change.id.substring(1)));
+                    agentApi.logInfo (`Enriched with details of ${tfvcDetail.length} files`);
+                    extraDetail = tfvcDetail;
+                } else if (change.type === "GitHub") {
+                    let res: restm.IRestResponse<GitCommit>;
+                    // we build PAT auth object even if we have no token
+                    // this will still allow access to public repos
+                    // if we have a token it will allow access to private ones
+                    let auth = new PersonalAccessTokenCredentialHandler(gitHubPat);
+                    let rc = new restm.RestClient("rest-client", "", [auth], {});
+                    let gitHubRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
+                    if (gitHubRes.statusCode === 200) {
+                        var gitHubFiles = gitHubRes.result.files;
+                        agentApi.logInfo (`Enriched with details of ${gitHubFiles.length} files`);
+                        extraDetail = gitHubFiles;
+                    } else {
+                        agentApi.logWarn(`Cannot access API ${gitHubRes.statusCode} accessing ${change.location}`);
+                        agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
+                    }
+                } else {
+                    agentApi.logWarn(`Cannot preform enrichment as type ${change.type} is not supported for enrichment`);
+                }
+                change["Changes"] = extraDetail;
+            }
+            resolve(changes);
+        } catch (err) {
+            reject(err);
+        }
     });
 }
 
