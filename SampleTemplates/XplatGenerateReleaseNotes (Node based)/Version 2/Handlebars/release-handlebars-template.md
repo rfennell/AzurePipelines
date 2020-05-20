@@ -71,10 +71,15 @@
 
 # Global list of CS ({{commits.length}})
 {{#forEach commits}}
-{{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
+{{#if isFirst}}### Associated commits{{/if}}
 * ** ID{{this.id}}** 
    -  **Message:** {{this.message}}
    -  **Commited by:** {{this.author.displayName}} 
+   -  **FileCount:** {{this.changes.length}} 
+{{#forEach this.changes}}
+      -  **File path (TFVC or TfsGit):** {{this.item.path}}  
+      -  **File filename:** {{this.filename}}  
+{{/forEach}}
 {{/forEach}}
 
 

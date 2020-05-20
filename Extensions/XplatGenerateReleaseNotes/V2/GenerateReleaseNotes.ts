@@ -60,6 +60,10 @@ async function run(): Promise<number>  {
             var customHandlebarsExtensionFile = tl.getInput("customHandlebarsExtensionFile");
             var customHandlebarsExtensionFolder = tl.getInput("customHandlebarsExtensionFolder");
             var gitHubPat = tl.getInput("gitHubPat");
+            if (!gitHubPat) {
+                // a check to make sure we don't get a null
+                gitHubPat = "";
+            }
 
             let credentialHandler: vstsInterfaces.IRequestHandler = util.getCredentialHandler();
             let vsts = new webApi.WebApi(tpcUri, credentialHandler);

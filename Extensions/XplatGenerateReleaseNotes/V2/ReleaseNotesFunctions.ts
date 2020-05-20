@@ -250,7 +250,7 @@ export async function enrichChangesWithFileDetails(
                 } else {
                     agentApi.logWarn(`Cannot preform enrichment as type ${change.type} is not supported for enrichment`);
                 }
-                change["Changes"] = extraDetail;
+                change["changes"] = extraDetail;
             }
             resolve(changes);
         } catch (err) {

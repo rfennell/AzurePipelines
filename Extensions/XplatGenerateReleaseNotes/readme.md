@@ -2,6 +2,7 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 2.47.x onwards, adds details of the files included in any commit or changeset so they can be displayed in Handlebar based templates
 * 2.46.x onwards, adds tests to the list of items that can be displayed in Handlebar based templates
 * 2.34.x onwards, extends the PR functionality to check for any PRs associated with commits associated with the release - not this functionality is only usable using Handlebars based templates
 * 2.33.x onwards, allow limited functionality to list the PR associated with triggering of the build/release
@@ -84,18 +85,15 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 
 # Global list of CS ({{commits.length}})
 {{#forEach commits}}
-{{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
+{{#if isFirst}}### Associated commits{{/if}}
 * ** ID{{this.id}}** 
    -  **Message:** {{this.message}}
    -  **Commited by:** {{this.author.displayName}} 
+   -  **FileCount:** {{this.changes.length}} 
+{{#forEach this.changes}}
+      -  **File path (TFVC or TfsGit):** {{this.item.path}}  
+      -  **File filename:** {{this.filename}}  
 {{/forEach}}
-
-# Global list of test ({{tests.length}})
-{{#forEach tests}}
-{{#if isFirst}}### Tests {{/if}}
-* ** ID{{this.id}}** 
-   -  Name: {{this.testCase.name}}
-   -  Outcome: {{this.outcome}}
 {{/forEach}}
 
 
