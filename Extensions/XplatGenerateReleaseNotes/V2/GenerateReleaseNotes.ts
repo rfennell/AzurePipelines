@@ -99,7 +99,7 @@ async function run(): Promise<number>  {
                 }
 
                 globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
-                globalCommits = await util.enrichChangesWithFileDetails(gitApi, tfvcApi, teamProject, globalCommits, gitHubPat);
+                globalCommits = await util.enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
                 globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
                 globalTests = await util.getTestsForBuild(testApi, teamProject, buildId);
 
@@ -196,8 +196,8 @@ async function run(): Promise<number>  {
                                                 activateFix = "true";
                                             }
 
-                                            let baseBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId));
                                             if (activateFix && activateFix.toLowerCase() === "true") {
+                                                let baseBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId));
                                                 agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
                                                 // There is only a workaround for Git but not for TFVC :(
                                                 if (baseBuild.repository.type === "TfsGit") {
@@ -218,7 +218,7 @@ async function run(): Promise<number>  {
 
                                             // enrich what we have with file names
                                             if (commits) {
-                                                commits = await util.enrichChangesWithFileDetails(gitApi, tfvcApi, baseBuild.project.name, commits, gitHubPat);
+                                                commits = await util.enrichChangesWithFileDetails(gitApi, tfvcApi, commits, gitHubPat);
                                             }
 
                                         } else {
