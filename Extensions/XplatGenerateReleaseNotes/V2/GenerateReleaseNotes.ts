@@ -18,6 +18,7 @@ import { GitPullRequest, GitPullRequestQueryType } from "azure-devops-node-api/i
 import { all } from "q";
 import { ITestApi } from "azure-devops-node-api/TestApi";
 import { X_OK } from "constants";
+import { ITfvcApi } from "azure-devops-node-api/TfvcApi";
 
 let agentApi = new AgentSpecificApi();
 
@@ -59,6 +60,10 @@ async function run(): Promise<number>  {
             var customHandlebarsExtensionFile = tl.getInput("customHandlebarsExtensionFile");
             var customHandlebarsExtensionFolder = tl.getInput("customHandlebarsExtensionFolder");
             var gitHubPat = tl.getInput("gitHubPat");
+            if (!gitHubPat) {
+                // a check to make sure we don't get a null
+                gitHubPat = "";
+            }
 
             let credentialHandler: vstsInterfaces.IRequestHandler = util.getCredentialHandler();
             let vsts = new webApi.WebApi(tpcUri, credentialHandler);
@@ -67,6 +72,7 @@ async function run(): Promise<number>  {
             var gitApi: IGitApi = await vsts.getGitApi();
             var testApi: ITestApi = await vsts.getTestApi();
             var workItemTrackingApi: IWorkItemTrackingApi = await vsts.getWorkItemTrackingApi();
+            var tfvcApi: ITfvcApi = await vsts.getTfvcApi();
 
             // the result containers
             var globalCommits: Change[] = [];
@@ -93,6 +99,7 @@ async function run(): Promise<number>  {
                 }
 
                 globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
+                globalCommits = await util.enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
                 globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
                 globalTests = await util.getTestsForBuild(testApi, teamProject, buildId);
 
@@ -188,9 +195,10 @@ async function run(): Promise<number>  {
                                                 agentApi.logInfo("Defaulting on the workaround for build API limitation (see issue #349 set 'ReleaseNotes.Fix349=false' to disable)");
                                                 activateFix = "true";
                                             }
+
                                             if (activateFix && activateFix.toLowerCase() === "true") {
-                                                agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
                                                 let baseBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId));
+                                                agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
                                                 // There is only a workaround for Git but not for TFVC :(
                                                 if (baseBuild.repository.type === "TfsGit") {
                                                     let currentBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId));
@@ -206,6 +214,11 @@ async function run(): Promise<number>  {
                                                 // Issue #349: These APIs are affected by the build API limitation and only return the latest 200 changes and work items associated to those changes
                                                 commits = await buildApi.getChangesBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                                 workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                            }
+
+                                            // enrich what we have with file names
+                                            if (commits) {
+                                                commits = await util.enrichChangesWithFileDetails(gitApi, tfvcApi, commits, gitHubPat);
                                             }
 
                                         } else {
