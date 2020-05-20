@@ -204,6 +204,7 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
 export async function enrichChangesWithFileDetails(
     gitApi: IGitApi,
     tfvcApi: ITfvcApi,
+    teamProject: string,
     changes: Change[],
     gitHubPat: string
 ): Promise<Change[]> {
@@ -221,7 +222,7 @@ export async function enrichChangesWithFileDetails(
                     // split the url up, check it is the expected format and then get the ID
                     var parts = url.parse(change.location);
                     if (parts.host === "dev.azure.com") {
-                        let gitDetails = await gitApi.getChanges(change.id, parts.path.split("/")[5]);
+                        let gitDetails = await gitApi.getChanges(change.id, parts.path.split("/")[5], teamProject);
                         agentApi.logInfo (`Enriched with details of ${gitDetails.changes.length} files`);
                         extraDetail = gitDetails.changes;
                     } else  {
