@@ -92,7 +92,7 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
    -  **FileCount:** {{this.changes.length}} 
 {{#forEach this.changes}}
       -  **File path (TFVC or TfsGit):** {{this.item.path}}  
-      -  **File filename:** {{this.filename}}  
+      -  **File filename (GitHub):** {{this.filename}}  
 {{/forEach}}
 {{/forEach}}
 

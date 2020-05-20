@@ -78,7 +78,7 @@
    -  **FileCount:** {{this.changes.length}} 
 {{#forEach this.changes}}
       -  **File path (TFVC or TfsGit):** {{this.item.path}}  
-      -  **File filename:** {{this.filename}}  
+      -  **File filename (GitHub):** {{this.filename}}  
 {{/forEach}}
 {{/forEach}}
 
