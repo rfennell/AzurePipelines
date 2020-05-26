@@ -400,7 +400,7 @@ export async function getFullWorkItemDetails (
         while ((indexEnd <= workItemIds.length) && (indexStart !== indexEnd)) {
             var subList = workItemIds.slice(indexStart, indexEnd);
             agentApi.logInfo(`Getting full details of WI batch from index: [${indexStart}] to [${indexEnd}]`);
-            var subListDetails = await workItemTrackingApi.getWorkItems(subList, null, null, WorkItemExpand.Fields, null);
+            var subListDetails = await workItemTrackingApi.getWorkItems(subList, null, null, WorkItemExpand.All, null);
             agentApi.logInfo(`Adding [${subListDetails.length}] items`);
             fullWorkItems = fullWorkItems.concat(subListDetails);
             indexStart = indexEnd;
