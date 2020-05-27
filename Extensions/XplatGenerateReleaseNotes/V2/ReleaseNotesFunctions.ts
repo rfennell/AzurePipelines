@@ -712,7 +712,7 @@ export function processTemplate(
 
             if (typeof customHandlebarsExtensionCode !== undefined && customHandlebarsExtensionCode && customHandlebarsExtensionCode.length > 0) {
                 agentApi.logInfo("Loading custom handlebars extension");
-                writeFile(`${customHandlebarsExtensionFolder}/${customHandlebarsExtensionFile}.js`, customHandlebarsExtensionCode);
+                writeFile(`${customHandlebarsExtensionFolder}/${customHandlebarsExtensionFile}.js`, customHandlebarsExtensionCode, true, false);
                 var tools = require(`${customHandlebarsExtensionFolder}/${customHandlebarsExtensionFile}`);
                 handlebars.registerHelper(tools);
             }
@@ -742,9 +742,24 @@ export function processTemplate(
     return output;
 }
 
-export function writeFile(filename: string, data: string) {
-    agentApi.logInfo(`Writing output file ${filename}`);
-    fs.writeFileSync(filename, data, "utf8");
+export function writeFile(filename: string, data: string, replaceFile: boolean, appendToFile: boolean) {
+    if (replaceFile) {
+        agentApi.logInfo(`Writing output file ${filename}`);
+        fs.writeFileSync(filename, data, "utf8");
+    } else {
+        if (appendToFile) {
+            agentApi.logInfo(`Appending output to file ${filename}`);
+            fs.appendFileSync(filename, data, "utf8");
+        } else {
+            agentApi.logInfo(`Prepending output to file ${filename}`);
+            var oldContent = "";
+            if (fs.existsSync(filename)) {
+                oldContent = fs.readFileSync(filename, "utf8");
+            }
+            fs.writeFileSync(filename, data, "utf8");
+            fs.appendFileSync(filename, oldContent);
+        }
+    }
     agentApi.logInfo(`Finished writing output file ${filename}`);
 }
 

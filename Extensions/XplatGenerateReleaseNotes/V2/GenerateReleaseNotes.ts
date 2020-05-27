@@ -39,6 +39,8 @@ async function run(): Promise<number>  {
             var delimiter = tl.getInput("delimiter");
             var anyFieldContent = tl.getInput("anyFieldContent");
             var showOnlyPrimary = tl.getBoolInput("showOnlyPrimary");
+            var replaceFile = tl.getBoolInput("replaceFile");
+            var appendToFile = tl.getBoolInput("appendToFile");
             var searchCrossProjectForPRs = tl.getBoolInput("searchCrossProjectForPRs");
             if (delimiter === null) {
                 agentApi.logInfo(`No delimiter passed, setting a default of :`);
@@ -402,7 +404,7 @@ async function run(): Promise<number>  {
                 globalTests,
                 releaseTests);
 
-            util.writeFile(outputfile, outputString);
+            util.writeFile(outputfile, outputString, replaceFile, appendToFile);
 
             agentApi.writeVariable(outputVariableName, outputString.toString());
 
