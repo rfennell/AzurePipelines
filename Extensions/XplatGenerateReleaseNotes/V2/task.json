@@ -178,6 +178,23 @@
       "helpMarkDown": "To expand commit messages stored in a private GitHub repos a PAT needs to be provided, it is not required for repo stored in Azure DevOps or public GitHub repos",
       "groupName":"advanced"
      },
+     {
+      "name": "replaceFile",
+      "type": "boolean",
+      "label": "Replace the output file",
+      "defaultValue": "True",
+      "required": true,
+      "helpMarkDown": "Replace the output file"
+    },
+    {
+      "name": "appendToFile",
+      "type": "boolean",
+      "label": "Append to end of the output file",
+      "defaultValue": "True",
+      "required": true,
+      "helpMarkDown": "Append to end of file in the output file if not replacing file",
+      "visibleRule":"replaceFile = False"
+    },
 
      {
       "name": "customHandlebarsExtensionCode",
