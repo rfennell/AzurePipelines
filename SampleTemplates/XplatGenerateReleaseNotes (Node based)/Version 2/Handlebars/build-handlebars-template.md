@@ -8,20 +8,6 @@
 *  **PR {{this.id}}**  {{this.title}}
 {{/forEach}}
 
-# Builds with associated WI/CS ({{builds.length}})
-{{#forEach builds}}
-{{#if isFirst}}## Builds {{/if}}
-##  Build {{this.build.buildNumber}}
-{{#forEach this.commits}}
-{{#if isFirst}}### Commits {{/if}}
-- CS {{this.id}}
-{{/forEach}}
-{{#forEach this.workitems}}
-{{#if isFirst}}### Workitems {{/if}}
-- WI {{this.id}}
-{{/forEach}} 
-{{/forEach}}
-
 # Global list of WI ({{workItems.length}})
 {{#forEach workItems}}
 {{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
