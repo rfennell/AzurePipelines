@@ -180,8 +180,8 @@ export async function UpdateGitWikiFile(
             logInfo(`Added ${targetFile} to repo ${localpath}`);
         }
 
-        await git.commit(message);
-        logInfo(`Committed to ${localpath} with message "${message}`);
+        var summary = await git.commit(message);
+        logInfo(`Committed "${localpath}" with message "${message}" as SHA ${summary.commit}`);
 
         await git.push();
         logInfo(`Pushed to ${repo}`);
