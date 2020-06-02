@@ -183,6 +183,8 @@ export async function UpdateGitWikiFile(
         var summary = await git.commit(message);
         if (summary.commit.length > 0) {
             logInfo(`Committed "${localpath}" with message "${message}" as SHA ${summary.commit}`);
+            logInfo(summary.summary);
+            
             await git.push();
             logInfo(`Pushed to ${repo}`);
 
@@ -196,7 +198,7 @@ export async function UpdateGitWikiFile(
                 }
             }
         } else {
-            logInfo(`No commit was performed as no files have be added, deleted or edited`);
+            logInfo(`No commit was performed as no files have been added, deleted or edited`);
         }
 
     } catch (error) {

@@ -166,7 +166,8 @@ export async function UpdateGitWikiFile(
         var summary = await git.commit(message);
         if (summary.commit.length > 0) {
             logInfo(`Committed file "${localpath}" with message "${message}" as SHA ${summary.commit}`);
-
+            logInfo(summary.summary);
+            
             await git.push();
             logInfo(`Pushed to ${repo}`);
 
@@ -180,7 +181,7 @@ export async function UpdateGitWikiFile(
                 }
             }
         } else {
-            logInfo(`No commit was performed as the new file has no changes form the existing version`);
+            logInfo(`No commit was performed as the new file has no changes from the existing version`);
         }
 
     } catch (error) {
