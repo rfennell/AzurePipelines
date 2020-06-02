@@ -181,10 +181,6 @@ export async function UpdateGitWikiFile(
         }
 
         var summary = await git.commit(message);
-        logInfo(summary.author);
-        logInfo(summary.branch);
-        logInfo(summary.commit);
-        logInfo(summary.summary);
         if (summary.commit.length > 0) {
             logInfo(`Committed "${localpath}" with message "${message}" as SHA ${summary.commit}`);
             await git.push();
