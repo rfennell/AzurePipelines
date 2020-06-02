@@ -164,19 +164,23 @@ export async function UpdateGitWikiFile(
         logInfo(`Added ${filename} to repo ${localpath}`);
 
         var summary = await git.commit(message);
-        logInfo(`Committed file "${localpath}" with message "${message}" as SHA ${summary.commit}`);
+        if (summary.commit.length > 0) {
+            logInfo(`Committed file "${localpath}" with message "${message}" as SHA ${summary.commit}`);
 
-        await git.push();
-        logInfo(`Pushed to ${repo}`);
+            await git.push();
+            logInfo(`Pushed to ${repo}`);
 
-        if (tagRepo) {
-            if (tag.length > 0) {
-                logInfo(`Adding tag ${tag}`);
-                await git.addTag(tag);
-                await git.pushTags();
-            } else {
-                logWarning(`Requested to add tag, but no tag passed`);
+            if (tagRepo) {
+                if (tag.length > 0) {
+                    logInfo(`Adding tag ${tag}`);
+                    await git.addTag(tag);
+                    await git.pushTags();
+                } else {
+                    logWarning(`Requested to add tag, but no tag passed`);
+                }
             }
+        } else {
+            logInfo(`No commit was performed as the new file has no changes form the existing version`);
         }
 
     } catch (error) {
