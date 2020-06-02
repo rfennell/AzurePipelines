@@ -167,7 +167,7 @@ export async function UpdateGitWikiFile(
         if (summary.commit.length > 0) {
             logInfo(`Committed file "${localpath}" with message "${message}" as SHA ${summary.commit}`);
             logInfo(summary.summary);
-            
+
             await git.push();
             logInfo(`Pushed to ${repo}`);
 
