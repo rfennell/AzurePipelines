@@ -734,6 +734,14 @@ export function processTemplate(
                 return JSON.stringify(context);
             });
 
+            // add our helper to find children and parents
+            handlebars.registerHelper("lookup_a_work_item", function (array, url) {
+                    var urlParts = url.split("/");
+                    var id = parseInt(urlParts[urlParts.length - 1]);
+                    return array.find(element => element.id === id);
+                }
+            );
+
             var customHandlebarsExtensionFile = "customHandlebarsExtension";
             // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
             // Note that the name is case sensitive on Mac and Linux
