@@ -302,6 +302,7 @@ The task takes the following parameters
 * (Advanced V2 only) Cross Project For PRs. If true will try to match commits to Azure DevOps PR cross project within the organisation, if false only searches the Team Project.
 * (Advanced V2 only) GitHub PAT. (Optional) This [GitHub PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) is only required to expand commit messages stored in a private GitHub repos. This PAT is not required for commit in Azure DevOps public or private repos or public GitHub repos
 * (Handlebars V2 only) customHandlebars ExtensionCode. A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};
+* (Handlebars V2 only) Get Parent and Children for associated work items, defaults to false
 * (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.
 
 ## Output location ##
