@@ -195,14 +195,6 @@
       "helpMarkDown": "Append to end of file in the output file if not replacing file",
       "visibleRule":"replaceFile = False"
     },
-    {
-      "name": "getParentsAndChildren",
-      "type": "boolean",
-      "label": "Find related WI",
-      "defaultValue": "False",
-      "required": true,
-      "helpMarkDown": "Find the parents and child workitems for any workitems associated with a build"
-    },
      {
       "name": "customHandlebarsExtensionCode",
       "type": "multiLine",
@@ -211,7 +203,17 @@
       "required": false,
       "helpMarkDown": "A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};",
       "groupName":"handlebars"
-     }
+     },
+     {
+      "name": "getParentsAndChildren",
+      "type": "boolean",
+      "label": "Find related WI",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "Find the parents and child workitems for any workitems associated with a build",
+      "groupName":"handlebars"
+    }
+
 
    ],
   "instanceNameFormat": "Generate Release Notes based on Release Comparision API",
