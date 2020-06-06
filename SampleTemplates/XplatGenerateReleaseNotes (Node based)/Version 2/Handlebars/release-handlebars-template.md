@@ -40,6 +40,32 @@
    - **Assigned** {{#with (lookup this.fields 'System.AssignedTo')}} {{displayName}} {{/with}}
 {{/forEach}}
 
+# Global list of WI with parents and children
+{{#forEach this.workItems}}
+{{#if isFirst}}### WorkItems {{/if}}
+*  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+   - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
+   - **Tags** {{lookup this.fields 'System.Tags'}}
+   - **Assigned** {{#with (lookup this.fields 'System.AssignedTo')}} {{displayName}} {{/with}}
+   - **Description** {{{lookup this.fields 'System.Description'}}}
+   - **Parents**
+{{#forEach this.relations}}
+{{#if (contains this.attributes.name 'Parent')}}
+{{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
+      - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+{{/with}}
+{{/if}}
+{{/forEach}} 
+   - **Children**
+{{#forEach this.relations}}
+{{#if (contains this.attributes.name 'Child')}}
+{{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
+      - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+{{/with}}
+{{/if}}
+{{/forEach}} 
+{{/forEach}} 
+
 # WI with 'Tag 1'
 {{#forEach this.workItems}}
 {{#if isFirst}}### WorkItems with 'Tag 1'{{/if}}

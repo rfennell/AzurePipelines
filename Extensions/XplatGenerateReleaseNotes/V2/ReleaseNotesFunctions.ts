@@ -387,6 +387,35 @@ export function getTemplate(
         return template;
 }
 
+export async function getAllDirectRelatedWorkitems (
+    workItemTrackingApi: IWorkItemTrackingApi,
+    workItems: WorkItem[]
+) {
+    var relatedWorkItems = [...workItems]; // a clone
+    for (let wiIndex = 0; wiIndex < workItems.length; wiIndex++) {
+        var wi  = workItems[wiIndex];
+
+        agentApi.logInfo(`Looking for parents and children of ${wi.id}`);
+        for (let relIndex = 0; relIndex <  wi.relations.length; relIndex++) {
+            var relation  =  wi.relations[relIndex];
+            if ((relation.attributes.name === "Child") ||
+                (relation.attributes.name === "Parent")) {
+                var urlParts = relation.url.split("/");
+                var id = parseInt(urlParts[urlParts.length - 1]);
+                if (!relatedWorkItems.find(element => element.id === id)) {
+                    agentApi.logInfo(`Add ${relation.attributes.name} WI ${id}`);
+                    relatedWorkItems.push(await workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null));
+                } else {
+                    agentApi.logInfo(`Skipping ${id} as already in the relations list`);
+                }
+            }
+        }
+    }
+
+    return relatedWorkItems;
+
+}
+
 export async function getFullWorkItemDetails (
     workItemTrackingApi: IWorkItemTrackingApi,
     workItemRefs: ResourceRef[]
@@ -400,7 +429,7 @@ export async function getFullWorkItemDetails (
         while ((indexEnd <= workItemIds.length) && (indexStart !== indexEnd)) {
             var subList = workItemIds.slice(indexStart, indexEnd);
             agentApi.logInfo(`Getting full details of WI batch from index: [${indexStart}] to [${indexEnd}]`);
-            var subListDetails = await workItemTrackingApi.getWorkItems(subList, null, null, WorkItemExpand.Fields, null);
+            var subListDetails = await workItemTrackingApi.getWorkItems(subList, null, null, WorkItemExpand.All, null);
             agentApi.logInfo(`Adding [${subListDetails.length}] items`);
             fullWorkItems = fullWorkItems.concat(subListDetails);
             indexStart = indexEnd;
@@ -427,7 +456,8 @@ export function processTemplate(
     pullRequests: GitPullRequest[],
     globalBuilds: UnifiedArtifactDetails[],
     globalTests: TestCaseResult[],
-    releaseTests: TestCaseResult[]
+    releaseTests: TestCaseResult[],
+    relatedWorkItems: WorkItem[]
     ): string {
 
     var widetail = undefined;
@@ -443,7 +473,7 @@ export function processTemplate(
         agentApi.logDebug(`  Builds: ${globalBuilds.length}`);
         agentApi.logDebug(`  Global Tests: ${globalTests.length}`);
         agentApi.logDebug(`  Release Tests: ${releaseTests.length}`);
-
+        agentApi.logDebug(`  Related WI: ${relatedWorkItems.length}`);
         // if it's an array, it's a legacy template
         if (Array.isArray(template)) {
 
@@ -704,6 +734,14 @@ export function processTemplate(
                 return JSON.stringify(context);
             });
 
+            // add our helper to find children and parents
+            handlebars.registerHelper("lookup_a_work_item", function (array, url) {
+                    var urlParts = url.split("/");
+                    var id = parseInt(urlParts[urlParts.length - 1]);
+                    return array.find(element => element.id === id);
+                }
+            );
+
             var customHandlebarsExtensionFile = "customHandlebarsExtension";
             // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
             // Note that the name is case sensitive on Mac and Linux
@@ -730,7 +768,8 @@ export function processTemplate(
                 "pullRequests": pullRequests,
                 "builds": globalBuilds,
                 "tests": globalTests,
-                "releaseTests": releaseTests
+                "releaseTests": releaseTests,
+                "relatedWorkItems": relatedWorkItems
              });
         }
 
