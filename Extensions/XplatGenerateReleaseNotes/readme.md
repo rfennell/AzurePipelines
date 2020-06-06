@@ -2,6 +2,7 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 2.49.x onwards, adds an array of direct parent and child workitems for the workitems associated with the release. These can only be referenced in Handlebar based templates
 * 2.47.x onwards, adds details of the files included in any commit or changeset so they can be displayed in Handlebar based templates
 * 2.46.x onwards, adds tests to the list of items that can be displayed in Handlebar based templates
 * 2.34.x onwards, extends the PR functionality to check for any PRs associated with commits associated with the release - not this functionality is only usable using Handlebars based templates
@@ -76,12 +77,30 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 {{/forEach}}
 
 # Global list of WI ({{workItems.length}})
-{{#forEach workItems}}
-{{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
+{{#forEach this.workItems}}
+{{#if isFirst}}### WorkItems {{/if}}
 *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
    - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
    - **Tags** {{lookup this.fields 'System.Tags'}}
-{{/forEach}}
+   - **Assigned** {{#with (lookup this.fields 'System.AssignedTo')}} {{displayName}} {{/with}}
+   - **Description** {{{lookup this.fields 'System.Description'}}}
+   - **Parents**
+{{#forEach this.relations}}
+{{#if (contains this.attributes.name 'Parent')}}
+{{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
+      - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+{{/with}}
+{{/if}}
+{{/forEach}} 
+   - **Children**
+{{#forEach this.relations}}
+{{#if (contains this.attributes.name 'Child')}}
+{{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
+      - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+{{/with}}
+{{/if}}
+{{/forEach}} 
+{{/forEach}} 
 
 # Global list of CS ({{commits.length}})
 {{#forEach commits}}
@@ -113,6 +132,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
     - **commits**  - the commits associated with this build
     - **workitems**  - the work items associated with the build
     - **tests**  - the work items associated with the build
+* **relatedWorkItems** – the array of all work item associated with the release plus their direct parents or children
 
 #### Release objects (only available in a release)
 * **releaseDetails** – the release details of the release that the task was triggered for.

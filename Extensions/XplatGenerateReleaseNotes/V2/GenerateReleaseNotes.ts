@@ -41,6 +41,8 @@ async function run(): Promise<number>  {
             var showOnlyPrimary = tl.getBoolInput("showOnlyPrimary");
             var replaceFile = tl.getBoolInput("replaceFile");
             var appendToFile = tl.getBoolInput("appendToFile");
+            var getParentsAndChildren = tl.getBoolInput("getParentsAndChildren");
+
             var searchCrossProjectForPRs = tl.getBoolInput("searchCrossProjectForPRs");
             if (delimiter === null) {
                 agentApi.logInfo(`No delimiter passed, setting a default of :`);
@@ -295,9 +297,17 @@ async function run(): Promise<number>  {
             // get an array of workitem ids
             let fullWorkItems = await util.getFullWorkItemDetails(workItemTrackingApi, globalWorkItems);
 
+            let relatedWorkItems = [];
+
+            if (getParentsAndChildren) {
+                agentApi.logInfo("Getting parents and children of WorkItems");
+                relatedWorkItems = await util.getAllDirectRelatedWorkitems(workItemTrackingApi, fullWorkItems);
+            }
+
             agentApi.logInfo(`Total build artifacts: [${globalBuilds.length}]`);
             agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
             agentApi.logInfo(`Total workitems: [${fullWorkItems.length}]`);
+            agentApi.logInfo(`Total related workitems: [${relatedWorkItems.length}]`);
             agentApi.logInfo(`Total release tests: [${releaseTests.length}]`);
             agentApi.logInfo(`Total tests: [${globalTests.length}]`);
 
@@ -402,7 +412,8 @@ async function run(): Promise<number>  {
                 globalPullRequests,
                 globalBuilds,
                 globalTests,
-                releaseTests);
+                releaseTests,
+                relatedWorkItems);
 
             util.writeFile(outputfile, outputString, replaceFile, appendToFile);
 
