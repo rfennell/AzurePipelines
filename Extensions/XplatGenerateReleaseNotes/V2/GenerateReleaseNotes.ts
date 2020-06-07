@@ -69,6 +69,26 @@ async function run(): Promise<number>  {
                 gitHubPat = "";
             }
 
+        await generateReleaseNotes(
+            tpcUri,
+            teamProject,
+            templateLocation,
+            templateFile);
+
+        } catch (err) {
+
+            agentApi.logError(err);
+            reject(err);
+        }
+    });
+    return promise;
+}
+
+async function generateReleaseNotes(
+    tpcUri: string,
+    teamProject: string,
+    templateLocation: string,
+    templateFile: string) {
             let credentialHandler: vstsInterfaces.IRequestHandler = util.getCredentialHandler();
             let vsts = new webApi.WebApi(tpcUri, credentialHandler);
             var releaseApi: IReleaseApi = await vsts.getReleaseApi();
@@ -420,13 +440,6 @@ async function run(): Promise<number>  {
             agentApi.writeVariable(outputVariableName, outputString.toString());
 
             resolve(0);
-        } catch (err) {
-
-            agentApi.logError(err);
-            reject(err);
-        }
-    });
-    return promise;
 }
 
 run()
