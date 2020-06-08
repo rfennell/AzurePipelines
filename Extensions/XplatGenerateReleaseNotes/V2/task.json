@@ -179,6 +179,24 @@
       "groupName":"advanced"
      },
      {
+      "name": "dumpPayload",
+      "type": "boolean",
+      "label": "Dump Payload",
+      "defaultValue": "false",
+      "required": true,
+      "helpMarkDown": "If true the data objects passed to the file generator is dumped to the log, and optionally to a JSON file"
+    },
+     {
+      "name": "dumpPayloadFileName",
+      "type": "string",
+      "label": "Payload Dump File",
+      "defaultValue": "$(Build.ArtifactStagingDirectory)\\payload.json",
+      "required": false,
+      "helpMarkDown": "The filename to dump the data objects passed to the file generator",
+      "groupName":"advanced",
+      "visibleRule":"dumpPayload = True"
+     },
+     {
       "name": "replaceFile",
       "type": "boolean",
       "label": "Replace the output file",
