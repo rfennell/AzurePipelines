@@ -219,7 +219,7 @@ What is done behind the scenes is that each `${properties}` block in the templat
 
 #### Release objects (only available in a release) 
 * **releaseDetails** – the release details of the release that the task was triggered for.
-* **compareReleaseDetails** - the the previous successful release that comparisons are bein made against
+* **compareReleaseDetails** - the the previous successful release that comparisons are being made against
 
 #### Build objects
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
