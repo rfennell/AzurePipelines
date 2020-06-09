@@ -26,19 +26,27 @@ async function run(): Promise<number>  {
             var getParentsAndChildren = tl.getBoolInput("getParentsAndChildren");
             var searchCrossProjectForPRs = tl.getBoolInput("searchCrossProjectForPRs");
             var fieldEquality = tl.getInput("fieldEquality");
-
+            var overrideStageName = tl.getInput("overrideStageName");
             var stopOnRedeploy = tl.getBoolInput("stopOnRedeploy");
             var sortWi = tl.getBoolInput("SortWi");
             var customHandlebarsExtensionCode = tl.getInput("customHandlebarsExtensionCode");
             var customHandlebarsExtensionFile = tl.getInput("customHandlebarsExtensionFile");
             var customHandlebarsExtensionFolder = tl.getInput("customHandlebarsExtensionFolder");
             var gitHubPat = tl.getInput("gitHubPat");
-            var dumpPayload = tl.getBoolInput("dumpPayload");
+            var dumpPayloadToFile = tl.getBoolInput("dumpPayloadToFile");
+            var dumpPayloadToConsole = tl.getBoolInput("dumpPayloadToConsole");
             var dumpPayloadFileName = tl.getInput("dumpPayloadFileName");
 
         var returnCode = await util.generateReleaseNotes(
+            "",
             tpcUri,
             teamProject,
+            parseInt(tl.getVariable("Build.BuildId")),
+            parseInt(tl.getVariable("Release.ReleaseId")),
+            parseInt(tl.getVariable("Release.DefinitionId")),
+            overrideStageName,
+            tl.getVariable("Release_EnvironmentName"),
+            tl.getVariable("ReleaseNotes.Fix349"),
             templateLocation,
             templateFile,
             inlineTemplate,
@@ -59,7 +67,8 @@ async function run(): Promise<number>  {
             customHandlebarsExtensionFile,
             customHandlebarsExtensionFolder,
             gitHubPat,
-            dumpPayload,
+            dumpPayloadToConsole,
+            dumpPayloadToFile,
             dumpPayloadFileName);
 
         } catch (err) {

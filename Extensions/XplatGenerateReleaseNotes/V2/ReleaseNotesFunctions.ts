@@ -224,9 +224,17 @@ export async function enrichChangesWithFileDetails(
                         // neither are that nice.
                         var url = require("url");
                         // split the url up, check it is the expected format and then get the ID
-                        var parts = url.parse(change.location);
-                        if (parts.host === "dev.azure.com") {
-                            let gitDetails = await gitApi.getChanges(change.id, parts.path.split("/")[6]);
+                        var urlParts = url.parse(change.location);
+                        if (urlParts.host === "dev.azure.com") {
+                            var pathParts = urlParts.path.split("/");
+                            var repoId = "";
+                            for (let index = 0; index < pathParts.length; index++) {
+                                if (pathParts[index] === "repositories") {
+                                    repoId = pathParts[index + 1];
+                                    break;
+                                }
+                            }
+                            let gitDetails = await gitApi.getChanges(change.id, repoId);
                             agentApi.logInfo (`Enriched with details of ${gitDetails.changes.length} files`);
                             extraDetail = gitDetails.changes;
                         } else  {
@@ -268,17 +276,24 @@ export async function enrichChangesWithFileDetails(
 }
 
 // Gets the credential handler.  Supports both PAT and OAuth tokens
-export function getCredentialHandler(): IRequestHandler {
-    var accessToken: string = tl.getVariable("System.AccessToken");
-    let credHandler: IRequestHandler;
-    if (!accessToken || accessToken.length === 0) {
-        throw "Unable to locate access token.  Please make sure you have enabled the \"Allow scripts to access OAuth token\" setting.";
+export function getCredentialHandler(pat: string): IRequestHandler {
+    if (!pat || pat.length === 0) {
+        // no pat passed so we need the system token
+        tl.debug("Using System.AccessToken");
+        var accessToken = tl.getVariable("System.AccessToken");
+        let credHandler: IRequestHandler;
+        if (!accessToken || accessToken.length === 0) {
+            throw "Unable to locate access token.  Please make sure you have enabled the \"Allow scripts to access OAuth token\" setting.";
+        } else {
+            tl.debug("Creating the credential handler");
+            // used for local debugging.  Allows switching between PAT token and Bearer Token for debugging
+            credHandler = webApi.getHandlerFromToken(accessToken);
+        }
+        return credHandler;
     } else {
-        tl.debug("Creating the credential handler");
-        // used for local debugging.  Allows switching between PAT token and Bearer Token for debugging
-        credHandler = webApi.getHandlerFromToken(accessToken);
+        tl.debug("Using PAT (suitable for local test only)");
+        return webApi.getPersonalAccessTokenHandler(pat);
     }
-    return credHandler;
 
 }
 
@@ -752,7 +767,7 @@ export function processTemplate(
             // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
             // Note that the name is case sensitive on Mac and Linux
             var customHandlebarsExtensionFolder = `${process.env.AGENT_WORKFOLDER}/_temp`;
-            agentApi.logDebug(`Saving custom handles code to file in folder ${customHandlebarsExtensionFolder}`);
+            agentApi.logDebug(`Saving custom Handlebars code to file in folder ${customHandlebarsExtensionFolder}`);
 
             if (typeof customHandlebarsExtensionCode !== undefined && customHandlebarsExtensionCode && customHandlebarsExtensionCode.length > 0) {
                 agentApi.logInfo("Loading custom handlebars extension");
@@ -923,8 +938,15 @@ export function fixline (line: string ): string {
 }
 
 export async function generateReleaseNotes(
+    pat: string,
     tpcUri: string,
     teamProject: string,
+    buildId: number,
+    releaseId: number,
+    releaseDefinitionId: number,
+    overrideStageName: string,
+    environmentName: string,
+    activateFix: string,
     templateLocation: string,
     templateFile: string,
     inlineTemplate: string,
@@ -945,7 +967,8 @@ export async function generateReleaseNotes(
     customHandlebarsExtensionFile: string,
     customHandlebarsExtensionFolder: string,
     gitHubPat: string,
-    dumpPayload: boolean,
+    dumpPayloadToConsole: boolean,
+    dumpPayloadToFile: boolean,
     dumpPayloadFileName: string): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
@@ -966,14 +989,14 @@ export async function generateReleaseNotes(
                 gitHubPat = "";
             }
 
-            let credentialHandler: vstsInterfaces.IRequestHandler = getCredentialHandler();
-            let vsts = new webApi.WebApi(tpcUri, credentialHandler);
-            var releaseApi: IReleaseApi = await vsts.getReleaseApi();
-            var buildApi: IBuildApi = await vsts.getBuildApi();
-            var gitApi: IGitApi = await vsts.getGitApi();
-            var testApi: ITestApi = await vsts.getTestApi();
-            var workItemTrackingApi: IWorkItemTrackingApi = await vsts.getWorkItemTrackingApi();
-            var tfvcApi: ITfvcApi = await vsts.getTfvcApi();
+            let credentialHandler: vstsInterfaces.IRequestHandler = getCredentialHandler(pat);
+            let organisation = new webApi.WebApi(tpcUri, credentialHandler);
+            var releaseApi: IReleaseApi = await organisation.getReleaseApi();
+            var buildApi: IBuildApi = await organisation.getBuildApi();
+            var gitApi: IGitApi = await organisation.getGitApi();
+            var testApi: ITestApi = await organisation.getTestApi();
+            var workItemTrackingApi: IWorkItemTrackingApi = await organisation.getWorkItemTrackingApi();
+            var tfvcApi: ITfvcApi = await organisation.getTfvcApi();
 
             // the result containers
             var globalCommits: Change[] = [];
@@ -989,9 +1012,8 @@ export async function generateReleaseNotes(
             var currentRelease: Release;
             var currentBuild: Build;
 
-            if (tl.getVariable("Release.ReleaseId") === undefined) {
+            if ((releaseId === undefined) || !releaseId) {
                 agentApi.logInfo("Getting the current build details");
-                let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
                 currentBuild = await buildApi.getBuild(teamProject, buildId);
 
                 if (!currentBuild) {
@@ -1006,9 +1028,7 @@ export async function generateReleaseNotes(
                 globalTests = await getTestsForBuild(testApi, teamProject, buildId);
 
             } else {
-                let releaseId: number = parseInt(tl.getVariable("Release.ReleaseId"));
-                let releaseDefinitionId: number = parseInt(tl.getVariable("Release.DefinitionId"));
-                let environmentName: string = (tl.getInput("overrideStageName") || tl.getVariable("Release_EnvironmentName")).toLowerCase();
+                environmentName = (overrideStageName || environmentName).toLowerCase();
 
                 agentApi.logInfo("Getting the current release details");
                 currentRelease = await releaseApi.getRelease(teamProject, releaseId);
@@ -1093,7 +1113,6 @@ export async function generateReleaseNotes(
                                             agentApi.logInfo(`Checking what commits and workitems have changed from [${artifactInMostRecentRelease.buildNumber}][ID ${artifactInMostRecentRelease.buildId}] => [${artifactInThisRelease.buildNumber}] [ID ${artifactInThisRelease.buildId}]`);
 
                                             // Check if workaround for issue #349 should be used
-                                            let activateFix = tl.getVariable("ReleaseNotes.Fix349");
                                             if (!activateFix) {
                                                 agentApi.logInfo("Defaulting on the workaround for build API limitation (see issue #349 set 'ReleaseNotes.Fix349=false' to disable)");
                                                 activateFix = "true";
@@ -1105,7 +1124,7 @@ export async function generateReleaseNotes(
                                                 // There is only a workaround for Git but not for TFVC :(
                                                 if (baseBuild.repository.type === "TfsGit") {
                                                     let currentBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId));
-                                                    let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(vsts, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
+                                                    let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisation, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
                                                     commits = commitInfo.commits;
                                                     workitems = commitInfo.workItems;
                                                 } else {
@@ -1187,7 +1206,7 @@ export async function generateReleaseNotes(
                 ))
             );
 
-            let expandedGlobalCommits = await expandTruncatedCommitMessages(vsts, globalCommits, gitHubPat);
+            let expandedGlobalCommits = await expandTruncatedCommitMessages(organisation, globalCommits, gitHubPat);
 
             if (!expandedGlobalCommits || expandedGlobalCommits.length !== globalCommits.length) {
                 agentApi.logError("Failed to expand the global commits.");
@@ -1229,7 +1248,6 @@ export async function generateReleaseNotes(
             var prDetails = <GitPullRequest> {};
 
             try {
-                let buildId: number = parseInt(tl.getVariable("Build.BuildId"));
                 if (isNaN(buildId)) {  // only try this if we have numeric build ID, not a GUID see #694
                     agentApi.logInfo(`Do not have an Azure DevOps numeric buildId, so skipping trying to get  any build PR trigger info`);
                 } else {
@@ -1296,22 +1314,22 @@ export async function generateReleaseNotes(
 
             agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
 
-            if (dumpPayload) {
-                dumpJsonPayloadToFile(
-                    dumpPayloadFileName,
-                    {
-                        workItems: fullWorkItems,
-                        commits: globalCommits,
-                        pullRequests: globalPullRequests,
-                        tests: globalTests,
-                        builds: globalBuilds,
-                        relatedWorkItems: relatedWorkItems,
-                        releaseDetails: currentRelease,
-                        compareReleaseDetails: mostRecentSuccessfulDeploymentRelease,
-                        releaseTests: releaseTests,
-                        buildDetails: currentBuild
-                    });
-            }
+            dumpJsonPayload(
+                dumpPayloadToConsole,
+                dumpPayloadToFile,
+                dumpPayloadFileName,
+                {
+                    workItems: fullWorkItems,
+                    commits: globalCommits,
+                    pullRequests: globalPullRequests,
+                    tests: globalTests,
+                    builds: globalBuilds,
+                    relatedWorkItems: relatedWorkItems,
+                    releaseDetails: currentRelease,
+                    compareReleaseDetails: mostRecentSuccessfulDeploymentRelease,
+                    releaseTests: releaseTests,
+                    buildDetails: currentBuild
+                });
 
             var template = getTemplate (templateLocation, templateFile, inlineTemplate);
             var outputString = processTemplate(
@@ -1343,14 +1361,21 @@ export async function generateReleaseNotes(
         });
 }
 
-function dumpJsonPayloadToFile(fileName: string, payload) {
+function dumpJsonPayload(dumpPayloadToConsole: boolean, dumpPayloadToFile: boolean, fileName: string, payload) {
     let data = JSON.stringify(payload);
-    agentApi.logInfo("Start of payload data dump");
-    agentApi.logInfo(data);
-    agentApi.logInfo("End of payload data dump");
 
-    if (fileName) {
-        agentApi.logInfo(`Writing payload data to file ${fileName}`);
-        fs.writeFileSync(fileName, data);
+    if (dumpPayloadToConsole) {
+        agentApi.logInfo("Start of payload data dump");
+        agentApi.logInfo(data);
+        agentApi.logInfo("End of payload data dump");
+    }
+
+    if (dumpPayloadToFile) {
+        if (fileName) {
+            agentApi.logInfo(`Writing payload data to file ${fileName}`);
+            fs.writeFileSync(fileName, data);
+        } else {
+            agentApi.logWarn(`No payload dump file name provided`);
+        }
     }
 }

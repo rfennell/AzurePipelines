@@ -179,12 +179,20 @@
       "groupName":"advanced"
      },
      {
-      "name": "dumpPayload",
+      "name": "dumpPayloaToConsole",
       "type": "boolean",
-      "label": "Dump Payload",
+      "label": "Dump Payload to Console",
       "defaultValue": "false",
       "required": true,
-      "helpMarkDown": "If true the data objects passed to the file generator is dumped to the log, and optionally to a JSON file"
+      "helpMarkDown": "If true the data objects passed to the file generator is dumped to the log"
+    },
+    {
+      "name": "dumpPayloadToFile",
+      "type": "boolean",
+      "label": "Dump Payload to File",
+      "defaultValue": "false",
+      "required": true,
+      "helpMarkDown": "If true the data objects passed to the file generator is dumped to a JSON file"
     },
      {
       "name": "dumpPayloadFileName",
@@ -194,7 +202,7 @@
       "required": false,
       "helpMarkDown": "The filename to dump the data objects passed to the file generator",
       "groupName":"advanced",
-      "visibleRule":"dumpPayload = True"
+      "visibleRule":"dumpPayloadToFile = True"
      },
      {
       "name": "replaceFile",
