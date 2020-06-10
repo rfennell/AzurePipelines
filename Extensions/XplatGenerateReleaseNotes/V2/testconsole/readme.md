@@ -10,7 +10,7 @@ However, running this is not as simple was you might expect so please read the i
    `<repo root>Extensions\XplatGenerateReleaseNotes\V2\testconsole`
 1. Build the tool using NPM (this does assume [Node](https://nodejs.org/en/download/_) is already installed)
    ```
-   mpm install
+   npm install
    npm run build 
    ```
 
