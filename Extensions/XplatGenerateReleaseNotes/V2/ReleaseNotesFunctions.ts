@@ -11,9 +11,9 @@ export interface SimpleArtifact {
 export class UnifiedArtifactDetails {
     build: Build;
     commits: Change[];
-    workitems: ResourceRef[];
+    workitems: WorkItem[];
     tests: TestCaseResult[];
-    constructor ( build: Build, commits: Change[], workitems: ResourceRef[], tests: TestCaseResult[]) {
+    constructor ( build: Build, commits: Change[], workitems: WorkItem[], tests: TestCaseResult[]) {
         this.build = build;
         if (commits) {
             this.commits = commits;
@@ -1162,8 +1162,8 @@ export async function generateReleaseNotes(
                                         // get artifact details for the unified output format
                                         let artifact = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId));
                                         agentApi.logInfo(`Adding the build [${artifact.id}] and its association to the unified results object`);
-                                        console.log(workitems);
-                                        globalBuilds.push(new UnifiedArtifactDetails(artifact, commits, workitems, tests));
+                                        let fullBuildWorkItems = await getFullWorkItemDetails(workItemTrackingApi, workitems);
+                                        globalBuilds.push(new UnifiedArtifactDetails(artifact, commits, fullBuildWorkItems, tests));
 
                                         if (commits) {
                                             globalCommits = globalCommits.concat(commits);
