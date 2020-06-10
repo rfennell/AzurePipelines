@@ -1,8 +1,8 @@
 {
     "TeamFoundationCollectionUri": "https://dev.azure.com/richardfennell",
     "TeamProject": "GitHub",
-    "buildId": "7940",
-    "releaseId": "2706",
+    "buildId": "7956",
+    "releaseId": "2709",
     "releaseDefinitionId":"23",
     "environmentName":"Windows",
     "templatefile": "release-handlebars-template.md",

@@ -14,20 +14,19 @@
 # Builds with associated WI/CS ({{builds.length}})
 {{#forEach builds}}
 {{#if isFirst}}## Builds {{/if}}
-##  Build {{this.build.buildNumber}}
+-  Build {{this.build.buildNumber}}
 {{#forEach this.commits}}
-{{#if isFirst}}### Commits {{/if}}
-- CS {{this.id}}
+   - CS {{this.id}}
+      - **Message:** {{this.message}}
 {{/forEach}}
 {{#forEach this.workitems}}
-{{#if isFirst}}### Workitems {{/if}}
-- WI {{this.id}}
+   - WI {{this.id}}
+      - **Title** {{lookup this.fields 'System.Title'}}
 {{/forEach}} 
 {{#forEach this.tests}}
-{{#if isFirst}}### Tests {{/if}}
-- Test {{this.id}} 
-   -  Name: {{this.testCase.name}}
-   -  Outcome: {{this.outcome}}
+   - Test {{this.id}} 
+      -  **Name** {{this.testCase.name}}
+      -  **Outcome** {{this.outcome}}
 {{/forEach}} 
 {{/forEach}}
 

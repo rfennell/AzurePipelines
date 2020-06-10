@@ -414,7 +414,7 @@ export async function getAllDirectRelatedWorkitems (
     for (let wiIndex = 0; wiIndex < workItems.length; wiIndex++) {
         var wi  = workItems[wiIndex];
 
-        agentApi.logInfo(`Looking for parents and children of ${wi.id}`);
+        agentApi.logInfo(`Looking for parents and children of WI [${wi.id}]`);
         for (let relIndex = 0; relIndex <  wi.relations.length; relIndex++) {
             var relation  =  wi.relations[relIndex];
             if ((relation.attributes.name === "Child") ||
@@ -1162,6 +1162,7 @@ export async function generateReleaseNotes(
                                         // get artifact details for the unified output format
                                         let artifact = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId));
                                         agentApi.logInfo(`Adding the build [${artifact.id}] and its association to the unified results object`);
+                                        console.log(workitems);
                                         globalBuilds.push(new UnifiedArtifactDetails(artifact, commits, workitems, tests));
 
                                         if (commits) {
@@ -1194,17 +1195,10 @@ export async function generateReleaseNotes(
             }
 
             // remove duplicates
-            globalCommits = globalCommits.filter((thing, index, self) =>
-                index === self.findIndex((t) => (
-                t.id === thing.id
-                ))
-            );
-
-            globalWorkItems = globalWorkItems.filter((thing, index, self) =>
-                index === self.findIndex((t) => (
-                t.id === thing.id
-                ))
-            );
+            agentApi.logInfo("Removing duplicate Commits from master list");
+            globalCommits = removeDuplicates(globalCommits);
+            agentApi.logInfo("Removing duplicate WorkItems from master list");
+            globalWorkItems = removeDuplicates(globalWorkItems);
 
             let expandedGlobalCommits = await expandTruncatedCommitMessages(organisation, globalCommits, gitHubPat);
 
@@ -1226,7 +1220,7 @@ export async function generateReleaseNotes(
 
             agentApi.logInfo(`Total build artifacts: [${globalBuilds.length}]`);
             agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
-            agentApi.logInfo(`Total workitems: [${globalCommits.length}]`);
+            agentApi.logInfo(`Total workitems: [${globalWorkItems.length}]`);
             agentApi.logInfo(`Total related workitems: [${relatedWorkItems.length}]`);
             agentApi.logInfo(`Total release tests: [${releaseTests.length}]`);
             agentApi.logInfo(`Total tests: [${globalTests.length}]`);
@@ -1378,4 +1372,12 @@ function dumpJsonPayload(dumpPayloadToConsole: boolean, dumpPayloadToFile: boole
             agentApi.logWarn(`No payload dump file name provided`);
         }
     }
+}
+
+function removeDuplicates(array: any[]): any[] {
+    array = array.filter((thing, index, self) =>
+    index === self.findIndex((t) => (
+    t.id === thing.id
+    )));
+    return array;
 }
