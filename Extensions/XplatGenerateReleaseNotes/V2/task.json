@@ -130,7 +130,7 @@
       "label": "Name of stage (override)",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "If set uses this stage name to find the last succesful deployment, as opposed to the currently active stage (Release usage only)",
+      "helpMarkDown": "If set uses this stage name to find the last successful deployment, as opposed to the currently active stage (Release usage only)",
       "groupName":"advanced"
      },
      {
@@ -179,6 +179,34 @@
       "groupName":"advanced"
      },
      {
+      "name": "dumpPayloadToConsole",
+      "type": "boolean",
+      "label": "Dump Payload to Console",
+      "defaultValue": "false",
+      "groupName":"advanced",
+      "required": true,
+      "helpMarkDown": "If true the data objects passed to the file generator is dumped to the log"
+    },
+    {
+      "name": "dumpPayloadToFile",
+      "type": "boolean",
+      "label": "Dump Payload to File",
+      "defaultValue": "false",
+      "groupName":"advanced",
+      "required": true,
+      "helpMarkDown": "If true the data objects passed to the file generator is dumped to a JSON file"
+    },
+     {
+      "name": "dumpPayloadFileName",
+      "type": "string",
+      "label": "Payload Dump File",
+      "defaultValue": "$(Build.ArtifactStagingDirectory)\\payload.json",
+      "required": false,
+      "helpMarkDown": "The filename to dump the data objects passed to the file generator",
+      "groupName":"advanced",
+      "visibleRule":"dumpPayloadToFile = True"
+     },
+     {
       "name": "replaceFile",
       "type": "boolean",
       "label": "Replace the output file",
@@ -216,7 +244,7 @@
 
 
    ],
-  "instanceNameFormat": "Generate Release Notes based on Release Comparision API",
+  "instanceNameFormat": "Generate Release Notes based on Release Comparison API",
   "execution": {
     "Node": {
             "target": "GenerateReleaseNotes.js",
