@@ -11,9 +11,9 @@ export interface SimpleArtifact {
 export class UnifiedArtifactDetails {
     build: Build;
     commits: Change[];
-    workitems: ResourceRef[];
+    workitems: WorkItem[];
     tests: TestCaseResult[];
-    constructor ( build: Build, commits: Change[], workitems: ResourceRef[], tests: TestCaseResult[]) {
+    constructor ( build: Build, commits: Change[], workitems: WorkItem[], tests: TestCaseResult[]) {
         this.build = build;
         if (commits) {
             this.commits = commits;
@@ -53,6 +53,10 @@ import { TestCaseResult } from "azure-devops-node-api/interfaces/TestInterfaces"
 import { IWorkItemTrackingApi } from "azure-devops-node-api/WorkItemTrackingApi";
 import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import { ITfvcApi } from "azure-devops-node-api/TfvcApi";
+import * as issue349 from "./Issue349Workaround";
+import { ITestApi } from "azure-devops-node-api/TestApi";
+import { IBuildApi } from "azure-devops-node-api/BuildApi";
+import * as vstsInterfaces from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 
 let agentApi = new AgentSpecificApi();
 
@@ -220,9 +224,17 @@ export async function enrichChangesWithFileDetails(
                         // neither are that nice.
                         var url = require("url");
                         // split the url up, check it is the expected format and then get the ID
-                        var parts = url.parse(change.location);
-                        if (parts.host === "dev.azure.com") {
-                            let gitDetails = await gitApi.getChanges(change.id, parts.path.split("/")[6]);
+                        var urlParts = url.parse(change.location);
+                        if (urlParts.host === "dev.azure.com") {
+                            var pathParts = urlParts.path.split("/");
+                            var repoId = "";
+                            for (let index = 0; index < pathParts.length; index++) {
+                                if (pathParts[index] === "repositories") {
+                                    repoId = pathParts[index + 1];
+                                    break;
+                                }
+                            }
+                            let gitDetails = await gitApi.getChanges(change.id, repoId);
                             agentApi.logInfo (`Enriched with details of ${gitDetails.changes.length} files`);
                             extraDetail = gitDetails.changes;
                         } else  {
@@ -264,17 +276,24 @@ export async function enrichChangesWithFileDetails(
 }
 
 // Gets the credential handler.  Supports both PAT and OAuth tokens
-export function getCredentialHandler(): IRequestHandler {
-    var accessToken: string = tl.getVariable("System.AccessToken");
-    let credHandler: IRequestHandler;
-    if (!accessToken || accessToken.length === 0) {
-        throw "Unable to locate access token.  Please make sure you have enabled the \"Allow scripts to access OAuth token\" setting.";
+export function getCredentialHandler(pat: string): IRequestHandler {
+    if (!pat || pat.length === 0) {
+        // no pat passed so we need the system token
+        tl.debug("Using System.AccessToken");
+        var accessToken = tl.getVariable("System.AccessToken");
+        let credHandler: IRequestHandler;
+        if (!accessToken || accessToken.length === 0) {
+            throw "Unable to locate access token.  Please make sure you have enabled the \"Allow scripts to access OAuth token\" setting.";
+        } else {
+            tl.debug("Creating the credential handler");
+            // used for local debugging.  Allows switching between PAT token and Bearer Token for debugging
+            credHandler = webApi.getHandlerFromToken(accessToken);
+        }
+        return credHandler;
     } else {
-        tl.debug("Creating the credential handler");
-        // used for local debugging.  Allows switching between PAT token and Bearer Token for debugging
-        credHandler = webApi.getHandlerFromToken(accessToken);
+        tl.debug("Using PAT (suitable for local test only)");
+        return webApi.getPersonalAccessTokenHandler(pat);
     }
-    return credHandler;
 
 }
 
@@ -395,7 +414,7 @@ export async function getAllDirectRelatedWorkitems (
     for (let wiIndex = 0; wiIndex < workItems.length; wiIndex++) {
         var wi  = workItems[wiIndex];
 
-        agentApi.logInfo(`Looking for parents and children of ${wi.id}`);
+        agentApi.logInfo(`Looking for parents and children of WI [${wi.id}]`);
         for (let relIndex = 0; relIndex <  wi.relations.length; relIndex++) {
             var relation  =  wi.relations[relIndex];
             if ((relation.attributes.name === "Child") ||
@@ -451,7 +470,9 @@ export function processTemplate(
     delimiter,
     fieldEquality,
     anyFieldContent,
-    customHandlebarsExtensionCode,
+    customHandlebarsExtensionCode: string,
+    customHandlebarsExtensionFile: string,
+    customHandlebarsExtensionFolder: string,
     prDetails,
     pullRequests: GitPullRequest[],
     globalBuilds: UnifiedArtifactDetails[],
@@ -746,7 +767,7 @@ export function processTemplate(
             // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
             // Note that the name is case sensitive on Mac and Linux
             var customHandlebarsExtensionFolder = `${process.env.AGENT_WORKFOLDER}/_temp`;
-            agentApi.logDebug(`Saving custom handles code to file in folder ${customHandlebarsExtensionFolder}`);
+            agentApi.logDebug(`Saving custom Handlebars code to file in folder ${customHandlebarsExtensionFolder}`);
 
             if (typeof customHandlebarsExtensionCode !== undefined && customHandlebarsExtensionCode && customHandlebarsExtensionCode.length > 0) {
                 agentApi.logInfo("Loading custom handlebars extension");
@@ -914,4 +935,449 @@ export function fixline (line: string ): string {
         // we only expand the line if the ${ in it. This fixes problems with incorrectly expand {}
         return "\"" + line.trim() + "\"";
     }
+}
+
+export async function generateReleaseNotes(
+    pat: string,
+    tpcUri: string,
+    teamProject: string,
+    buildId: number,
+    releaseId: number,
+    releaseDefinitionId: number,
+    overrideStageName: string,
+    environmentName: string,
+    activateFix: string,
+    templateLocation: string,
+    templateFile: string,
+    inlineTemplate: string,
+    outputFile: string,
+    outputVariableName: string,
+    emptyDataset: string,
+    delimiter: string,
+    anyFieldContent: string,
+    showOnlyPrimary: boolean,
+    replaceFile: boolean,
+    appendToFile: boolean,
+    getParentsAndChildren: boolean,
+    searchCrossProjectForPRs: boolean,
+    fieldEquality: string,
+    stopOnRedeploy: boolean,
+    sortWi: boolean,
+    customHandlebarsExtensionCode: string,
+    customHandlebarsExtensionFile: string,
+    customHandlebarsExtensionFolder: string,
+    gitHubPat: string,
+    dumpPayloadToConsole: boolean,
+    dumpPayloadToFile: boolean,
+    dumpPayloadFileName: string): Promise<number> {
+        return new Promise<number>(async (resolve, reject) => {
+
+            if (delimiter === null) {
+                agentApi.logInfo(`No delimiter passed, setting a default of :`);
+                delimiter = ":";
+            }            if (fieldEquality === null) {
+                agentApi.logInfo(`No fieldEquality passed, setting a default of =`);
+                delimiter = "=";
+            }
+
+            if (fieldEquality === delimiter) {
+                agentApi.logError (`The delimiter and field equality parameters cannot be the same, please change one. The usual defaults a : and = respectively`);
+            }
+
+            if (!gitHubPat) {
+                // a check to make sure we don't get a null
+                gitHubPat = "";
+            }
+
+            let credentialHandler: vstsInterfaces.IRequestHandler = getCredentialHandler(pat);
+            let organisation = new webApi.WebApi(tpcUri, credentialHandler);
+            var releaseApi: IReleaseApi = await organisation.getReleaseApi();
+            var buildApi: IBuildApi = await organisation.getBuildApi();
+            var gitApi: IGitApi = await organisation.getGitApi();
+            var testApi: ITestApi = await organisation.getTestApi();
+            var workItemTrackingApi: IWorkItemTrackingApi = await organisation.getWorkItemTrackingApi();
+            var tfvcApi: ITfvcApi = await organisation.getTfvcApi();
+
+            // the result containers
+            var globalCommits: Change[] = [];
+            var globalWorkItems: ResourceRef[] = [];
+            var globalPullRequests: GitPullRequest[] = [];
+            var globalBuilds: UnifiedArtifactDetails[] = [];
+            var globalTests: TestCaseResult[] = [];
+            var releaseTests: TestCaseResult[] = [];
+
+            var mostRecentSuccessfulDeploymentName: string = "";
+            let mostRecentSuccessfulDeploymentRelease: Release;
+
+            var currentRelease: Release;
+            var currentBuild: Build;
+
+            if ((releaseId === undefined) || !releaseId) {
+                agentApi.logInfo("Getting the current build details");
+                currentBuild = await buildApi.getBuild(teamProject, buildId);
+
+                if (!currentBuild) {
+                    agentApi.logError (`Unable to locate the current build with id ${buildId} in the project ${teamProject}`);
+                    reject (-1);
+                    return;
+                }
+
+                globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
+                globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
+                globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
+                globalTests = await getTestsForBuild(testApi, teamProject, buildId);
+
+            } else {
+                environmentName = (overrideStageName || environmentName).toLowerCase();
+
+                agentApi.logInfo("Getting the current release details");
+                currentRelease = await releaseApi.getRelease(teamProject, releaseId);
+
+                agentApi.logInfo(`Show associated items for primary artifact only is set to ${showOnlyPrimary}`);
+
+                // check of redeploy
+                if (stopOnRedeploy === true) {
+                    if ( getDeploymentCount(currentRelease.environments, environmentName) > 1) {
+                        agentApi.logWarn(`Skipping release note generation as this deploy is a re-deployment`);
+                        resolve(-1);
+                        return;
+                    }
+                }
+
+                if (!currentRelease) {
+                    agentApi.logError(`Unable to locate the current release with id ${releaseId}`);
+                    resolve(-1);
+                    return;
+                }
+
+                var environmentId = getReleaseDefinitionId(currentRelease.environments, environmentName);
+
+                let mostRecentSuccessfulDeployment = await getMostRecentSuccessfulDeployment(releaseApi, teamProject, releaseDefinitionId, environmentId);
+                let isInitialRelease = false;
+
+                agentApi.logInfo(`Getting all artifacts in the current release...`);
+                var arifactsInThisRelease = getSimpleArtifactArray(currentRelease.artifacts);
+                agentApi.logInfo(`Found ${arifactsInThisRelease.length}`);
+
+                let arifactsInMostRecentRelease: SimpleArtifact[] = [];
+                if (mostRecentSuccessfulDeployment) {
+                    // Get the release that the deployment was a part of - This is required for the templating.
+                    mostRecentSuccessfulDeploymentRelease = await releaseApi.getRelease(teamProject, mostRecentSuccessfulDeployment.release.id);
+                    agentApi.logInfo(`Getting all artifacts in the most recent successful release [${mostRecentSuccessfulDeployment.release.name}]...`);
+                    arifactsInMostRecentRelease = getSimpleArtifactArray(mostRecentSuccessfulDeployment.release.artifacts);
+                    mostRecentSuccessfulDeploymentName = mostRecentSuccessfulDeployment.release.name;
+                    agentApi.logInfo(`Found ${arifactsInMostRecentRelease.length}`);
+                } else {
+                    agentApi.logInfo(`Skipping fetching artifact in the most recent successful release as there isn't one.`);
+                    // we need to set the last successful as the current release to templates can get some data
+                    mostRecentSuccessfulDeploymentRelease = currentRelease;
+                    mostRecentSuccessfulDeploymentName = "Initial Deployment";
+                    arifactsInMostRecentRelease = arifactsInThisRelease;
+                    isInitialRelease = true;
+                }
+
+                for (var artifactInThisRelease of arifactsInThisRelease) {
+                    agentApi.logInfo(`Looking at artifact [${artifactInThisRelease.artifactAlias}]`);
+                    agentApi.logInfo(`Artifact type [${artifactInThisRelease.artifactType}]`);
+                    agentApi.logInfo(`Build Definition ID [${artifactInThisRelease.buildDefinitionId}]`);
+                    agentApi.logInfo(`Build Number: [${artifactInThisRelease.buildNumber}]`);
+                    agentApi.logInfo(`Is Primary: [${artifactInThisRelease.isPrimary}]`);
+
+                    if ((showOnlyPrimary === false) || (showOnlyPrimary === true && artifactInThisRelease.isPrimary === true)) {
+                        if (arifactsInMostRecentRelease.length > 0) {
+                            if (artifactInThisRelease.artifactType === "Build") {
+                                agentApi.logInfo(`Looking for the [${artifactInThisRelease.artifactAlias}] in the most recent successful release [${mostRecentSuccessfulDeploymentName}]`);
+                                for (var artifactInMostRecentRelease of arifactsInMostRecentRelease) {
+                                    if (artifactInThisRelease.artifactAlias.toLowerCase() === artifactInMostRecentRelease.artifactAlias.toLowerCase()) {
+                                        agentApi.logInfo(`Found artifact [${artifactInMostRecentRelease.artifactAlias}] with build number [${artifactInMostRecentRelease.buildNumber}] in release [${mostRecentSuccessfulDeploymentName}]`);
+
+                                        var commits: Change[];
+                                        var workitems: ResourceRef[];
+                                        var tests: TestCaseResult[];
+
+                                        // Only get the commits and workitems if the builds are different
+                                        if (isInitialRelease) {
+                                            agentApi.logInfo(`This is the first release so checking what commits and workitems are associated with artifacts`);
+                                            var builds = await buildApi.getBuilds(artifactInThisRelease.sourceId, [parseInt(artifactInThisRelease.buildDefinitionId)]);
+                                            commits = [];
+                                            workitems = [];
+
+                                            for (var build of builds) {
+                                                agentApi.logInfo(`Getting the details of ${build.id}`);
+                                                var buildCommits = await buildApi.getBuildChanges(teamProject, build.id);
+                                                commits.push(...buildCommits);
+                                                var buildWorkitems = await buildApi.getBuildWorkItemsRefs(teamProject, build.id);
+                                                workitems.push(...buildWorkitems);
+                                            }
+                                        } else if (artifactInMostRecentRelease.buildId !== artifactInThisRelease.buildId) {
+                                            agentApi.logInfo(`Checking what commits and workitems have changed from [${artifactInMostRecentRelease.buildNumber}][ID ${artifactInMostRecentRelease.buildId}] => [${artifactInThisRelease.buildNumber}] [ID ${artifactInThisRelease.buildId}]`);
+
+                                            // Check if workaround for issue #349 should be used
+                                            if (!activateFix) {
+                                                agentApi.logInfo("Defaulting on the workaround for build API limitation (see issue #349 set 'ReleaseNotes.Fix349=false' to disable)");
+                                                activateFix = "true";
+                                            }
+
+                                            if (activateFix && activateFix.toLowerCase() === "true") {
+                                                let baseBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId));
+                                                agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
+                                                // There is only a workaround for Git but not for TFVC :(
+                                                if (baseBuild.repository.type === "TfsGit") {
+                                                    let currentBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId));
+                                                    let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisation, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
+                                                    commits = commitInfo.commits;
+                                                    workitems = commitInfo.workItems;
+                                                } else {
+                                                    // Fall back to original behavior
+                                                    commits = await buildApi.getChangesBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                                    workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                                }
+                                            } else {
+                                                // Issue #349: These APIs are affected by the build API limitation and only return the latest 200 changes and work items associated to those changes
+                                                commits = await buildApi.getChangesBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                                workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                            }
+
+                                            // enrich what we have with file names
+                                            if (commits) {
+                                                commits = await enrichChangesWithFileDetails(gitApi, tfvcApi, commits, gitHubPat);
+                                            }
+
+                                        } else {
+                                            commits = [];
+                                            workitems = [];
+                                            agentApi.logInfo(`Build for artifact [${artifactInThisRelease.artifactAlias}] has not changed.  Nothing to do`);
+                                        }
+
+                                        // look for any test in the current build
+                                        agentApi.logInfo(`Getting test associated with the latest build [${artifactInThisRelease.buildId}]`);
+                                        tests = await getTestsForBuild(testApi, teamProject, parseInt(artifactInThisRelease.buildId));
+
+                                        if (tests) {
+                                            agentApi.logInfo(`Found ${tests.length} test associated with the build [${artifactInThisRelease.buildId}] adding any not already in the global test list to the list`);
+                                            // we only want to add unique items
+                                            globalTests = addUniqueTestToArray(globalTests, tests);
+                                        }
+
+                                        // get artifact details for the unified output format
+                                        let artifact = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId));
+                                        agentApi.logInfo(`Adding the build [${artifact.id}] and its association to the unified results object`);
+                                        let fullBuildWorkItems = await getFullWorkItemDetails(workItemTrackingApi, workitems);
+                                        globalBuilds.push(new UnifiedArtifactDetails(artifact, commits, fullBuildWorkItems, tests));
+
+                                        if (commits) {
+                                            globalCommits = globalCommits.concat(commits);
+                                        }
+
+                                        if (workitems) {
+                                            globalWorkItems = globalWorkItems.concat(workitems);
+                                        }
+
+                                        agentApi.logInfo(`Detected ${commits.length} commits/changesets and ${workitems.length} workitems between the current build and the last successful one`);
+                                        agentApi.logInfo(`Detected ${tests.length} tests associated within the current build.`);
+                                    }
+                                }
+                            } else {
+                                agentApi.logInfo(`Skipping artifact as cannot get WI and commits/changesets details`);
+                            }
+                        }
+                    } else {
+                        agentApi.logInfo(`Skipping artifact as only primary artifact required`);
+                    }
+                    agentApi.logInfo(``);
+                }
+
+                // checking for test associated with the release
+                releaseTests = await getTestsForRelease(testApi, teamProject, currentRelease);
+                // we only want to add unique items
+                globalTests = addUniqueTestToArray(globalTests, releaseTests);
+
+            }
+
+            // remove duplicates
+            agentApi.logInfo("Removing duplicate Commits from master list");
+            globalCommits = removeDuplicates(globalCommits);
+            agentApi.logInfo("Removing duplicate WorkItems from master list");
+            globalWorkItems = removeDuplicates(globalWorkItems);
+
+            let expandedGlobalCommits = await expandTruncatedCommitMessages(organisation, globalCommits, gitHubPat);
+
+            if (!expandedGlobalCommits || expandedGlobalCommits.length !== globalCommits.length) {
+                agentApi.logError("Failed to expand the global commits.");
+                resolve(-1);
+                return;
+            }
+
+            // get an array of workitem ids
+            let fullWorkItems = await getFullWorkItemDetails(workItemTrackingApi, globalWorkItems);
+
+            let relatedWorkItems = [];
+
+            if (getParentsAndChildren) {
+                agentApi.logInfo("Getting parents and children of WorkItems");
+                relatedWorkItems = await getAllDirectRelatedWorkitems(workItemTrackingApi, fullWorkItems);
+            }
+
+            agentApi.logInfo(`Total build artifacts: [${globalBuilds.length}]`);
+            agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
+            agentApi.logInfo(`Total workitems: [${globalWorkItems.length}]`);
+            agentApi.logInfo(`Total related workitems: [${relatedWorkItems.length}]`);
+            agentApi.logInfo(`Total release tests: [${releaseTests.length}]`);
+            agentApi.logInfo(`Total tests: [${globalTests.length}]`);
+
+            // by default order by ID, has the option to group by type
+            if (sortWi) {
+                agentApi.logInfo("Sorting WI by type then id");
+                fullWorkItems = fullWorkItems.sort((a, b) => (a.fields["System.WorkItemType"] > b.fields["System.WorkItemType"]) ? 1 : (a.fields["System.WorkItemType"] === b.fields["System.WorkItemType"]) ? ((a.id > b.id) ? 1 : -1) : -1 );
+            } else {
+                agentApi.logInfo("Leaving WI in default order as returned by API");
+            }
+
+            // to allow access to the PR details if any
+            // this was the original PR enrichment behaviour
+            // this only works for build triggered in PR validation
+
+            // make sure we have an empty value if there is no PR
+            // this is for backwards compat.
+            var prDetails = <GitPullRequest> {};
+
+            try {
+                if (isNaN(buildId)) {  // only try this if we have numeric build ID, not a GUID see #694
+                    agentApi.logInfo(`Do not have an Azure DevOps numeric buildId, so skipping trying to get  any build PR trigger info`);
+                } else {
+                    agentApi.logDebug(`Getting the details of build ${buildId} from default project`);
+                    currentBuild = await buildApi.getBuild(teamProject, buildId);
+                    // and enhance the details if they can
+                    if ((currentBuild.repository.type === "TfsGit") && (currentBuild.triggerInfo["pr.number"])) {
+                        agentApi.logInfo(`The default artifact for the build/release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
+                        prDetails = await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"]));
+                        globalPullRequests.push(prDetails);
+                    } else {
+                        agentApi.logInfo(`The default artifact for the release was not linked to an Azure DevOps Git Repo Pull Request`);
+                    }
+                }
+            } catch (error) {
+                agentApi.logWarn(`Could not get details of Trigger PR an error was seen: ${error}`);
+            }
+
+            // 2nd method aims to get the end of PR merges
+            var prProjectFilter = "";
+            if (searchCrossProjectForPRs) {
+                agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs in the Organisation`);
+            } else {
+                agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs in the Team Project ${teamProject}`);
+                prProjectFilter = teamProject;
+            }
+
+            try {
+                var allPullRequests: GitPullRequest[] = await getPullRequests(gitApi, prProjectFilter);
+                if (allPullRequests && (allPullRequests.length > 0)) {
+                    agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps for PRs`);
+                    globalCommits.forEach(commit => {
+                        if (commit.type === "TfsGit") {
+                            agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
+
+                            allPullRequests.forEach(pr => {
+                                if (pr.lastMergeCommit) {
+                                    if (pr.lastMergeCommit.commitId === commit.id) {
+                                        agentApi.logInfo(`- PR ${pr.pullRequestId} matches the commit ${commit.id}`);
+                                        globalPullRequests.push(pr);
+                                    }
+                                } else {
+                                    console.log(`- PR ${pr.pullRequestId} does not have a lastMergeCommit`);
+                                }
+                            });
+
+                        } else {
+                            agentApi.logDebug(`Cannot check for associated PR as the commit ${commit.id} is not in an Azure DevOps repo`);
+                        }
+                    });
+                } else {
+                    agentApi.logDebug(`No completed Azure DevOps PRs found`);
+                }
+            } catch (error) {
+                agentApi.logWarn(`Could not get details of any PR an error was seen: ${error}`);
+            }
+
+            // remove duplicates
+            globalPullRequests = globalPullRequests.filter((thing, index, self) =>
+                index === self.findIndex((t) => (
+                t.pullRequestId === thing.pullRequestId
+                ))
+            );
+
+            agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
+
+            dumpJsonPayload(
+                dumpPayloadToConsole,
+                dumpPayloadToFile,
+                dumpPayloadFileName,
+                {
+                    workItems: fullWorkItems,
+                    commits: globalCommits,
+                    pullRequests: globalPullRequests,
+                    tests: globalTests,
+                    builds: globalBuilds,
+                    relatedWorkItems: relatedWorkItems,
+                    releaseDetails: currentRelease,
+                    compareReleaseDetails: mostRecentSuccessfulDeploymentRelease,
+                    releaseTests: releaseTests,
+                    buildDetails: currentBuild
+                });
+
+            var template = getTemplate (templateLocation, templateFile, inlineTemplate);
+            var outputString = processTemplate(
+                template,
+                fullWorkItems,
+                globalCommits,
+                currentBuild,
+                currentRelease,
+                mostRecentSuccessfulDeploymentRelease,
+                emptyDataset,
+                delimiter,
+                fieldEquality,
+                anyFieldContent,
+                customHandlebarsExtensionCode,
+                customHandlebarsExtensionFile,
+                customHandlebarsExtensionFolder,
+                prDetails,
+                globalPullRequests,
+                globalBuilds,
+                globalTests,
+                releaseTests,
+                relatedWorkItems);
+
+            writeFile(outputFile, outputString, replaceFile, appendToFile);
+
+            agentApi.writeVariable(outputVariableName, outputString.toString());
+
+            resolve(0);
+        });
+}
+
+function dumpJsonPayload(dumpPayloadToConsole: boolean, dumpPayloadToFile: boolean, fileName: string, payload) {
+    let data = JSON.stringify(payload);
+
+    if (dumpPayloadToConsole) {
+        agentApi.logInfo("Start of payload data dump");
+        agentApi.logInfo(data);
+        agentApi.logInfo("End of payload data dump");
+    }
+
+    if (dumpPayloadToFile) {
+        if (fileName) {
+            agentApi.logInfo(`Writing payload data to file ${fileName}`);
+            fs.writeFileSync(fileName, data);
+        } else {
+            agentApi.logWarn(`No payload dump file name provided`);
+        }
+    }
+}
+
+function removeDuplicates(array: any[]): any[] {
+    array = array.filter((thing, index, self) =>
+    index === self.findIndex((t) => (
+    t.id === thing.id
+    )));
+    return array;
 }
