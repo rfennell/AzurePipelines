@@ -204,7 +204,7 @@ The `@@..@@` marker options are as follow
    - `@@CSLOOP@@` should wrapper the block to be performed for all changesets/commits. This marker can accept a regex based filter to be applied to the commit message.
       - `@@CSLOOP[^Merged PR #.+]@@` match only commits/changesets with a commit message in the form 'Merged PR #1234' 
    - `@@WILOOP@@` should wrapper the block to be performed for all work items. This marker can accept a list of tags and field options that can be used as a filter on the work items. The general format is `@@WILOOP[ALL|ANY]:TAG:Fieldname=value:...@@`, there can be any number of parameters e.g.
-      - `@@WILOOP:TAG1:TAG2@@` matches work items that have all tags (legacy behaviour for backwards compatability)
+      - `@@WILOOP:TAG1:TAG2@@` matches work items that have all tags (legacy behaviour for backwards compatibility)
       - `@@WILOOP[ALL]:TAG1:TAG2@@` matches work items that have all tags (equivalent to legacy behaviour)
       - `@@WILOOP[ANY]:TAG1:TAG2@@` matches work items that have any of the tags 
       - `@@WILOOP[ALL]:TAG1:System.Title=Exact match to title@@` matches work items that have both the named tag and the field  
@@ -220,7 +220,7 @@ What is done behind the scenes is that each `${properties}` block in the templat
 
 #### Release objects (only available in a release) 
 * **releaseDetails** – the release details of the release that the task was triggered for.
-* **compareReleaseDetails** - the the previous successful release that comparisons are bein made against
+* **compareReleaseDetails** - the the previous successful release that comparisons are being made against
 
 #### Build objects
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
@@ -318,3 +318,5 @@ However, within a release there are no such artifacts location. Hence, it is rec
 
 # Local Testing of the Task & Templates
 To speed the development of templates, with version 2.50.x, a [tool](https://github.com/rfennell/AzurePipelines/tree/master/Extensions/XplatGenerateReleaseNotes/V2/testconsole/readme.md) is provided in this repo to allow local testing.
+
+Also there are now parameters (see above) to dump all the REST API payload data to the console or a file to make discovery of the data available in a template easier.

@@ -183,6 +183,7 @@
       "type": "boolean",
       "label": "Dump Payload to Console",
       "defaultValue": "false",
+      "groupName":"advanced",
       "required": true,
       "helpMarkDown": "If true the data objects passed to the file generator is dumped to the log"
     },
@@ -191,6 +192,7 @@
       "type": "boolean",
       "label": "Dump Payload to File",
       "defaultValue": "false",
+      "groupName":"advanced",
       "required": true,
       "helpMarkDown": "If true the data objects passed to the file generator is dumped to a JSON file"
     },
