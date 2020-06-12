@@ -148,9 +148,10 @@ Once this is create, for GitHub WIKIs, the `user` parameter is you Git account n
 
 The most common problems are usually cured by checking the following
 
-- Make sure the repo URL parameter is in the correct format i.e. DOES NOT start with https://, this needs to be removed see above.
-- If you are using a private build agent and getting an error, try swapping to a Microsoft hosted agent.
-- If trying to use OAUTH and having permission problem, try swapping to a PAT
-- If there is any chance there is a proxy or corporate firewall between a private agent and the Azure DevOps instance enable the `Injectheader` option, see above.
-- If you are on a private agent and get `Error: spawn git ENOENT` make sure `C:\agent\externals\git\cmd` is in the environment path on agent machine.
+- Make sure the repo URL parameter is in the correct format i.e. DOES NOT start with https://, anything before the domain name needs to be removed (see above).
+- If you are using a private build agent and getting an error try swapping to a Microsoft hosted agent. Remember a build or release can make use of a mixture of agent phases.
+- If intending to use the OAUTH build user credentials make sure that the agent phase is allowing access to the OAUTH Token (especially important for UI based build as this is not the default. Unlike in YAML where it is)
+- If trying to use OAUTH and still having permission problems try swapping to a PAT for a user you know has rights to edit the WIKI.
+- If there is any chance there is a proxy or corporate firewall between a private agent and the Azure DevOps instance enable the `Injectheader` option. This is most common when accessing Azure DevOps Server/TFS (see above).
+- If you are on a private agent and get errors in the form `Error: spawn git ENOENT` when trying to clone a repo, make sure `C:\agent\externals\git\cmd` is in the environment path on agent machine [See this issue for details](https://github.com/rfennell/AzurePipelines/issues/738).
 
