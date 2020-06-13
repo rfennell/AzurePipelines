@@ -782,24 +782,28 @@ export function processTemplate(
             }
 
             // compile the template
-            var handlebarsTemplate = handlebars.compile(template);
+            try {
+                var handlebarsTemplate = handlebars.compile(template);
 
-            // execute the compiled template
-            output = handlebarsTemplate({
-                "workItems": workItems,
-                "commits": commits,
-                "buildDetails": buildDetails,
-                "releaseDetails": releaseDetails,
-                "compareReleaseDetails": compareReleaseDetails,
-                "pullRequests": pullRequests,
-                "builds": globalBuilds,
-                "tests": globalTests,
-                "releaseTests": releaseTests,
-                "relatedWorkItems": relatedWorkItems
-             });
+                // execute the compiled template
+                output = handlebarsTemplate({
+                    "workItems": workItems,
+                    "commits": commits,
+                    "buildDetails": buildDetails,
+                    "releaseDetails": releaseDetails,
+                    "compareReleaseDetails": compareReleaseDetails,
+                    "pullRequests": pullRequests,
+                    "builds": globalBuilds,
+                    "tests": globalTests,
+                    "releaseTests": releaseTests,
+                    "relatedWorkItems": relatedWorkItems
+                });
+                agentApi.logInfo( "Completed processing template");
+
+            } catch (err) {
+                agentApi.logError(`Error Processing handlebars [${err}]`);
+            }
         }
-
-        agentApi.logInfo( "Completed processing template");
     } else {
         agentApi.logError( `Cannot load template file [${template}] or it is empty`);
     }  // if no template
