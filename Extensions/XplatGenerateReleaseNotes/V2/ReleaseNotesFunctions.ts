@@ -388,8 +388,13 @@ export function getTemplate(
         var template;
         const handlebarIndicator = "{{";
         if (templateLocation === "File") {
-            agentApi.logInfo (`Loading template file ${templatefile}`);
-            template = fs.readFileSync(templatefile, "utf8").toString();
+            if (fs.existsSync(templatefile)) {
+                agentApi.logInfo (`Loading template file ${templatefile}`);
+                template = fs.readFileSync(templatefile, "utf8").toString();
+            } else {
+                agentApi.logError (`Cannot find template file ${templatefile}`);
+                return template;
+            }
         } else {
             agentApi.logInfo ("Using in-line template");
             template = inlinetemplate;
@@ -777,24 +782,28 @@ export function processTemplate(
             }
 
             // compile the template
-            var handlebarsTemplate = handlebars.compile(template);
+            try {
+                var handlebarsTemplate = handlebars.compile(template);
 
-            // execute the compiled template
-            output = handlebarsTemplate({
-                "workItems": workItems,
-                "commits": commits,
-                "buildDetails": buildDetails,
-                "releaseDetails": releaseDetails,
-                "compareReleaseDetails": compareReleaseDetails,
-                "pullRequests": pullRequests,
-                "builds": globalBuilds,
-                "tests": globalTests,
-                "releaseTests": releaseTests,
-                "relatedWorkItems": relatedWorkItems
-             });
+                // execute the compiled template
+                output = handlebarsTemplate({
+                    "workItems": workItems,
+                    "commits": commits,
+                    "buildDetails": buildDetails,
+                    "releaseDetails": releaseDetails,
+                    "compareReleaseDetails": compareReleaseDetails,
+                    "pullRequests": pullRequests,
+                    "builds": globalBuilds,
+                    "tests": globalTests,
+                    "releaseTests": releaseTests,
+                    "relatedWorkItems": relatedWorkItems
+                });
+                agentApi.logInfo( "Completed processing template");
+
+            } catch (err) {
+                agentApi.logError(`Error Processing handlebars [${err}]`);
+            }
         }
-
-        agentApi.logInfo( "Completed processing template");
     } else {
         agentApi.logError( `Cannot load template file [${template}] or it is empty`);
     }  // if no template
@@ -1326,32 +1335,36 @@ export async function generateReleaseNotes(
                 });
 
             var template = getTemplate (templateLocation, templateFile, inlineTemplate);
-            var outputString = processTemplate(
-                template,
-                fullWorkItems,
-                globalCommits,
-                currentBuild,
-                currentRelease,
-                mostRecentSuccessfulDeploymentRelease,
-                emptyDataset,
-                delimiter,
-                fieldEquality,
-                anyFieldContent,
-                customHandlebarsExtensionCode,
-                customHandlebarsExtensionFile,
-                customHandlebarsExtensionFolder,
-                prDetails,
-                globalPullRequests,
-                globalBuilds,
-                globalTests,
-                releaseTests,
-                relatedWorkItems);
+            if ((template) && (template.length > 0)) {
+                var outputString = processTemplate(
+                    template,
+                    fullWorkItems,
+                    globalCommits,
+                    currentBuild,
+                    currentRelease,
+                    mostRecentSuccessfulDeploymentRelease,
+                    emptyDataset,
+                    delimiter,
+                    fieldEquality,
+                    anyFieldContent,
+                    customHandlebarsExtensionCode,
+                    customHandlebarsExtensionFile,
+                    customHandlebarsExtensionFolder,
+                    prDetails,
+                    globalPullRequests,
+                    globalBuilds,
+                    globalTests,
+                    releaseTests,
+                    relatedWorkItems);
 
-            writeFile(outputFile, outputString, replaceFile, appendToFile);
+                writeFile(outputFile, outputString, replaceFile, appendToFile);
 
-            agentApi.writeVariable(outputVariableName, outputString.toString());
+                agentApi.writeVariable(outputVariableName, outputString.toString());
 
-            resolve(0);
+                resolve(0);
+            } else {
+                reject ("Missing template file");
+            }
         });
 }
 
