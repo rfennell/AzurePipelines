@@ -41,9 +41,9 @@ console.log(`Variable: Replace File [${replaceFile}]`);
 console.log(`Variable: Append to File [${appendToFile}]`);
 console.log(`Variable: Username [${user}]`);
 console.log(`Variable: Password [${password}]`);
-console.log(`Variable: Localpath [${localpath}]`);
+console.log(`Variable: LocalPath [${localpath}]`);
 console.log(`Variable: Data Is File [${dataIsFile}]`);
-console.log(`Variable: SoureFile [${sourceFile}]`);
+console.log(`Variable: SourCeFile [${sourceFile}]`);
 console.log(`Variable: Tag Repo [${tagRepo}]`);
 console.log(`Variable: Tag [${tag}]`);
 console.log(`Variable: Branch [${branch}]`);
@@ -55,8 +55,16 @@ if (useAgentToken === true) {
     password = getSystemAccessToken();
 }
 
+var haveData = true;
 if (dataIsFile === true) {
-    contents = fs.readFileSync(sourceFile, "utf8");
+    if (fs.existsSync(sourceFile)) {
+        contents = fs.readFileSync(sourceFile, "utf8");
+    } else {
+        logError(`Cannot find the file ${filename}`);
+        haveData = false;
+    }
 }
 
-UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch);
+if (haveData) {
+    UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch);
+}
