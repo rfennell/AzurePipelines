@@ -186,4 +186,5 @@ export async function UpdateGitWikiFile(
     } catch (error) {
         logError(error);
     }
+
 }
