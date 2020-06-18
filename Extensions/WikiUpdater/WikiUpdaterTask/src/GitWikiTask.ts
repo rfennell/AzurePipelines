@@ -60,7 +60,7 @@ if (dataIsFile === true) {
     if (fs.existsSync(sourceFile)) {
         contents = fs.readFileSync(sourceFile, "utf8");
     } else {
-        logError(`Cannot find the file ${filename}`);
+        logError(`Cannot find the file ${sourceFile}`);
         haveData = false;
     }
 }
