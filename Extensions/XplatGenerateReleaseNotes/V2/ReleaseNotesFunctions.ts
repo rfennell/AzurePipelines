@@ -1112,11 +1112,15 @@ export async function generateReleaseNotes(
                                             workitems = [];
 
                                             for (var build of builds) {
-                                                agentApi.logInfo(`Getting the details of ${build.id}`);
-                                                var buildCommits = await buildApi.getBuildChanges(teamProject, build.id);
-                                                commits.push(...buildCommits);
-                                                var buildWorkitems = await buildApi.getBuildWorkItemsRefs(teamProject, build.id);
-                                                workitems.push(...buildWorkitems);
+                                                try {
+                                                    agentApi.logInfo(`Getting the details of ${build.id}`);
+                                                    var buildCommits = await buildApi.getBuildChanges(teamProject, build.id);
+                                                    commits.push(...buildCommits);
+                                                    var buildWorkitems = await buildApi.getBuildWorkItemsRefs(teamProject, build.id);
+                                                    workitems.push(...buildWorkitems);
+                                                } catch (err) {
+                                                    agentApi.logWarn(`There was a problem getting the details of the build ${err}`);
+                                                }
                                             }
                                         } else if (artifactInMostRecentRelease.buildId !== artifactInThisRelease.buildId) {
                                             agentApi.logInfo(`Checking what commits and workitems have changed from [${artifactInMostRecentRelease.buildNumber}][ID ${artifactInMostRecentRelease.buildId}] => [${artifactInThisRelease.buildNumber}] [ID ${artifactInThisRelease.buildId}]`);
