@@ -29,5 +29,6 @@ const tagRepo = false;
 const tag = "";
 const branch = "";
 const injectExtraHeaders = false;
+const protocol = "https";
 
-UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, targetFolder, message,  sourceFolder, filter, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch);
+UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message,  sourceFolder, filter, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch);

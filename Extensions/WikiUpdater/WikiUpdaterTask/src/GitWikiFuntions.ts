@@ -68,7 +68,33 @@ export function GetWorkingFile(filename, logInfo): any {
     return name;
 }
 
+export function GetProtocol(url: string, logInfo): string {
+    var protocol = "https";
+    logInfo(`The provided repo URL is ${url}`);
+    if (url.indexOf("://") !== -1) {
+        protocol = url.substr(0, url.indexOf("//") - 1 );
+    }
+    logInfo(`The protocol is ${protocol}`);
+    return protocol;
+}
+
+export function GetTrimmedUrl(url: string, logInfo): string {
+    var fixedUrl = url;
+    logInfo(`The provided repo URL is ${fixedUrl}`);
+    if (fixedUrl.indexOf("://") !== -1) {
+        logInfo(`Removing leading http:// or https:// block`);
+        fixedUrl = fixedUrl.substr(fixedUrl.indexOf("://") + 3);
+    }
+    if (fixedUrl.indexOf("@") !== -1) {
+        logInfo(`Removing leading username@ block`);
+        fixedUrl = fixedUrl.substr(fixedUrl.indexOf("@") + 1);
+    }
+    logInfo(`Trimmed the URL to ${fixedUrl}`);
+    return fixedUrl;
+}
+
 export async function UpdateGitWikiFile(
+    protocol,
     repo,
     localpath,
     user,
@@ -93,20 +119,20 @@ export async function UpdateGitWikiFile(
     var extraHeaders = [];  // Add handling for #613
 
     if (injectExtraHeader) {
-        remote = `https://${repo}`;
+        remote = `${protocol}://${repo}`;
         logremote = remote;
         extraHeaders = [`-c http.extraheader=AUTHORIZATION: bearer ${password}`];
         logInfo (`Injecting the authentication via the clone command using paramter -c http.extraheader='AUTHORIZATION: bearer ***'`);
     } else {
         if (password === null) {
-            remote = `https://${repo}`;
+            remote = `${protocol}://${repo}`;
             logremote = remote;
         } else if (user === null) {
-            remote = `https://${password}@${repo}`;
-            logremote = `https://***@${repo}`;
+            remote = `${protocol}://${password}@${repo}`;
+            logremote = `${protocol}://***@${repo}`;
         } else {
-            remote = `https://${user}:${password}@${repo}`;
-            logremote = `https://${user}:***@${repo}`;
+            remote = `${protocol}://${user}:${password}@${repo}`;
+            logremote = `${protocol}://${user}:***@${repo}`;
         }
     }
 
