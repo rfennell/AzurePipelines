@@ -2,7 +2,9 @@ import tl = require("azure-pipelines-task-lib/task");
 import * as fs from "fs";
 
 import {
-    UpdateGitWikiFile
+    UpdateGitWikiFile,
+    GetTrimmedUrl,
+    GetProtocol
     } from "./GitWikiFuntions";
 
 import {
@@ -53,4 +55,7 @@ if (useAgentToken === true) {
     password = getSystemAccessToken();
 }
 
-UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, targetFolder, message, sourceFolder, filter, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch);
+var protocol = GetProtocol(repo, logInfo);
+repo = GetTrimmedUrl(repo, logInfo);
+
+UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message, sourceFolder, filter, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch);
