@@ -2,7 +2,8 @@ import tl = require("azure-pipelines-task-lib/task");
 import * as fs from "fs";
 
 import {
-    UpdateGitWikiFile
+    UpdateGitWikiFile,
+    GetTrimmedUrl
     } from "./GitWikiFuntions";
 
 import {
@@ -54,6 +55,8 @@ if (useAgentToken === true) {
     user = "buildagent";
     password = getSystemAccessToken();
 }
+
+repo = GetTrimmedUrl(repo, logInfo);
 
 var haveData = true;
 if (dataIsFile === true) {

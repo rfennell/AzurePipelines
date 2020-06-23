@@ -68,6 +68,21 @@ export function GetWorkingFile(filename, logInfo): any {
     return name;
 }
 
+export function GetTrimmedUrl(url: string, logInfo): string {
+    var fixedUrl = url;
+    logInfo(`The provided repo URL is ${fixedUrl}`);
+    if (fixedUrl.indexOf("//") !== -1) {
+        logInfo(`Removing leading http:// or https:// block`);
+        fixedUrl = fixedUrl.substr(fixedUrl.indexOf("//") + 2);
+    }
+    if (fixedUrl.indexOf("@") !== -1) {
+        logInfo(`Removing leading username@ block`);
+        fixedUrl = fixedUrl.substr(fixedUrl.indexOf("@") + 1);
+    }
+    logInfo(`Trimmed the URL to ${fixedUrl}`);
+    return fixedUrl;
+}
+
 export async function UpdateGitWikiFile(
     repo,
     localpath,

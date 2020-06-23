@@ -23,7 +23,7 @@ __Note:__ If you see problems such as `Error: spawn git ENOENT` when using eithe
 Both tasks can be used in a build or a release
 
 #### Required Parameters (for both tasks)
-- Repo - The repo URL to update e.g in the form **dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki** (see the URL section below as to how to find this URL)
+- Repo - The repo URL to update e.g in the form **https://dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki** (see the URL section below as to how to find this URL)
 - Filename - The file (page to save/update), must end in .md else it will not appear on the WIKI e.g. page.md
 - Message - The Git commit message
 - GitName - The name for the .gitatrributes file e.g. _builduser_ (not a critical value)
@@ -55,6 +55,18 @@ _For more authentication parameters see 'Authentication' section below_
 
 ### URL required to clone a WIKI repo
 
+Prior to version 1.14.x the URL has to be edited into a special format i.e. trimmed of any content before the host name. With 1.14.x this is no longer required. There is now logic in the task to trim the url if needed. 
+
+So now both the old trimmed format url
+
+`dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki`
+
+or a full URL 
+
+`https://richardfennell@dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki`
+
+are both acceptable forms for the `repo` parameter
+
 #### Azure DevOps Services & Azure DevOps Server (TFS) WIKIs
 
 The URL to clone a Azure DevOps WIKIs is not obvious. 
@@ -71,8 +83,7 @@ To find the correct URL to clone the repo, and use it as the parameter for this 
 1. Load the WIKI in a browser
 1. At the top of the menu pane there is a menu (click the ellipsis ...)
 1. Select the 'Clone repo' option
-1. You will get a URL in the form https://richardfennell@dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. This is the full URL needed, **but you only require part of it for this task**. 
-1. The part you need to add as the repo parameter for this task is everything after the @ i.e dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki
+1. You will get a URL in the form https://richardfennell@dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. This is the URL needed
 
 #### GitHub
 
@@ -89,8 +100,7 @@ SO DON'T USE IT
 To find the correct URL
 
 1. Load the WIKI in a browser
-1. Look in lower right of any WIKI pages. It will be in the form https://github.com/rfennell/AzurePipelines.wiki.git. This is the full URL needed, **but you only require part of it for this task**. 
-1. The part you need to add as the repo parameter for this task is everything after the // i.e github.com/rfennell/AzurePipelines.wiki.git
+1. Look in lower right of any WIKI pages. It will be in the form https://github.com/rfennell/AzurePipelines.wiki.git. This is the full URL needed
 
 ### Authentication
 
