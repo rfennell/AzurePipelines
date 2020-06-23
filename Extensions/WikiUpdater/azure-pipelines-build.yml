@@ -277,7 +277,23 @@ stages:
                 gitemail: 'build@demo'
                 useAgentToken: true
                 localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagent'
-
+              - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+                displayName: 'Git based WIKI Updater - Azure DevOps as Agent with full url'
+                inputs:
+                  repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
+                  filename: TestPageForWikiUpdaterTrimed.md
+                  contents: |
+                    Header
+                    ---
+                    $(OutputText)
+                    ---
+                    Footer
+                  message: 'Update from Release - $(Release.ReleaseName) as Agent'
+                  gitname: builduser
+                  gitemail: 'build@demo'
+                  useAgentToken: true
+                  localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagent'
+  
     - deployment: Private_Test_Multi_File
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIUpdater)'
@@ -306,6 +322,19 @@ stages:
                 gitemail: 'build@demo'
                 useAgentToken: true
                 localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagentfolder'
+
+                - task: WikiFolderUpdaterTask@1
+                inputs:
+                  repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
+                  targetFolder: 'folder'
+                  replaceFile: True
+                  sourceFolder: '$(Build.SourcesDirectory)/testdata'
+                  Filter: '**/*.md'
+                  message: 'Updated as a folder'
+                  gitname: builduser
+                  gitemail: 'build@demo'
+                  useAgentToken: true
+                  localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagentfolder'
 
   - stage: Documentation
     dependsOn: Test 
