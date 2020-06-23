@@ -3,7 +3,8 @@ import * as fs from "fs";
 
 import {
     UpdateGitWikiFile,
-    GetTrimmedUrl
+    GetTrimmedUrl,
+    GetProtocol
     } from "./GitWikiFuntions";
 
 import {
@@ -54,6 +55,7 @@ if (useAgentToken === true) {
     password = getSystemAccessToken();
 }
 
+var protocol = GetProtocol(repo, logInfo);
 repo = GetTrimmedUrl(repo, logInfo);
 
-UpdateGitWikiFile(repo, localpath, user, password, gitname, gitemail, targetFolder, message, sourceFolder, filter, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch);
+UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message, sourceFolder, filter, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch);
