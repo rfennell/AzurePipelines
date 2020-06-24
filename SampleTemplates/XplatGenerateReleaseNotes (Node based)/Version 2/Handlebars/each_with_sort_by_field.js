@@ -19,7 +19,7 @@
 
 
 const handlebars = require("handlebars");
-module.exports = {each_with_sort_by_field: function (array, key, opts) {
+module.exports = {each_with_sort_by_field(array, key, opts) {
     if(opts.data) {
         data  = handlebars.createFrame(opts.data) 
     }

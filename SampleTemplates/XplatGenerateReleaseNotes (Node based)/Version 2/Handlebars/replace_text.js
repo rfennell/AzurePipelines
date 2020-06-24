@@ -3,6 +3,6 @@
 - {{replace_text this.message 'fix:' '* Fixed'}} 
 */
 
-module.exports = {replace_text: function (msg, match, replacement) {
+module.exports = {replace_text(msg, match, replacement) {
     return msg.replace(match, replacement);}
 };

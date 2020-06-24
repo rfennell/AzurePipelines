@@ -5,6 +5,6 @@
 - Product Backlog Item {{count_workitems_by_type this.workItems "Product Backlog Item"}} 
 */
 
-module.exports = {count_workitems_by_type: function (array, typeName) {
+module.exports = {count_workitems_by_type(array, typeName) {
     return array.filter(wi => wi.fields['System.WorkItemType'] === typeName).length;}
 };
