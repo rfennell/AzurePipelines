@@ -3,7 +3,7 @@
   "name": "XplatGenerateReleaseNotes",
   "friendlyName": "Generate Release Notes (Crossplatform)",
   "description": "Generates a release notes file in a format of your choice from the build or release history",
-    "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task/)",
+    "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/AzurePipelines/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task/)",
 
   "category": "Utility",
   "visibility": [
@@ -12,9 +12,9 @@
   ],
   "author": "Black Marble",
   "version": {
-    "Major": 2,
-    "Minor": 53,
-    "Patch": 2
+    "Major": 3,
+    "Minor": 0,
+    "Patch": 0
   },
   "minimumAgentVersion": "1.82.0",
   "groups": [
@@ -85,45 +85,6 @@
          "visibleRule": "templateLocation = InLine"
       }
       ,
-    {
-      "name": "emptySetText",
-      "type": "string",
-      "label": "Text for empty sets",
-      "defaultValue": "None",
-      "required": false,
-      "helpMarkDown": "This is the text that will be placed in the generated release notes if there are no work items or changesets/commits.",
-      "groupName":"advanced"
-    }
-  ,
-  {
-    "name": "delimiter",
-    "type": "string",
-    "label": "Delimiter for tags",
-    "defaultValue": ":",
-    "required": true,
-    "helpMarkDown": "The delimiter is used to separate field filter and tags in the @@WILOOP:TAG1:TAG2@@ block markers. Default is :",
-    "groupName":"advanced"
-  },
-  {
-    "name": "fieldEquality",
-    "type": "string",
-    "label": "Expression equality",
-    "defaultValue": "=",
-    "required": true,
-    "helpMarkDown": "The field equality symbol used to in field filter e.g. @@WILOOP:System.Title=123@@ block markers. The default is =",
-    "groupName":"advanced"
-  }
-,
-{
-  "name": "anyFieldContent",
-  "type": "string",
-  "label": "Symbol for 'any field value'",
-  "defaultValue": "*",
-  "required": true,
-  "helpMarkDown": "The value to put in WILOOP constructs to match any contents e.g. @@WILOOP:System.Title=*@@. The default is *",
-  "groupName":"advanced"
-}
-,
     {
       "name": "overrideStageName",
       "type": "string",
@@ -239,14 +200,14 @@
       "defaultValue": "False",
       "required": true,
       "helpMarkDown": "Find the parents and child workitems for any workitems associated with a build",
-      "groupName":"handlebars"
+      "groupName":"advanced"
     }
 
 
    ],
   "instanceNameFormat": "Generate Release Notes based on Release Comparison API",
   "execution": {
-    "Node": {
+    "Node10": {
             "target": "GenerateReleaseNotes.js",
             "argumentFormat": ""
      }

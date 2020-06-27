@@ -17,7 +17,7 @@ variables:
   #  major
   #  minor
   - group:  'XplatGenerateReleaseNotes Extension'
-    # this group includes the following variablea  
+    # this group includes the following variables  
     #  ExtensionRoot - working folder
     #  PublisherID  - Marketplace publisher
     #  ExtensionID - Marketplace extension id
@@ -42,10 +42,10 @@ stages:
           targetFiles: '**\\task.json'
 
       - task: PowerShell@1
-        displayName: 'PowerShell Script - Set V2 Task Version'
+        displayName: 'PowerShell Script - Set V3 Task Version'
         inputs:
           scriptType: inlineScript
-          arguments: '-Version $(Build.BuildNumber) -Path "$(Build.SourcesDirectory)\$(ExtensionRoot)\V2\task.json"'
+          arguments: '-Version $(Build.BuildNumber) -Path "$(Build.SourcesDirectory)\$(ExtensionRoot)\V3\task.json"'
           inlineScript: |
             param ($version, $path)
             $parts = $version.split('.')
@@ -143,8 +143,8 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@2
-              displayName: 'Generate Release Notes based on Release Comparision API V2'
+            - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@3
+              displayName: 'Generate Release Notes based on Release Comparison API V2'
               inputs:
                 outputfile: '$(System.DefaultWorkingDirectory)\inline.md'
                 outputVariableName: OutputText
@@ -219,8 +219,8 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@2
-              displayName: 'Generate Release Notes based on Release Comparision API V2'
+            - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@3
+              displayName: 'Generate Release Notes based on Release Comparison API V2'
               inputs:
                 outputfile: '$(System.DefaultWorkingDirectory)\inline.md'
                 outputVariableName: OutputText
@@ -270,7 +270,7 @@ stages:
               displayName: 'Git based WIKI Updater'
               inputs:
                 repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
-                filename: 'xPlatReleaseNotes/build-Linux-handbars.md'
+                filename: 'xPlatReleaseNotes/build-Linux-handlebars.md'
                 dataIsFile: true
                 sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
                 message: 'Update from Build'
@@ -293,8 +293,8 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@2
-              displayName: 'Generate Release Notes based on Release Comparision API V2'
+            - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@3
+              displayName: 'Generate Release Notes based on Release Comparison API V2'
               inputs:
                 outputfile: '$(System.DefaultWorkingDirectory)\inline.md'
                 outputVariableName: OutputText
