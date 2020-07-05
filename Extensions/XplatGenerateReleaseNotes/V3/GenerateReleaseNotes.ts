@@ -17,15 +17,11 @@ async function run(): Promise<number>  {
             var inlineTemplate = tl.getInput("inlinetemplate");
             var outputFile = tl.getInput("outputfile", true);
             var outputVariableName = tl.getInput("outputVariableName");
-            var emptyDataset = tl.getInput("emptySetText");
-            var delimiter = tl.getInput("delimiter");
-            var anyFieldContent = tl.getInput("anyFieldContent");
             var showOnlyPrimary = tl.getBoolInput("showOnlyPrimary");
             var replaceFile = tl.getBoolInput("replaceFile");
             var appendToFile = tl.getBoolInput("appendToFile");
             var getParentsAndChildren = tl.getBoolInput("getParentsAndChildren");
             var searchCrossProjectForPRs = tl.getBoolInput("searchCrossProjectForPRs");
-            var fieldEquality = tl.getInput("fieldEquality");
             var overrideStageName = tl.getInput("overrideStageName");
             var stopOnRedeploy = tl.getBoolInput("stopOnRedeploy");
             var sortWi = tl.getBoolInput("SortWi");
@@ -36,36 +32,39 @@ async function run(): Promise<number>  {
             var dumpPayloadToFile = tl.getBoolInput("dumpPayloadToFile");
             var dumpPayloadToConsole = tl.getBoolInput("dumpPayloadToConsole");
             var dumpPayloadFileName = tl.getInput("dumpPayloadFileName");
+            var checkStage = tl.getBoolInput("checkStage");
 
-        var returnCode = await util.generateReleaseNotes(
-            "",
-            tpcUri,
-            teamProject,
-            parseInt(tl.getVariable("Build.BuildId")),
-            parseInt(tl.getVariable("Release.ReleaseId")),
-            parseInt(tl.getVariable("Release.DefinitionId")),
-            overrideStageName,
-            tl.getVariable("Release_EnvironmentName"),
-            tl.getVariable("ReleaseNotes.Fix349"),
-            templateLocation,
-            templateFile,
-            inlineTemplate,
-            outputFile,
-            outputVariableName,
-            sortWi,
-            showOnlyPrimary,
-            replaceFile,
-            appendToFile,
-            getParentsAndChildren,
-            searchCrossProjectForPRs,
-            stopOnRedeploy,
-            customHandlebarsExtensionCode,
-            customHandlebarsExtensionFile,
-            customHandlebarsExtensionFolder,
-            gitHubPat,
-            dumpPayloadToConsole,
-            dumpPayloadToFile,
-            dumpPayloadFileName);
+            var returnCode = await util.generateReleaseNotes(
+                "",
+                tpcUri,
+                teamProject,
+                parseInt(tl.getVariable("Build.BuildId")),
+                parseInt(tl.getVariable("Release.ReleaseId")),
+                parseInt(tl.getVariable("Release.DefinitionId")),
+                overrideStageName,
+                tl.getVariable("Release_EnvironmentName"),
+                tl.getVariable("ReleaseNotes.Fix349"),
+                templateLocation,
+                templateFile,
+                inlineTemplate,
+                outputFile,
+                outputVariableName,
+                sortWi,
+                showOnlyPrimary,
+                replaceFile,
+                appendToFile,
+                getParentsAndChildren,
+                searchCrossProjectForPRs,
+                stopOnRedeploy,
+                customHandlebarsExtensionCode,
+                customHandlebarsExtensionFile,
+                customHandlebarsExtensionFolder,
+                gitHubPat,
+                dumpPayloadToConsole,
+                dumpPayloadToFile,
+                dumpPayloadFileName,
+                checkStage,
+                parseInt(tl.getVariable("Build.DefinitionId")));
 
         } catch (err) {
 
