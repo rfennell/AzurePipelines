@@ -256,17 +256,17 @@ stages:
                   {{/forEach}}
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater'
-                inputs:
-                  repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
-                  filename: 'xPlatReleaseNotes/build-Windows-handbars-multistage.md'
-                  dataIsFile: true
-                  sourceFile: '$(System.DefaultWorkingDirectory)\releasenotes.md'
-                  message: 'Update from Build'
-                  gitname: builduser
-                  gitemail: 'build@demo'
-                  useAgentToken: false
-                  user: richardfennell
-                  password: '$(pat)'
+              inputs:
+                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                filename: 'xPlatReleaseNotes/build-Windows-handbars-multistage.md'
+                dataIsFile: true
+                sourceFile: '$(System.DefaultWorkingDirectory)\releasenotes.md'
+                message: 'Update from Build'
+                gitname: builduser
+                gitemail: 'build@demo'
+                useAgentToken: false
+                user: richardfennell
+                password: '$(pat)'
           
 
   - stage: Test_Linux
