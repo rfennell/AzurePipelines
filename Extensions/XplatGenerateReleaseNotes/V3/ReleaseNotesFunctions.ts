@@ -48,14 +48,14 @@ import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfac
 import { GitCommit, GitPullRequest, GitPullRequestQueryType, GitPullRequestSearchCriteria, PullRequestStatus } from "azure-devops-node-api/interfaces/GitInterfaces";
 import { WebApi } from "azure-devops-node-api";
 import { TestApi } from "azure-devops-node-api/TestApi";
-import { timeout } from "q";
+import { timeout, async } from "q";
 import { TestCaseResult } from "azure-devops-node-api/interfaces/TestInterfaces";
 import { IWorkItemTrackingApi } from "azure-devops-node-api/WorkItemTrackingApi";
 import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import { ITfvcApi } from "azure-devops-node-api/TfvcApi";
 import * as issue349 from "./Issue349Workaround";
 import { ITestApi } from "azure-devops-node-api/TestApi";
-import { IBuildApi } from "azure-devops-node-api/BuildApi";
+import { IBuildApi, BuildApi } from "azure-devops-node-api/BuildApi";
 import * as vstsInterfaces from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 
 let agentApi = new AgentSpecificApi();
@@ -577,6 +577,44 @@ export function writeFile(filename: string, data: string, replaceFile: boolean, 
     agentApi.logInfo(`Finished writing output file ${filename}`);
 }
 
+export async function getLastSuccessfulBuildByStage(
+    buildApi: IBuildApi,
+    teamProject: string,
+    stageName: string,
+    buildId: number,
+    buildDefId: number
+) {
+    if (stageName.length === 0) {
+        agentApi.logInfo ("No stage name provided, cannot find last successful build by stage");
+        return 0;
+    }
+    let builds = await buildApi.getBuilds(teamProject, [buildDefId]);
+    if (builds.length > 1 ) {
+        for (let buildIndex = 0; buildIndex < builds.length; buildIndex++) {
+            const build = builds[buildIndex];
+            agentApi.logInfo (`Comparing ${build.id} against ${buildId}`);
+            if (build.id === buildId) {
+                agentApi.logInfo("Ignore compare against self");
+            } else {
+                var lastGoodBuildId = 0;
+                let timeline = await buildApi.getBuildTimeline(teamProject, build.id);
+                for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
+                    const record  = timeline.records[timelineIndex];
+                    if (record.type === "Stage") {
+                        if ( (record.name === stageName ) &&
+                            record.state.toString() === "2" && // completed
+                            record.result.toString() === "0") { // succeeded
+                                agentApi.logInfo (`Found required stage ${record.name} in the completed and successful state in build ${build.id}`);
+                            return build.id;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 export async function generateReleaseNotes(
     pat: string,
     tpcUri: string,
@@ -605,7 +643,8 @@ export async function generateReleaseNotes(
     gitHubPat: string,
     dumpPayloadToConsole: boolean,
     dumpPayloadToFile: boolean,
-    dumpPayloadFileName: string): Promise<number> {
+    dumpPayloadFileName: string,
+    checkStage: boolean): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
             if (!gitHubPat) {
@@ -646,10 +685,48 @@ export async function generateReleaseNotes(
                     return;
                 }
 
-                globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
-                globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
-                globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
-                globalTests = await getTestsForBuild(testApi, teamProject, buildId);
+                if (checkStage) {
+                    var stageName = tl.getVariable("System.StageName");
+                    if (overrideStageName && overrideStageName.length > 0) {
+                        agentApi.logInfo(`Overriding current stage '${stageName}' with '${overrideStageName}'`);
+                        stageName = overrideStageName;
+                    }
+                    agentApi.logInfo (`Getting items associated the builds since the last successful build to the stage '${stageName}'`);
+                    var lastGoodBuildId = await getLastSuccessfulBuildByStage(buildApi, teamProject, stageName, buildId, currentBuild.definition.id);
+
+                    if (lastGoodBuildId !== 0) {
+                        console.log(`Getting the details between ${lastGoodBuildId} and ${buildId}`);
+
+                        let baseBuild = await buildApi.getBuild(teamProject, lastGoodBuildId);
+                        // There is only a workaround for Git but not for TFVC :(
+                        if (baseBuild.repository.type === "TfsGit") {
+                            agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
+                            let currentBuild = await buildApi.getBuild(teamProject, buildId);
+                            let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisation, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
+                            globalCommits = commitInfo.commits;
+                            globalWorkItems = commitInfo.workItems;
+                        } else {
+                            // Fall back to original behavior
+                            globalCommits = await buildApi.getChangesBetweenBuilds(teamProject, lastGoodBuildId, buildId);
+                            globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
+                            globalWorkItems = await buildApi.getWorkItemsBetweenBuilds(teamProject, lastGoodBuildId, buildId);
+                        }
+
+                       globalTests = await getTestsForBuild(testApi, teamProject, buildId);
+                    } else {
+                        console.log("There has been no past successful build for this stage, so we can just get details from this build");
+                        globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
+                        globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
+                        globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
+                        globalTests = await getTestsForBuild(testApi, teamProject, buildId);
+                    }
+                } else {
+                    agentApi.logInfo (`Getting items associated with only the current build`);
+                    globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
+                    globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
+                    globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
+                    globalTests = await getTestsForBuild(testApi, teamProject, buildId);
+                }
 
             } else {
                 environmentName = (overrideStageName || environmentName).toLowerCase();

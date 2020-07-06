@@ -2,16 +2,17 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 3.1.x adds support for looking for the last successful stage in a multi-stage YAML pipeline. For this to work the stage name must be unique in the pipeline
 * 3.0.x drops support for the legacy template model, only handlebars templates supported.
-* 2.50.x onwards, add debugging and development tools
-* 2.49.x onwards, adds an array of direct parent and child workitems for the workitems associated with the release. These can only be referenced in Handlebar based templates
-* 2.47.x onwards, adds details of the files included in any commit or changeset so they can be displayed in Handlebar based templates
-* 2.46.x onwards, adds tests to the list of items that can be displayed in Handlebar based templates
-* 2.34.x onwards, extends the PR functionality to check for any PRs associated with commits associated with the release - not this functionality is only usable using Handlebars based templates
-* 2.33.x onwards, allow limited functionality to list the PR associated with triggering of the build/release
-* 2.27.x onwards, thanks to the work of [KennethScott](https://github.com/KennethScott), adds support for [Handlbars](https://handlebarsjs.com/) based templates as well as the bespoke version used previously.
-* 2.17.x onwards supports operation in a build whether YAML or legacy, getting the commits/changesets associated with the build. 
-* 2.0.x onwards supports tag filtering in the work items listed in a report. A report can have many WILOOPs with different filters. 2.18.x & 2.19.x add support for advanced work item filtering
+* 2.50.x add debugging and development tools
+* 2.49.x adds an array of direct parent and child workitems for the workitems associated with the release. These can only be referenced in Handlebar based templates
+* 2.47.x adds details of the files included in any commit or changeset so they can be displayed in Handlebar based templates
+* 2.46.x adds tests to the list of items that can be displayed in Handlebar based templates
+* 2.34.x extends the PR functionality to check for any PRs associated with commits associated with the release - not this functionality is only usable using Handlebars based templates
+* 2.33.x allows limited functionality to list the PR associated with triggering of the build/release
+* 2.27.x thanks to the work of [KennethScott](https://github.com/KennethScott), adds support for [Handlbars](https://handlebarsjs.com/) based templates as well as the bespoke version used previously.
+* 2.17.x supports operation in a build whether YAML or legacy, getting the commits/changesets associated with the build. 
+* 2.0.x supports tag filtering in the work items listed in a report. A report can have many WILOOPs with different filters. 2.18.x & 2.19.x add support for advanced work item filtering
 * The Azure DevOps REST APIs have a limitation that by default they only return 200 items. As a release could include more Work Items or ChangeSets/Commits. A workaround for this has been added [#349](https://github.com/rfennell/AzurePipelines/issues/349). Since version 2.12.x this feature has been defaulted on. To disable it set the variable `ReleaseNotes.Fix349` to `false`
 
 **IMPORTANT** - There have been three major versions of this extension, this is because
@@ -187,6 +188,7 @@ The task takes the following parameters
 * A picker allows you to set if the template is provided as a file in source control or an inline file. The setting of this picker effects which other parameters are shown
     * Either, the template file name, which should point to a file in source control.
     * Or, the template text.
+* Check Stage - If true a comparison is made against the last build that was successful to the current stage, or overrideStageName if specified (Build Only)
 * (Advanced) Empty set text - the text to place in the results file if there is no changeset/commit or WI content
 * (Advanced) Name of the release stage to look for the last successful release in, defaults to empty value so uses the current stage of the release that the task is running in.
 * (Advanced) Do not generate release notes of a re-deploy. If this is set, and a re-deploy occurs the task will succeeds with a warning
@@ -194,6 +196,7 @@ The task takes the following parameters
 * (Advanced) Replace File. If this is set the output overwrites and file already present.
 * (Advanced) Append To File. If this is set, and replace file is false then then output is appended to the output file. If false it is preprended.
 * (Advanced) Cross Project For PRs. If true will try to match commits to Azure DevOps PR cross project within the organisation, if false only searches the Team Project.
+* (Advanced) Override Stage Name. If set uses this stage name to find the last successful deployment, as opposed to the currently active stage
 * (Advanced) GitHub PAT. (Optional) This [GitHub PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) is only required to expand commit messages stored in a private GitHub repos. This PAT is not required for commit in Azure DevOps public or private repos or public GitHub repos
 * (Advanced) Dump Payload to Console - If true the data objects passed to the file generator is dumped to the log.
 * (Advanced) Dump Payload to File - If true the data objects passed to the file generator is dumped to a JSON file.
