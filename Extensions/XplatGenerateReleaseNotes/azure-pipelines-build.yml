@@ -209,7 +209,7 @@ stages:
 
             - task: XplatGenerateReleaseNotes@3
               inputs:
-                outputfile: '$(Build.DefaultWorkingDirectory)\releasenotes.md'
+                outputfile: '$(System.DefaultWorkingDirectory)\releasenotes.md'
                 outputVariableName: 'outputvar'
                 templateLocation: 'InLine'
                 checkStage: true
