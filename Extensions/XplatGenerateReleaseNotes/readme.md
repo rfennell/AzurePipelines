@@ -2,7 +2,7 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
-* 3.1.x adds support for looking for the last successful stage in a multi-stage YAML pipeline
+* 3.1.x adds support for looking for the last successful stage in a multi-stage YAML pipeline. For this to work the stage name must be unique in the pipeline
 * 3.0.x drops support for the legacy template model, only handlebars templates supported.
 * 2.50.x add debugging and development tools
 * 2.49.x adds an array of direct parent and child workitems for the workitems associated with the release. These can only be referenced in Handlebar based templates

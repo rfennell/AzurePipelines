@@ -63,8 +63,7 @@ async function run(): Promise<number>  {
                 dumpPayloadToConsole,
                 dumpPayloadToFile,
                 dumpPayloadFileName,
-                checkStage,
-                parseInt(tl.getVariable("Build.DefinitionId")));
+                checkStage);
 
         } catch (err) {
 

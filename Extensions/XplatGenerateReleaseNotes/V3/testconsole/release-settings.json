@@ -4,7 +4,6 @@
     "buildId": "7956",
     "releaseDefinitionId": "",
     "releaseId": "2709",
-    "releaseDefinitionId":"23",
     "environmentName":"Windows",
     "templatefile": "release-handlebars-template.md",
     "outputfile": "output.md",

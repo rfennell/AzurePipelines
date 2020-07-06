@@ -91,7 +91,7 @@
         "label": "Check Stage",
         "defaultValue": "false",
         "required": false,
-        "helpMarkDown": "If true a comparison is made against the last build that was successful to the current stage, or overrideStageName if specified (Build Only)"
+        "helpMarkDown": "If true a comparison is made against the last build that was successful to the current stage, or overrideStageName if specified (Build Only, for this to work the stage name must be unique in the pipeline)"
       },
    
       {
