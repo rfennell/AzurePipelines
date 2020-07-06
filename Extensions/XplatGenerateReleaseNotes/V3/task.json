@@ -85,13 +85,22 @@
          "visibleRule": "templateLocation = InLine"
       }
       ,
-    {
+      {
+        "name": "checkStage",
+        "type": "boolean",
+        "label": "Check Stage",
+        "defaultValue": "false",
+        "required": false,
+        "helpMarkDown": "If true a comparison is made against the last build that was successful to the current stage, or overrideStageName if specified (Build Only, for this to work the stage name must be unique in the pipeline)"
+      },
+   
+      {
       "name": "overrideStageName",
       "type": "string",
       "label": "Name of stage (override)",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "If set uses this stage name to find the last successful deployment, as opposed to the currently active stage (Release usage only)",
+      "helpMarkDown": "If set uses this stage name to find the last successful deployment, as opposed to the currently active stage",
       "groupName":"advanced"
      },
      {

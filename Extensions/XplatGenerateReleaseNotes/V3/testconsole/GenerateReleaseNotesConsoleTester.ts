@@ -46,6 +46,7 @@ async function run(): Promise<number>  {
                     var dumpPayloadToConsole = getBoolean(settings.dumpPayloadToConsole);
                     var dumpPayloadToFile = getBoolean(settings.dumpPayloadToFile);
                     var dumpPayloadFileName = settings.dumpPayloadFileName;
+                    var checkStage = settings.checkStage;
 
                     var returnCode = await util.generateReleaseNotes(
                         pat,
@@ -75,7 +76,8 @@ async function run(): Promise<number>  {
                         gitHubPat,
                         dumpPayloadToConsole,
                         dumpPayloadToFile,
-                        dumpPayloadFileName);
+                        dumpPayloadFileName,
+                        checkStage);
                 } else {
                     console.log(`Cannot fine settings file ${filename}`);
                 }
