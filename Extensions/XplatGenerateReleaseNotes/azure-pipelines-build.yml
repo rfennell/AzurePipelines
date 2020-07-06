@@ -146,7 +146,7 @@ stages:
             - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@3
               displayName: 'Generate Release Notes based on Release Comparison API V2'
               inputs:
-                outputfile: '$(System.DefaultWorkingDirectory)\inline.md'
+                outputfile: '$(System.ArtifactStagingDirectory)\inline.md'
                 outputVariableName: OutputText
                 templateLocation: InLine
                 inlinetemplate: |
@@ -197,9 +197,9 @@ stages:
               displayName: 'Git based WIKI Updater'
               inputs:
                 repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
-                filename: 'xPlatReleaseNotes/build-Windows-handbars.md'
+                filename: 'xPlatReleaseNotes/build-Windows-handlebars.md'
                 dataIsFile: true
-                sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
+                sourceFile: '$(System.ArtifactStagingDirectory)\inline.md'
                 message: 'Update from Build'
                 gitname: builduser
                 gitemail: 'build@demo'
@@ -258,9 +258,9 @@ stages:
               displayName: 'Git based WIKI Updater'
               inputs:
                 repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
-                filename: 'xPlatReleaseNotes/build-Windows-handbars-multistage.md'
+                filename: 'xPlatReleaseNotes/build-Windows-handlebars-multistage.md'
                 dataIsFile: true
-                sourceFile: '$(System.DefaultWorkingDirectory)\releasenotes.md'
+                sourceFile: '$(System.ArtifactStagingDirectory)\releasenotes.md'
                 message: 'Update from Build'
                 gitname: builduser
                 gitemail: 'build@demo'
