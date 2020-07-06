@@ -146,7 +146,7 @@ stages:
             - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@3
               displayName: 'Generate Release Notes based on Release Comparison API V2'
               inputs:
-                outputfile: '$(System.ArtifactStagingDirectory)\inline.md'
+                outputfile: '$(System.DefaultWorkingDirectory)\inline.md'
                 outputVariableName: OutputText
                 templateLocation: InLine
                 inlinetemplate: |
@@ -199,7 +199,7 @@ stages:
                 repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
                 filename: 'xPlatReleaseNotes/build-Windows-handlebars.md'
                 dataIsFile: true
-                sourceFile: '$(System.ArtifactStagingDirectory)\inline.md'
+                sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
                 message: 'Update from Build'
                 gitname: builduser
                 gitemail: 'build@demo'
@@ -209,7 +209,7 @@ stages:
 
             - task: XplatGenerateReleaseNotes@3
               inputs:
-                outputfile: '$(Build.ArtifactStagingDirectory)\releasenotes.md'
+                outputfile: '$(Build.DefaultWorkingDirectory)\releasenotes.md'
                 outputVariableName: 'outputvar'
                 templateLocation: 'InLine'
                 checkStage: true
@@ -260,7 +260,7 @@ stages:
                 repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
                 filename: 'xPlatReleaseNotes/build-Windows-handlebars-multistage.md'
                 dataIsFile: true
-                sourceFile: '$(System.ArtifactStagingDirectory)\releasenotes.md'
+                sourceFile: '$(System.DefaultWorkingDirectory)\releasenotes.md'
                 message: 'Update from Build'
                 gitname: builduser
                 gitemail: 'build@demo'
