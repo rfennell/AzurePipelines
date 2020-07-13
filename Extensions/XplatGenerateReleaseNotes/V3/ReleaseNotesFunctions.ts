@@ -708,7 +708,6 @@ export async function generateReleaseNotes(
                         } else {
                             // Fall back to original behavior
                             globalCommits = await buildApi.getChangesBetweenBuilds(teamProject, lastGoodBuildId, buildId);
-                            globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
                             globalWorkItems = await buildApi.getWorkItemsBetweenBuilds(teamProject, lastGoodBuildId, buildId);
                         }
 
@@ -716,17 +715,17 @@ export async function generateReleaseNotes(
                     } else {
                         console.log("There has been no past successful build for this stage, so we can just get details from this build");
                         globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
-                        globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
                         globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
-                        globalTests = await getTestsForBuild(testApi, teamProject, buildId);
                     }
                 } else {
                     agentApi.logInfo (`Getting items associated with only the current build`);
                     globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
-                    globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
                     globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
-                    globalTests = await getTestsForBuild(testApi, teamProject, buildId);
                 }
+                console.log("Get the file details associated with the commits");
+                globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
+                console.log("Get any test details associated with the build");
+                globalTests = await getTestsForBuild(testApi, teamProject, buildId);
 
             } else {
                 environmentName = (overrideStageName || environmentName).toLowerCase();
