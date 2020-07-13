@@ -1,0 +1,97 @@
+[[_TOC_]]
+{{#if (eq (template) 'production')}}
+
+## Production Release
+### 🚀 [{{releaseDetails.name}}]({{get '_links.web.href' releaseDetails}})  
+**Started By:** {{releaseDetails.createdBy.displayName}}  
+**Start Time:** {{date releaseDetails.createdOn 'llll'}}  
+**Total # Work Items:** {{workItems.length}}  
+**Total # Commits:** {{commits.length}}  
+
+### 🔧 Features & Bugs
+{{#forEach workItems}}
+{{#with fields}}
+{{#if (not (eq (get 'System.WorkItemType' this) 'Task'))}}
+#{{../id}}  
+{{/if}}
+{{/with}}
+{{/forEach}}
+
+### 📜 Release Notes
+{{#forEach workItems}}
+{{#with fields}}
+{{#if (not (eq (get 'System.WorkItemType' this) 'Task'))}}
+{{#if (get 'Custom.ReleaseNotes' this)}}
+- {{{get 'Custom.ReleaseNotes' this}}}
+{{/if}}
+{{/if}}
+{{/with}}
+{{/forEach}}
+
+## Test Releases
+{{/if}}
+
+{{#if (eq (template) 'testing')}}
+--------------------------------------------
+### 🧪 [{{releaseDetails.name}}]({{get '_links.web.href' releaseDetails}})
+**Started By:** {{releaseDetails.createdBy.displayName}}
+**Start Time:** {{date releaseDetails.createdOn 'llll'}}
+**Tests Ran:** 🧪 {{tests.length}} {{#if (gt tests.length 0)}}<small></small>{{#with (get 'testRun' (first tests))}}<a href="{{first (split url '/_apis')}}/_testManagement/runs?_a=runCharts&runId={{id}}">(details)</a>{{/with}}{{/if}}
+**Total # Work Items:** {{workItems.length}}
+**Total # Commits:** {{commits.length}}
+
+#### 🐞 Bugs
+{{#forEach workItems}}
+{{#with fields}}
+{{#if (eq (get 'System.WorkItemType' this) 'Bug')}}
+#{{../id}}  
+**Expected:** {{sanitize (get 'Custom.ExpectedResults' this)}}
+**Actual:** {{sanitize (get 'Custom.ActualResults' this)}}
+{{/if}}
+{{/with}}
+{{/forEach}}
+
+#### 🆕 Features
+{{#forEach workItems}}
+{{#with fields}}
+{{#if (eq (get 'System.WorkItemType' this) 'Product Backlog Item')}}
+#{{../id}}  
+**Acceptance Critera:** {{{sanitize (get 'Microsoft.VSTS.Common.AcceptanceCriteria' this)}}}  
+{{/if}}
+{{/with}}
+{{/forEach}}
+
+## Development Releases
+{{/if}}
+{{#if (eq (template) 'development')}}
+
+--------------------------------------- 
+
+### 🧰 [{{buildDetails.buildNumber}}]({{get '_links.web.href' buildDetails}})  
+**Started By:** {{buildDetails.requestedFor.displayName}}  
+**Start Time:** {{date buildDetails.startTime 'llll'}}  
+**Build Duration:** {{date (subtract (date buildDetails.finishTime 'x') (date buildDetails.startTime 'x')) 'mm:ss'}}  
+**Tests Ran:** 🧪 {{tests.length}} {{#if (gt tests.length 0)}}<small></small>{{#with (get 'testRun' (first tests))}}<a href="{{first (split url '/_apis')}}/_testManagement/runs?_a=runCharts&runId={{id}}">(details)</a>{{/with}}{{/if}}  
+{{#if (get 'pr.number' buildDetails.triggerInfo)}}
+    **Build Trigger PR Number**: {{get 'pr.number' buildDetails.triggerInfo}}  
+{{/if}}
+
+#### 🔧 Work Items ({{workItems.length}})
+{{#forEach workItems}}
+<img
+style="vertical-align: bottom;	height: 22px; padding-bottom: 1px;"
+src="{{get 'imageUrl' (get 'System.AssignedTo' this.fields)}}" 
+title="{{get 'displayName' (get 'System.AssignedTo' this.fields)}}"/> #{{this.id}}   
+{{/forEach}}
+
+#### 🌵 Pull Requests ({{pullRequests.length}})
+{{#forEach pullRequests}}
+!{{pullRequestId}} created by **{{createdBy.displayName}}**, reviewed by {{#forEach reviewers}}*{{displayName}}* {{#if (gt vote 0)}}🗹{{/if}}{{#if (eq vote 0)}}☐{{/if}}{{#if (lt vote 0)}}🗵{{/if}}{{#unless isLast}}, {{/unless}}{{/forEach}}  
+{{/forEach}}
+
+#### 📝 Commits Associated ({{commits.length}})
+{{#forEach commits}}
+<small><span style="font-family: 'Consolas'"><a href="{{../buildDetails.repository.url}}/commit/{{id}}">{{truncate id 5}}</a></span> by <b>{{author.displayName}}</b> {{#if (gt changes.length 0)}}({{inflect changes.length "file" "files" true}} changed) {{/if}}- <i> {{replace message '#' '# '}} </i></small>  
+{{/forEach}}
+
+{{/if}}
