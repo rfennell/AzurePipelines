@@ -24,7 +24,7 @@ For instance, you can release DEV five times on version `1.5.2`, TEST twice, and
 There is a single Handlebars Helper necessary here, which is used to allow the pipeline to define whether to render a development, testing, or production template.
 
 ## Custom Fields
-This template makes use of 3 custom fields. Bugs and PBIs have 
+This template makes use of 3 custom fields. Bugs and PBIs have a field called "Release Notes" which allows the generation of a high-level Release Notes section in the production template. Bugs alone have two fields called "Expected Results" and "Actual Results". This helps QA in TEST identify the issue, and the intended functionality.
 
 ## Result
 _Note: It is expected there will be more than one iteration of the release and development templates_
