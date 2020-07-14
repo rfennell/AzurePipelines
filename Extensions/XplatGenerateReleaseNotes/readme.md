@@ -1,3 +1,4 @@
+A test
 # Releases
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
