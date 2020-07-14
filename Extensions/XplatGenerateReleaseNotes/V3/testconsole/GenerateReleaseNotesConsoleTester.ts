@@ -46,7 +46,7 @@ async function run(): Promise<number>  {
                     var dumpPayloadToConsole = getBoolean(settings.dumpPayloadToConsole);
                     var dumpPayloadToFile = getBoolean(settings.dumpPayloadToFile);
                     var dumpPayloadFileName = settings.dumpPayloadFileName;
-                    var checkStage = settings.checkStage;
+                    var checkStage = getBoolean(settings.checkStage);
 
                     var returnCode = await util.generateReleaseNotes(
                         pat,
