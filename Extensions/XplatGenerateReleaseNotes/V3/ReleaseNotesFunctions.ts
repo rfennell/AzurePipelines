@@ -514,10 +514,16 @@ export function processTemplate(
             }
         );
 
-        var customHandlebarsExtensionFile = "customHandlebarsExtension";
-        // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
-        // Note that the name is case sensitive on Mac and Linux
-        var customHandlebarsExtensionFolder = `${process.env.AGENT_WORKFOLDER}/_temp`;
+        if (customHandlebarsExtensionFile && customHandlebarsExtensionFile.length === 0) {
+            customHandlebarsExtensionFile = "customHandlebarsExtension";
+        }
+
+        if (customHandlebarsExtensionFolder && customHandlebarsExtensionFolder.length === 0) {
+            // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
+            // Note that the name is case sensitive on Mac and Linux
+            customHandlebarsExtensionFolder = `${process.env.AGENT_WORKFOLDER}/_temp`;
+        }
+
         agentApi.logDebug(`Saving custom Handlebars code to file in folder ${customHandlebarsExtensionFolder}`);
 
         if (typeof customHandlebarsExtensionCode !== undefined && customHandlebarsExtensionCode && customHandlebarsExtensionCode.length > 0) {
