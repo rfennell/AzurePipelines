@@ -199,7 +199,7 @@
       "label": "Custom Handlebars Extension",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};",
+      "helpMarkDown": "A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo() {return 'Returns foo';}};",
       "groupName":"handlebars"
      },
      {
