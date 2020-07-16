@@ -23,8 +23,8 @@
     "stopOnRedeploy": "false",
     "SortWi": "true",
     "customHandlebarsExtensionCode": "",
-    "customHandlebarsExtensionFile": "customHandlebars.js",
-    "customHandlebarsExtensionFolder": ".\\",
+    "customHandlebarsExtensionFile": "customHandlebars",
+    "customHandlebarsExtensionFolder": "c:/temp/",
     "overrideStageName": "",
     "checkStage": "false",
     "Fix349": "true"
