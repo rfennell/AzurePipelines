@@ -203,6 +203,24 @@
       "groupName":"handlebars"
      },
      {
+      "name": "customHandlebarsExtensionFile",
+      "type": "string",
+      "label": "Custom Handlebars Extension File",
+      "defaultValue": "customHandlebarsExtension",
+      "required": false,
+      "helpMarkDown": "The filename (without extension) for any custom Handlebars extension written",
+      "groupName":"handlebars"
+     },
+     {
+      "name": "customHandlebarsExtensionFolder",
+      "type": "string",
+      "label": "Folder for Custom Handlebars Extension",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The folder to save custom Handlebars extension file. If empty defaults to customHandlebarsExtensionFolder the agents temp folder '${process.env.AGENT_WORKFOLDER}/_temp'",
+      "groupName":"handlebars"
+     },
+     {
       "name": "getParentsAndChildren",
       "type": "boolean",
       "label": "Find related WI",

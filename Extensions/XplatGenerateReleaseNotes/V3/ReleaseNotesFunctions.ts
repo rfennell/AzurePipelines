@@ -57,6 +57,7 @@ import * as issue349 from "./Issue349Workaround";
 import { ITestApi } from "azure-devops-node-api/TestApi";
 import { IBuildApi, BuildApi } from "azure-devops-node-api/BuildApi";
 import * as vstsInterfaces from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
+import { time } from "console";
 
 let agentApi = new AgentSpecificApi();
 
@@ -514,11 +515,7 @@ export function processTemplate(
             }
         );
 
-        if (customHandlebarsExtensionFile && customHandlebarsExtensionFile.length === 0) {
-            customHandlebarsExtensionFile = "customHandlebarsExtension";
-        }
-
-        if (customHandlebarsExtensionFolder && customHandlebarsExtensionFolder.length === 0) {
+        if (!customHandlebarsExtensionFolder || customHandlebarsExtensionFolder.length === 0) {
             // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
             // Note that the name is case sensitive on Mac and Linux
             customHandlebarsExtensionFolder = `${process.env.AGENT_WORKFOLDER}/_temp`;
@@ -604,16 +601,20 @@ export async function getLastSuccessfulBuildByStage(
             } else {
                 var lastGoodBuildId = 0;
                 let timeline = await buildApi.getBuildTimeline(teamProject, build.id);
-                for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
-                    const record  = timeline.records[timelineIndex];
-                    if (record.type === "Stage") {
-                        if ( (record.name === stageName ) &&
-                            record.state.toString() === "2" && // completed
-                            record.result.toString() === "0") { // succeeded
-                                agentApi.logInfo (`Found required stage ${record.name} in the completed and successful state in build ${build.id}`);
-                            return build.id;
+                if (timeline && timeline.records) {
+                    for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
+                        const record  = timeline.records[timelineIndex];
+                        if (record.type === "Stage") {
+                            if ( (record.name === stageName ) &&
+                                record.state.toString() === "2" && // completed
+                                record.result.toString() === "0") { // succeeded
+                                    agentApi.logInfo (`Found required stage ${record.name} in the completed and successful state in build ${build.id}`);
+                                return build.id;
+                            }
                         }
                     }
+                } else {
+                    agentApi.logInfo("Skipping check as no timeline available for this build");
                 }
             }
         }
