@@ -515,7 +515,7 @@ export function processTemplate(
             }
         );
 
-        if (customHandlebarsExtensionFolder.length === 0) {
+        if (!customHandlebarsExtensionFolder || customHandlebarsExtensionFolder.length === 0) {
             // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
             // Note that the name is case sensitive on Mac and Linux
             customHandlebarsExtensionFolder = `${process.env.AGENT_WORKFOLDER}/_temp`;
