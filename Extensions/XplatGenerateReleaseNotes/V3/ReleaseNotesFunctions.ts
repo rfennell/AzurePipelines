@@ -187,9 +187,11 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
                                 // this will still allow access to public repos
                                 // if we have a token it will allow access to private ones
                                 let rc = new restm.RestClient("rest-client");
-                                if (bitbucketSecret.length > 0 ) {
+                                if (bitbucketUser && bitbucketUser.length > 0 && bitbucketSecret && bitbucketSecret.length > 0 ) {
                                     let auth = new BasicCredentialHandler(bitbucketUser, bitbucketSecret);
                                     rc = new restm.RestClient("rest-client", "", [auth], {});
+                                } else {
+                                    agentApi.logInfo(`No Bitbucket user and app secret passed so cannot access private Bitbucket repos`);
                                 }
 
                                 let bitbucketRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
@@ -281,7 +283,7 @@ export async function enrichChangesWithFileDetails(
                             agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
                         }
                     } else if (change.type === "Bitbucket") {
-                            agentApi.logWarn(`This task does not currently support getting file details associated to a commit`);
+                            agentApi.logWarn(`This task does not currently support getting file details associated to a commit on Bitbucket`);
                     } else {
                         agentApi.logWarn(`Cannot preform enrichment as type ${change.type} is not supported for enrichment`);
                     }
