@@ -1,18 +1,37 @@
 import * as util from "../ReleaseNotesFunctions";
 import fs  = require("fs");
+import { exit } from "process";
 
 async function run(): Promise<number>  {
     var promise = new Promise<number>(async (resolve, reject) => {
 
         try {
             console.log("Starting Tag XplatGenerateReleaseNotes Local Tester");
-            var args = process.argv;
-            if (args.length < 4 || args.length > 5) {
-                console.error("USAGE: node GenerateReleaseNotesConsoleTester.js settings.json <Azure-DevOps-PAT> <Optional GitHub-PAT>");
+            var argv = require("minimist")(process.argv.slice(2));
+            var filename = argv["filename"];
+            var pat = argv["pat"];
+            var gitHubPat = argv["githubpat"];
+            var bitbucketUser = argv["bitbucketuser"];
+            var bitbucketSecret = argv["bitbucketsecret"];
+
+            var showUsage = false;
+            if (!filename || filename.length === 0) {
+                showUsage = true;
+            }
+
+            if (!pat || pat.length === 0) {
+                showUsage = true;
+            }
+
+            if (showUsage) {
+                console.error("USAGE: node GenerateReleaseNotesConsoleTester.js --filename settings.json --pat <Azure-DevOps-PAT> --githubpat <Optional GitHub-PAT> --bitbucketuser <Optional Bitbucket User> --bitbucketsecret <Optional Bitbucket App Secret>");
             } else  {
-                var filename = args[2];
-                var pat = args[3];
-                var gitHubPat = args[4];
+                console.log(`Command Line Arguements:`);
+                console.log(`  --filename: ${filename}`);
+                console.log(`  --pat: ${pat}`);
+                console.log(`  --githubpat: ${gitHubPat}`);
+                console.log(`  --bitbucketuser: ${bitbucketUser}`);
+                console.log(`  --bitbucketsecret: ${bitbucketSecret}`);
 
                 if (fs.existsSync(filename)) {
                     console.log(`Loading settings from ${filename}`);
@@ -74,6 +93,8 @@ async function run(): Promise<number>  {
                         customHandlebarsExtensionFile,
                         customHandlebarsExtensionFolder,
                         gitHubPat,
+                        bitbucketUser,
+                        bitbucketSecret,
                         dumpPayloadToConsole,
                         dumpPayloadToFile,
                         dumpPayloadFileName,

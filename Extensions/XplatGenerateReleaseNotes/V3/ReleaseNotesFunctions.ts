@@ -34,7 +34,7 @@ export class UnifiedArtifactDetails {
 }
 
 import * as restm from "typed-rest-client/RestClient";
-import { PersonalAccessTokenCredentialHandler } from "typed-rest-client/Handlers";
+import { PersonalAccessTokenCredentialHandler, BasicCredentialHandler } from "typed-rest-client/Handlers";
 import tl = require("azure-pipelines-task-lib/task");
 import { ReleaseEnvironment, Artifact, Deployment, DeploymentStatus, Release } from "azure-devops-node-api/interfaces/ReleaseInterfaces";
 import { IAgentSpecificApi, AgentSpecificApi } from "./agentSpecific";
@@ -155,7 +155,7 @@ export async function getMostRecentSuccessfulDeployment(releaseApi: IReleaseApi,
     });
 }
 
-export async function expandTruncatedCommitMessages(restClient: WebApi, globalCommits: Change[], pat: string): Promise<Change[]> {
+export async function expandTruncatedCommitMessages(restClient: WebApi, globalCommits: Change[], gitHubPat: string, bitbucketUser: string, bitbucketSecret: string): Promise<Change[]> {
     return new Promise<Change[]>(async (resolve, reject) => {
             var expanded: number = 0;
             agentApi.logInfo(`Expanding the truncated commit messages...`);
@@ -169,7 +169,7 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
                             // we build PAT auth object even if we have no token
                             // this will still allow access to public repos
                             // if we have a token it will allow access to private ones
-                            let auth = new PersonalAccessTokenCredentialHandler(pat);
+                            let auth = new PersonalAccessTokenCredentialHandler(gitHubPat);
 
                             let rc = new restm.RestClient("rest-client", "", [auth], {});
                             let gitHubRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
@@ -181,6 +181,26 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
                                 agentApi.logWarn(`Cannot access API ${gitHubRes.statusCode} accessing ${change.location}`);
                                 agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
                             }
+                        } else if (change.location.startsWith("https://api.bitbucket.org/")) {
+                                agentApi.logDebug(`Need to expand details from BitBucket`);
+                                // we build PAT auth object even if we have no token
+                                // this will still allow access to public repos
+                                // if we have a token it will allow access to private ones
+                                let rc = new restm.RestClient("rest-client");
+                                if (bitbucketSecret.length > 0 ) {
+                                    let auth = new BasicCredentialHandler(bitbucketUser, bitbucketSecret);
+                                    rc = new restm.RestClient("rest-client", "", [auth], {});
+                                }
+
+                                let bitbucketRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
+                                if (bitbucketRes.statusCode === 200) {
+                                    change.message = bitbucketRes.result.message;
+                                    change.messageTruncated = false;
+                                    expanded++;
+                                } else {
+                                    agentApi.logWarn(`Cannot access API ${bitbucketRes.statusCode} accessing ${change.location}`);
+                                    agentApi.logWarn(`The most common reason for this failure is that the Bitbucket Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
+                                }
                         } else {
                             agentApi.logDebug(`Need to expand details from Azure DevOps`);
                             // the REST client is already authorised with the agent token
@@ -197,7 +217,6 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
                     } catch (err) {
                         agentApi.logWarn(`Cannot expand message ${err}`);
                         agentApi.logWarn(`Using ${change.location}`);
-                        agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
                     }
                 }
             }
@@ -261,6 +280,8 @@ export async function enrichChangesWithFileDetails(
                             agentApi.logWarn(`Cannot access API ${gitHubRes.statusCode} accessing ${change.location}`);
                             agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
                         }
+                    } else if (change.type === "Bitbucket") {
+                            agentApi.logWarn(`This task does not currently support getting file details associated to a commit`);
                     } else {
                         agentApi.logWarn(`Cannot preform enrichment as type ${change.type} is not supported for enrichment`);
                     }
@@ -515,19 +536,22 @@ export function processTemplate(
             }
         );
 
-        if (!customHandlebarsExtensionFolder || customHandlebarsExtensionFolder.length === 0) {
-            // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
-            // Note that the name is case sensitive on Mac and Linux
-            customHandlebarsExtensionFolder = `${process.env.AGENT_WORKFOLDER}/_temp`;
-        }
-
-        agentApi.logDebug(`Saving custom Handlebars code to file in folder ${customHandlebarsExtensionFolder}`);
-
         if (typeof customHandlebarsExtensionCode !== undefined && customHandlebarsExtensionCode && customHandlebarsExtensionCode.length > 0) {
+
+            agentApi.logDebug(`Saving custom Handlebars code to file in folder ${customHandlebarsExtensionFolder}`);
+
+            if (!customHandlebarsExtensionFolder || customHandlebarsExtensionFolder.length === 0) {
+                // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
+                // Note that the name is case sensitive on Mac and Linux
+                customHandlebarsExtensionFolder = `${process.env.AGENT_WORKFOLDER}/_temp`;
+            }
+
             agentApi.logInfo("Loading custom handlebars extension");
             writeFile(`${customHandlebarsExtensionFolder}/${customHandlebarsExtensionFile}.js`, customHandlebarsExtensionCode, true, false);
             var tools = require(`${customHandlebarsExtensionFolder}/${customHandlebarsExtensionFile}`);
             handlebars.registerHelper(tools);
+        } else  {
+            agentApi.logDebug(`No custom Handlebars code to process`);
         }
 
         // compile the template
@@ -648,6 +672,8 @@ export async function generateReleaseNotes(
     customHandlebarsExtensionFile: string,
     customHandlebarsExtensionFolder: string,
     gitHubPat: string,
+    bitbucketUser: string,
+    bitbucketSecret: string,
     dumpPayloadToConsole: boolean,
     dumpPayloadToFile: boolean,
     dumpPayloadFileName: string,
@@ -915,7 +941,7 @@ export async function generateReleaseNotes(
             agentApi.logInfo("Removing duplicate WorkItems from master list");
             globalWorkItems = removeDuplicates(globalWorkItems);
 
-            let expandedGlobalCommits = await expandTruncatedCommitMessages(organisation, globalCommits, gitHubPat);
+            let expandedGlobalCommits = await expandTruncatedCommitMessages(organisation, globalCommits, gitHubPat, bitbucketUser, bitbucketSecret);
 
             if (!expandedGlobalCommits || expandedGlobalCommits.length !== globalCommits.length) {
                 agentApi.logError("Failed to expand the global commits.");
