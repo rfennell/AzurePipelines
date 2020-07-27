@@ -53,7 +53,13 @@ async function run(): Promise<number>  {
 
                     var stopOnRedeploy = settings.stopOnRedeploy;
                     var sortWi = getBoolean(settings.SortWi);
+
                     var customHandlebarsExtensionCode = settings.customHandlebarsExtensionCode;
+                    if (fs.existsSync(settings.customHandlebarsExtensionCode)) {
+                        console.log("customHandlebarsExtensionCode value specifies a file, so loading string from file");
+                        customHandlebarsExtensionCode = fs.readFileSync(settings.customHandlebarsExtensionCode);
+                    }
+
                     var customHandlebarsExtensionFile = settings.customHandlebarsExtensionFile;
                     var customHandlebarsExtensionFolder = settings.customHandlebarsExtensionFolder;
                     var buildId = settings.buildId;
