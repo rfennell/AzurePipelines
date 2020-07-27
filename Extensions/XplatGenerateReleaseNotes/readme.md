@@ -2,17 +2,9 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 3.4.x adds support for getting full commit messages from Bitbucket
 * 3.1.x adds support for looking for the last successful stage in a multi-stage YAML pipeline. For this to work the stage name must be unique in the pipeline
 * 3.0.x drops support for the legacy template model, only handlebars templates supported.
-* 2.50.x add debugging and development tools
-* 2.49.x adds an array of direct parent and child workitems for the workitems associated with the release. These can only be referenced in Handlebar based templates
-* 2.47.x adds details of the files included in any commit or changeset so they can be displayed in Handlebar based templates
-* 2.46.x adds tests to the list of items that can be displayed in Handlebar based templates
-* 2.34.x extends the PR functionality to check for any PRs associated with commits associated with the release - not this functionality is only usable using Handlebars based templates
-* 2.33.x allows limited functionality to list the PR associated with triggering of the build/release
-* 2.27.x thanks to the work of [KennethScott](https://github.com/KennethScott), adds support for [Handlbars](https://handlebarsjs.com/) based templates as well as the bespoke version used previously.
-* 2.17.x supports operation in a build whether YAML or legacy, getting the commits/changesets associated with the build. 
-* 2.0.x supports tag filtering in the work items listed in a report. A report can have many WILOOPs with different filters. 2.18.x & 2.19.x add support for advanced work item filtering
 * The Azure DevOps REST APIs have a limitation that by default they only return 200 items. As a release could include more Work Items or ChangeSets/Commits. A workaround for this has been added [#349](https://github.com/rfennell/AzurePipelines/issues/349). Since version 2.12.x this feature has been defaulted on. To disable it set the variable `ReleaseNotes.Fix349` to `false`
 
 **IMPORTANT** - There have been three major versions of this extension, this is because

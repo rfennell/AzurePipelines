@@ -29,6 +29,8 @@ async function run(): Promise<number>  {
             var customHandlebarsExtensionFile = tl.getInput("customHandlebarsExtensionFile");
             var customHandlebarsExtensionFolder = tl.getInput("customHandlebarsExtensionFolder");
             var gitHubPat = tl.getInput("gitHubPat");
+            var bitbucketSecret = tl.getInput("bitbucketSecret");
+            var bitbucketUser = tl.getInput("bitbucketUser");
             var dumpPayloadToFile = tl.getBoolInput("dumpPayloadToFile");
             var dumpPayloadToConsole = tl.getBoolInput("dumpPayloadToConsole");
             var dumpPayloadFileName = tl.getInput("dumpPayloadFileName");
@@ -60,6 +62,8 @@ async function run(): Promise<number>  {
                 customHandlebarsExtensionFile,
                 customHandlebarsExtensionFolder,
                 gitHubPat,
+                bitbucketUser,
+                bitbucketSecret,
                 dumpPayloadToConsole,
                 dumpPayloadToFile,
                 dumpPayloadFileName,

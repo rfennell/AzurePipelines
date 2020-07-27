@@ -2,75 +2,20 @@
     "version": "0.2.0",
     "configurations":
     [
-
         {
+            "name": "Generate Release Notes Console Tester",
+            "program": "${workspaceFolder}/Extensions/XplatGenerateReleaseNotes/v3/testconsole/GenerateReleaseNotesConsoleTester.js",
+            "request": "launch",
+            "cwd": "${workspaceRoot}/Extensions/XplatGenerateReleaseNotes/v3/testconsole",
             "type": "node",
-           "request": "launch",
-           "name": "Node - YAMLGenerator",
-           "program": "${workspaceRoot}/Extensions/YamlGenerator/YamlGeneratorTask/src/Generate-YAMLDocumation.ts",
-           "outFiles": ["${workspaceRoot}/Extensions/YamlGenerator/YamlGeneratorTask/dist/*.js"],
-           "cwd": "${workspaceRoot}",
-           "env": {
-           }
-       },
-
-        {
-             "type": "node",
-            "request": "launch",
-            "name": "Node - XPlatGenerateReleaseNotes V2",
-            "program": "${workspaceRoot}/Extensions/XplatGenerateReleaseNotes/V2/GenerateReleaseNotes.ts",
-            "outFiles": ["${workspaceRoot}/Extensions/XplatGenerateReleaseNotes/V2/*.js"],
-            "cwd": "${workspaceRoot}",
-            "env": {
-                "System_TeamFoundationCollectionUri": "https://xxxx.visualstudio.com",
-                "System_TeamProject": "xxxx",
-                "System_HostType": "Release",
-                "Release_ReleaseId": "xx",
-                "System_AccessToken": "xxxxx",
-                "Release_DefinitionId": "1",
-                "Release_DefinitionEnvironmentId" : "2",
-                "Release_EnvironmentName": "xxxx",
-                "INPUT_OVERRIDESTAGE": "xxxx",
-                "INPUT_TEMPLATELOCATION": "Inline",
-                "INPUT_INLINETEMPLATE": "#Release notes for release ${releaseDetails.releaseDefinition.name}\n**Release Number**  : ${releaseDetails.name}\n**Release completed** ${releaseDetails.modifiedOn}\n---\n\n\n@@CSLOOP@@\n${csdetail.message}\n@@CSLOOP@@",
-                "INPUT_OUTPUTFILE": "./test.md"
-            }
+            "args": [ 
+                "--filename", "build-settings.json", 
+                "--pat", "<pat>",
+                "--githubpat", "<pat>",
+                "--bitbucketuser", "<user>",
+                "--bitbucketsecret", "<secret>"]
         },
-         {
-            "type": "node",
-            "request": "launch",
-            "name": "Node - VersionDotNetCoreAssembliesTask",
-            "program": "${workspaceRoot}/Extensions/Versioning/VersionDotNetCoreAssembliesTask/src/ApplyVersionToAssemblies.ts",
-            "outFiles": ["${workspaceRoot}/Extensions/Versioning/VersionDotNetCoreAssembliesTask/dist/src/*.js"],
-              "cwd": "${workspaceRoot}",
-              "env": {
-                "INPUT_ADDDEFAULT": "Version",
-                "INPUT_INJECTVERSION": "True",
-                "INPUT_VERSIONNUMBER": "4.5.6.7",
-                "INPUT_FIELD": "",
-                "INPUT_FILENAMEPATTERN": "core483.csproj.initial",
-                "INPUT_PATH": "C:/projects/github/vNextBuild/Extensions/Versioning/VersionDotNetCoreAssembliesTask/test/testdata"
-            }
-        },
-         {
-             "type": "node",
-            "request": "launch",
-            "name": "Node - XmlFileTask",
-            "program": "${workspaceRoot}/Extensions/FileUtilities/src/FileUpdate.ts",
-            "outFiles": ["${workspaceRoot}/Extensions/FileUtilities/dist/src/*.js"]
-          },
-        {
-            "name": "PowerShell - GenerateReleaseNotes",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceRoot}/Extensions/GenerateReleaseNotes/test/runtests.ps1"
-        },
-        {
-            "name": "PowerShell - StyleCop",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceRoot}/Extensions/StyleCop/test/runtests.ps1"
-        },
+    
         {
             "name": "PowerShell - current file",
             "type": "PowerShell",

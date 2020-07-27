@@ -149,6 +149,24 @@
       "groupName":"advanced"
      },
      {
+      "name": "bitbucketUser",
+      "type": "string",
+      "label": "Bitbucket User",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "To expand commit messages stored in a private Bitbucket repos a user and app secret need to be provided, it is not required for repo stored in Azure DevOps or public Bitbucket repos",
+      "groupName":"advanced"
+     },
+     {
+      "name": "bitbucketSecret",
+      "type": "string",
+      "label": "Bitbucket App Secret",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "To expand commit messages stored in a private Bitbucket repos a user and app secret need to be provided, it is not required for repo stored in Azure DevOps or public Bitbucket repos",
+      "groupName":"advanced"
+     },
+     {
       "name": "dumpPayloadToConsole",
       "type": "boolean",
       "label": "Dump Payload to Console",
