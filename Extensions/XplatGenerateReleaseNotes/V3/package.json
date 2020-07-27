@@ -17,6 +17,7 @@
     "fs": "^0.0.1-security",
     "handlebars": "^4.7.3",
     "handlebars-helpers": "^0.10.0",
+    "minimist": "^1.2.5",
     "ncp": "^2.0.0",
     "request": "^2.88.0",
     "tsd": "^0.6.5",

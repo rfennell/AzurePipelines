@@ -19,15 +19,17 @@ The task takes many parameters, and reads runtime environment variable. These ha
 
 The only value not stored in the JSON files are the PATs required to access the REST API. This reduces the chance of them being copied onto source control by mistake.
 
-- Azure devOps PAT (Required) - within a build or release is this is automatically picked up. For this tool it must be provided
-- GitHub PAT - this is an optional parameter for the task, you only need to provide it if working with private GitHub repos.
+- [Azure DevOps PAT](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page) (Required) - within a build or release is this is automatically picked up. For this tool it must be provided
+- [GitHub PAT](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) - this is an optional parameter for the task, you only need to provide it if working with private GitHub repos.
+- Bitbucket User Name - this is an optional parameter for the task, you only need to provide it if working with private Bitbucket repos. It must be paired with a App Secret. It will be name of th user the App Secret was created for.
+- [Bitbucket App Secret](https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/?_ga=2.216122326.1721502558.1595774436-1359824809.1581077155) - this is an optional parameter for the task, you only need to provide it if working with private Bitbucket repos. It must be paired with a User Name
 
 ### Test a Build
 To run the tool against a build
 
 1. In the settings file make sure the TeamFoundationCollectionUri, TeamProject and BuildID are set to the build you wish to run against, and that the ReleaseID is empty.
 1. Run the command
-   `node .\GenerateReleaseNotesConsoleTester.js build-settings.json <your-Azure-DevOps-PAT> < your GitHub PAT>`
+   `node GenerateReleaseNotesConsoleTester.js --filename settings.json --pat <Azure-DevOps-PAT> --githubpat <Optional GitHub-PAT> --bitbucketuser <Optional Bitbucket User> --bitbucketsecret <Optional Bitbucket App Secret>`
 1. Assuming you are using the sample settings you should get an output.md file with your release notes.
 
 ### Test a Release
