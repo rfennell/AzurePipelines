@@ -7,7 +7,7 @@ However, running this is not as simple was you might expect so please read the i
 1. Clone the repo contain this code.
 1. Change to the folder
 
-   `<repo root>Extensions\XplatGenerateReleaseNotes\V2\testconsole`
+   `<repo root>Extensions\XplatGenerateReleaseNotes\V3\testconsole`
 1. Build the tool using NPM (this does assume [Node](https://nodejs.org/en/download/_) is already installed)
    ```
    npm install
