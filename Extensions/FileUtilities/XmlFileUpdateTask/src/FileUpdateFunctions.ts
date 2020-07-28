@@ -66,7 +66,10 @@ export function processFile(xpathQuery, file, rawContent, value, attribute, logF
           xmlNode.singleNodeValue.textContent = value;
           logFunction(`Updated the file [${file}] with the new value [${xpathQuery}] with the value [${value}]`);
       } else {
-          xmlNode.singleNodeValue.attributes.getNamedItem(attribute).textContent = value;
+          // Previously call this, but Typescript won't compile, so need to use any type
+          // xmlNode.singleNodeValue.attributes.getNamedItem(attribute).textContent = value;
+          let node: any = xmlNode.singleNodeValue;
+          node.attributes.getNamedItem(attribute).textContent = value;
           logFunction(`Updated the file [${file}] with the new value [${xpathQuery}] with the attribute [${attribute}=${value}]`);
       }
   }
