@@ -11,6 +11,7 @@ export interface IAgentSpecificApi {
     logError(msg: string): void;
     publishEvent(feature, properties: any): void;
     writeVariable (variableName: string, value: string): void;
+    getSystemAccessToken(): string;
 }
 
 export class AgentSpecificApi implements IAgentSpecificApi {
@@ -75,6 +76,17 @@ export class AgentSpecificApi implements IAgentSpecificApi {
             agentVersion: tl.getVariable("AGENT.VERSION"),
             version: taskJson.version
         };
+    }
+
+    public getSystemAccessToken(): string {
+        tl.debug("Getting credentials the agent is running as");
+        var auth = tl.getEndpointAuthorization("SYSTEMVSSCONNECTION", false);
+        if (auth.scheme === "OAuth") {
+            tl.debug("Found an OAUTH token");
+            return auth.parameters["AccessToken"];
+        } else {
+            tl.warning(tl.loc("BuildCredentialsWarn"));
+        }
     }
 
 }
