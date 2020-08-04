@@ -2,6 +2,7 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 3.5.x removed the need to enable OAUTH access for the Agent phase
 * 3.4.x adds support for getting full commit messages from Bitbucket
 * 3.1.x adds support for looking for the last successful stage in a multi-stage YAML pipeline. For this to work the stage name must be unique in the pipeline
 * 3.0.x drops support for the legacy template model, only handlebars templates supported.
@@ -172,7 +173,7 @@ As custom modules allows any JavaScript logic to be inject for bespoke need they
 ## Usage
 Once the extension is added to your Azure DevOps Server (TFS) or Azure DevOps Services, the task should be available in the utilities section of 'add tasks'
 
-**IMPORTANT** - The V2 & V3 Tasks requires that oAuth access is enabled on agent running the task
+**IMPORTANT** - The V2 Task requires that oAuth access is enabled on agent running the task, this requirement has been removed in V3
 
 The task takes the following parameters
 
