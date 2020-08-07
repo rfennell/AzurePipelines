@@ -8,7 +8,7 @@
 # Associated Pull Requests ({{pullRequests.length}})
 {{#forEach pullRequests}}
 {{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
-*  **PR {{this.id}}**  {{this.title}}
+*  **{{this.pullRequestId}}** {{this.title}}
 {{/forEach}}
 
 # Builds with associated WI/CS ({{builds.length}})
