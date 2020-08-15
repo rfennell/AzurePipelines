@@ -2,6 +2,7 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 3.6.x adds compareBuildDetails variable for YAML based builds
 * 3.5.x removed the need to enable OAUTH access for the Agent phase
 * 3.4.x adds support for getting full commit messages from Bitbucket
 * 3.1.x adds support for looking for the last successful stage in a multi-stage YAML pipeline. For this to work the stage name must be unique in the pipeline
@@ -133,6 +134,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 
 #### Build objects
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
+* **compareBuildDetails** - the previous successful build that comparisons are being made against, only available if checkstage=true
 
 **Note:** To dump all possible values use the form `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion (See below)
 
@@ -191,6 +193,8 @@ The task takes the following parameters
 * (Advanced) Cross Project For PRs. If true will try to match commits to Azure DevOps PR cross project within the organisation, if false only searches the Team Project.
 * (Advanced) Override Stage Name. If set uses this stage name to find the last successful deployment, as opposed to the currently active stage
 * (Advanced) GitHub PAT. (Optional) This [GitHub PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) is only required to expand commit messages stored in a private GitHub repos. This PAT is not required for commit in Azure DevOps public or private repos or public GitHub repos
+* (Advanced) BitBucket User (Optional) To expand commit messages stored in a private Bitbucket repos a [BitBucker user and app password](https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/) need to be provided, it is not required for repo stored in Azure DevOps or public Bitbucket repos.
+* (Advanced) BitBucket Password (Optional) See BitBucket User documentation above
 * (Advanced) Dump Payload to Console - If true the data objects passed to the file generator is dumped to the log.
 * (Advanced) Dump Payload to File - If true the data objects passed to the file generator is dumped to a JSON file.
 * (Advanced) Dump Payload Filename - The filename to dump the data objects passed to the file generator
