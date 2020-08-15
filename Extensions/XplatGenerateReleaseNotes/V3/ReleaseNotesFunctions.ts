@@ -501,7 +501,8 @@ export function processTemplate(
     globalBuilds: UnifiedArtifactDetails[],
     globalTests: TestCaseResult[],
     releaseTests: TestCaseResult[],
-    relatedWorkItems: WorkItem[]
+    relatedWorkItems: WorkItem[],
+    compareBuildDetails: Build
     ): string {
 
     var output = "";
@@ -571,7 +572,8 @@ export function processTemplate(
                 "builds": globalBuilds,
                 "tests": globalTests,
                 "releaseTests": releaseTests,
-                "relatedWorkItems": relatedWorkItems
+                "relatedWorkItems": relatedWorkItems,
+                "compareBuildDetails": compareBuildDetails
             });
             agentApi.logInfo( "Completed processing template");
 
@@ -706,6 +708,7 @@ export async function generateReleaseNotes(
 
             var mostRecentSuccessfulDeploymentName: string = "";
             let mostRecentSuccessfulDeploymentRelease: Release;
+            let mostRecentSuccessfulBuild: Build;
 
             var currentRelease: Release;
             var currentBuild: Build;
@@ -732,12 +735,13 @@ export async function generateReleaseNotes(
                     if (lastGoodBuildId !== 0) {
                         console.log(`Getting the details between ${lastGoodBuildId} and ${buildId}`);
 
-                        let baseBuild = await buildApi.getBuild(teamProject, lastGoodBuildId);
+                        mostRecentSuccessfulBuild = await buildApi.getBuild(teamProject, lastGoodBuildId);
+
                         // There is only a workaround for Git but not for TFVC :(
-                        if (baseBuild.repository.type === "TfsGit") {
+                        if (mostRecentSuccessfulBuild.repository.type === "TfsGit") {
                             agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
                             let currentBuild = await buildApi.getBuild(teamProject, buildId);
-                            let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisation, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
+                            let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisation, mostRecentSuccessfulBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
                             globalCommits = commitInfo.commits;
                             globalWorkItems = commitInfo.workItems;
                         } else {
@@ -1065,7 +1069,8 @@ export async function generateReleaseNotes(
                     releaseDetails: currentRelease,
                     compareReleaseDetails: mostRecentSuccessfulDeploymentRelease,
                     releaseTests: releaseTests,
-                    buildDetails: currentBuild
+                    buildDetails: currentBuild,
+                    compareBuildDetails: mostRecentSuccessfulBuild
                 });
 
             var template = getTemplate (templateLocation, templateFile, inlineTemplate);
@@ -1084,7 +1089,8 @@ export async function generateReleaseNotes(
                     globalBuilds,
                     globalTests,
                     releaseTests,
-                    relatedWorkItems);
+                    relatedWorkItems,
+                    mostRecentSuccessfulBuild);
 
                 writeFile(outputFile, outputString, replaceFile, appendToFile);
 
