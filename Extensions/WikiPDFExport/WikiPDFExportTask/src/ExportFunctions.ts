@@ -3,6 +3,16 @@ import { logWarning } from "./agentSpecific";
 import { exec } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+import {
+    CloneWikiRepo,
+    GetTrimmedUrl,
+    GetProtocol
+    } from "./GitWikiFuntions";
+import {
+    logInfo,
+    logError,
+    getSystemAccessToken
+    }  from "./agentSpecific";
 
 // Define a function to filter releases.
 function filterRelease(release) {
@@ -90,9 +100,6 @@ export async function ExportPDF(
 
     await DownloadExportExe(wikiRootPath, logInfo, logError);
 
-    logInfo(`Pause to avoid 'The process cannot access the file because it is being used by another process.' error`);
-    await new Promise(resolve => setTimeout(resolve, 5000));
-
     var command = `${wikiRootPath}\\azuredevops-export-wiki.exe  ${args}`;
 
     logInfo(`Using command '${command}'`);
@@ -105,3 +112,39 @@ export async function ExportPDF(
         }
     });
 }
+
+export async function ExportRun (
+    cloneRepo,
+    localpath,
+    singleFile,
+    outputFile,
+    extraParams,
+    useAgentToken,
+    repo,
+    user,
+    password,
+    injectExtraHeader,
+    branch
+ ) {
+     if (cloneRepo) {
+         console.log(`Cloning Repo`);
+         if (useAgentToken === true) {
+             console.log(`Using OAUTH Agent Token, overriding username and password`);
+             user = "buildagent";
+             password = getSystemAccessToken();
+         }
+
+         var protocol = GetProtocol(repo, logInfo);
+         repo = GetTrimmedUrl(repo, logInfo);
+
+         await CloneWikiRepo(protocol, repo, localpath, user, password, logInfo, logError, injectExtraHeader, branch);
+     }
+
+     if (singleFile && singleFile.length > 0) {
+         console.log(`A filename ${singleFile} has been passed so only processing that file `);
+         ExportPDF (localpath, singleFile, outputFile, extraParams,  logInfo, logError);
+     } else  {
+         console.log(`No filename has been passed so cloning the repo `);
+         ExportPDF (localpath, "" , outputFile, extraParams, logInfo, logError);
+     }
+ }

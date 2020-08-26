@@ -2,20 +2,8 @@ import tl = require("azure-pipelines-task-lib");
 import * as fs from "fs";
 
 import {
-    CloneWikiRepo,
-    GetTrimmedUrl,
-    GetProtocol
-    } from "./GitWikiFuntions";
-
-import {
-    ExportPDF
+    ExportRun
     } from "./ExportFunctions";
-
-import {
-    logInfo,
-    logError,
-    getSystemAccessToken
-    }  from "./agentSpecific";
 
 var repo = tl.getInput("repo");
 var localpath = tl.getInput("localpath");
@@ -39,23 +27,16 @@ console.log(`Variable: OutputFile [${outputFile}]`);
 console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
 
-if (cloneRepo) {
-    console.log(`Cloning Repo`);
-    if (useAgentToken === true) {
-        console.log(`Using OAUTH Agent Token, overriding username and password`);
-        user = "buildagent";
-        password = getSystemAccessToken();
-    }
-
-    var protocol = GetProtocol(repo, logInfo);
-    repo = GetTrimmedUrl(repo, logInfo);
-    CloneWikiRepo(protocol, repo, localpath, user, password, logInfo, logError, injectExtraHeader, branch);
-}
-
-if (singleFile && singleFile.length > 0) {
-    console.log(`A filename ${singleFile} has been passed so only processing that file `);
-    ExportPDF (localpath, singleFile, outputFile, extraParams,  logInfo, logError);
-} else  {
-    console.log(`No filename has been passed so cloning the repo `);
-    ExportPDF (localpath, "" , outputFile, extraParams, logInfo, logError);
-}
+ExportRun(
+    cloneRepo,
+    localpath,
+    singleFile,
+    outputFile,
+    extraParams,
+    useAgentToken,
+    repo,
+    user,
+    password,
+    injectExtraHeader,
+    branch
+);

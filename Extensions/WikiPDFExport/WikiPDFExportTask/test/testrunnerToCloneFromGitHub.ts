@@ -1,9 +1,5 @@
 import {
-    CloneWikiRepo
-    } from "../src/GitWikiFuntions";
-
-import {
-    ExportPDF
+    ExportRun
     } from "../src/ExportFunctions";
 
 function logInfo (msg: string) {
@@ -25,7 +21,22 @@ const injectExtraHeaders = false;
 const branch = "";
 const protocol = "https";
 const outputFile = "c:\\tmp\\test\\output.pdf";
+const injectExtraHeader = false;
+const singleFile = "";
+const extraParams = "";
+const useAgentToken = false;
+const cloneRepo = true;
 
-CloneWikiRepo(protocol, repo, localpath, user, password, logInfo, logError, injectExtraHeaders, branch);
-console.log(`Current folder is ${__dirname}`);
-ExportPDF (localpath, "" , outputFile, "", logInfo, logError);
+ExportRun(
+    cloneRepo,
+    localpath,
+    singleFile,
+    outputFile,
+    extraParams,
+    useAgentToken,
+    repo,
+    user,
+    password,
+    injectExtraHeader,
+    branch
+);

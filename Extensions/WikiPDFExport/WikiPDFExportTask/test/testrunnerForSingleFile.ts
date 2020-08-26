@@ -1,9 +1,5 @@
 import {
-    CloneWikiRepo
-    } from "../src/GitWikiFuntions";
-
-import {
-    ExportPDF
+    ExportRun
     } from "../src/ExportFunctions";
 
 function logInfo (msg: string) {
@@ -15,9 +11,28 @@ function logError (msg: string) {
 }
 
 // const singleFile = `${__dirname}\\..\\..\\..\\readme.md`;
-const localFolder = `C:\\projects\\github\\AzurePipelines.wiki`;
+const localpath = `C:\\projects\\github\\AzurePipelines.wiki`;
 const singleFile = `C:\\projects\\github\\AzurePipelines.wiki\\ArtifactDescription-Tasks.md`;
 const outputFile = "c:\\tmp\\test\\new\\output.pdf";
-console.log(`Current folder is ${__dirname}`);
+const injectExtraHeader = false;
+const extraParams = "";
+const useAgentToken = false;
+const cloneRepo = false;
+const user = "";
+const password = "";
+const repo = "";
+const branch = "";
 
-ExportPDF (localFolder, singleFile , outputFile, "", logInfo, logError);
+ExportRun(
+    cloneRepo,
+    localpath,
+    singleFile,
+    outputFile,
+    extraParams,
+    useAgentToken,
+    repo,
+    user,
+    password,
+    injectExtraHeader,
+    branch
+);
