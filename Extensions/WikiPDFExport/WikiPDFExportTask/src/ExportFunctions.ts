@@ -88,8 +88,8 @@ export async function ExportPDF(
     logInfo(`Changing folder to ${wikiRootPath}`);
     process.chdir(wikiRootPath);
 
-    await DownloadExportExe(folder, logInfo, logError);
-    var command = `${folder}\\azuredevops-export-wiki.exe ${args}`;
+    await DownloadExportExe(wikiRootPath, logInfo, logError);
+    var command = `${wikiRootPath}\\azuredevops-export-wiki.exe ${args}`;
 
     logInfo(`Using command '${command}'`);
     exec(command, function (error, stdout, stderr) {
