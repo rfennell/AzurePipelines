@@ -110,7 +110,7 @@ stages:
     jobs:
     - deployment: Private_Test_Single_File
       timeoutInMinutes: 0
-      environment: 'Azure DevOps Marketplace (WIKIUpdater)'
+      environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
       pool:
         vmImage: '$(vmImage)'
       strategy:
@@ -290,7 +290,7 @@ stages:
   
     - deployment: Private_Test_Multi_File
       timeoutInMinutes: 0
-      environment: 'Azure DevOps Marketplace (WIKIUpdater)'
+      environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
       pool:
         #vmImage: '$(vmImage)'
         name: default
