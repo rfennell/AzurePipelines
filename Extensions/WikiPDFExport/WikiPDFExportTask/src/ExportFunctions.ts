@@ -8,7 +8,7 @@ export async function ExportPDF(
     wikiRootPath,
     singleFile,
     outputFile,
-    extraParams
+    extraParams,
     logInfo,
     logError) {
 
