@@ -129,10 +129,10 @@
       "visibleRule": "cloneRepo = True"
     }
   ],
-  "instanceNameFormat": "Git based WIKI Exporter",
+  "instanceNameFormat": "WIKI PDF Exporter",
   "execution": {
     "Node": {
-      "target": "GitPDFExportTask.js",
+      "target": "WikiPDFExportTask.js",
       "argumentFormat": ""
     }
   }

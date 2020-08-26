@@ -108,11 +108,12 @@ stages:
   - stage: Test
     dependsOn: Private 
     jobs:
-    - deployment: Private_Test_Single_File
+    - deployment: Private_Tests
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
       pool:
-        vmImage: '$(vmImage)'
+        name: default
+        # vmImage: '$(vmImage)'
       strategy:
         runOnce:
           deploy:
