@@ -1,0 +1,139 @@
+{
+  "id": "48d40d27-32e1-460e-8ea6-0dfb48abdd6f",
+  "name": "WikiPdfExportTask",
+  "friendlyName": "A wrapper for the AzureDevOps.WikiPDFExport",
+  "description": "A wrapper for the [AzureDevOps.WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport)",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-PdfExport-Task/)",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "Richard Fennell",
+  "version": {
+    "Major": 1,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "demands": [],
+  "minimumAgentVersion": "1.82.0",
+  "groups": [
+    {
+      "name": "authentication",
+      "displayName": "Authentication",
+      "isExpanded": true
+    },
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "cloneRepo",
+      "type": "boolean",
+      "label": "Clone Repo",
+      "defaultValue": "True",
+      "required": false,
+      "helpMarkDown": "If set to true the specified repo will be clone to the localfolder. f false then the localfolder must specify an existing folder",
+    },
+    {
+      "name": "repo",
+      "type": "string",
+      "label": "Repo",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The repo URL to clone e.g dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. See documentation for more details https://github.com/rfennell/AzurePipelines/wiki/WIKI-Updater-Tasks",
+      "visibleRule": "cloneRepo = True"
+    },
+    {
+      "name": "branch",
+      "type": "string",
+      "label": "Checkout Branch",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The name of the pre-existing branch to checkout prior exporting a repo, if left blank the default branch will be used",
+      "visibleRule": "cloneRepo = True"
+    },
+    {
+      "name": "singleFile",
+      "type": "string",
+      "label": "Single file to export",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Name of the single file to be exported, default is empty i.e. whole repo is exported e.g. myfile.md"
+    },
+    {
+      "name": "useAgentToken",
+      "type": "boolean",
+      "label": "Run with Build Agent Credentials",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true use the built in agent OAUTH token. OAUTH script access must be enabled for the agent",
+      "groupName": "authentication",
+      "visibleRule": "cloneRepo = True"
+    },
+    {
+      "name": "user",
+      "type": "string",
+      "label": "Username",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The username for authentication",
+      "groupName": "authentication",
+      "visibleRule": "useAgentToken = False"
+    },
+    {
+      "name": "password",
+      "type": "string",
+      "label": "Password/PAT",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The password/PAT for authentication (recommended stored as secret variable)",
+      "groupName": "authentication",
+      "visibleRule": "cloneRepo = True"
+    },
+    {
+      "name": "localpath",
+      "type": "string",
+      "label": "Local folder",
+      "defaultValue": "$(System.DefaultWorkingDirectory)\\repo",
+      "required": true,
+      "helpMarkDown": "The Path to clone the repo into, or the folder containing the single file to export"
+    },
+    {
+      "name": "outputFile",
+      "type": "string",
+      "label": "Output file",
+      "defaultValue": "$(System.DefaultWorkingDirectory)\\output.pdf",
+      "required": true,
+      "helpMarkDown": "The output PDF file"
+    },
+    {
+      "name": "ExtraParameters",
+      "type": "string",
+      "label": "WIKIPDFExport Parameters",
+      "defaultValue": "$(System.DefaultWorkingDirectory)\\repo",
+      "required": true,
+      "helpMarkDown": "Optional any extra WikiPDFExport you wish to pass to the command line tool"
+    },
+    {
+      "name": "injectExtraHeader",
+      "type": "boolean",
+      "label": "Inject credentials via Headers",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If set to true, credentials are passed as a header value. If false, the default, they are passed in te URL. To address #613 which is seen on some on-prem instances",
+      "groupName": "advanced",
+      "visibleRule": "cloneRepo = True"
+    }
+  ],
+  "instanceNameFormat": "Git based WIKI Exporter",
+  "execution": {
+    "Node": {
+      "target": "GitPDFExportTask.js",
+      "argumentFormat": ""
+    }
+  }
+}
