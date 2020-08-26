@@ -148,6 +148,7 @@ stages:
                 outputFile: '$(Build.ArtifactStagingDirectory)\PDF\singleFile.pdf'
             - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@1
               displayName: 'Export Public GitHub WIKI'
+              condition: succeededOrFailed()
               inputs:
                 cloneRepo: true
                 repo: 'https://github.com/rfennell/AzurePipelines.wiki.git'
@@ -156,13 +157,15 @@ stages:
                 outputFile: '$(Build.ArtifactStagingDirectory)\PDF\publicGitHub.pdf'
             - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@1
               displayName: 'Export Azure DevOps WIKI'
+              condition: succeededOrFailed()
               inputs:
                 cloneRepo: true
-                repo: 'https://richardfennell@dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                user: richardfennell
                 useAgentToken: true
-                localpath: '$(System.DefaultWorkingDirectory)\AzRepo'
                 outputFile: '$(Build.ArtifactStagingDirectory)\PDF\Azrepo.pdf'
             - task: PublishPipelineArtifact@0
+              condition: succeededOrFailed()
               inputs:
                 artifactName: 'PDFs'
                 targetPath: '$(Build.ArtifactStagingDirectory)\PDF'

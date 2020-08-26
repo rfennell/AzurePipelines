@@ -2,6 +2,7 @@ import * as process from "process";
 import { logWarning } from "./agentSpecific";
 import { exec } from "child_process";
 import * as fs from "fs";
+import * as path from "path";
 
 // Define a function to filter releases.
 function filterRelease(release) {
@@ -21,7 +22,7 @@ async function DownloadExportExe(
     logError) {
 
     var downloadRelease = require("download-github-release");
-    logInfo("Starting download of command line tool");
+    logInfo(`Starting download of command line tool to ${folder}`);
     await downloadRelease("MaxMelcher", "AzureDevOps.WikiPDFExport", folder, filterRelease, filterAsset, false)
     .then(function() {
         logInfo("Download done");
@@ -38,7 +39,6 @@ export async function ExportPDF(
     extraParams,
     logInfo,
     logError) {
-
         await DownloadExportExe(__dirname, logInfo, logError);
         var command = `${__dirname}\\azuredevops-export-wiki.exe`;
         if (!fs.existsSync(command)) {
@@ -54,6 +54,7 @@ export async function ExportPDF(
                 command += ` -p ${wikiRootPath}`;
             }
         }
+
         if (singleFile.length > 0) {
             if (!fs.existsSync(`${singleFile}`)) {
                 logError(`Cannot find the requested file ${singleFile} to export`);
@@ -66,6 +67,7 @@ export async function ExportPDF(
                 logInfo(`No filename specified and cannot find the .order file in the root of the wiki, the exported PDF will therefore be empty`);
             }
         }
+
         if (outputFile.length > 0) {
             command += ` -o ${outputFile}`;
         } else {
@@ -73,7 +75,7 @@ export async function ExportPDF(
             return;
         }
 
-        if (extraParams.length > 0) {
+        if (extraParams && extraParams.length > 0) {
             logInfo("Adding extra parameters to the command line");
             command += ` ${extraParams}`;
         }
@@ -83,7 +85,15 @@ export async function ExportPDF(
             command += ` -v`;
         }
 
-    logInfo(`Using command ${command}`);
+    var folder = path.dirname(outputFile);
+    if (!fs.existsSync(folder)) {
+        logInfo(`Creating folder ${folder}`);
+        fs.mkdirSync(folder, { recursive: true });
+    }
+
+    logInfo(`Changing folder to ${wikiRootPath}`);
+    process.chdir(wikiRootPath);
+    logInfo(`Using command '${command}'`);
     exec(command, function (error, stdout, stderr) {
         logInfo(stdout);
         logInfo(stderr);

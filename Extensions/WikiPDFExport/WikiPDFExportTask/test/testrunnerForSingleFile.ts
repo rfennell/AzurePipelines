@@ -17,7 +17,7 @@ function logError (msg: string) {
 // const singleFile = `${__dirname}\\..\\..\\..\\readme.md`;
 const localFolder = `C:\\projects\\github\\AzurePipelines.wiki`;
 const singleFile = `C:\\projects\\github\\AzurePipelines.wiki\\ArtifactDescription-Tasks.md`;
-const outputFile = "c:\\tmp\\test\\output.pdf";
+const outputFile = "c:\\tmp\\test\\new\\output.pdf";
 console.log(`Current folder is ${__dirname}`);
 
 ExportPDF (localFolder, singleFile , outputFile, "", logInfo, logError);
