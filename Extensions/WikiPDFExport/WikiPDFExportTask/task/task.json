@@ -36,7 +36,7 @@
       "label": "Clone Repo",
       "defaultValue": "True",
       "required": false,
-      "helpMarkDown": "If set to true the specified repo will be clone to the localfolder. f false then the localfolder must specify an existing folder"
+      "helpMarkDown": "If set to true the specified repo will be cloned to the localfolder. If false then the localfolder must specify an existing folder that already contains a file structure"
     },
     {
       "name": "repo",

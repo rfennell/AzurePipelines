@@ -20,7 +20,7 @@ __Note:__ If you see problems such as `Error: spawn git ENOENT` when cloing a re
 #### General
 - CloneRepo - a flag whether to cloen the repo or not
 - Repo - The repo URL to update e.g in the form **https://dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki** (see the URL section below as to how to find this URL)
-- LocalPath - The Path to clone the repo into, or the folder containing the single file to export
+- LocalPath - The Path to clone the repo into, or the folder structure containing the file(s) to export
 - SingleFile - Optional single file to export in the localPath folder e.g. page.md
 - ExtraParameters - Optional any extra [WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/) you wish to pass to the command line tool
 #### Git Clone Specific

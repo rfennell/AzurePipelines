@@ -3,14 +3,48 @@ import { logWarning } from "./agentSpecific";
 import { exec } from "child_process";
 import * as fs from "fs";
 
+// Define a function to filter releases.
+function filterRelease(release) {
+    // Filter out prereleases.
+    return release.prerelease === false;
+}
+
+// Define a function to filter assets.
+function filterAsset(asset) {
+    // Select assets that contain the string 'windows'.
+    return asset.name.indexOf("azuredevops-export-wiki.exe") >= 0;
+}
+
+async function DownloadExportExe(
+    folder,
+    logInfo,
+    logError) {
+
+    var downloadRelease = require("download-github-release");
+    logInfo("Starting download of command line tool");
+    await downloadRelease("MaxMelcher", "AzureDevOps.WikiPDFExport", folder, filterRelease, filterAsset, false)
+    .then(function() {
+        logInfo("Download done");
+    })
+    .catch(function(err) {
+        logError(err.message);
+    });
+}
+
 export async function ExportPDF(
-    command,
     wikiRootPath,
     singleFile,
     outputFile,
     extraParams,
     logInfo,
     logError) {
+
+        await DownloadExportExe(__dirname, logInfo, logError);
+        var command = `${__dirname}\\azuredevops-export-wiki.exe`;
+        if (!fs.existsSync(command)) {
+            logError(`Cannot find command line tool ${command}`);
+            return;
+        }
 
         if (wikiRootPath.length > 0) {
             if (!fs.existsSync(`${wikiRootPath}`)) {

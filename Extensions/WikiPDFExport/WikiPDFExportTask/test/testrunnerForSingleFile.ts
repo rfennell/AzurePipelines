@@ -18,6 +18,6 @@ function logError (msg: string) {
 const localFolder = `C:\\projects\\github\\AzurePipelines.wiki`;
 const singleFile = `C:\\projects\\github\\AzurePipelines.wiki\\ArtifactDescription-Tasks.md`;
 const outputFile = "c:\\tmp\\test\\output.pdf";
-
 console.log(`Current folder is ${__dirname}`);
-ExportPDF (`${__dirname}\\..\\..\\task\\azuredevops-export-wiki.exe`, localFolder, singleFile , outputFile, "", logInfo, logError);
+
+ExportPDF (localFolder, singleFile , outputFile, "", logInfo, logError);

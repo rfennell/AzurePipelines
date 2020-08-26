@@ -28,4 +28,4 @@ const outputFile = "c:\\tmp\\test\\output.pdf";
 
 CloneWikiRepo(protocol, repo, localpath, user, password, logInfo, logError, injectExtraHeaders, branch);
 console.log(`Current folder is ${__dirname}`);
-ExportPDF (`${__dirname}\\..\\..\\task\\azuredevops-export-wiki.exe`, localpath, "" , outputFile, "", logInfo, logError);
+ExportPDF (localpath, "" , outputFile, "", logInfo, logError);

@@ -54,8 +54,8 @@ if (cloneRepo) {
 
 if (singleFile && singleFile.length > 0) {
     console.log(`A filename ${singleFile} has been passed so only processing that file `);
-    ExportPDF ("azuredevops-export-wiki.exe", localpath, singleFile, outputFile, extraParams,  logInfo, logError);
+    ExportPDF (localpath, singleFile, outputFile, extraParams,  logInfo, logError);
 } else  {
     console.log(`No filename has been passed so cloning the repo `);
-    ExportPDF ("azuredevops-export-wiki.exe", localpath, "" , outputFile, extraParams, logInfo, logError);
+    ExportPDF (localpath, "" , outputFile, extraParams, logInfo, logError);
 }
