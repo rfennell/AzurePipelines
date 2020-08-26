@@ -1,14 +1,14 @@
-The extension contains a task that wrapper the Max Melcher's [AzureDevOps.WikiPDFExport command line tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport) that can be used to covert a WIKI to a PDF file.
+The extension contains a task that wrappers Max Melcher's [AzureDevOps.WikiPDFExport command line tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport) that can be used to covert a WIKI to a PDF file.
 
 When run the task will download the current release of the AzureDevOps.WikiPDFExport command line tool from GitHub. It then allows you to 
-1. Optionally clone a WIKI repo that is hosted on Azure DevOps or GitHub into a local folder for exporting. If you already have the folder structure on the agent then this feature can be skipped
+1. Optionally clone a Git based WIKI repo that is hosted on Azure DevOps or GitHub into a local folder for exporting, or if you already have the folder structure on the agent then this feature can be skipped
 1. The task will then export either 
-   - the whole WIKI structure as a PDF (assuming a .order file is present in the root)
+   - the whole WIKI structure as a PDF (based on the .order file is present in the root)
    - a single named file
 
 <hr>
 
-__Note:__ If you see problems such as `Error: spawn git ENOENT` when cloing a repo using this task, please check the troubleshooting section at the end of this document before logging a support issue.
+__Note:__ If you see problems such as `Error: spawn git ENOENT` when cloning a repo using this task, please check the troubleshooting section at the end of this document before logging a support issue.
 
 <hr>
 
