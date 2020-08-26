@@ -114,8 +114,8 @@
       "name": "ExtraParameters",
       "type": "string",
       "label": "WIKIPDFExport Parameters",
-      "defaultValue": "$(System.DefaultWorkingDirectory)\\repo",
-      "required": true,
+      "defaultValue": "",
+      "required": false,
       "helpMarkDown": "Optional any extra WikiPDFExport you wish to pass to the command line tool"
     },
     {

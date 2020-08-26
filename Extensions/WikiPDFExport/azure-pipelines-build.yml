@@ -138,198 +138,33 @@ stages:
                   @@CSLOOP@@  
                   * **ID ${csdetail.commitId} ** ${csdetail.comment}    
                   @@CSLOOP@@
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater - GitHub'
+            - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@1
+              displayName: 'Export Single File'
               inputs:
-                repo: github.com/rfennell/demorepo.wiki
-                filename: PageFromWikiUpdater.md
-                contents: |
-                  Header
-                  ---
-                  $(OutputText)
-                  ---
-                  Footer
-                message: 'Update from Release - $(Release.ReleaseName)'
-                gitname: builduser
-                gitemail: 'build@demo'
-                user: rfennell
-                password: '$(githubPAT)'
-                localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater - GitHub append'
+                cloneRepo: false
+                localpath: '$(System.DefaultWorkingDirectory)'
+                singleFile: 'inline.md'
+                outputFile: '$(Build.ArtifactStagingDirectory)\PDF\singleFile.pdf'
+            - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@1
+              displayName: 'Export Public GitHub WIKI'
               inputs:
-                repo: github.com/rfennell/demorepo.wiki
-                filename: PageFromWikiUpdater.md
-                replaceFile: false
-                contents: |
-                  ---
-                  This is more test that has been added to the end of the file
-                  message: 'Append from Release - $(Release.ReleaseName)'
-                gitname: builduser
-                gitemail: 'build@demo'
-                user: rfennell
-                password: '$(githubPAT)'
-                localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater - GitHub prepend '
+                cloneRepo: true
+                repo: 'https://github.com/rfennell/AzurePipelines.wiki.git'
+                useAgentToken: false
+                localpath: '$(System.DefaultWorkingDirectory)\GitHubRepo'
+                outputFile: '$(Build.ArtifactStagingDirectory)\PDF\publicGitHub.pdf'
+            - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@1
+              displayName: 'Export Azure DevOps WIKI'
               inputs:
-                repo: github.com/rfennell/demorepo.wiki
-                filename: PageFromWikiUpdater.md
-                replaceFile: false
-                appendToFile: false
-                contents: |
-                  ---
-                  This is more test that has been added to the end of the file
-                  message: 'Append from Release - $(Release.ReleaseName)'
-                gitname: builduser
-                gitemail: 'build@demo'
-                user: rfennell
-                password: '$(githubPAT)'
-                localpath: '$(System.DefaultWorkingDirectory)\githubrepo'   
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater - GitHub folder'
-              inputs:
-                repo: github.com/rfennell/demorepo.wiki
-                filename: TestFolder/PageFromWikiUpdater.md
-                contents: |
-                  Header
-                  ---
-                  $(OutputText)
-                  ---
-                  Footer
-                  message: 'Update from Release - $(Release.ReleaseName)'
-                gitname: builduser
-                gitemail: 'build@demo'
-                user: rfennell
-                password: '$(githubPAT)'
-                localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater - Azure DevOps with Creds'
-              inputs:
-                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
-                filename: TestPageWithCreds.md
-                contents: |
-                  Header
-                  ---
-                  $(OutputText)
-                  ---
-                  Footer
-                message: 'Update from Release - $(Release.ReleaseName) with Creds'
-                gitname: builduser
-                gitemail: 'build@demo'
-                user: richardfennell
-                password: '$(AzureDevOpsPAT)'
-                localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater - Azure DevOps in branch'
-              inputs:
-                repo: 'dev.azure.com/richardfennell/Git%20project/_git/WikiRepo'
-                filename: TestPageOnBranch.md
-                contents: |
-                  Header on Branch
-                  ---
-                  $(OutputText)
-                  ---
-                  Footer
-                message: 'Update from Release - $(Release.ReleaseName) with Creds'
-                gitname: builduser
-                gitemail: 'build@demo'
-                user: richardfennell
-                password: '$(AzureDevOpsPAT)'
-                localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
-                branch: b1
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater - Azure DevOps into Folder'
-              inputs:
-                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
-                filename: subfolder/TestPageWithCredsInFolder.md
-                contents: |
-                  Header
-                  ---
-                  $(OutputText)
-                  ---
-                  Footer
-                message: 'Update from Release - $(Release.ReleaseName) with Creds'
-                gitname: builduser
-                gitemail: 'build@demo'
-                user: richardfennell
-                password: '$(AzureDevOpsPAT)'
-                localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater - Azure DevOps as Agent'
-              inputs:
-                repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
-                filename: TestPageForWikiUpdater.md
-                contents: |
-                  Header
-                  ---
-                  $(OutputText)
-                  ---
-                  Footer
-                message: 'Update from Release - $(Release.ReleaseName) as Agent'
-                gitname: builduser
-                gitemail: 'build@demo'
+                cloneRepo: true
+                repo: 'https://richardfennell@dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
                 useAgentToken: true
-                localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagent'
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater - Azure DevOps as Agent with full url'
+                localpath: '$(System.DefaultWorkingDirectory)\AzRepo'
+                outputFile: '$(Build.ArtifactStagingDirectory)\PDF\Azrepo.pdf'
+            - task: PublishPipelineArtifact@0
               inputs:
-                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
-                filename: TestPageForWikiUpdaterTrimed.md
-                contents: |
-                  Header
-                  ---
-                  $(OutputText)
-                  ---
-                  Footer
-                message: 'Update from Release - $(Release.ReleaseName) as Agent'
-                gitname: builduser
-                gitemail: 'build@demo'
-                useAgentToken: true
-                localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagent'
-  
-    - deployment: Private_Test_Multi_File
-      timeoutInMinutes: 0
-      environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
-      pool:
-        #vmImage: '$(vmImage)'
-        name: default
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-
-            - checkout: VSTSBuildTaskValidation  
-              clean: false
-              fetchDepth: 0
-              lfs: false
-
-            - task: WikiFolderUpdaterTask@1
-              inputs:
-                repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
-                targetFolder: 'folder'
-                replaceFile: True
-                sourceFolder: '$(Build.SourcesDirectory)/testdata'
-                Filter: '**/*.md'
-                message: 'Updated as a folder'
-                gitname: builduser
-                gitemail: 'build@demo'
-                useAgentToken: true
-                localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagentfolder'
-
-            - task: WikiFolderUpdaterTask@1
-              inputs:
-                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
-                targetFolder: 'folder'
-                replaceFile: True
-                sourceFolder: '$(Build.SourcesDirectory)/testdata'
-                Filter: '**/*.md'
-                message: 'Updated as a folder'
-                gitname: builduser
-                gitemail: 'build@demo'
-                useAgentToken: true
-                localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagentfolder'
-
+                artifactName: 'PDFs'
+                targetPath: '$(Build.ArtifactStagingDirectory)\PDF'
   - stage: Documentation
     dependsOn: Test 
     pool:

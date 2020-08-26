@@ -1,16 +1,14 @@
-The extension contains a task that wrapper the Max Melcher's [AzureDevOps.WikiPDFExport command line tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport);
+The extension contains a task that wrapper the Max Melcher's [AzureDevOps.WikiPDFExport command line tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport) that can be used to covert a WIKI to a PDF file.
 
-The task allows you to 
-1. Optionally clone a WIKI repo that is hosted on Azure DevOps or GitHub into a local folder
-1. Export 
-   - the whole WIKI as a PDF (assuming a .order file is present)
+When run the task will download the current release of the AzureDevOps.WikiPDFExport command line tool from GitHub. It then allows you to 
+1. Optionally clone a WIKI repo that is hosted on Azure DevOps or GitHub into a local folder for exporting. If you already have the folder structure on the agent then this feature can be skipped
+1. The task will then export either 
+   - the whole WIKI structure as a PDF (assuming a .order file is present in the root)
    - a single named file
-
-Note: If used without the clone step, it can allow the export to PDF of any markdown file in the file system.
 
 <hr>
 
-__Note:__ If you see problems such as `Error: spawn git ENOENT` when cloing a repo using this tasks, please check the troubleshooting section at the end of this document before logging a support issue.
+__Note:__ If you see problems such as `Error: spawn git ENOENT` when cloing a repo using this task, please check the troubleshooting section at the end of this document before logging a support issue.
 
 <hr>
 
@@ -18,14 +16,14 @@ __Note:__ If you see problems such as `Error: spawn git ENOENT` when cloing a re
 
 ### Parameters
 #### General
-- CloneRepo - a flag whether to cloen the repo or not
+- CloneRepo - a boolean flag whether to clone the repo or not
 - Repo - The repo URL to update e.g in the form **https://dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki** (see the URL section below as to how to find this URL)
-- LocalPath - The Path to clone the repo into, or the folder structure containing the file(s) to export
+- LocalPath - The Path to clone the repo into and hence the folder structure containing the file(s) to export
 - SingleFile - Optional single file to export in the localPath folder e.g. page.md
-- ExtraParameters - Optional any extra [WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/) you wish to pass to the command line tool
+- ExtraParameters - Any optional extra as defined at [WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/) you wish to pass to the command line tool - the task automatically managed the -p, -s, -c and -v parameters
 #### Git Clone Specific
-- Branch - The name of the **pre-existing** branch to checkout prior to the export, defaults to the default branch
-- UseAgentToken - If true the task will use the built in agent OAUTH token, if false you need to provide username & password/PAT". **Note** for use of the OAUTH token to work you must allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) and grant _contribute_ access on the target Azure DevOps WIKI to the _Project Collection Build Service_ user (assuming this is the account the pipeline is running as). The default is _false_ (see Authentication below)
+- Branch - The name of the **pre-existing** branch to checkout prior to the export. If not set the default branch is used.
+- UseAgentToken - If true the task will use the built in agent OAUTH token, if false you need to provide username & password/PAT. **Note** for use of the OAUTH token to work you must allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) and grant _contribute_ access on the target Azure DevOps WIKI to the _Project Collection Build Service_ user (assuming this is the account the pipeline is running as). The default is _false_ (see Authentication below)
 - Username - The username to authenticate with the repo (see Authentication below)
 - Password - The password or PAT to authenticate with the repo (see Authentication below) _Recommended that this is stored as secret variable_
 - InjectExtraHeader -  If set to true, credentials are passed as a header value. If false, the default, they are passed in the URL. This option was added to address the issue [#613](https://github.com/rfennell/AzurePipelines/issues/613) which found that this means of authentication is required when working with an on-prem TFS/Azure DevOps Server
