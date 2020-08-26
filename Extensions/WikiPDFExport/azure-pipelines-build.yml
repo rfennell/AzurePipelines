@@ -160,8 +160,7 @@ stages:
               condition: succeededOrFailed()
               inputs:
                 cloneRepo: true
-                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
-                user: richardfennell
+                repo: 'https://dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 useAgentToken: true
                 outputFile: '$(Build.ArtifactStagingDirectory)\PDF\Azrepo.pdf'
             - task: PublishPipelineArtifact@0

@@ -39,19 +39,14 @@ export async function ExportPDF(
     extraParams,
     logInfo,
     logError) {
-        await DownloadExportExe(__dirname, logInfo, logError);
-        var command = `${__dirname}\\azuredevops-export-wiki.exe`;
-        if (!fs.existsSync(command)) {
-            logError(`Cannot find command line tool ${command}`);
-            return;
-        }
 
+        var args = "";
         if (wikiRootPath.length > 0) {
             if (!fs.existsSync(`${wikiRootPath}`)) {
                 logError(`Cannot find wiki folder ${wikiRootPath}`);
                 return;
             } else {
-                command += ` -p ${wikiRootPath}`;
+                args += ` -p ${wikiRootPath}`;
             }
         }
 
@@ -60,7 +55,7 @@ export async function ExportPDF(
                 logError(`Cannot find the requested file ${singleFile} to export`);
                 return;
             } else {
-                command += ` -s ${singleFile}`;
+                args += ` -s ${singleFile}`;
             }
         } else {
             if (!fs.existsSync(`${wikiRootPath}/.order`)) {
@@ -69,7 +64,7 @@ export async function ExportPDF(
         }
 
         if (outputFile.length > 0) {
-            command += ` -o ${outputFile}`;
+            args += ` -o ${outputFile}`;
         } else {
             logError("No output file name provided");
             return;
@@ -77,12 +72,12 @@ export async function ExportPDF(
 
         if (extraParams && extraParams.length > 0) {
             logInfo("Adding extra parameters to the command line");
-            command += ` ${extraParams}`;
+            args += ` ${extraParams}`;
         }
 
-        if (!command.includes("-v")) {
+        if (!args.includes("-v")) {
             logInfo("Adding the verbose flag to increase logging");
-            command += ` -v`;
+            args += ` -v`;
         }
 
     var folder = path.dirname(outputFile);
@@ -90,9 +85,12 @@ export async function ExportPDF(
         logInfo(`Creating folder ${folder}`);
         fs.mkdirSync(folder, { recursive: true });
     }
-
     logInfo(`Changing folder to ${wikiRootPath}`);
     process.chdir(wikiRootPath);
+
+    await DownloadExportExe(folder, logInfo, logError);
+    var command = `${folder}\\azuredevops-export-wiki.exe ${args}`;
+
     logInfo(`Using command '${command}'`);
     exec(command, function (error, stdout, stderr) {
         logInfo(stdout);
