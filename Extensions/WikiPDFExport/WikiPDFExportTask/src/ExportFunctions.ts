@@ -89,9 +89,14 @@ export async function ExportPDF(
     process.chdir(wikiRootPath);
 
     await DownloadExportExe(wikiRootPath, logInfo, logError);
-    var command = `${wikiRootPath}\\azuredevops-export-wiki.exe ${args}`;
+
+    logInfo(`Pause to avoid 'The process cannot access the file because it is being used by another process.' error`);
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    var command = `${wikiRootPath}\\azuredevops-export-wiki.exe  ${args}`;
 
     logInfo(`Using command '${command}'`);
+
     exec(command, function (error, stdout, stderr) {
         logInfo(stdout);
         logInfo(stderr);
@@ -99,5 +104,4 @@ export async function ExportPDF(
             logError(error);
         }
     });
-
 }
