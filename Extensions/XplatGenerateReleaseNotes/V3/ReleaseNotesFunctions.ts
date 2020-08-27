@@ -42,7 +42,7 @@ import { IReleaseApi } from "azure-devops-node-api/ReleaseApi";
 import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 import * as webApi from "azure-devops-node-api/WebApi";
 import fs  = require("fs");
-import { Build, Change } from "azure-devops-node-api/interfaces/BuildInterfaces";
+import { Build, Change, Timeline, TimelineRecord } from "azure-devops-node-api/interfaces/BuildInterfaces";
 import { IGitApi, GitApi } from "azure-devops-node-api/GitApi";
 import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfaces";
 import { GitCommit, GitPullRequest, GitPullRequestQueryType, GitPullRequestSearchCriteria, PullRequestStatus } from "azure-devops-node-api/interfaces/GitInterfaces";
@@ -502,7 +502,8 @@ export function processTemplate(
     globalTests: TestCaseResult[],
     releaseTests: TestCaseResult[],
     relatedWorkItems: WorkItem[],
-    compareBuildDetails: Build
+    compareBuildDetails: Build,
+    currentStage: TimelineRecord
     ): string {
 
     var output = "";
@@ -614,10 +615,13 @@ export async function getLastSuccessfulBuildByStage(
     stageName: string,
     buildId: number,
     buildDefId: number
-) {
+)  {
     if (stageName.length === 0) {
         agentApi.logInfo ("No stage name provided, cannot find last successful build by stage");
-        return 0;
+        return {
+            id: 0,
+            stage: null
+        };
     }
     let builds = await buildApi.getBuilds(teamProject, [buildDefId]);
     if (builds.length > 1 ) {
@@ -638,7 +642,10 @@ export async function getLastSuccessfulBuildByStage(
                                 record.state.toString() === "2" && // completed
                                 record.result.toString() === "0") { // succeeded
                                     agentApi.logInfo (`Found required stage ${record.name} in the completed and successful state in build ${build.id}`);
-                                return build.id;
+                                return {
+                                    id: build.id,
+                                    stage: record
+                                };
                             }
                         }
                     }
@@ -648,7 +655,10 @@ export async function getLastSuccessfulBuildByStage(
             }
         }
     }
-    return 0;
+    return {
+        id: 0,
+        stage: null
+    };
 }
 
 export async function generateReleaseNotes(
@@ -713,6 +723,7 @@ export async function generateReleaseNotes(
 
             var currentRelease: Release;
             var currentBuild: Build;
+            var currentStage: TimelineRecord;
 
             if ((releaseId === undefined) || !releaseId) {
                 agentApi.logInfo("Getting the current build details");
@@ -731,10 +742,11 @@ export async function generateReleaseNotes(
                         stageName = overrideStageName;
                     }
                     agentApi.logInfo (`Getting items associated the builds since the last successful build to the stage '${stageName}'`);
-                    var lastGoodBuildId = await getLastSuccessfulBuildByStage(buildApi, teamProject, stageName, buildId, currentBuild.definition.id);
-
+                    var successfulStageDetails = await getLastSuccessfulBuildByStage(buildApi, teamProject, stageName, buildId, currentBuild.definition.id);
+                    var lastGoodBuildId = successfulStageDetails.id;
                     if (lastGoodBuildId !== 0) {
                         console.log(`Getting the details between ${lastGoodBuildId} and ${buildId}`);
+                        currentStage = successfulStageDetails.stage;
 
                         mostRecentSuccessfulBuild = await buildApi.getBuild(teamProject, lastGoodBuildId);
 
@@ -1071,7 +1083,8 @@ export async function generateReleaseNotes(
                     compareReleaseDetails: mostRecentSuccessfulDeploymentRelease,
                     releaseTests: releaseTests,
                     buildDetails: currentBuild,
-                    compareBuildDetails: mostRecentSuccessfulBuild
+                    compareBuildDetails: mostRecentSuccessfulBuild,
+                    currentStage: currentStage
                 });
 
             var template = getTemplate (templateLocation, templateFile, inlineTemplate);
@@ -1091,7 +1104,8 @@ export async function generateReleaseNotes(
                     globalTests,
                     releaseTests,
                     relatedWorkItems,
-                    mostRecentSuccessfulBuild);
+                    mostRecentSuccessfulBuild,
+                    currentStage);
 
                 writeFile(outputFile, outputString, replaceFile, appendToFile);
 
