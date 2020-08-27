@@ -16,6 +16,7 @@ FileCopier Utils |[![Release Status](https://dev.azure.com/richardfennell/github
 GenerateReleaseNotes (XPlat) |[![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/XplatGenerateReleaseNotes?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=85)
 Manifest Versioning | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/VersioningExtension?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=65) 
 WIKI Updater | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/extensions/WikiUpdaterExtension?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=64)
+WIKI PDF Exporter | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/extensions/WikiPDFExportExtension?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=92)
 YAML Generator | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/extensions/YamlGenerator?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=83)
 
 ## Supported but planned to deprecate in not too distant future

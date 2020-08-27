@@ -1,0 +1,68 @@
+{
+ "manifestVersion": 1,
+ "id": "BM-VSTS-WikiPDFExport-Tasks",
+ "version": "1.0.0",
+ "name": "WIKI PDF Export Tasks",
+ "publisher": "richardfennellBM",
+  "description": "Set of tasks to wrapper https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/",
+  "CustomerQnASupport": {
+    "enableqna":"true",
+    "url": "https://github.com/rfennell/AzurePipelines/issues"
+  }, 
+  "categories": [
+    "Azure Pipelines"
+  ],
+  "targets": [
+         {
+             "id": "Microsoft.VisualStudio.Services"
+         }
+     ],
+  "tags": [
+    "WIKI"
+  ],   
+  "branding": {
+        "color": "#f97923",
+        "theme": "dark"
+  },
+  "icons": {
+      "default": "images/logo.png"
+  },
+   "links": {
+    "getstarted": {
+      "uri": "https://github.com/rfennell/AzurePipelines/wiki/WIKI-PDFExport-Tasks"
+    },
+    "support": {
+      "uri": "https://github.com/rfennell/AzurePipelines/issues"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot1.png"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "files": [
+    {
+      "path": "WikiPDFExportTask"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "WikiPDFExportTask",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "WikiPDFExportTask"
+      }
+    }
+  ]
+}
