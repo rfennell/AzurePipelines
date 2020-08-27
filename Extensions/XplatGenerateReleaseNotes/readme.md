@@ -2,6 +2,7 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 3.8.x adds currentStage variable for multi-stage YAML based builds
 * 3.6.x adds compareBuildDetails variable for YAML based builds
 * 3.5.x removed the need to enable OAUTH access for the Agent phase
 * 3.4.x adds support for getting full commit messages from Bitbucket
@@ -135,6 +136,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 #### Build objects
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
 * **compareBuildDetails** - the previous successful build that comparisons are being made against, only available if checkstage=true
+* **currentStage** - if `checkstage` is enable this object is set to the details of the stage in the current build that is being used for the stage check
 
 **Note:** To dump all possible values use the form `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion (See below)
 
