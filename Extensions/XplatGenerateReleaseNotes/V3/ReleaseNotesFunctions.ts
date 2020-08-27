@@ -624,7 +624,8 @@ export async function getLastSuccessfulBuildByStage(
         for (let buildIndex = 0; buildIndex < builds.length; buildIndex++) {
             const build = builds[buildIndex];
             agentApi.logInfo (`Comparing ${build.id} against ${buildId}`);
-            if (build.id === buildId) {
+            // force the cast to string as was getting a type mimatch
+            if (build.id.toString() === buildId.toString()) {
                 agentApi.logInfo("Ignore compare against self");
             } else {
                 var lastGoodBuildId = 0;
