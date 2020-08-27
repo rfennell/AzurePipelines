@@ -22,8 +22,10 @@ const user = "";
 const password = "";
 const repo = "";
 const branch = "";
+const exeFolder = "C:\\tmp";
 
 ExportRun(
+    exeFolder,
     cloneRepo,
     localpath,
     singleFile,

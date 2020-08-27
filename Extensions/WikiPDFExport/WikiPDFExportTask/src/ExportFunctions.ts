@@ -22,18 +22,26 @@ function filterRelease(release) {
 
 // Define a function to filter assets.
 function filterAsset(asset) {
-    // Select assets that contain the string 'windows'.
+    // Select assets that contain the string .
     return asset.name.indexOf("azuredevops-export-wiki.exe") >= 0;
 }
 
-async function DownloadExportExe(
+async function DownloadGitHubArtifact(
+    user,
+    repo,
     folder,
     logInfo,
     logError) {
 
     var downloadRelease = require("download-github-release");
     logInfo(`Starting download of command line tool to ${folder}`);
-    await downloadRelease("MaxMelcher", "AzureDevOps.WikiPDFExport", folder, filterRelease, filterAsset, false)
+    await downloadRelease(
+        user,
+        repo,
+        folder,
+        filterRelease,
+        filterAsset,
+        false)
     .then(function() {
         logInfo("Download done");
     })
@@ -43,12 +51,20 @@ async function DownloadExportExe(
 }
 
 export async function ExportPDF(
+    command,
     wikiRootPath,
     singleFile,
     outputFile,
     extraParams,
     logInfo,
     logError) {
+
+        if (command.length > 0) {
+            if (!fs.existsSync(`${command}`)) {
+                logError(`Cannot find EXE ${command}`);
+                return;
+            }
+        }
 
         var args = "";
         if (wikiRootPath.length > 0) {
@@ -98,12 +114,7 @@ export async function ExportPDF(
     logInfo(`Changing folder to ${wikiRootPath}`);
     process.chdir(wikiRootPath);
 
-    await DownloadExportExe(wikiRootPath, logInfo, logError);
-
-    logInfo(`Pause to avoid 'The process cannot access the file because it is being used by another process.' error`);
-    await new Promise(resolve => setTimeout(resolve, 5000));
-
-    var command = `${wikiRootPath}\\azuredevops-export-wiki.exe  ${args}`;
+    command += ` ${args}`;
 
     logInfo(`Using command '${command}'`);
 
@@ -117,6 +128,7 @@ export async function ExportPDF(
 }
 
 export async function ExportRun (
+    exeFolder,
     cloneRepo,
     localpath,
     singleFile,
@@ -129,6 +141,15 @@ export async function ExportRun (
     injectExtraHeader,
     branch
  ) {
+    logInfo(`Start Download`);
+    await DownloadGitHubArtifact("MaxMelcher", "AzureDevOps.WikiPDFExport", exeFolder, logInfo, logError);
+    var exeCmd = `${exeFolder}\\azuredevops-export-wiki.exe`;
+
+    // `Pause to avoid 'The process cannot access the file because it is being used by another process.' error`
+    // It seems that even though we wait for the download the file is not available to run for a short period.
+    // This is a nasty solution but appears to work
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
      if (cloneRepo) {
          console.log(`Cloning Repo`);
          if (useAgentToken === true) {
@@ -145,9 +166,9 @@ export async function ExportRun (
 
      if (singleFile && singleFile.length > 0) {
          console.log(`A filename ${singleFile} has been passed so only processing that file `);
-         ExportPDF (localpath, singleFile, outputFile, extraParams,  logInfo, logError);
+         ExportPDF (exeCmd, localpath, singleFile, outputFile, extraParams,  logInfo, logError);
      } else  {
          console.log(`No filename has been passed so cloning the repo `);
-         ExportPDF (localpath, "" , outputFile, extraParams, logInfo, logError);
+         ExportPDF (exeCmd, localpath, "" , outputFile, extraParams, logInfo, logError);
      }
  }

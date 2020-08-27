@@ -16,6 +16,7 @@ var useAgentToken = tl.getBoolInput("useAgentToken");
 var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
 var cloneRepo = tl.getBoolInput("cloneRepo");
+var exeFolder = tl.getVariable("Agent.TempDirectory");
 
 console.log(`Variable: Repo [${repo}]`);
 console.log(`Variable: Use Agent Token [${useAgentToken}]`);
@@ -26,8 +27,10 @@ console.log(`Variable: SingleFile [${singleFile}]`);
 console.log(`Variable: OutputFile [${outputFile}]`);
 console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
+console.log(`Variable: Exe Download Folder [${exeFolder}]`);
 
 ExportRun(
+    exeFolder,
     cloneRepo,
     localpath,
     singleFile,

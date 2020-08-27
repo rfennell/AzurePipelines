@@ -26,8 +26,10 @@ const singleFile = "";
 const extraParams = "";
 const useAgentToken = false;
 const cloneRepo = true;
+const exeFolder = "C:\\tmp";
 
 ExportRun(
+    exeFolder,
     cloneRepo,
     localpath,
     singleFile,
