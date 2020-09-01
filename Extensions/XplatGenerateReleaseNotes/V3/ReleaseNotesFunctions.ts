@@ -638,7 +638,7 @@ export async function getLastSuccessfulBuildByStage(
                     for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
                         const record  = timeline.records[timelineIndex];
                         if (record.type === "Stage") {
-                            if ((record.name === stageName || record.identifier === stageName) && 
+                            if ((record.name === stageName || record.identifier === stageName) &&
                                 (record.state.toString() === "2" || record.state.toString() === "completed") && // completed
                                 (record.result.toString() === "0" || record.result.toString() === "succeeded")) { // succeeded
                                     agentApi.logInfo (`Found required stage ${record.name} in the completed and successful state in build ${build.id}`);
