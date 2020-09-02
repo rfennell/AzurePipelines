@@ -4,6 +4,9 @@ import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfac
 import { GitQueryCommitsCriteria, GitVersionType } from "azure-devops-node-api/interfaces/GitInterfaces";
 import { Change } from "azure-devops-node-api/interfaces/BuildInterfaces";
 import { ArtifactUriQuery } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
+import { AgentSpecificApi } from "./agentSpecific";
+
+let agentApi = new AgentSpecificApi();
 
 export async function getCommitsAndWorkItemsForGitRepo(vsts: WebApi, baseSourceVersion: string, currentSourceVersion: string, repositoryId: string): Promise<CommitInfo> {
     let maxCommits = tl.getVariable("ReleaseNotes.Fix349.MaxCommits") ? Number(tl.getVariable("ReleaseNotes.Fix349.MaxCommits")) : 5000;
@@ -22,26 +25,31 @@ export async function getCommitsAndWorkItemsForGitRepo(vsts: WebApi, baseSourceV
 
     let workItems: ResourceRef[] = [];
     let commits: Change[] = [];
-    commitsBetweenBuilds.forEach(c => {
-        commits.push(<Change>{
-            id: c.commitId,
-            message: c.comment,
-            messageTruncated: c.commentTruncated,
-            type: "TfsGit",
-            author: {
-                displayName: c.author.name,
-                id: null,
-                uniqueName: c.committer.email
-            },
-            timestamp: c.author.date,
-            location: c.url
-            // pusher is missing from the result - do we need that?
+    if (commitsBetweenBuilds) {
+        agentApi.logInfo("Processing commits found");
+        commitsBetweenBuilds.forEach(c => {
+            commits.push(<Change>{
+                id: c.commitId,
+                message: c.comment,
+                messageTruncated: c.commentTruncated,
+                type: "TfsGit",
+                author: {
+                    displayName: c.author.name,
+                    id: null,
+                    uniqueName: c.committer.email
+                },
+                timestamp: c.author.date,
+                location: c.url
+                // pusher is missing from the result - do we need that?
+            });
+            let index = 0;
+            while (index < c.workItems.length && workItems.length < maxWorkItems) {
+                workItems.push(c.workItems[index++]);
+            }
         });
-        let index = 0;
-        while (index < c.workItems.length && workItems.length < maxWorkItems) {
-            workItems.push(c.workItems[index++]);
-        }
-    });
+    } else {
+        agentApi.logInfo("No commits found");
+    }
 
     return {
         commits: commits,
