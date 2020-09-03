@@ -771,8 +771,8 @@ export async function generateReleaseNotes(
                     }
                 } else {
                     agentApi.logInfo (`Getting items associated with only the current build`);
-                    globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
-                    globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
+                    globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
+                    globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000);
                 }
                 console.log("Get the file details associated with the commits");
                 globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
