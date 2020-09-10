@@ -96,7 +96,7 @@ export function GetTrimmedUrl(url: string, logInfo): string {
     return fixedUrl;
 }
 
-export async function UpdateGitWikiFile(
+export async function UpdateGitWikiFolder(
     protocol,
     repo,
     localpath,
@@ -115,7 +115,8 @@ export async function UpdateGitWikiFile(
     tagRepo,
     tag,
     injectExtraHeader,
-    branch) {
+    branch,
+    maxRetries) {
     const git = simplegit();
 
     let remote = "";
@@ -210,8 +211,29 @@ export async function UpdateGitWikiFile(
         if (summary.commit.length > 0) {
             logInfo(`Committed "${localpath}" with message "${message}" as SHA ${summary.commit}`);
 
-            await git.push();
-            logInfo(`Pushed to ${repo}`);
+            if (maxRetries < 1) {
+                maxRetries = 1;
+                logInfo(`Setting max retries to 1 and it must be a positive value`);
+            }
+            for (let index = 1; index <= maxRetries; index++) {
+                try {
+                    logInfo(`Attempt ${index} - Push to ${repo}`);
+                    await git.push();
+                    logInfo(`Push completed`);
+                    break;
+                } catch (err) {
+                    if (index < maxRetries) {
+                        logInfo(`Push failed, probably due to target being updated completed, will retry up to ${maxRetries} times`);
+                        sleep(1000);
+                        logInfo(`Pull to get updates from other users`);
+                        await git.pull();
+                    } else {
+                        logInfo(`Reached the retry limit`);
+                        logError(err);
+                        return;
+                    }
+                }
+            }
 
             if (tagRepo) {
                 if (tag.length > 0) {
@@ -229,4 +251,10 @@ export async function UpdateGitWikiFile(
     } catch (error) {
         logError(error);
     }
+}
+
+function sleep(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
 }
