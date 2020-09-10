@@ -165,9 +165,8 @@ export async function UpdateGitWikiFile(
 
         // do git pull just in case the clone was slow and there have been updates since
         // this is to try to reduce concurrency issues
-        // await git.pull();
+        await git.pull();
         logInfo(`Pull in case of post clone updates from other users`);
-        await sleep(5000);
 
         // we need to change any encoded
         var workingFile = GetWorkingFile(filename, logInfo);
