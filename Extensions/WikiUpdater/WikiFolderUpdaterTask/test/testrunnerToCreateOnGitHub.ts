@@ -1,5 +1,5 @@
 import {
-    UpdateGitWikiFile
+    UpdateGitWikiFolder
     } from "../src/GitWikiFuntions";
 
 function logInfo (msg: string) {
@@ -30,5 +30,6 @@ const tag = "";
 const branch = "";
 const injectExtraHeaders = false;
 const protocol = "https";
+const retries = "5";
 
-UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message,  sourceFolder, filter, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch);
+UpdateGitWikiFolder(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message,  sourceFolder, filter, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch, retries);

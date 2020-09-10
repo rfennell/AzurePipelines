@@ -2,7 +2,7 @@ import tl = require("azure-pipelines-task-lib/task");
 import * as fs from "fs";
 
 import {
-    UpdateGitWikiFile,
+    UpdateGitWikiFolder,
     GetTrimmedUrl,
     GetProtocol
     } from "./GitWikiFuntions";
@@ -30,6 +30,7 @@ var tagRepo = tl.getBoolInput("tagRepo");
 var tag = tl.getInput("tag");
 var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
+var retries = tl.getInput("retries");
 
 console.log(`Variable: Repo [${repo}]`);
 console.log(`Variable: TargetFolder [${targetFolder}]`);
@@ -48,6 +49,7 @@ console.log(`Variable: Tag Repo [${tagRepo}]`);
 console.log(`Variable: Tag [${tag}]`);
 console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
+console.log(`Variable: Retries [${retries}]`);
 
 if (useAgentToken === true) {
     console.log(`Using OAUTH Agent Token, overriding username and password`);
@@ -58,4 +60,4 @@ if (useAgentToken === true) {
 var protocol = GetProtocol(repo, logInfo);
 repo = GetTrimmedUrl(repo, logInfo);
 
-UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message, sourceFolder, filter, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch);
+UpdateGitWikiFolder(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message, sourceFolder, filter, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch, retries);
