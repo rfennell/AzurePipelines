@@ -31,6 +31,7 @@ var tagRepo = tl.getBoolInput("tagRepo");
 var tag = tl.getInput("tag");
 var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
+var retries = tl.getBoolInput("retries");
 
 console.log(`Variable: Repo [${repo}]`);
 console.log(`Variable: Filename [${filename}]`);
@@ -50,6 +51,7 @@ console.log(`Variable: Tag Repo [${tagRepo}]`);
 console.log(`Variable: Tag [${tag}]`);
 console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
+console.log(`Variable: Retries [${retries}]`);
 
 if (useAgentToken === true) {
     console.log(`Using OAUTH Agent Token, overriding username and password`);
@@ -71,5 +73,5 @@ if (dataIsFile === true) {
 }
 
 if (haveData) {
-    UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch);
+    UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch, retries);
 }

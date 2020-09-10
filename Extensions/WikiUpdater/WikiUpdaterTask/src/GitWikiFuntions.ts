@@ -5,6 +5,7 @@ import * as path from "path";
 import * as process from "process";
 import { logWarning } from "./agentSpecific";
 import { BranchSummary } from "simple-git/typings/response";
+import { SSL_OP_CIPHER_SERVER_PREFERENCE, SSL_OP_LEGACY_SERVER_CONNECT } from "constants";
 
 // A wrapper to make sure that directory delete is handled in sync
 function rimrafPromise (localpath)  {
@@ -111,7 +112,8 @@ export async function UpdateGitWikiFile(
     tagRepo,
     tag,
     injectExtraHeader,
-    branch) {
+    branch,
+    maxRetries) {
     const git = simplegit();
 
     let remote = "";
@@ -163,8 +165,9 @@ export async function UpdateGitWikiFile(
 
         // do git pull just in case the clone was slow and there have been updates since
         // this is to try to reduce concurrency issues
-        await git.pull();
+        // await git.pull();
         logInfo(`Pull in case of post clone updates from other users`);
+        await sleep(5000);
 
         // we need to change any encoded
         var workingFile = GetWorkingFile(filename, logInfo);
@@ -193,8 +196,29 @@ export async function UpdateGitWikiFile(
         if (summary.commit.length > 0) {
             logInfo(`Committed file "${localpath}" with message "${message}" as SHA ${summary.commit}`);
 
-            await git.push();
-            logInfo(`Pushed to ${repo}`);
+            if (maxRetries < 1) {
+                maxRetries = 1;
+                logInfo(`Setting max retries to 1 and it must be a positive value`);
+            }
+            for (let index = 1; index <= maxRetries; index++) {
+                try {
+                    logInfo(`Attempt ${index} - Push to ${repo}`);
+                    await git.push();
+                    logInfo(`Push completed`);
+                    break;
+                } catch (err) {
+                    if (index < maxRetries) {
+                        logInfo(`Push failed, probably due to target being updated completed, will retry up to ${maxRetries} times`);
+                        sleep(1000);
+                        logInfo(`Pull to get updates from other users`);
+                        await git.pull();
+                    } else {
+                        logInfo(`Reached the retry limit`);
+                        logError(err);
+                        return;
+                    }
+                }
+            }
 
             if (tagRepo) {
                 if (tag.length > 0) {
@@ -213,4 +237,10 @@ export async function UpdateGitWikiFile(
         logError(error);
     }
 
+}
+
+function sleep(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
 }

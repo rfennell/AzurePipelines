@@ -31,6 +31,7 @@ Both tasks can be used in a build or a release
 - Tag Repo - If true a Git Tag set in the value of 'Tag' parameter in the repo. Defaults to false
 - Tag - The tag to add to the repo, if the Tag repo flag is set to true
 - Branch - The name of the **pre-existing** branch to checkout prior to committing the change, defaults to empty, so no checkout is done and writes are done to the default master branch
+- Retries - The number of times to retry if a push fails. After a failed push a pull is run prior to the next attempt, default to 5
 
 #### Required Parameters (Single File Task)
 - DataIsFile - If true will upload a file, if false the upload is the content provided as a string
