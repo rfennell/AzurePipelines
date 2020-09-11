@@ -186,7 +186,7 @@
       "helpMarkDown": "A comma-separated list of Work Item states to include in the report.",
       "groupName": "advanced",
       "visibleRule": "showParents = true"
-    }    ,
+    },
     {
       "name": "unifiedList",
       "type": "boolean",
@@ -195,7 +195,16 @@
       "required": false,
       "helpMarkDown": "A boolean flag whether when running inside a release the WI/Commit for all builds are returned as a single list",
       "groupName": "advanced"
-     }
+     },
+     {
+      "name": "buildTags",
+      "type": "string",
+      "label": "Include only the builds with tags:",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "A comma-separated list of build tags.",
+      "groupName": "advanced"
+    }
   ],
   "instanceNameFormat": "Generate release notes (PowerShell)",
   "execution": {

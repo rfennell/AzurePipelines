@@ -65,7 +65,7 @@ $wiStateFilter= Get-VstsInput -Name "wiStateFilter"
 $showParents = Get-VstsInput -Name "showParents"
 $appendToFile = Get-VstsInput -Name "appendToFile"
 $unifiedList = Get-VstsInput -Name "unifiedList"
-
+$buildTags = Get-VstsInput -Name "buildTags"
 
 if ( ([string]::IsNullOrEmpty($releaseid) -eq $false) -and [string]::IsNullOrEmpty($releasedefid) )
 {
@@ -204,7 +204,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
         Write-Verbose "Checking build artifacts for the Build Defintion ID $($defId)"
         $lastBuild = $currentRelease.artifacts | Where-Object { $_.definitionReference.definition.id -eq $defId}
         $firstBuild = $lastSuccessfulRelease.artifacts | Where-Object { $_.definitionReference.definition.id -eq $defId}
-        foreach ($build in Get-BuildsByDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -buildDefid $defId -usedefaultcreds $usedefaultcreds)
+        foreach ($build in Get-BuildsByDefinitionId -tfsUri $collectionUrl -teamproject $teamproject -buildDefid $defId -usedefaultcreds $usedefaultcreds -buildTags $buildTags)
         {
             # Extra checks for for #561
             Write-Verbose "Comparing range values"
