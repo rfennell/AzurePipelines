@@ -262,10 +262,11 @@ function Get-BuildsByDefinitionId {
         $tfsUri,
         $teamproject,
         $buildDefid,
-        $usedefaultcreds
+        $usedefaultcreds,
+        $buildTags
     )
 
-    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?definitions=$($builddefid)&api-version=2.0"
+    $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds?definitions=$($builddefid)&tagFilters=$($buildTags)&api-version=2.0"
     $jsondata = Invoke-GetCommand -uri $uri -usedefaultcreds $usedefaultcreds | ConvertFrom-JsonUsingDOTNET
     $jsondata.value
 }

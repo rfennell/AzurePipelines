@@ -179,6 +179,7 @@ In this form the task takes three parameters
 * (Advanced) A comma-separated list of Work Item types that should be included in the output.
 * (Advanced) A comma-separated list of Work Item states that should be included in the output.
 * (Advanced) A boolean flag whether when running inside a release the WI/Commit for all builds are returned as a single list as opposed to being listed by builds - not that a different template (see [samples](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates/GenerateReleaseNotes%20(Original%20Powershell%20based)) is required for this to work, one with no **@@BUILDLOOP@@** entry. (In 2.18.x and later)
+* (Advanced) A comma-separated list of build tags.
 * (Outputs) Optional: Name of the variable that markdown contents will be copied into for use in other tasks
 
 When run you should expect to see a build logs as below and a releases notes file in your drops location.
