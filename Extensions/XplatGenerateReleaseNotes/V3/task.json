@@ -246,8 +246,16 @@
       "required": true,
       "helpMarkDown": "Find the parents and child workitems for any workitems associated with a build",
       "groupName":"advanced"
+    },
+    {
+      "name": "getAllParents",
+      "type": "boolean",
+      "label": "Find all Parent WI",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "Find the parents all workitems associated with a build, recursing back to workitem with no parents e.g. up to Epics",
+      "groupName":"advanced"
     }
-
 
    ],
   "instanceNameFormat": "Generate Release Notes based on Release Comparison API",
