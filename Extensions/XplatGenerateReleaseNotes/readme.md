@@ -126,7 +126,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
     - **commits**  - the commits associated with this build
     - **workitems**  - the work items associated with the build
     - **tests**  - the work items associated with the build
-* **relatedWorkItems** – the array of all work item associated with the release plus their direct parents or children
+* **relatedWorkItems** – the array of all work item associated with the release plus their direct parents or children and/or all parents depending on task parameters
 
 #### Release objects (only available in a release)
 * **releaseDetails** – the release details of the release that the task was triggered for.
@@ -200,7 +200,8 @@ The task takes the following parameters
 * (Advanced) Dump Payload to Console - If true the data objects passed to the file generator is dumped to the log.
 * (Advanced) Dump Payload to File - If true the data objects passed to the file generator is dumped to a JSON file.
 * (Advanced) Dump Payload Filename - The filename to dump the data objects passed to the file generator
-* (Advanced) Get Parent and Children for associated work items, defaults to false
+* (Advanced) Get Direct Parent and Children for associated work items, defaults to false
+* (Advanced) Get All Parents for associated work items, recursing back to workitem with no parents e.g. up to Epics, defaults to false
 * (Handlebars) customHandlebars ExtensionCode. A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};
 * (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.
 
