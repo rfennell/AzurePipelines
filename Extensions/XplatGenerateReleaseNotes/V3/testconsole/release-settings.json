@@ -19,6 +19,8 @@
     "replaceFile": "true",
     "appendToFile": "false",
     "getParentsAndChildren": "true",
+    "getAllParents": "true",
+    
     "searchCrossProjectForPRs": "true",
     "stopOnRedeploy": "false",
     "SortWi": "true",

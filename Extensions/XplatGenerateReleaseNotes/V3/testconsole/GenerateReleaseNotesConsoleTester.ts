@@ -49,6 +49,7 @@ async function run(): Promise<number>  {
                     var replaceFile = getBoolean(settings.replaceFile);
                     var appendToFile = getBoolean(settings.appendToFile);
                     var getParentsAndChildren = getBoolean(settings.getParentsAndChildren);
+                    var getAllParents = getBoolean(settings.getAllParents);
                     var searchCrossProjectForPRs = getBoolean(settings.searchCrossProjectForPRs);
 
                     var stopOnRedeploy = settings.stopOnRedeploy;
@@ -104,7 +105,8 @@ async function run(): Promise<number>  {
                         dumpPayloadToConsole,
                         dumpPayloadToFile,
                         dumpPayloadFileName,
-                        checkStage);
+                        checkStage,
+                        getAllParents);
                 } else {
                     console.log(`Cannot fine settings file ${filename}`);
                 }

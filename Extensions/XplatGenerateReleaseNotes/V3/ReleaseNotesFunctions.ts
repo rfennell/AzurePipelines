@@ -463,6 +463,44 @@ export async function getAllDirectRelatedWorkitems (
 
 }
 
+export async function getAllParentWorkitems (
+    workItemTrackingApi: IWorkItemTrackingApi,
+    relatedWorkItems: WorkItem[],
+) {
+    var allRelatedWorkItems = [...relatedWorkItems]; // a clone
+    var knownWI = allRelatedWorkItems.length;
+    var addedOnThisPass = 0;
+    do {
+        // reset the count
+        addedOnThisPass = 0;
+        // look for all the parent
+        for (let wiIndex = 0; wiIndex < allRelatedWorkItems.length; wiIndex++) {
+            var wi  = allRelatedWorkItems[wiIndex];
+
+            agentApi.logInfo(`Looking for parents of WI [${wi.id}]`);
+            for (let relIndex = 0; relIndex <  wi.relations.length; relIndex++) {
+                var relation  =  wi.relations[relIndex];
+                if (relation.attributes.name === "Parent") {
+                    var urlParts = relation.url.split("/");
+                    var id = parseInt(urlParts[urlParts.length - 1]);
+                    if (!allRelatedWorkItems.find(element => element.id === id)) {
+                        agentApi.logInfo(`Add ${relation.attributes.name} WI ${id}`);
+                        allRelatedWorkItems.push(await workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null));
+                        // if we add something add to the count
+                        addedOnThisPass ++;
+                    } else {
+                        agentApi.logInfo(`Skipping ${id} as already in the found parent list`);
+                    }
+                }
+            }
+        }
+    } while (addedOnThisPass !== 0); // exit if we added nothing in this pass
+
+    agentApi.logInfo(`Added ${allRelatedWorkItems.length - knownWI} parent WI to the list of direct relations`);
+    return allRelatedWorkItems;
+
+}
+
 export async function getFullWorkItemDetails (
     workItemTrackingApi: IWorkItemTrackingApi,
     workItemRefs: ResourceRef[]
@@ -692,7 +730,8 @@ export async function generateReleaseNotes(
     dumpPayloadToConsole: boolean,
     dumpPayloadToFile: boolean,
     dumpPayloadFileName: string,
-    checkStage: boolean): Promise<number> {
+    checkStage: boolean,
+    getAllParents: boolean): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
             if (!gitHubPat) {
@@ -974,8 +1013,13 @@ export async function generateReleaseNotes(
             let relatedWorkItems = [];
 
             if (getParentsAndChildren) {
-                agentApi.logInfo("Getting parents and children of WorkItems");
+                agentApi.logInfo("Getting direct parents and children of WorkItems");
                 relatedWorkItems = await getAllDirectRelatedWorkitems(workItemTrackingApi, fullWorkItems);
+            }
+
+            if (getAllParents) {
+                agentApi.logInfo("Getting all parents of known WorkItems");
+                relatedWorkItems = await getAllParentWorkitems(workItemTrackingApi, relatedWorkItems);
             }
 
             agentApi.logInfo(`Total build artifacts: [${globalBuilds.length}]`);
