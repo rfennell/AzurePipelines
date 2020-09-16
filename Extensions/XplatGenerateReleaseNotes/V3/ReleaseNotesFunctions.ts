@@ -764,6 +764,8 @@ export async function generateReleaseNotes(
             var currentBuild: Build;
             var currentStage: TimelineRecord;
 
+            try {
+
             if ((releaseId === undefined) || !releaseId) {
                 agentApi.logInfo("Getting the current build details");
                 currentBuild = await buildApi.getBuild(teamProject, buildId);
@@ -1159,7 +1161,11 @@ export async function generateReleaseNotes(
             } else {
                 reject ("Missing template file");
             }
-        });
+        } catch (ex) {
+            agentApi.logError(ex);
+            reject (ex);
+        }
+    });
 }
 
 function dumpJsonPayload(dumpPayloadToConsole: boolean, dumpPayloadToFile: boolean, fileName: string, payload) {
