@@ -652,7 +652,8 @@ export async function getLastSuccessfulBuildByStage(
     teamProject: string,
     stageName: string,
     buildId: number,
-    buildDefId: number
+    buildDefId: number,
+    tags: string[]
 )  {
     if (stageName.length === 0) {
         agentApi.logInfo ("No stage name provided, cannot find last successful build by stage");
@@ -661,6 +662,7 @@ export async function getLastSuccessfulBuildByStage(
             stage: null
         };
     }
+
     let builds = await buildApi.getBuilds(teamProject, [buildDefId]);
     if (builds.length > 1 ) {
         for (let buildIndex = 0; buildIndex < builds.length; buildIndex++) {
@@ -670,26 +672,32 @@ export async function getLastSuccessfulBuildByStage(
             if (build.id.toString() === buildId.toString()) {
                 agentApi.logInfo("Ignore compare against self");
             } else {
-                var lastGoodBuildId = 0;
-                let timeline = await buildApi.getBuildTimeline(teamProject, build.id);
-                if (timeline && timeline.records) {
-                    for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
-                        const record  = timeline.records[timelineIndex];
-                        if (record.type === "Stage") {
-                            if ((record.name === stageName || record.identifier === stageName) &&
-                                (record.state.toString() === "2" || record.state.toString() === "completed") && // completed
-                                (record.result.toString() === "0" || record.result.toString() === "succeeded")) { // succeeded
-                                    agentApi.logInfo (`Found required stage ${record.name} in the completed and successful state in build ${build.id}`);
-                                return {
-                                    id: build.id,
-                                    stage: record
-                                };
+                if (tags.length === 0 ||
+                    (tags.length > 0 && build.tags.sort().join(",") === tags.sort().join(","))) {
+                        agentApi.logInfo("Considering build");
+                        var lastGoodBuildId = 0;
+                        let timeline = await buildApi.getBuildTimeline(teamProject, build.id);
+                        if (timeline && timeline.records) {
+                            for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
+                                const record  = timeline.records[timelineIndex];
+                                if (record.type === "Stage") {
+                                    if ((record.name === stageName || record.identifier === stageName) &&
+                                        (record.state.toString() === "2" || record.state.toString() === "completed") && // completed
+                                        (record.result.toString() === "0" || record.result.toString() === "succeeded")) { // succeeded
+                                            agentApi.logInfo (`Found required stage ${record.name} in the completed and successful state in build ${build.id}`);
+                                        return {
+                                            id: build.id,
+                                            stage: record
+                                        };
+                                    }
+                                }
                             }
-                        }
+                    } else {
+                        agentApi.logInfo("Skipping check as no timeline available for this build");
                     }
-                } else {
-                    agentApi.logInfo("Skipping check as no timeline available for this build");
-                }
+                    } else {
+                        agentApi.logInfo(`Skipping build as does not have the correct tags`);
+                    }
             }
         }
     }
@@ -731,7 +739,8 @@ export async function generateReleaseNotes(
     dumpPayloadToFile: boolean,
     dumpPayloadFileName: string,
     checkStage: boolean,
-    getAllParents: boolean): Promise<number> {
+    getAllParents: boolean,
+    tags: string): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
             if (!gitHubPat) {
@@ -778,12 +787,17 @@ export async function generateReleaseNotes(
 
                 if (checkStage) {
                     var stageName = tl.getVariable("System.StageName");
+                    var tagArray = [];
+                    if (tags && tags.length > 0 ) {
+                        tagArray = tags.split(",");
+                        agentApi.logInfo(`Only considering builds with the tag(s) '${tags}'`);
+                    }
                     if (overrideStageName && overrideStageName.length > 0) {
                         agentApi.logInfo(`Overriding current stage '${stageName}' with '${overrideStageName}'`);
                         stageName = overrideStageName;
                     }
                     agentApi.logInfo (`Getting items associated the builds since the last successful build to the stage '${stageName}'`);
-                    var successfulStageDetails = await getLastSuccessfulBuildByStage(buildApi, teamProject, stageName, buildId, currentBuild.definition.id);
+                    var successfulStageDetails = await getLastSuccessfulBuildByStage(buildApi, teamProject, stageName, buildId, currentBuild.definition.id, tagArray);
                     var lastGoodBuildId = successfulStageDetails.id;
                     if (lastGoodBuildId !== 0) {
                         console.log(`Getting the details between ${lastGoodBuildId} and ${buildId}`);

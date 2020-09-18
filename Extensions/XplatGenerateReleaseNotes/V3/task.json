@@ -255,7 +255,17 @@
       "required": true,
       "helpMarkDown": "Find the parents all workitems associated with a build, recursing back to workitem with no parents e.g. up to Epics",
       "groupName":"advanced"
+    },
+    {
+      "name": "tags",
+      "type": "string",
+      "label": "Tags",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "A comma separated list of pipeline tags that must all be matched when looking for previous successful builds, only used if checkStage=true",
+      "groupName":"advanced"
     }
+
 
    ],
   "instanceNameFormat": "Generate Release Notes based on Release Comparison API",

@@ -29,5 +29,6 @@
     "customHandlebarsExtensionFolder": "c:/temp/",
     "overrideStageName": "",
     "checkStage": "false",
-    "Fix349": "true"
+    "Fix349": "true",
+    "tags": ""
 }
