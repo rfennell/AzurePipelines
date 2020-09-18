@@ -787,8 +787,9 @@ export async function generateReleaseNotes(
 
                 if (checkStage) {
                     var stageName = tl.getVariable("System.StageName");
-                    var tagArray = tags.split(",");
+                    var tagArray = [];
                     if (tags.length > 0 ) {
+                        tagArray = tags.split(",");
                         agentApi.logInfo(`Only considering builds with the tag(s) '${tags}'`);
                     }
                     if (overrideStageName && overrideStageName.length > 0) {
