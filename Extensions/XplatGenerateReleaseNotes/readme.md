@@ -202,6 +202,7 @@ The task takes the following parameters
 * (Advanced) Dump Payload Filename - The filename to dump the data objects passed to the file generator
 * (Advanced) Get Direct Parent and Children for associated work items, defaults to false
 * (Advanced) Get All Parents for associated work items, recursing back to workitem with no parents e.g. up to Epics, defaults to false
+* (Advanced) Tags a comma separated list of pipeline tags that must all be matched when looking for previous successful builds , only used if checkStage=true
 * (Handlebars) customHandlebars ExtensionCode. A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};
 * (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.
 
