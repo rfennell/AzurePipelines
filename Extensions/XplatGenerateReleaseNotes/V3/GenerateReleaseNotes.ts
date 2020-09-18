@@ -36,6 +36,7 @@ async function run(): Promise<number>  {
             var dumpPayloadFileName = tl.getInput("dumpPayloadFileName");
             var checkStage = tl.getBoolInput("checkStage");
             var getAllParents = tl.getBoolInput("getAllParents");
+            var tags = tl.getInput("tags");
 
             var returnCode = await util.generateReleaseNotes(
                 "",
@@ -69,7 +70,8 @@ async function run(): Promise<number>  {
                 dumpPayloadToFile,
                 dumpPayloadFileName,
                 checkStage,
-                getAllParents);
+                getAllParents,
+                tags);
 
         } catch (err) {
 
