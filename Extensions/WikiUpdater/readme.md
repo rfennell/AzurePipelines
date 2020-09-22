@@ -54,7 +54,7 @@ Both tasks can be used in a build or a release
 
 _For more authentication parameters see 'Authentication' section below_
 
-### URL required to clone a WIKI repo
+## URL required to clone a WIKI repo
 
 Prior to version 1.14.x the URL has to be edited into a special format i.e. trimmed of any content before the host name. With 1.14.x this is no longer required. There is now logic in the task to trim the url if needed. 
 
@@ -68,7 +68,7 @@ or a full URL
 
 are both acceptable forms for the `repo` parameter
 
-#### Azure DevOps Services & Azure DevOps Server (TFS) WIKIs
+### Azure DevOps Services & Azure DevOps Server (TFS) WIKIs
 
 The URL to clone a Azure DevOps WIKIs is not obvious. 
 
@@ -86,7 +86,7 @@ To find the correct URL to clone the repo, and use it as the parameter for this 
 1. Select the 'Clone repo' option
 1. You will get a URL in the form https://richardfennell@dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. This is the URL needed
 
-#### GitHub
+### GitHub
 
 Again, as with Azure DevOps, the URL to clone a GitHb WIKI also is not the one shown in the browser when the WIKI is viewed.
 
@@ -103,7 +103,7 @@ To find the correct URL
 1. Load the WIKI in a browser
 1. Look in lower right of any WIKI pages. It will be in the form https://github.com/rfennell/AzurePipelines.wiki.git. This is the full URL needed
 
-### Authentication
+## Authentication
 
 There are two ways this task can authenticate, either putting the credentials in the URL in the form
 
@@ -117,20 +117,25 @@ or the Header in the form
 extraHeaders = [`-c http.extraheader=AUTHORIZATION: bearer ${password}`];
 ```
 
-In general, the former should be used for Azure DevOps Services and GitHub, for latter for Azure DevOps Server/TFS
+In general, the former (default) should be used for Azure DevOps Services and GitHub, for latter for Azure DevOps Server/TFS (via the `InjectExtraHeader` set to true)
 
 The following are supported means to authenticate with different services
 
-#### Authentication using OAUTH to Azure DevOps Services hosted Repos
+### Authentication using OAUTH to Azure DevOps Services hosted Repos
 The recommended approach is to use the build agents OAUTH Token for authentication. To do this
 
-1. Allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) 
-1. Grant _contribute_ access on the target Azure DevOps WIKI to the _Project Collection Build Service_ user (assuming this is the account the pipeline is running as). 
+1. Allow the pipeline to access th OAUTH Token
+   - For UI based pipelines this is [documented here](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) 
+   - For YAML based pipelines the OAUTH token should automatically be available
+1. Grant 'contribute' access on the target Azure DevOps WIKI Repo to user the build agent is scoped to run as 
+   - Control of the scope the build agent runs as is [documented here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/access-tokens?view=azure-devops&tabs=yaml#job-authorization-scope).
+   - Make sure that the 'Project Collection > Setting > Pipeline > Setting > Limit job authorization scope to referenced Azure DevOps repositories' as not enabled. If set it can block access to the target repo. 
+   - Usually this is the '_Project Name_ Build Service' user (assuming this is the account the pipeline is running. The alternative if the wider scope is used is the 'Project Collection Build Service' user
 1. Set the task's `UseAgentToken` parameter to true
 
 Once this is set the `user` and the `password` parameters are managed by the task. 
 
-#### Authentication using Personal Access Tokens to Azure DevOps Services hosted Repos
+### Authentication using Personal Access Tokens to Azure DevOps Services hosted Repos
 If you do not wish to use OAUTH then authentication can be done using Personal Access Tokens. To do this
 
 1. Grant _contribute_ access on the target Azure DevOps WIKI to the user who's PAT is to be used
@@ -138,7 +143,7 @@ If you do not wish to use OAUTH then authentication can be done using Personal A
 
 For this usecase for Azure DevOps Services then the `user` parameter is your organisation account name and the `password` is your PAT
 
-#### Authentication using OAUTH to On premises Azure DevOps Server & TFS hosted Repos
+### Authentication using OAUTH to On premises Azure DevOps Server & TFS hosted Repos
 The recommended approach is to use for all on premises Azure DevOps Servers & TFS. To do this
 
 1. Allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) 
@@ -148,7 +153,7 @@ The recommended approach is to use for all on premises Azure DevOps Servers & TF
 
 Once this is set the `user` and the `password` parameters are managed by the task. 
 
-#### Authentication using Personal Access Tokens to GitHub hosted Repos
+### Authentication using Personal Access Tokens to GitHub hosted Repos
 The supported means to authenticate to a GitHub repo is using a Personal Access Token
 
 1. For a user who has rights to update the WIKI, create [PAT](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
@@ -163,6 +168,7 @@ The most common problems are usually cured by checking the following
 - If you are using a private build agent and getting an error try swapping to a Microsoft hosted agent. Remember a build or release can make use of a mixture of agent phases.
 - If intending to use the OAUTH build user credentials make sure that the agent phase is allowing access to the OAUTH Token (especially important for UI based build as this is not the default. Unlike in YAML where it is)
 - If trying to use OAUTH and still having permission problems try swapping to a PAT for a user you know has rights to edit the WIKI.
+- If using OAUTH make sure that the 'Project Collection > Setting > Pipeline > Setting > Limit job authorization scope to referenced Azure DevOps repositories' as not enabled. If set it can block access to the target repo. 
 - If there is any chance there is a proxy or corporate firewall between a private agent and the Azure DevOps instance enable the `Injectheader` option. This is most common when accessing Azure DevOps Server/TFS (see above).
 - If you are on a private agent and get errors in the form `Error: spawn git ENOENT` when trying to clone a repo, make sure `C:\agent\externals\git\cmd` is in the environment path on agent machine [See this issue for details](https://github.com/rfennell/AzurePipelines/issues/738).
 
