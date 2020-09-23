@@ -264,6 +264,15 @@
       "required": false,
       "helpMarkDown": "A comma separated list of pipeline tags that must all be matched when looking for previous successful builds, only used if checkStage=true",
       "groupName":"advanced"
+    },
+    {
+      "name": "overridePat",
+      "type": "string",
+      "label": "Override Pat",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "It is possible to inject a Personal Access Token to use in place of the Build Agent OAUTH token. This option will only be used in very rare situations usually after a support issue has been raised",
+      "groupName":"advanced"
     }
 
 
