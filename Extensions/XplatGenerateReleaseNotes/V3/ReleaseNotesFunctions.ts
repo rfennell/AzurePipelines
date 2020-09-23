@@ -303,19 +303,19 @@ export async function enrichChangesWithFileDetails(
 export function getCredentialHandler(pat: string): IRequestHandler {
     if (!pat || pat.length === 0) {
         // no pat passed so we need the system token
-        tl.debug("Getting System.AccessToken");
+        agentApi.logDebug("Getting System.AccessToken");
         var accessToken = agentApi.getSystemAccessToken();
         let credHandler: IRequestHandler;
         if (!accessToken || accessToken.length === 0) {
             throw "Unable to locate access token that will allow access to Azure DevOps API.";
         } else {
-            tl.debug("Creating the credential handler");
+            agentApi.logInfo("Creating the credential handler from the OAUTH token");
             // used for local debugging.  Allows switching between PAT token and Bearer Token for debugging
             credHandler = webApi.getHandlerFromToken(accessToken);
         }
         return credHandler;
     } else {
-        tl.debug("Using override PAT (suitable for local testing or if the OUATH token cannot be used)");
+        agentApi.logInfo("Creating the credential handler using override PAT (suitable for local testing or if the OAUTH token cannot be used)");
         return webApi.getPersonalAccessTokenHandler(pat);
     }
 
