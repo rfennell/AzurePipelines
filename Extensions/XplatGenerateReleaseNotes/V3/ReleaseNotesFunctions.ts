@@ -315,7 +315,7 @@ export function getCredentialHandler(pat: string): IRequestHandler {
         }
         return credHandler;
     } else {
-        tl.debug("Using PAT (suitable for local test only)");
+        tl.debug("Using override PAT (suitable for local testing or if the OUATH token cannot be used)");
         return webApi.getPersonalAccessTokenHandler(pat);
     }
 

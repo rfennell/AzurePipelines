@@ -37,9 +37,10 @@ async function run(): Promise<number>  {
             var checkStage = tl.getBoolInput("checkStage");
             var getAllParents = tl.getBoolInput("getAllParents");
             var tags = tl.getInput("tags");
+            var overridePat = tl.getInput("overridePat");
 
             var returnCode = await util.generateReleaseNotes(
-                "",
+                overridePat,
                 tpcUri,
                 teamProject,
                 parseInt(tl.getVariable("Build.BuildId")),
