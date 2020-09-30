@@ -508,7 +508,7 @@ export async function getFullWorkItemDetails (
     var workItemIds = workItemRefs.map(wi => parseInt(wi.id));
     let fullWorkItems: WorkItem[] = [];
     agentApi.logInfo(`Get details of [${workItemIds.length}] WIs`);
-    if (workItemIds.length > 0) {
+    if (workItemIds && workItemIds.length > 0) {
         var indexStart = 0;
         var indexEnd = (workItemIds.length > 200) ? 200 : workItemIds.length ;
         while ((indexEnd <= workItemIds.length) && (indexStart !== indexEnd)) {
