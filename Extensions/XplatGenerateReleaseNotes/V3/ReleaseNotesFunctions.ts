@@ -67,7 +67,9 @@ export function getDeploymentCount(environments: ReleaseEnvironment[], environme
     for (let environment of environments) {
         if (environment.name.toLowerCase() === environmentName) {
             var currentDeployment = environment.preDeployApprovals[environment.preDeployApprovals.length - 1];
-            attemptCount = currentDeployment.attempt;
+            if (currentDeployment) {
+                attemptCount = currentDeployment.attempt;
+            }
         }
     }
     if (attemptCount === 0) {
