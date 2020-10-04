@@ -71,7 +71,7 @@
       "defaultValue": "False",
       "required": false,
       "helpMarkDown": "If true use the built in agent OAUTH token. OAUTH script access must be enabled for the agent",
-      "groupName": "authentication",
+      "groupName": "authentication"
     },
     {
       "name": "user",
