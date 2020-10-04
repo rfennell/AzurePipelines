@@ -71,8 +71,7 @@
       "defaultValue": "False",
       "required": false,
       "helpMarkDown": "If true use the built in agent OAUTH token. OAUTH script access must be enabled for the agent",
-      "groupName": "authentication",
-      "visibleRule": "cloneRepo = True"
+      "groupName": "authentication"
     },
     {
       "name": "user",
@@ -81,8 +80,7 @@
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "The username for authentication",
-      "groupName": "authentication",
-      "visibleRule": "useAgentToken = False"
+      "groupName": "authentication"
     },
     {
       "name": "password",
@@ -91,8 +89,7 @@
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "The password/PAT for authentication (recommended stored as secret variable)",
-      "groupName": "authentication",
-      "visibleRule": "cloneRepo = True"
+      "groupName": "authentication"
     },
     {
       "name": "localpath",
@@ -125,8 +122,7 @@
       "defaultValue": "False",
       "required": false,
       "helpMarkDown": "If set to true, credentials are passed as a header value. If false, the default, they are passed in te URL. To address #613 which is seen on some on-prem instances",
-      "groupName": "advanced",
-      "visibleRule": "cloneRepo = True"
+      "groupName": "advanced"
     }
   ],
   "instanceNameFormat": "WIKI PDF Exporter",
