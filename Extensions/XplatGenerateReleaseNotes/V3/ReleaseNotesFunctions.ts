@@ -66,6 +66,7 @@ export function getDeploymentCount(environments: ReleaseEnvironment[], environme
     var attemptCount = 0;
     for (let environment of environments) {
         if (environment.name.toLowerCase() === environmentName) {
+            agentApi.logInfo(`Found the stage [${environmentName}]`);
             var currentDeployment = environment.preDeployApprovals[environment.preDeployApprovals.length - 1];
             if (currentDeployment) {
                 attemptCount = currentDeployment.attempt;
@@ -73,9 +74,10 @@ export function getDeploymentCount(environments: ReleaseEnvironment[], environme
         }
     }
     if (attemptCount === 0) {
-        throw `Failed to locate stage with name ${environmentName} so cannot get attempt`;
+        agentApi.logInfo(`Cannot find any deployment to [${environmentName}]`);
+    } else {
+        agentApi.logInfo(`Identified [${environmentName}] as having deployment count of [${attemptCount}]`);
     }
-    agentApi.logInfo(`Identified [${environmentName}] as having deployment count of [${attemptCount}]`);
     return attemptCount;
 }
 
