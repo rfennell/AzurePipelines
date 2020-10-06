@@ -22,10 +22,10 @@ const user = "";
 const password = "";
 const repo = "";
 const branch = "";
-const exeFolder = "C:\\tmp";
+const exePath = "..\\testdata\\azuredevops-export-wiki.exe";
 
 ExportRun(
-    exeFolder,
+    exePath,
     cloneRepo,
     localpath,
     singleFile,

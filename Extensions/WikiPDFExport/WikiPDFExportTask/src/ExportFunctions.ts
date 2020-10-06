@@ -7,7 +7,7 @@ import {
     CloneWikiRepo,
     GetTrimmedUrl,
     GetProtocol
-    } from "./GitWikiFuntions";
+    } from "./GitWikiFunctions";
 import {
     logInfo,
     logError,
@@ -127,8 +127,34 @@ export async function ExportPDF(
     });
 }
 
+export async function GetExePath (
+    overrideExePath,
+    workingFolder,
+) {
+    if (overrideExePath &&  overrideExePath.length > 0) {
+        if (fs.existsSync(overrideExePath)) {
+            logInfo(`Using the overrideExePath`);
+            return overrideExePath;
+        } else {
+            logError(`Attempting to use the overrideExePath of ${overrideExePath} but cannot find the file`);
+            return "";
+        }
+    } else {
+        logInfo(`Start Download for AzureDevOps.WikiPDFExport release`);
+        await DownloadGitHubArtifact("MaxMelcher", "AzureDevOps.WikiPDFExport", workingFolder, logInfo, logError);
+        var exeCmd = `${workingFolder}\\azuredevops-export-wiki.exe`;
+
+        // `Pause to avoid 'The process cannot access the file because it is being used by another process.' error`
+        // It seems that even though we wait for the download the file is not available to run for a short period.
+        // This is a nasty solution but appears to work
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
+        return exeCmd;
+    }
+}
+
 export async function ExportRun (
-    exeFolder,
+    exeCmd,
     cloneRepo,
     localpath,
     singleFile,
@@ -141,14 +167,13 @@ export async function ExportRun (
     injectExtraHeader,
     branch
  ) {
-    logInfo(`Start Download`);
-    await DownloadGitHubArtifact("MaxMelcher", "AzureDevOps.WikiPDFExport", exeFolder, logInfo, logError);
-    var exeCmd = `${exeFolder}\\azuredevops-export-wiki.exe`;
 
-    // `Pause to avoid 'The process cannot access the file because it is being used by another process.' error`
-    // It seems that even though we wait for the download the file is not available to run for a short period.
-    // This is a nasty solution but appears to work
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    if (fs.existsSync(exeCmd)) {
+        logInfo(`Using the EXE path of ${exeCmd} for AzureDevOps.WikiPDFExport`);
+    } else {
+        logError(`Cannot find the the AzureDevOps.WikiPDFExport tool in ${exeCmd}`);
+        return;
+    }
 
      if (cloneRepo) {
          console.log(`Cloning Repo`);

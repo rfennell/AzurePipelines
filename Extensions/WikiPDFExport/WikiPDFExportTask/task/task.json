@@ -123,6 +123,15 @@
       "required": false,
       "helpMarkDown": "If set to true, credentials are passed as a header value. If false, the default, they are passed in te URL. To address #613 which is seen on some on-prem instances",
       "groupName": "advanced"
+    },
+    {
+      "name": "overrideExePath",
+      "type": "string",
+      "label": "EXE tool path override",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "An optional path to a previously download copy of the [AzureDevOps.WikiPDFExport tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport). If not set the task will download the current release of this tool e.g 'c:\\myfolder\\azuredevops-export-wiki.exe'",
+      "groupName": "advanced"
     }
   ],
   "instanceNameFormat": "WIKI PDF Exporter",
