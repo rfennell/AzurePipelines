@@ -589,7 +589,9 @@ export function processTemplate(
             if (!customHandlebarsExtensionFolder || customHandlebarsExtensionFolder.length === 0) {
                 // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
                 // Note that the name is case sensitive on Mac and Linux
-                customHandlebarsExtensionFolder = `${process.env.AGENT_WORKFOLDER}/_temp`;
+                // Also #832 found that the temp file has to be under the same folder structure as the main .js files
+                // else you cannot load any modules
+                customHandlebarsExtensionFolder = __dirname;
             }
 
             agentApi.logInfo("Loading custom handlebars extension");
