@@ -1,7 +1,7 @@
 import { expect } from "chai";
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import "mocha";
-import { GetWorkingFolder, GetWorkingFile } from "../src/GitWikiFuntions";
+import { GetWorkingFolder, GetWorkingFile } from "../src/GitWikiFunctions";
 import { logInfo } from "../src/agentSpecific";
 import { existsSync, fstat } from "fs";
 import { pathToFileURL } from "url";

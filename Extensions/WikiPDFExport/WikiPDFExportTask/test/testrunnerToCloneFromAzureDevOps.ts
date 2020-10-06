@@ -30,10 +30,10 @@ const singleFile = "";
 const extraParams = "";
 const useAgentToken = false;
 const cloneRepo = true;
-const exeFolder = "C:\\tmp";
+const exePath = "..\\testdata\\azuredevops-export-wiki.exe";
 
 ExportRun(
-    exeFolder,
+    exePath,
     cloneRepo,
     localpath,
     singleFile,
