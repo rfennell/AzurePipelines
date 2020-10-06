@@ -173,7 +173,7 @@ stages:
               condition: succeededOrFailed()
               inputs:
                 cloneRepo: true
-                overrideExePath: '$(Agent.BuildDirectory)/VSTSBuildTaskValidation/tools/azuredevops-export-wiki.exe'
+                overrideExePath: '$(System.DefaultWorkingDirectory)/tools/azuredevops-export-wiki.exe'
                 repo: 'https://dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 useAgentToken: true
                 outputFile: '$(Build.ArtifactStagingDirectory)\PDF\Azrepo-nodownload.pdf'

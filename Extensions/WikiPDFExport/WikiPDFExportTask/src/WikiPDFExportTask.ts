@@ -2,6 +2,13 @@ import tl = require("azure-pipelines-task-lib");
 import * as fs from "fs";
 
 import {
+    logInfo,
+    logError,
+    logWarning,
+    getSystemAccessToken
+    }  from "./agentSpecific";
+
+import {
     ExportRun,
     GetExePath
     } from "./ExportFunctions";
@@ -50,5 +57,7 @@ GetExePath(
             injectExtraHeader,
             branch
         );
+    } else {
+        logError(`Cannot find the 'azuredevops-export-wiki.exe' tool`);
     }
 });
