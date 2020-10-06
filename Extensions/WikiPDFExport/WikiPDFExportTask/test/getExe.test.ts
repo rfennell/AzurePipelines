@@ -20,4 +20,9 @@ describe("Get Exe Path ", () => {
     expect(actual).to.equal(".\\testdata\\dummy.exe.txt");
   });
 
+  after(() => {
+    // tidy up as the exe is too big
+    del(".\\testdata\\azuredevops-export-wiki.exe");
+  });
+
 });
