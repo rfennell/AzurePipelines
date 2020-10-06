@@ -136,7 +136,7 @@ export async function GetExePath (
             logInfo(`Using the overrideExePath`);
             return overrideExePath;
         } else {
-            logError(`Attempting to use the overrideExePath of ${overrideExePath} but cannot find the file`);
+            logInfo(`Attempting to use the overrideExePath of ${overrideExePath} but cannot find the file`);
             return "";
         }
     } else {
