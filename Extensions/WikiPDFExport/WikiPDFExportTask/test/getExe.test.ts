@@ -22,7 +22,7 @@ describe("Get Exe Path ", () => {
 
   after(() => {
     // tidy up as the exe is too big
-    // del(".\\testdata\\azuredevops-export-wiki.exe");
+    del(".\\testdata\\azuredevops-export-wiki.exe");
   });
 
 });
