@@ -1,5 +1,4 @@
 import * as process from "process";
-import { logWarning } from "./agentSpecific";
 import { exec } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
@@ -11,6 +10,7 @@ import {
 import {
     logInfo,
     logError,
+    logWarning,
     getSystemAccessToken
     }  from "./agentSpecific";
 
@@ -136,7 +136,7 @@ export async function GetExePath (
             logInfo(`Using the overrideExePath`);
             return overrideExePath;
         } else {
-            logInfo(`Attempting to use the overrideExePath of ${overrideExePath} but cannot find the file`);
+            logWarning(`Attempting to use the overrideExePath of ${overrideExePath} but cannot find the file`);
             return "";
         }
     } else {

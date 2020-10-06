@@ -15,9 +15,9 @@ describe("Get Exe Path ", () => {
     expect(actual).to.equal(".\\testdata\\dummy.exe.txt");
   });
 
-  it("should error if exe cannot be found when overriding the release download", async () => {
-    var actual = await GetExePath(".\\testdata\\nothere.exe.txt", "");
-    expect(actual).to.equal("");
+  it("should be able to override the release download", async () => {
+    var actual = await GetExePath(".\\testdata\\dummy.exe.txt", "");
+    expect(actual).to.equal(".\\testdata\\dummy.exe.txt");
   });
 
 });
