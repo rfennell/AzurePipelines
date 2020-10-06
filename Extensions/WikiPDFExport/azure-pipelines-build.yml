@@ -118,7 +118,10 @@ stages:
         runOnce:
           deploy:
             steps:
-            - download: VSTSBuildTaskValidation   # pipeline resource identifier.
+            - checkout: VSTSBuildTaskValidation  
+              clean: false
+              fetchDepth: 0
+              lfs: false
             
             - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@2
               displayName: 'Generate Release Notes based on Release Comparision API'
