@@ -118,6 +118,8 @@ stages:
         runOnce:
           deploy:
             steps:
+            - download: VSTSBuildTaskValidation   # pipeline resource identifier.
+            
             - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@2
               displayName: 'Generate Release Notes based on Release Comparision API'
               inputs:
@@ -163,6 +165,15 @@ stages:
                 repo: 'https://dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 useAgentToken: true
                 outputFile: '$(Build.ArtifactStagingDirectory)\PDF\Azrepo.pdf'
+            - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@1
+              displayName: 'Export Azure DevOps WIKI without downloading tool'
+              condition: succeededOrFailed()
+              inputs:
+                cloneRepo: true
+                overrideExePath: '$(Agent.BuildDirectory)/VSTSBuildTaskValidation/tools/azuredevops-export-wiki.exe'
+                repo: 'https://dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
+                useAgentToken: true
+                outputFile: '$(Build.ArtifactStagingDirectory)\PDF\Azrepo-nodownload.pdf'
             - task: PublishPipelineArtifact@0
               condition: succeededOrFailed()
               inputs:
