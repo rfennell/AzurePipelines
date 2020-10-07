@@ -244,7 +244,8 @@ function FixedFormatOfNewContent(contents: string, trimLeadingSpecialChar: boole
     // sort out the newlines
     var fixedContents: string = contents.replace(/`n/g, "\r\n");
     // fix for #826 where special characters get added between the files being appended
-    if (trimLeadingSpecialChar) {
+    // 65279 is the Unicode Character 'ZERO WIDTH NO-BREAK SPACE'
+    if (trimLeadingSpecialChar && fixedContents.charCodeAt(0) ===  65279) {
         fixedContents = fixedContents.substr(1);
     }
     return fixedContents;
