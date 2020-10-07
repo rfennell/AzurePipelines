@@ -191,7 +191,16 @@
       "label": "Retries",
       "defaultValue": "5",
       "required": false,
-      "helpMarkDown": "The number of times to retry if a push fails. After a failed push a pull is run prior to the next attempt",
+      "helpMarkDown": "The number of times to retry if a push fails. After a failed push a pull is run prior to the next attempt, default of 5",
+      "groupName": "advanced"
+    },
+    {
+      "name": "trimLeadingSpecialChar",
+      "type": "boolean",
+      "label": "Trim Leading Special Character",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "The appending or prepending files prior to uploading a leading special character gets added to the file. Setting this flag to true removes this first character.",
       "groupName": "advanced"
     }
   ],
