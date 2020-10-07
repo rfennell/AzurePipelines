@@ -113,7 +113,8 @@ export async function UpdateGitWikiFile(
     tag,
     injectExtraHeader,
     branch,
-    maxRetries) {
+    maxRetries,
+    trimLeadingSpecialChar) {
     const git = simplegit();
 
     let remote = "";
@@ -175,7 +176,8 @@ export async function UpdateGitWikiFile(
             logInfo(`Created the ${workingFile} in ${workingPath}`);
         } else {
             if (appendToFile) {
-                fs.appendFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+                // fix for #826 where special characters get added between the files being appended
+                fs.appendFileSync(workingFile, FixedFormatOfNewContent(contents, trimLeadingSpecialChar));
                 logInfo(`Appended to the ${workingFile} in ${workingPath}`);
             } else {
                 var oldContent = "";
@@ -183,7 +185,7 @@ export async function UpdateGitWikiFile(
                     oldContent = fs.readFileSync(workingFile, "utf8");
                 }
                 fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
-                fs.appendFileSync(workingFile, oldContent);
+                fs.appendFileSync(workingFile, FixedFormatOfNewContent(oldContent, trimLeadingSpecialChar));
                 logInfo(`Prepending to the ${workingFile} in ${workingPath}`);
             }
         }
@@ -236,6 +238,16 @@ export async function UpdateGitWikiFile(
         logError(error);
     }
 
+}
+
+function FixedFormatOfNewContent(contents: string, trimLeadingSpecialChar: boolean): string {
+    // sort out the newlines
+    var fixedContents: string = contents.replace(/`n/g, "\r\n");
+    // fix for #826 where special characters get added between the files being appended
+    if (trimLeadingSpecialChar) {
+        fixedContents = fixedContents.substr(1);
+    }
+    return fixedContents;
 }
 
 function sleep(ms) {
