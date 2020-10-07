@@ -30,5 +30,6 @@ const injectExtraHeaders = false;
 const branch = "";
 const protocol = "https";
 const retries = "5";
+const trimLeadingSpecialChar = true;
 
-UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch, retries);
+UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch, retries, trimLeadingSpecialChar);
