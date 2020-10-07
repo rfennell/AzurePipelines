@@ -30,7 +30,14 @@ var tagRepo = tl.getBoolInput("tagRepo");
 var tag = tl.getInput("tag");
 var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
-var retries = tl.getInput("retries");
+var retriesInput = tl.getInput("retries");
+
+var retries = 5;
+try {
+    retries = Number(retriesInput);
+} catch {
+    console.log(`Count not parse the inputed retry count of ${retriesInput} set it to the default of ${retries} `);
+}
 
 console.log(`Variable: Repo [${repo}]`);
 console.log(`Variable: TargetFolder [${targetFolder}]`);
