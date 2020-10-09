@@ -582,6 +582,14 @@ export function processTemplate(
             }
         );
 
+        // add our helper to find PR
+        handlebars.registerHelper("lookup_a_pullrequest", function (array, url) {
+                var urlParts = url.split("%2F");
+                var id = parseInt(urlParts[urlParts.length - 1]);
+                return array.find(element => element.pullRequestId === id);
+            }
+        );
+
         if (typeof customHandlebarsExtensionCode !== undefined && customHandlebarsExtensionCode && customHandlebarsExtensionCode.length > 0) {
 
             agentApi.logDebug(`Saving custom Handlebars code to file in folder ${customHandlebarsExtensionFolder}`);

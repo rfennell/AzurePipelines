@@ -70,7 +70,7 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 {{/forEach}} 
 {{/forEach}}
 
-# Global list of WI ({{workItems.length}})
+# Global list of WI with PRs, parents and children
 {{#forEach this.workItems}}
 {{#if isFirst}}### WorkItems {{/if}}
 *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
@@ -78,11 +78,26 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
    - **Tags** {{lookup this.fields 'System.Tags'}}
    - **Assigned** {{#with (lookup this.fields 'System.AssignedTo')}} {{displayName}} {{/with}}
    - **Description** {{{lookup this.fields 'System.Description'}}}
+   - **PRs**
+{{#forEach this.relations}}
+{{#if (contains this.attributes.name 'Pull Request')}}
+{{#with (lookup_a_pullrequest ../../pullRequests  this.url)}}
+      - {{this.pullRequestId}} - {{this.title}} 
+{{/with}}
+{{/if}}
+{{/forEach}} 
    - **Parents**
 {{#forEach this.relations}}
 {{#if (contains this.attributes.name 'Parent')}}
 {{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
       - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+      {{#forEach this.relations}}
+      {{#if (contains this.attributes.name 'Parent')}}
+      {{#with (lookup_a_work_item ../../../../relatedWorkItems  this.url)}}
+         - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+      {{/with}}
+      {{/if}}
+      {{/forEach}} 
 {{/with}}
 {{/if}}
 {{/forEach}} 
@@ -94,7 +109,7 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 {{/with}}
 {{/if}}
 {{/forEach}} 
-{{/forEach}} 
+{{/forEach}}
 
 # Global list of CS ({{commits.length}})
 {{#forEach commits}}
