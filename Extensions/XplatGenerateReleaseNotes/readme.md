@@ -78,8 +78,13 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
    - **Tags** {{lookup this.fields 'System.Tags'}}
    - **Assigned** {{#with (lookup this.fields 'System.AssignedTo')}} {{displayName}} {{/with}}
    - **Description** {{{lookup this.fields 'System.Description'}}}
-   - **Parents**
 {{#forEach this.relations}}
+{{#if (contains this.attributes.name 'Pull Request')}}
+{{#with (lookup_a_pullrequest ../../pullRequests  this.url)}}
+      - {{this.pullRequestId}} - {{this.title}} 
+{{/with}}
+{{/if}}
+   - **Parents**
 {{#if (contains this.attributes.name 'Parent')}}
 {{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
       - {{this.id}} - {{lookup this.fields 'System.Title'}} 
