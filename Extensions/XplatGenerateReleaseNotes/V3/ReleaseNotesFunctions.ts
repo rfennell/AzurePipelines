@@ -697,7 +697,7 @@ export async function getLastSuccessfulBuildByStage(
     if (builds.length > 1 ) {
         agentApi.logInfo(`Found '${builds.length}' matching builds to consider`);
         // check of we are using an override
-        if (overrideBuildReleaseId.length > 0) {
+        if (overrideBuildReleaseId && overrideBuildReleaseId.length > 0) {
             agentApi.logInfo(`An override build number has been passed, will only consider this build`);
             var overrideBuild = builds.find(element => element.id.toString() === overrideBuildReleaseId);
             if (overrideBuild) {
