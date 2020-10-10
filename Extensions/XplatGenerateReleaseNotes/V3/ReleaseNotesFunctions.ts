@@ -58,6 +58,7 @@ import { ITestApi } from "azure-devops-node-api/TestApi";
 import { IBuildApi, BuildApi } from "azure-devops-node-api/BuildApi";
 import * as vstsInterfaces from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 import { time } from "console";
+import { InstalledExtensionQuery } from "azure-devops-node-api/interfaces/ExtensionManagementInterfaces";
 
 let agentApi = new AgentSpecificApi();
 
@@ -136,7 +137,7 @@ export async function getPullRequests(gitApi: GitApi, projectName: string): Prom
     });
 }
 
-export async function getMostRecentSuccessfulDeployment(releaseApi: IReleaseApi, teamProject: string, releaseDefinitionId: number, environmentId: number): Promise<Deployment> {
+export async function getMostRecentSuccessfulDeployment(releaseApi: IReleaseApi, teamProject: string, releaseDefinitionId: number, environmentId: number, overrideBuildReleaseId: string): Promise<Deployment> {
     return new Promise<Deployment>(async (resolve, reject) => {
 
         let mostRecentDeployment: Deployment = null;
@@ -148,7 +149,21 @@ export async function getMostRecentSuccessfulDeployment(releaseApi: IReleaseApi,
             });
 
             if (successfulDeployments && successfulDeployments.length > 0) {
-                mostRecentDeployment = successfulDeployments[0];
+                agentApi.logInfo (`Found ${successfulDeployments.length} successful releases`);
+                if (overrideBuildReleaseId && !isNaN(parseInt(overrideBuildReleaseId))) {
+                    agentApi.logInfo (`Trying to find successful deployment with the override release ID of '${overrideBuildReleaseId}'`);
+                    mostRecentDeployment = successfulDeployments.find (element => element.release.id === parseInt(overrideBuildReleaseId));
+                    if (mostRecentDeployment) {
+                        agentApi.logInfo (`Found matching override release ${mostRecentDeployment.release.name}`);
+                    } else {
+                        agentApi.logError (`Cannot find matching release`);
+                        reject(-1);
+                        return;
+                    }
+                } else {
+                    mostRecentDeployment = successfulDeployments[0];
+                    agentApi.logInfo (`Finding the last successful release ${mostRecentDeployment.release.name}`);
+                }
             } else {
                 // There have been no recent successful deployments
             }
@@ -667,7 +682,8 @@ export async function getLastSuccessfulBuildByStage(
     stageName: string,
     buildId: number,
     buildDefId: number,
-    tags: string[]
+    tags: string[],
+    overrideBuildReleaseId: string
 )  {
     if (stageName.length === 0) {
         agentApi.logInfo ("No stage name provided, cannot find last successful build by stage");
@@ -679,6 +695,26 @@ export async function getLastSuccessfulBuildByStage(
 
     let builds = await buildApi.getBuilds(teamProject, [buildDefId]);
     if (builds.length > 1 ) {
+        agentApi.logInfo(`Found '${builds.length}' matching builds to consider`);
+        // check of we are using an override
+        if (overrideBuildReleaseId && overrideBuildReleaseId.length > 0) {
+            agentApi.logInfo(`An override build number has been passed, will only consider this build`);
+            var overrideBuild = builds.find(element => element.id.toString() === overrideBuildReleaseId);
+            if (overrideBuild) {
+                agentApi.logInfo(`Found the over ride build ${overrideBuildReleaseId}`);
+                // we need to find the required timeline record
+                let timeline = await buildApi.getBuildTimeline(teamProject, overrideBuild.id);
+                let record = timeline.records.find(element => element.name === stageName);
+                return {
+                    id: overrideBuild.id,
+                    stage: record
+                };
+            } else {
+               agentApi.logError(`There is no build matching the override ID of ${overrideBuildReleaseId}`);
+               return;
+            }
+        }
+
         for (let buildIndex = 0; buildIndex < builds.length; buildIndex++) {
             const build = builds[buildIndex];
             agentApi.logInfo (`Comparing ${build.id} against ${buildId}`);
@@ -689,7 +725,6 @@ export async function getLastSuccessfulBuildByStage(
                 if (tags.length === 0 ||
                     (tags.length > 0 && build.tags.sort().join(",") === tags.sort().join(","))) {
                         agentApi.logInfo("Considering build");
-                        var lastGoodBuildId = 0;
                         let timeline = await buildApi.getBuildTimeline(teamProject, build.id);
                         if (timeline && timeline.records) {
                             for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
@@ -754,7 +789,9 @@ export async function generateReleaseNotes(
     dumpPayloadFileName: string,
     checkStage: boolean,
     getAllParents: boolean,
-    tags: string): Promise<number> {
+    tags: string,
+    overrideBuildReleaseId: string
+    ): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
             if (!gitHubPat) {
@@ -802,6 +839,7 @@ export async function generateReleaseNotes(
                 if (checkStage) {
                     var stageName = tl.getVariable("System.StageName");
                     var tagArray = [];
+
                     if (tags && tags.length > 0 ) {
                         tagArray = tags.split(",");
                         agentApi.logInfo(`Only considering builds with the tag(s) '${tags}'`);
@@ -810,9 +848,21 @@ export async function generateReleaseNotes(
                         agentApi.logInfo(`Overriding current stage '${stageName}' with '${overrideStageName}'`);
                         stageName = overrideStageName;
                     }
+
+                    var lastGoodBuildId;
+                    if (overrideBuildReleaseId && overrideBuildReleaseId.length > 0 ) {
+                        if (isNaN(parseInt(overrideBuildReleaseId, 10))) {
+                            agentApi.logError(`The override build ID '${overrideBuildReleaseId}' is not a number `);
+                            resolve(-1);
+                            return;
+                        }
+                        agentApi.logInfo (`Using the override for the last successful build of ID '${overrideBuildReleaseId}'`);
+                    }
+
                     agentApi.logInfo (`Getting items associated the builds since the last successful build to the stage '${stageName}'`);
-                    var successfulStageDetails = await getLastSuccessfulBuildByStage(buildApi, teamProject, stageName, buildId, currentBuild.definition.id, tagArray);
-                    var lastGoodBuildId = successfulStageDetails.id;
+                    var successfulStageDetails = await getLastSuccessfulBuildByStage(buildApi, teamProject, stageName, buildId, currentBuild.definition.id, tagArray, overrideBuildReleaseId);
+                    lastGoodBuildId = successfulStageDetails.id;
+
                     if (lastGoodBuildId !== 0) {
                         console.log(`Getting the details between ${lastGoodBuildId} and ${buildId}`);
                         currentStage = successfulStageDetails.stage;
@@ -873,7 +923,17 @@ export async function generateReleaseNotes(
 
                 var environmentId = getReleaseDefinitionId(currentRelease.environments, environmentName);
 
-                let mostRecentSuccessfulDeployment = await getMostRecentSuccessfulDeployment(releaseApi, teamProject, releaseDefinitionId, environmentId);
+                if (overrideBuildReleaseId && overrideBuildReleaseId.length > 0 ) {
+                    if (isNaN(parseInt(overrideBuildReleaseId, 10))) {
+                        agentApi.logError(`The override release ID '${overrideBuildReleaseId}' is not a number `);
+                        resolve(-1);
+                        return;
+                    } else {
+                        agentApi.logInfo (`Using the override for the last successful release of ID '${overrideBuildReleaseId}'`);
+                    }
+                }
+
+                let mostRecentSuccessfulDeployment = await getMostRecentSuccessfulDeployment(releaseApi, teamProject, releaseDefinitionId, environmentId, overrideBuildReleaseId);
                 let isInitialRelease = false;
 
                 agentApi.logInfo(`Getting all artifacts in the current release...`);
@@ -925,7 +985,7 @@ export async function generateReleaseNotes(
 
                                             for (var build of builds) {
                                                 try {
-                                                    agentApi.logInfo(`Getting the details of ${build.id}`);
+                                                    agentApi.logInfo(`Getting the details of build ${build.id}`);
                                                     var buildCommits = await buildApi.getBuildChanges(teamProject, build.id);
                                                     commits.push(...buildCommits);
                                                     var buildWorkitems = await buildApi.getBuildWorkItemsRefs(teamProject, build.id);

@@ -273,9 +273,16 @@
       "required": false,
       "helpMarkDown": "It is possible to inject a Personal Access Token to use in place of the Build Agent OAUTH token. This option will only be used in very rare situations usually after a support issue has been raised",
       "groupName":"advanced"
+    },
+    {
+      "name": "overrideBuildReleaseId",
+      "type": "string",
+      "label": "Override Build/ Release ID",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "For releases or multi-stage YAML a means to set the 'last good release' to compare against. This is release/build is not found then the task will exit with an errorFor releases or multi-stage YAML a means to set the 'last good release' to compare against. If this release/build is not found then the task will exit with an error",
+      "groupName":"advanced"
     }
-
-
    ],
   "instanceNameFormat": "Generate Release Notes based on Release Comparison API",
   "execution": {

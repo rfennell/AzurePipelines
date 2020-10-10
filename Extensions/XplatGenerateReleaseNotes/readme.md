@@ -2,6 +2,7 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 3.21.x adds an override for the historic pipeline to compare against
 * 3.8.x adds currentStage variable for multi-stage YAML based builds
 * 3.6.x adds compareBuildDetails variable for YAML based builds
 * 3.5.x removed the need to enable OAUTH access for the Agent phase
@@ -11,22 +12,22 @@ Generates release notes for a build or release. the file can be a format of your
 * The Azure DevOps REST APIs have a limitation that by default they only return 200 items. As a release could include more Work Items or ChangeSets/Commits. A workaround for this has been added [#349](https://github.com/rfennell/AzurePipelines/issues/349). Since version 2.12.x this feature has been defaulted on. To disable it set the variable `ReleaseNotes.Fix349` to `false`
 
 **IMPORTANT** - There have been three major versions of this extension, this is because
-* V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs. This version is not longer shipped in extension download from [GitHub](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9)
+* V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs. This version is not longer shipped in the extension, but can be download from [GitHub](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9)
 * V2 was a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the Node Azure DevOps SDK, with minor but breaking changes in the template format and that oAuth needs enabling on the agent running the tasks. At 2.27.x KennethScott](https://github.com/KennethScott) added support for [Handlbars](https://handlebarsjs.com/) templates.
 * V3 removed support for the legacy template model, only handlebars templates supported.
 
 # Usage
 This task generates a release notes file based on a template passed into the tool. It can be using inside a UI based Build or Release or a Multistage YAML Pipeline.
 
-In the case of a Release, the data source for the generated Release Notes is the Azure DevOps REST API's comparison calls that are also used by the Azure DevOps UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the Azure DevOps UI. 
+The data source for the generated Release Notes is the Azure DevOps REST API's comparison calls that are also used by the Azure DevOps UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the Azure DevOps UI. 
 
 **Note:** That this comparison is only done against the primary build artifact linked to the Release
 
-If used in the build or YAML pipeline the release notes are based on the current build only.
+If used in the build or non-multistage YAML pipeline the release notes are based on the current build only.
 
 ## The Template 
 
-There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes for both Git and TFVC based releases in all available template formats. Most samples are for Markdown file generation, but it is possible to generate any other format such as HTML
+There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes for both Git and TFVC based releases. Most samples are for Markdown file generation, but it is possible to generate any other format such as HTML
 
 <hr/>
 
@@ -133,7 +134,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 
 #### Common objects 
 * **workItems** – the array of work item associated with the release
-* **commits** – the array of commits associated with the release
+* **commits** – the array of commits/changesets associated with the release
 * **pullRequests** - the array of PRs referenced by the commits in the release
 * **tests** - the array of unique tests associated with any of the builds linked to the release or the release itself  
 * **builds** - the array of the build artifacts that CS and WI are associated with. Note that this is a object with three properties 
@@ -143,19 +144,19 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
     - **tests**  - the work items associated with the build
 * **relatedWorkItems** – the array of all work item associated with the release plus their direct parents or children and/or all parents depending on task parameters
 
-#### Release objects (only available in a release)
+#### Release objects (only available in a UI based Releases)
 * **releaseDetails** – the release details of the release that the task was triggered for.
 * **compareReleaseDetails** - the the previous successful release that comparisons are being made against
 * **releaseTest** - the list of test associated with the release e.g. integration tests
 
-#### Build objects
+#### Build objects (available for UI based builds and any YAML based pipelines)
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
 * **compareBuildDetails** - the previous successful build that comparisons are being made against, only available if checkstage=true
 * **currentStage** - if `checkstage` is enable this object is set to the details of the stage in the current build that is being used for the stage check
 
-**Note:** To dump all possible values use the form `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion (See below)
+**Note:** To dump all possible values via the template using the custom Handlebars extension `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion. There are also options to dump these raw values to the build console log or to a file. (See below)
 
-**Note:** if a field contains escaped HTML encode data this can be returned its original format with triple {{{ `{{{lookup this.fields 'System.Description'}}}` 
+**Note:** if a field contains escaped HTML encode data this can be returned its original format with triple brackets format `{{{lookup this.fields 'System.Description'}}}` 
 
 #### Handlebar Extensions
 With 2.28.x support was added for Handlebars extensions in a number of ways:
@@ -168,20 +169,57 @@ The year is {{year}}
 We can capitalize "foo bar baz" {{capitalizeAll "foo bar baz"}}
 ```
 
-In addition to the  [Handlebars Helpers](https://github.com/helpers/handlebars-helpers) extension library, there is also a custom Helper `json` that will dump the contents of any object. This is useful when working out what can be displayed in a template, though there are other ways to dump objects to files (see below)
+In addition to the [Handlebars Helpers](https://github.com/helpers/handlebars-helpers) extension library, there is also custom Helpers pre-loaded specific to the needs of this Azure DevOps task
+
+- `json` that will dump the contents of any object. This is useful when working out what can be displayed in a template, though there are other ways to dump objects to files (see below)
 
 ```
 ## The contents of the build object
 {{json buildDetails}}
 ```
 
-Also there is support for custom extension libraries. These are provided via an Azure DevOps task parameter holding a block of JavaScript which is loaded into the Handlebars templating engine. The
+- `lookup_a_work_item` this looks up a work item in the global array of work items based on a work item relations URL
+```
+{{#forEach this.relations}}
+{{#if (contains this.attributes.name 'Parent')}}
+{{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
+      - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+      {{#forEach this.relations}}
+      {{#if (contains this.attributes.name 'Parent')}}
+      {{#with (lookup_a_work_item ../../../../relatedWorkItems  this.url)}}
+         - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+      {{/with}}
+      {{/if}}
+      {{/forEach}} 
+{{/with}}
+{{/if}}
+{{/forEach}} 
+```
 
-A sample extension code is in the form
+- `lookup_a_pullrequest` this looks up a pull request item in the global array of pull requests based on a work item relations URL
 ```
-module.exports = {foo() {return 'Returns foo';}};
+{{#forEach this.relations}}
+{{#if (contains this.attributes.name 'Pull Request')}}
+{{#with (lookup_a_pullrequest ../../pullRequests  this.url)}}
+      - {{this.pullRequestId}} - {{this.title}} 
+{{/with}}
+{{/if}}
+{{/forEach}}
 ```
-And can be consumed in a template as shown below
+
+Finally there is also support for your own custom extension libraries. These are provided via an Azure DevOps task parameter holding a block of JavaScript which is loaded into the Handlebars templating engine. They are entered in the YAML as a single line or a multi-line parameter as follows using the `|` operator
+```
+- task: XplatGenerateReleaseNotes@3
+   inputs:
+      outputfile: '$(Build.ArtifactStagingDirectory)\releasenotes.md'
+      # all the other parameters required
+      customHandlebarsExtensionCode: |
+         module.exports = {foo() {
+            return 'Returns foo';
+         }};
+```
+
+and can be consumed in a template as shown below
 ```
 ## To confirm our custom extension works
 We can call our custom extension {{foo}}
@@ -216,9 +254,10 @@ The task takes the following parameters
 * (Advanced) Dump Payload to File - If true the data objects passed to the file generator is dumped to a JSON file.
 * (Advanced) Dump Payload Filename - The filename to dump the data objects passed to the file generator
 * (Advanced) Get Direct Parent and Children for associated work items, defaults to false
-* (Advanced) Get All Parents for associated work items, recursing back to workitem with no parents e.g. up to Epics, defaults to false
-* (Advanced) Tags a comma separated list of pipeline tags that must all be matched when looking for previous successful builds , only used if checkStage=true
-* (Advanced) overridePat a means to inject a Personal Access Token to use in place of the Build Agent OAUTH token. This option will only be used in very rare situations usually after a support issue has been raised, defaults to empty
+* (Advanced) Get All Parents for associated work items, recursing back to workitems with no parents e.g. up to Epics, defaults to false
+* (Advanced) Tags - a comma separated list of pipeline tags that must all be matched when looking for previous successful builds , only used if checkStage=true
+* (Advanced) OverridePat - a means to inject a Personal Access Token to use in place of the Build Agent OAUTH token. This option will only be used in very rare situations usually after a support issue has been raised, defaults to empty
+* (Advanced) OverrideBuildReleaseId - For releases or multi-stage YAML a means to set the 'last good release' to compare against. If this release/build is not found then the task will exit with an error
 * (Handlebars) customHandlebars ExtensionCode. A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};
 * (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.
 

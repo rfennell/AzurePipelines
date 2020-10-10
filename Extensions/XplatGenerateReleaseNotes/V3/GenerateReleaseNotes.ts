@@ -38,6 +38,7 @@ async function run(): Promise<number>  {
             var getAllParents = tl.getBoolInput("getAllParents");
             var tags = tl.getInput("tags");
             var overridePat = tl.getInput("overridePat");
+            var overrideBuildReleaseId = tl.getInput("overrideBuildReleaseId");
 
             var returnCode = await util.generateReleaseNotes(
                 overridePat,
@@ -72,7 +73,9 @@ async function run(): Promise<number>  {
                 dumpPayloadFileName,
                 checkStage,
                 getAllParents,
-                tags);
+                tags,
+                overrideBuildReleaseId
+                );
 
         } catch (err) {
 
