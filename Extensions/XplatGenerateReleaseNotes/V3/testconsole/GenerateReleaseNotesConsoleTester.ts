@@ -74,6 +74,7 @@ async function run(): Promise<number>  {
                     var dumpPayloadFileName = settings.dumpPayloadFileName;
                     var checkStage = getBoolean(settings.checkStage);
                     var tags = settings.tags;
+                    var overrideBuildReleaseId = settings.overrideBuildReleaseId;
 
                     var returnCode = await util.generateReleaseNotes(
                         pat,
@@ -108,7 +109,8 @@ async function run(): Promise<number>  {
                         dumpPayloadFileName,
                         checkStage,
                         getAllParents,
-                        tags);
+                        tags,
+                        overrideBuildReleaseId);
                 } else {
                     console.log(`Cannot fine settings file ${filename}`);
                 }
