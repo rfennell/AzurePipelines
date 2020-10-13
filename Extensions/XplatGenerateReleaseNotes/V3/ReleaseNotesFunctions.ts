@@ -59,6 +59,7 @@ import { IBuildApi, BuildApi } from "azure-devops-node-api/BuildApi";
 import * as vstsInterfaces from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 import { time } from "console";
 import { InstalledExtensionQuery } from "azure-devops-node-api/interfaces/ExtensionManagementInterfaces";
+import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "constants";
 
 let agentApi = new AgentSpecificApi();
 
@@ -117,7 +118,7 @@ export function getSimpleArtifactArray(artifacts: Artifact[]): SimpleArtifact[] 
 
 export async function getPullRequests(gitApi: GitApi, projectName: string): Promise<GitPullRequest[]> {
     return new Promise<GitPullRequest[]>(async (resolve, reject) => {
-        let prList: GitPullRequest[];
+        let prList: GitPullRequest[] = [];
         try {
             var filter: GitPullRequestSearchCriteria = {
                 creatorId: "",
@@ -129,7 +130,15 @@ export async function getPullRequests(gitApi: GitApi, projectName: string): Prom
                 status: PullRequestStatus.Completed,
                 targetRefName: ""
             };
-            prList = await gitApi.getPullRequestsByProject( projectName, filter);
+            var batchSize: number = 1000; // 1000 seems to be the API max
+            var skip: number = 0;
+            do {
+                agentApi.logDebug(`Get batch of PRs [${skip}] - [${skip + batchSize}]`);
+                var prListBatch = await gitApi.getPullRequestsByProject( projectName, filter, 0 , skip, batchSize);
+                agentApi.logDebug(`Adding batch of ${prListBatch.length} PRs`);
+                prList.push(...prListBatch);
+                skip += batchSize;
+            } while (batchSize === prListBatch.length);
             resolve(prList);
         } catch (err) {
             reject(err);
@@ -241,7 +250,7 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
                     }
                 }
             }
-            agentApi.logWarn(`Expanded ${expanded}`);
+            agentApi.logInfo(`Expanded truncated commit messages ${expanded}`);
             resolve(globalCommits);
     });
 }
@@ -1166,7 +1175,7 @@ export async function generateReleaseNotes(
             try {
                 var allPullRequests: GitPullRequest[] = await getPullRequests(gitApi, prProjectFilter);
                 if (allPullRequests && (allPullRequests.length > 0)) {
-                    agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps for PRs`);
+                    agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps PRs in the repo`);
                     globalCommits.forEach(commit => {
                         if (commit.type === "TfsGit") {
                             agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
@@ -1178,7 +1187,7 @@ export async function generateReleaseNotes(
                                         globalPullRequests.push(pr);
                                     }
                                 } else {
-                                    console.log(`- PR ${pr.pullRequestId} does not have a lastMergeCommit`);
+                                    agentApi.logInfo(`- PR ${pr.pullRequestId} does not have a lastMergeCommit`);
                                 }
                             });
 
