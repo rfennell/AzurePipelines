@@ -280,7 +280,7 @@
       "label": "Override Build/ Release ID",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "For releases or multi-stage YAML a means to set the 'last good release' to compare against. This is release/build is not found then the task will exit with an errorFor releases or multi-stage YAML a means to set the 'last good release' to compare against. If this release/build is not found then the task will exit with an error",
+      "helpMarkDown": "For releases or multi-stage YAML this parameter provides a means to set the ID of the 'last good release' to compare against. If the specified release/build is not found then the task will exit with an error. Default is empty/not set disabling this override behaviour",
       "groupName":"advanced"
     }
    ],
