@@ -257,7 +257,12 @@ The task takes the following parameters
 * (Advanced) Get All Parents for associated work items, recursing back to workitems with no parents e.g. up to Epics, defaults to false
 * (Advanced) Tags - a comma separated list of pipeline tags that must all be matched when looking for previous successful builds , only used if checkStage=true
 * (Advanced) OverridePat - a means to inject a Personal Access Token to use in place of the Build Agent OAUTH token. This option will only be used in very rare situations usually after a support issue has been raised, defaults to empty
-* (Advanced) OverrideBuildReleaseId - For releases or multi-stage YAML a means to set the 'last good release' to compare against. If this release/build is not found then the task will exit with an error
+* (Advanced) OverrideBuildReleaseId - For releases or multi-stage YAML this parameter provides a means to set the ID of the 'last good release' to compare against. If the specified release/build is not found then the task will exit with an error. The override behaviour is as follows
+   * (Default) Parameter undefined - Old behaviour, looks for last successful build using optional stage and tag filters
+   * Empty string - Old behaviour, looks for last successful build using optional stage and tag filters
+   * A valid build ID (int) - Use the build ID as the comparison
+   * An invalid build ID (int) -	If a valid build cannot be found then the task exits with a message
+   * Any other non empty input value - The task exits with an error message
 * (Handlebars) customHandlebars ExtensionCode. A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};
 * (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.
 
