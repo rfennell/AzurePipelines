@@ -39,13 +39,13 @@ function listFiles(dir, filelist) {
 function GetTask(filePath) {
     const task = JSON.parse(fs.readFileSync(filePath, "utf8"));
     logInfo(`Adding YAML sample for task ${task.name} from  ${filePath})`);
-    var markdown = `## ${task.name} \r\n`;
+    var markdown = `## ${task.name} V${task.version.Major}\r\n`;
     markdown += `${task.description} \r\n`;
     markdown += `### YAML snippet \r\n`;
     markdown += `\`\`\`\`\`\`\r\n`;
     markdown += `# ${task.friendlyName}\r\n`;
     markdown += `# Description - ${task.description}\r\n`;
-    markdown += `- task: ${task.name}\r\n`;
+    markdown += `- task: ${task.name}@${task.version.Major}\r\n`;
     markdown += `  inputs: \r\n`;
     markdown += `     # Required arguments\r\n`;
 
