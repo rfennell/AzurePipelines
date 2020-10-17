@@ -41,7 +41,7 @@ stages:
           rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
           targetFiles: '**\\task.json'
 
-      - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+      - task: Pester.PesterRunner.Pester-Task.Pester@10
         displayName: 'DACPac Versioning Pester Test Runner'
         inputs:
           scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionDacpacTask\test'
@@ -56,7 +56,7 @@ stages:
           testResultsFiles: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
           testRunTitle: 'DACPac Pester Tests'
 
-      - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+      - task: Pester.PesterRunner.Pester-Task.Pester@10
         displayName: 'PowerShellModule Versioning Tests'
         inputs:
           scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionPowerShellModule\test'
