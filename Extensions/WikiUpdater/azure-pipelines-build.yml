@@ -2,13 +2,13 @@ name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
 trigger: 
   branches:
-    include: [ master ] # branch names which will trigger a build
+    include: [ main ] # branch names which will trigger a build
   paths:
     include: [ /Extensions/WikiUpdater ] # file paths which must match to trigger a build, cannot be a variable
 
 pr: # will trigger on PR
   branches:
-    include: [ master ] # branch names which will trigger a build
+    include: [ main ] # branch names which will trigger a build
   paths:
     include: [ /Extensions/WikiUpdater ] # file paths which must match to trigger a build, cannot be a variable
 
@@ -370,7 +370,7 @@ stages:
 
   - stage: Public
     dependsOn: Documentation
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     jobs:
     - deployment: Public_Deployment
       timeoutInMinutes: 0

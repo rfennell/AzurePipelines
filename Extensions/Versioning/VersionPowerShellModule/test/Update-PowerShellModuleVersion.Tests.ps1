@@ -1,12 +1,13 @@
-$sut = Join-Path -Path $PSScriptRoot -ChildPath '..\src\Update-PowerShellModuleVersion.ps1' -Resolve
-# a dummy instance tomock
-function Get-VstsInput {param ($Name)}
+
 
 $VerbosePreference = "continue"
 
 Describe "Testing Update-PowerShellModuleVersion.ps1" {
 
-    Context "Testing Processing" {
+    BeforeEach {
+        $sut = Join-Path -Path $PSScriptRoot -ChildPath '..\src\Update-PowerShellModuleVersion.ps1' -Resolve
+        function Get-VstsInput {param ($Name)}
+        
         Function Update-MetaData {}
         Function Get-MetaData {}
 #        Mock -CommandName Write-Verbose -MockWith {}
@@ -36,123 +37,124 @@ Describe "Testing Update-PowerShellModuleVersion.ps1" {
         }
         Mock -CommandName Get-MetaData -MockWith {$true}
         #Mock -CommandName Select-Object -MockWith {}
+    }
 
-        It "Should write an error when the version number isn't a valid format" {
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\First.psd1'}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "FakeNumber"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
+    It "Should write an error when the version number isn't a valid format" {
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\First.psd1'}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "FakeNumber"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
 
-            &$Sut 
-            Assert-MockCalled -CommandName Write-Error -Scope It -Times 1
-        }
+        &$Sut 
+        Assert-MockCalled -CommandName Write-Error -Scope It -Times 1
+    }
 
 
-        It "Should install NuGet if it isn't already installed" {
-            Mock -CommandName Get-PackageProvider -MockWith { Throw }
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
+    It "Should install NuGet if it isn't already installed" {
+        Mock -CommandName Get-PackageProvider -MockWith { Throw }
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
 
-            &$Sut 
-            Assert-MockCalled -CommandName Install-PackageProvider -Scope It -Times 1
-        }
-        It "Should install NuGet if it isn't already installed and extract number" {
-            Mock -CommandName Get-PackageProvider -MockWith { Throw }
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "ABC 1.2.3.4"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "false"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
+        &$Sut 
+        Assert-MockCalled -CommandName Install-PackageProvider -Scope It -Times 1
+    }
+    It "Should install NuGet if it isn't already installed and extract number" {
+        Mock -CommandName Get-PackageProvider -MockWith { Throw }
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "ABC 1.2.3.4"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "false"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
 
-            &$Sut 
+        &$Sut 
 
-            Assert-MockCalled -CommandName Install-PackageProvider -Scope It -Times 1
-        }
-        It "Should install the latest version of Configuration when a newer version is available on the Gallery" {
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
+        Assert-MockCalled -CommandName Install-PackageProvider -Scope It -Times 1
+    }
+    It "Should install the latest version of Configuration when a newer version is available on the Gallery" {
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
 
-            Mock -CommandName Find-Module -MockWith { [PsCustomObject]@{Version='9.9.9.9';Repository='OtherRepository'}}
+        Mock -CommandName Find-Module -MockWith { [PsCustomObject]@{Version='9.9.9.9';Repository='OtherRepository'}}
 
-            &$Sut 
+        &$Sut 
 
-            Assert-MockCalled -CommandName Install-Module -Scope It -Times 1
-        }
-        It "Should not install a new version of Configuration when it is already available locally" -Skip {
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
+        Assert-MockCalled -CommandName Install-Module -Scope It -Times 1
+    }
+    It "Should not install a new version of Configuration when it is already available locally" -Skip {
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
 
-            Mock -CommandName Find-Module -MockWith { [PsCustomObject]@{Version=[Version]::Parse('0.0.0.0');Repository='OtherRepository'}}
-            Mock -CommandName Select-Object -MockWith {[PsCustomObject]@{Version=[Version]::Parse('1.1.1.1');Repository='OtherRepository'}} -ParameterFilter {$InputObject.Name -eq 'Configuration'}
+        Mock -CommandName Find-Module -MockWith { [PsCustomObject]@{Version=[Version]::Parse('0.0.0.0');Repository='OtherRepository'}}
+        Mock -CommandName Select-Object -MockWith {[PsCustomObject]@{Version=[Version]::Parse('1.1.1.1');Repository='OtherRepository'}} -ParameterFilter {$InputObject.Name -eq 'Configuration'}
 
-            &$Sut 
-            
-            Assert-MockCalled -CommandName Install-Module -Scope It -Times 0
-        }
-        It "Should attempt to update 1 module in the target path" {
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
+        &$Sut 
+        
+        Assert-MockCalled -CommandName Install-Module -Scope It -Times 0
+    }
+    It "Should attempt to update 1 module in the target path" {
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
 
-            Mock -CommandName Select-Object -MockWith {'TestDrive:\First.psd1'} -ParameterFilter {$InputObject.Path -eq 'TestDrive:\First.psd1'}
+        Mock -CommandName Select-Object -MockWith {'TestDrive:\First.psd1'} -ParameterFilter {$InputObject.Path -eq 'TestDrive:\First.psd1'}
 
-            &$Sut 
+        &$Sut 
 
-            Assert-MockCalled -CommandName Update-Metadata -Scope It -Times 1
-        }
-        It "Should attempt to update 2 modules in the target path" {
+        Assert-MockCalled -CommandName Update-Metadata -Scope It -Times 1
+    }
+    It "Should attempt to update 2 modules in the target path" {
 
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
 
-            &$Sut 
+        &$Sut 
 
-            Assert-MockCalled -CommandName Update-Metadata -Scope It -Times 2
-        }
-        It "Should attempt to update the version number and private data in 1 module in the target path when a prerelease version is passed" {
+        Assert-MockCalled -CommandName Update-Metadata -Scope It -Times 2
+    }
+    It "Should attempt to update the version number and private data in 1 module in the target path when a prerelease version is passed" {
 
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4-alpha"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
-            Mock -CommandName Select-Object -MockWith {'TestDrive:\First.psd1'} -ParameterFilter {$InputObject.Path -eq 'TestDrive:\First.psd1'}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4-alpha"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
+        Mock -CommandName Select-Object -MockWith {'TestDrive:\First.psd1'} -ParameterFilter {$InputObject.Path -eq 'TestDrive:\First.psd1'}
 
-            &$Sut 
+        &$Sut 
 
-            Assert-MockCalled -CommandName Update-Metadata -Scope It -Times 2
-        }
-        It "Should write a warning when the PSData Prerelease section isn't in the manifest when a prerelease version is passed" {
+        Assert-MockCalled -CommandName Update-Metadata -Scope It -Times 2
+    }
+    It "Should write a warning when the PSData Prerelease section isn't in the manifest when a prerelease version is passed" {
 
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4-alpha"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
-            Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
-            Mock -CommandName Select-Object -MockWith {'TestDrive:\First.psd1'} -ParameterFilter {$InputObject.Path -eq 'TestDrive:\First.psd1'}
-            Mock -CommandName Get-MetaData -MockWith {$null}
-            &$Sut 
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "Path"} {return 'TestDrive:\'}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionNumber"} {return "1.2.3.4-alpha"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return "true"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return "\d+\.\d+\.\d+\.\d+"}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
+        Mock -CommandName Select-Object -MockWith {'TestDrive:\First.psd1'} -ParameterFilter {$InputObject.Path -eq 'TestDrive:\First.psd1'}
+        Mock -CommandName Get-MetaData -MockWith {$null}
+        &$Sut 
 
-            Assert-MockCalled -CommandName Update-Metadata -Scope It -Times 1
-            Assert-MockCalled -CommandName Write-Warning -Scope It -Times 1 -ParameterFilter {
-                $Message -eq ("Cannot set Prerelease in module manifest. Add an empty Prerelease to your module manifest, like:`n" +
-                '         PrivateData = @{ PSData = @{ Prerelease = "" } }')
-            }
+        Assert-MockCalled -CommandName Update-Metadata -Scope It -Times 1
+        Assert-MockCalled -CommandName Write-Warning -Scope It -Times 1 -ParameterFilter {
+            $Message -eq ("Cannot set Prerelease in module manifest. Add an empty Prerelease to your module manifest, like:`n" +
+            '         PrivateData = @{ PSData = @{ Prerelease = "" } }')
         }
     }
 }
+

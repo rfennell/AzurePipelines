@@ -9,15 +9,15 @@ This repo contains Azure DevOps Services (VSTS) & Server (TFS) Pipeline Extensio
 ## Under Active Support
 Extension | Public Deployment Status
 ----------|------------------
-Artifact PR Description | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/ArtifactDescription?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=79) 
-Build Utils | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/BuildUpdatingExtension?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=70)
-DevTest Labs |  [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/DevtestLabsExtension?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=63) 
-FileCopier Utils |[![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/FileCopyExtension?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=69)  
-GenerateReleaseNotes (XPlat) |[![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/XplatGenerateReleaseNotes?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=85)
-Manifest Versioning | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/VersioningExtension?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=65) 
-WIKI Updater | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/extensions/WikiUpdaterExtension?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=64)
-WIKI PDF Exporter | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/extensions/WikiPDFExportExtension?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=92)
-YAML Generator | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/extensions/YamlGenerator?branchName=master&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=83)
+Artifact PR Description | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/ArtifactDescription?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=79) 
+Build Utils | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/BuildUpdatingExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=70)
+DevTest Labs |  [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/DevtestLabsExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=63) 
+FileCopier Utils |[![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/FileCopyExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=69)  
+GenerateReleaseNotes (XPlat) |[![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/XplatGenerateReleaseNotes?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=85)
+Manifest Versioning | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/VersioningExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=65) 
+WIKI Updater | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/extensions/WikiUpdaterExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=64)
+WIKI PDF Exporter | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/extensions/WikiPDFExportExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=92)
+YAML Generator | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/extensions/YamlGenerator?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=83)
 
 ## Supported but planned to deprecate in not too distant future
 Extension | Public Deployment Status

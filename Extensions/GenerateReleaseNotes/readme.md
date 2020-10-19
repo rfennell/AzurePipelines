@@ -30,7 +30,7 @@ The output for a build based report using Markdown might be something like the f
 >
 > Build Number: 20160229.3
 > Build started: 29/02/16 15:47:58
-> Source Branch: refs/heads/master
+> Source Branch: refs/heads/main
 >
 > Associated work items
 >
@@ -71,7 +71,7 @@ This give an output as follows
 > #Release notes for build Validate-ReleaseNotesTask.Master
 > **Build Number**  : 20160325.12
 > **Build started** : 25/03/16 09:07:47
-> **Source Branch** : refs/heads/master
+> **Source Branch** : refs/heads/main
 > ###Associated work items
 > None
 > ###Associated change sets/commits
@@ -95,7 +95,7 @@ This version of the template file dumps out all the available fields to help you
 This give an output as follows
 
 > #Release notes for build Validate-ReleaseNotesTask.Master
-> @{_links=; plans=System.Object[]; id=330; buildNumber=20160325.12; status=inProgress; queueTime=2016-03-25T09:07:44.7394253Z; startTime=2016-03-25T09:07:47.6398974Z; url=https://xxx.visualstudio.com/DefaultCollection/670b3a60-2021-47ab-a88b-d76ebd888a2f/_apis/build/Builds/330; definition=; buildNumberRevision=12; project=; uri=vstfs:///Build/Build/330; sourceBranch=refs/heads/master; sourceVersion=4e9b75b4a9d3b64a5e6abf9975b9ed1a1c29682f; queue=; priority=normal; reason=manual; requestedFor=; requestedBy=; lastChangedDate=2016-03-25T09:07:47.317Z; lastChangedBy=; parameters={"system.debug":"false","BuildConfiguration":"release","BuildPlatform":"any cpu"}; orchestrationPlan=; logs=; repository=; keepForever=False}
+> @{_links=; plans=System.Object[]; id=330; buildNumber=20160325.12; status=inProgress; queueTime=2016-03-25T09:07:44.7394253Z; startTime=2016-03-25T09:07:47.6398974Z; url=https://xxx.visualstudio.com/DefaultCollection/670b3a60-2021-47ab-a88b-d76ebd888a2f/_apis/build/Builds/330; definition=; buildNumberRevision=12; project=; uri=vstfs:///Build/Build/330; sourceBranch=refs/heads/main; sourceVersion=4e9b75b4a9d3b64a5e6abf9975b9ed1a1c29682f; queue=; priority=normal; reason=manual; requestedFor=; requestedBy=; lastChangedDate=2016-03-25T09:07:47.317Z; lastChangedBy=; parameters={"system.debug":"false","BuildConfiguration":"release","BuildPlatform":"any cpu"}; orchestrationPlan=; logs=; repository=; keepForever=False}
 > ###Associated work items
 > None
 > ###Associated change sets/commits

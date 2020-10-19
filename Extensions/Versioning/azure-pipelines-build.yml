@@ -2,13 +2,13 @@ name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
 trigger: 
   branches:
-    include: [ master ] # branch names which will trigger a build
+    include: [ main ] # branch names which will trigger a build
   paths:
     include: [ Extensions/Versioning ] # file paths which must match to trigger a build, cannot be a variable
 
 pr: # will trigger on PR
   branches:
-    include: [ master ] # branch names which will trigger a build
+    include: [ main ] # branch names which will trigger a build
   paths:
     include: [ Extensions/Versioning ] # file paths which must match to trigger a build, cannot be a variable
 
@@ -31,7 +31,8 @@ stages:
     jobs:
     - job: Build
       pool: 
-        vmImage: '$(vmImage)'
+        # vmImage: '$(vmImage)'
+        name: default
         demands: npm
       steps:
       # version all the task in the extension
@@ -41,7 +42,7 @@ stages:
           rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
           targetFiles: '**\\task.json'
 
-      - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+      - task: Pester.PesterRunner.Pester-Task.Pester@10
         displayName: 'DACPac Versioning Pester Test Runner'
         inputs:
           scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionDacpacTask\test'
@@ -56,7 +57,7 @@ stages:
           testResultsFiles: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
           testRunTitle: 'DACPac Pester Tests'
 
-      - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+      - task: Pester.PesterRunner.Pester-Task.Pester@10
         displayName: 'PowerShellModule Versioning Tests'
         inputs:
           scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionPowerShellModule\test'
@@ -269,7 +270,7 @@ stages:
 
   - stage: Public
     dependsOn: Documentation
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     jobs:
     - deployment: Public_Deployment
       timeoutInMinutes: 0
