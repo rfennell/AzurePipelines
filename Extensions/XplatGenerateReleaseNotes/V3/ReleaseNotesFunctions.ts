@@ -1153,7 +1153,13 @@ export async function generateReleaseNotes(
                     // and enhance the details if they can
                     if ((currentBuild.repository.type === "TfsGit") && (currentBuild.triggerInfo["pr.number"])) {
                         agentApi.logInfo(`The default artifact for the build/release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
-                        prDetails = await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"]));
+                        const pullRequestId = parseInt(currentBuild.triggerInfo["pr.number"]);
+                        prDetails = await gitApi.getPullRequestById(pullRequestId);
+
+                        // getPullRequestById does not populate labels, so get those as well
+                        const prLabels = await gitApi.getPullRequestLabels(prDetails.repository.id, pullRequestId);
+                        prDetails.labels = prLabels;
+
                         globalPullRequests.push(prDetails);
                     } else {
                         agentApi.logInfo(`The default artifact for the release was not linked to an Azure DevOps Git Repo Pull Request`);
