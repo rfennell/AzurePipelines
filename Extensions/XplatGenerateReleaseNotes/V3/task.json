@@ -41,7 +41,7 @@
          "label": "Output file",
          "defaultValue": "",
          "required": true,
-         "helpMarkDown": "The name of the Markdown file to export e.g. $(Build.ArtifactStagingDirectory)\\releasenotes.md if within a build workflow "
+         "helpMarkDown": "The name of the Markdown file to export e.g. $(Build.ArtifactStagingDirectory)/releasenotes.md if within a build workflow "
       },
       {
          "name": "outputVariableName",
@@ -188,7 +188,7 @@
       "name": "dumpPayloadFileName",
       "type": "string",
       "label": "Payload Dump File",
-      "defaultValue": "$(Build.ArtifactStagingDirectory)\\payload.json",
+      "defaultValue": "$(Build.ArtifactStagingDirectory)/payload.json",
       "required": false,
       "helpMarkDown": "The filename to dump the data objects passed to the file generator",
       "groupName":"advanced",
