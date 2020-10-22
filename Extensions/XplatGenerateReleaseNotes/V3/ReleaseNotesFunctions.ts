@@ -1211,6 +1211,14 @@ export async function generateReleaseNotes(
 
             agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
 
+            agentApi.logInfo(`Getting Tags/Labels for known Pull Requests`);
+            // get the labels for all the known PRs we are interested in as getPullRequestById does not populate labels, so get those as well
+            for (let index = 0; index < globalPullRequests.length; index++) {
+                const prDetails = globalPullRequests[index];
+                const prLabels = await gitApi.getPullRequestLabels(prDetails.repository.id, prDetails.pullRequestId);
+                prDetails.labels = prLabels;
+            }
+
             dumpJsonPayload(
                 dumpPayloadToConsole,
                 dumpPayloadToFile,
