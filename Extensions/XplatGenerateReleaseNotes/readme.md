@@ -46,10 +46,14 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 **Compared Release Number**  : {{compareReleaseDetails.name}}    
 **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
 
-# Associated Pull Requests ({{pullRequests.length}})
+## Associated Pull Requests ({{pullRequests.length}})
 {{#forEach pullRequests}}
-{{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
-*  **PR {{this.id}}**  {{this.title}}
+* **[{{this.pullRequestId}}]({{replace (replace this.url "_apis/git/repositories" "_git") "pullRequests" "pullRequest"}})** {{this.title}}
+{{#forEach this.associatedWorkitems}}
+   {{#with (lookup_a_work_item ../../relatedWorkItems this.url)}}
+    - WI [{{this.id}}]({{replace this.url "_apis/wit/workItems" "_workitems/edit"}}) - {{lookup this.fields 'System.Title'}} 
+   {{/with}}
+{{/forEach}}
 {{/forEach}}
 
 # Builds with associated WI/CS/Tests ({{builds.length}})

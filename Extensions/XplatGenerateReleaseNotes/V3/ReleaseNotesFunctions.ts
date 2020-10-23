@@ -8,6 +8,13 @@ export interface SimpleArtifact {
     sourceId: string;
 }
 
+interface WorkItemInfo {
+    id: number;
+    url: string;
+}
+interface EnrichedGitPullRequest extends GitPullRequest {
+    associatedWorkitems: WorkItemInfo[];
+}
 export class UnifiedArtifactDetails {
     build: Build;
     commits: Change[];
@@ -252,6 +259,37 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
             }
             agentApi.logInfo(`Expanded truncated commit messages ${expanded}`);
             resolve(globalCommits);
+    });
+}
+
+export async function enrichPullRequest(
+    gitApi: IGitApi,
+    pullRequests: EnrichedGitPullRequest[],
+): Promise<EnrichedGitPullRequest[]> {
+    return new Promise<EnrichedGitPullRequest[]>(async (resolve, reject) => {
+        try {
+            for (let prIndex = 0; prIndex < pullRequests.length; prIndex++) {
+                const prDetails = pullRequests[prIndex];
+                // get any missing labels for all the known PRs we are interested in as getPullRequestById does not populate labels, so get those as well
+                if (!prDetails.labels || prDetails.labels.length === 0 ) {
+                    agentApi.logDebug(`Checking for tags for ${prDetails.pullRequestId}`);
+                    const prLabels = await gitApi.getPullRequestLabels(prDetails.repository.id, prDetails.pullRequestId);
+                    prDetails.labels = prLabels;
+                }
+                // and added the WI IDs
+                var wiRefs = await gitApi.getPullRequestWorkItemRefs(prDetails.repository.id, prDetails.pullRequestId);
+                prDetails.associatedWorkitems = wiRefs.map(wi => {
+                    return {
+                        id: parseInt(wi.id),
+                        url: wi.url
+                    };
+                }) ;
+                agentApi.logDebug(`Added ${prDetails.associatedWorkitems.length} work items for ${prDetails.pullRequestId}`);
+            }
+            resolve(pullRequests);
+        } catch (err) {
+            reject(err);
+        }
     });
 }
 
@@ -820,7 +858,7 @@ export async function generateReleaseNotes(
             // the result containers
             var globalCommits: Change[] = [];
             var globalWorkItems: ResourceRef[] = [];
-            var globalPullRequests: GitPullRequest[] = [];
+            var globalPullRequests: EnrichedGitPullRequest[] = [];
             var globalBuilds: UnifiedArtifactDetails[] = [];
             var globalTests: TestCaseResult[] = [];
             var releaseTests: TestCaseResult[] = [];
@@ -1154,7 +1192,7 @@ export async function generateReleaseNotes(
                     if ((currentBuild.repository.type === "TfsGit") && (currentBuild.triggerInfo["pr.number"])) {
                         agentApi.logInfo(`The default artifact for the build/release was triggered by the PR ${currentBuild.triggerInfo["pr.number"]}, getting details`);
                         prDetails = await gitApi.getPullRequestById(parseInt(currentBuild.triggerInfo["pr.number"]));
-                        globalPullRequests.push(prDetails);
+                        globalPullRequests.push(<EnrichedGitPullRequest>prDetails);
                     } else {
                         agentApi.logInfo(`The default artifact for the release was not linked to an Azure DevOps Git Repo Pull Request`);
                     }
@@ -1184,7 +1222,7 @@ export async function generateReleaseNotes(
                                 if (pr.lastMergeCommit) {
                                     if (pr.lastMergeCommit.commitId === commit.id) {
                                         agentApi.logInfo(`- PR ${pr.pullRequestId} matches the commit ${commit.id}`);
-                                        globalPullRequests.push(pr);
+                                        globalPullRequests.push(<EnrichedGitPullRequest>pr);
                                     }
                                 } else {
                                     agentApi.logInfo(`- PR ${pr.pullRequestId} does not have a lastMergeCommit`);
@@ -1211,13 +1249,8 @@ export async function generateReleaseNotes(
 
             agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
 
-            agentApi.logInfo(`Getting Tags/Labels for known Pull Requests`);
-            // get the labels for all the known PRs we are interested in as getPullRequestById does not populate labels, so get those as well
-            for (let index = 0; index < globalPullRequests.length; index++) {
-                const prDetails = globalPullRequests[index];
-                const prLabels = await gitApi.getPullRequestLabels(prDetails.repository.id, prDetails.pullRequestId);
-                prDetails.labels = prLabels;
-            }
+            agentApi.logInfo(`Enriching known Pull Requests`);
+            globalPullRequests = await enrichPullRequest(gitApi, globalPullRequests);
 
             dumpJsonPayload(
                 dumpPayloadToConsole,
