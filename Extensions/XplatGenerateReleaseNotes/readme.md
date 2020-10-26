@@ -111,11 +111,11 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 {{/forEach}} 
    - **Parents**
 {{#forEach this.relations}}
-{{#if (contains this.attributes.name 'Parent')}}
+{{#if (contains this.attributes.name 'System.Parent')}}
 {{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
       - {{this.id}} - {{lookup this.fields 'System.Title'}} 
       {{#forEach this.relations}}
-      {{#if (contains this.attributes.name 'Parent')}}
+      {{#if (contains this.attributes.name 'System.Parent')}}
       {{#with (lookup_a_work_item ../../../../relatedWorkItems  this.url)}}
          - {{this.id}} - {{lookup this.fields 'System.Title'}} 
       {{/with}}
@@ -203,11 +203,11 @@ In addition to the [Handlebars Helpers](https://github.com/helpers/handlebars-he
 - `lookup_a_work_item` this looks up a work item in the global array of work items based on a work item relations URL
 ```
 {{#forEach this.relations}}
-{{#if (contains this.attributes.name 'Parent')}}
+{{#if (contains this.attributes.name 'System.Parent')}}
 {{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
       - {{this.id}} - {{lookup this.fields 'System.Title'}} 
       {{#forEach this.relations}}
-      {{#if (contains this.attributes.name 'Parent')}}
+      {{#if (contains this.attributes.name 'System.Parent')}}
       {{#with (lookup_a_work_item ../../../../relatedWorkItems  this.url)}}
          - {{this.id}} - {{lookup this.fields 'System.Title'}} 
       {{/with}}
