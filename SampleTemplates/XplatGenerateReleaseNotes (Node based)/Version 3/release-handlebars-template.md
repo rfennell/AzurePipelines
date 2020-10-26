@@ -49,7 +49,7 @@
    - **Description** {{{lookup this.fields 'System.Description'}}}
    - **Parents**
 {{#forEach this.relations}}
-{{#if (contains this.attributes.name 'Parent')}}
+{{#if (contains this.attributes.name 'System.Parent')}}
 {{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
       - {{this.id}} - {{lookup this.fields 'System.Title'}} 
 {{/with}}

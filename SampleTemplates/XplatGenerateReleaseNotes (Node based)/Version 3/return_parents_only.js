@@ -12,7 +12,7 @@ module.exports = {
         var foundList = [];
         for (var arrayCount = 0; arrayCount < array.length ; arrayCount++) {
              for (var relationCount = 0; relationCount < array[arrayCount].relations.length; relationCount++) { 
-                if (array[arrayCount].relations[relationCount].attributes.name == 'Parent') { 
+                if (array[arrayCount].relations[relationCount].attributes.name == 'System.Parent') { 
                     var urlParts = array[arrayCount].relations[relationCount].url.split("/");
                     var id = parseInt(urlParts[urlParts.length - 1]);
                     var parent = relatedWorkItems.find(element => element.id === id);
