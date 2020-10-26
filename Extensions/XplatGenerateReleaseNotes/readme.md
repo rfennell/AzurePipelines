@@ -17,25 +17,42 @@ Generates release notes for a build or release. the file can be a format of your
 * V2 was a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the Node Azure DevOps SDK, with minor but breaking changes in the template format and that oAuth needs enabling on the agent running the tasks. At 2.27.x KennethScott](https://github.com/KennethScott) added support for [Handlbars](https://handlebarsjs.com/) templates.
 * V3 removed support for the legacy template model, only handlebars templates supported.
 
-# Usage
-This task generates a release notes file based on a template passed into the tool. It can be using inside a UI based Build or Release or a Multistage YAML Pipeline.
+# Overview
+This task generates a release notes file based on a template passed into the tool. It can be using inside a [classic Build, a classic Release](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-the-classic-interface) or a [Multistage YAML Pipeline](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-yaml-syntax).
 
-The data source for the generated Release Notes is the Azure DevOps REST API's comparison calls that are also used by the Azure DevOps UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of items as the Azure DevOps UI. 
+The data source for the generated Release Notes is the Azure DevOps REST API's comparison calls that are also used by the Azure DevOps UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of work items and commits/changesets as the Azure DevOps UI, though it can enrich this core data with extra information. 
 
-**Note:** That this comparison is only done against the primary build artifact linked to the Release
+> **Note:** 
+>  - That this comparison is only done against the primary build artifact linked to a Classic Release
+>  - If used in the build or non-multistage YAML pipeline the release notes are based on the current build only.
 
-If used in the build or non-multistage YAML pipeline the release notes are based on the current build only.
+There are many ways that the task can be used. A common pattern is to use the task multiple times in a pipeline
 
-## The Template 
+1. Run once for every build, so you get the build notes of what is in that build
+1. Run as part of a deployment stage, checking against the last successful build, to generate the release notes issued with that release.
+
+Possible sets of parameters depending on your usage are summarized below
+
+| Option | Multi Stage YAML | Classic Build/Release |
+|-|-|-|
+| Generate notes for just the current build | Requires `checkstages=false` parameter| Run inside the build |
+| Generate notes since the last successful release.  <br>Option 1. Place the task in a stage that is only run when you wish to generate release notes. Usually this will be guarded by branch based filters or manual approvals.  |  Requires `checkstages=true` parameter | Run inside the release. Supported and you can override the stage name used for comparison using the `overrideStageName` parameter
+| Generate notes since the last successful release.  <br>Option 2. Set the task to look back for the last successful build that has a given tag |  Requires `checkstages=true` and the `tags` parameters| Not supported 
+| Generate notes since the last successful release.  <br>Option 3. Override the build that the task uses for comparison with a fixed value |  Requires `checkstages=true` and the `overrideBuildReleaseId` parameters | Run inside the release. Requires the `overrideBuildReleaseId` parameter
+
+You can see the documentation for all the features in the [WIKI ](https://github.com/rfennell/AzurePipelines/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task) and the YAML usage [here](https://github.com/rfennell/AzurePipelines/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task-YAML)
+
+
+# The Template 
 
 There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes for both Git and TFVC based releases. Most samples are for Markdown file generation, but it is possible to generate any other format such as HTML
 
 <hr/>
 
-**The legacy templating format has been be deprecated in V3. The only templating model supported is handlebars**
+**The legacy templating format has been be deprecated in V3. The only templating model supported is Handlebars**
 <hr/>
 
-### Handlebar Templates
+## Handlebar Templates
 Since 2.27.x it has been possible to create your templates using [Handlebars](https://handlebarsjs.com/) syntax. A template written in this format is as follows
 
 ```
@@ -133,11 +150,11 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 
 ```
 
-**IMPORTANT** Handlebars based templates have different objects available to the legacy template.
+> **IMPORTANT** Handlebars based templates have different objects available to the legacy template.
 
 What is done behind the scenes is that each `{{properties}}` block in the template is expanded by Handlebars. The property objects available to get data from at runtime are:
 
-#### Common objects 
+## Common objects 
 * **workItems** – the array of work item associated with the release
 * **commits** – the array of commits/changesets associated with the release
 * **pullRequests** - the array of PRs (inc. labels) referenced by the commits in the release
@@ -149,21 +166,21 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
     - **tests**  - the work items associated with the build
 * **relatedWorkItems** – the array of all work item associated with the release plus their direct parents or children and/or all parents depending on task parameters
 
-#### Release objects (only available in a UI based Releases)
+### Release objects (only available in a UI based Releases)
 * **releaseDetails** – the release details of the release that the task was triggered for.
 * **compareReleaseDetails** - the the previous successful release that comparisons are being made against
 * **releaseTest** - the list of test associated with the release e.g. integration tests
 
-#### Build objects (available for UI based builds and any YAML based pipelines)
+### Build objects (available for UI based builds and any YAML based pipelines)
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
 * **compareBuildDetails** - the previous successful build that comparisons are being made against, only available if checkstage=true
 * **currentStage** - if `checkstage` is enable this object is set to the details of the stage in the current build that is being used for the stage check
 
-**Note:** To dump all possible values via the template using the custom Handlebars extension `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion. There are also options to dump these raw values to the build console log or to a file. (See below)
+> **Note:** To dump all possible values via the template using the custom Handlebars extension `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion. There are also options to dump these raw values to the build console log or to a file. (See below)
 
-**Note:** if a field contains escaped HTML encode data this can be returned its original format with triple brackets format `{{{lookup this.fields 'System.Description'}}}` 
+> **Note:** if a field contains escaped HTML encode data this can be returned its original format with triple brackets format `{{{lookup this.fields 'System.Description'}}}` 
 
-#### Handlebar Extensions
+## Handlebar Extensions
 With 2.28.x support was added for Handlebars extensions in a number of ways:
 
  The [Handlebars Helpers](https://github.com/helpers/handlebars-helpers) extension library is also pre-load, this provides over 120 useful extensions to aid in data manipulation when templating. They are used the form
@@ -201,6 +218,18 @@ In addition to the [Handlebars Helpers](https://github.com/helpers/handlebars-he
 {{/forEach}} 
 ```
 
+```
+## Associated Pull Requests ({{pullRequests.length}})
+{{#forEach pullRequests}}
+* **[{{this.pullRequestId}}]({{replace (replace this.url "_apis/git/repositories" "_git") "pullRequests" "pullRequest"}})** {{this.title}}
+{{#forEach this.associatedWorkitems}}
+   {{#with (lookup_a_work_item ../../relatedWorkItems this.url)}}
+    - WI [{{this.id}}]({{replace this.url "_apis/wit/workItems" "_workitems/edit"}}) - {{lookup this.fields 'System.Title'}} 
+   {{/with}}
+{{/forEach}}
+{{/forEach}}
+```
+
 - `lookup_a_pullrequest` this looks up a pull request item in the global array of pull requests based on a work item relations URL
 ```
 {{#forEach this.relations}}
@@ -232,7 +261,7 @@ We can call our custom extension {{foo}}
 
 As custom modules allows any JavaScript logic to be inject for bespoke need they can be solution to your own bespoke filtering and sorting needs. You can find sample of custom modules [the the Handlebars section of the sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) e.g. to perform a sorted foreach.
 
-## Usage
+# Parameters
 Once the extension is added to your Azure DevOps Server (TFS) or Azure DevOps Services, the task should be available in the utilities section of 'add tasks'
 
 **IMPORTANT** - The V2 Task requires that oAuth access is enabled on agent running the task, this requirement has been removed in V3
@@ -271,7 +300,7 @@ The task takes the following parameters
 * (Handlebars) customHandlebars ExtensionCode. A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};
 * (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.
 
-## Output location ##
+# Output location 
 
 When using this task within a build then it is sensible to place the release notes files as a build artifacts.
 
