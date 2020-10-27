@@ -2,7 +2,9 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
-* 3.24.x adds PR labels/tags to th
+* 3.27.x enriches the PR with associated commits 
+* 3.25.x enriches the PR with associated work items references (need to do a lookup into the list of work items to get details see sample template below)
+* 3.24.x adds labels/tags to the PR 
 * 3.21.x adds an override for the historic pipeline to compare against
 * 3.8.x adds currentStage variable for multi-stage YAML based builds
 * 3.6.x adds compareBuildDetails variable for YAML based builds
@@ -66,10 +68,15 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 ## Associated Pull Requests ({{pullRequests.length}})
 {{#forEach pullRequests}}
 * **[{{this.pullRequestId}}]({{replace (replace this.url "_apis/git/repositories" "_git") "pullRequests" "pullRequest"}})** {{this.title}}
+* Associated Work Items
 {{#forEach this.associatedWorkitems}}
    {{#with (lookup_a_work_item ../../relatedWorkItems this.url)}}
-    - WI [{{this.id}}]({{replace this.url "_apis/wit/workItems" "_workitems/edit"}}) - {{lookup this.fields 'System.Title'}} 
+    - [{{this.id}}]({{replace this.url "_apis/wit/workItems" "_workitems/edit"}}) - {{lookup this.fields 'System.Title'}} 
    {{/with}}
+{{/forEach}}
+* Associated Commits (this includes commits on the PR source branch not associated directly with the build)
+{{#forEach this.associatedCommits}}
+    - [{{this.commitId}}]({{this.remoteUrl}}) -  {{this.comment}}
 {{/forEach}}
 {{/forEach}}
 
@@ -157,7 +164,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 ## Common objects 
 * **workItems** – the array of work item associated with the release
 * **commits** – the array of commits/changesets associated with the release
-* **pullRequests** - the array of PRs (inc. labels) referenced by the commits in the release
+* **pullRequests** - the array of PRs (inc. labels, associated WI links and commits to the source branch) referenced by the commits in the release
 * **tests** - the array of unique tests associated with any of the builds linked to the release or the release itself  
 * **builds** - the array of the build artifacts that CS and WI are associated with. Note that this is a object with three properties 
     - **build**  - the build details
@@ -222,10 +229,15 @@ In addition to the [Handlebars Helpers](https://github.com/helpers/handlebars-he
 ## Associated Pull Requests ({{pullRequests.length}})
 {{#forEach pullRequests}}
 * **[{{this.pullRequestId}}]({{replace (replace this.url "_apis/git/repositories" "_git") "pullRequests" "pullRequest"}})** {{this.title}}
+* Associated Work Items
 {{#forEach this.associatedWorkitems}}
    {{#with (lookup_a_work_item ../../relatedWorkItems this.url)}}
-    - WI [{{this.id}}]({{replace this.url "_apis/wit/workItems" "_workitems/edit"}}) - {{lookup this.fields 'System.Title'}} 
+    - [{{this.id}}]({{replace this.url "_apis/wit/workItems" "_workitems/edit"}}) - {{lookup this.fields 'System.Title'}} 
    {{/with}}
+{{/forEach}}
+* Associated Commits (this s commits on the PR source branch not associated directly with the build)
+{{#forEach this.associatedCommits}}
+    - [{{this.commitId}}]({{this.remoteUrl}}) -  {{this.comment}}
 {{/forEach}}
 {{/forEach}}
 ```

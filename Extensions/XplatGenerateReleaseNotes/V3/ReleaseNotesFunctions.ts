@@ -14,6 +14,7 @@ interface WorkItemInfo {
 }
 interface EnrichedGitPullRequest extends GitPullRequest {
     associatedWorkitems: WorkItemInfo[];
+    associatedCommits: GitCommit[];
 }
 export class UnifiedArtifactDetails {
     build: Build;
@@ -285,6 +286,14 @@ export async function enrichPullRequest(
                     };
                 }) ;
                 agentApi.logDebug(`Added ${prDetails.associatedWorkitems.length} work items for ${prDetails.pullRequestId}`);
+
+                prDetails.associatedCommits = [];
+                var csRefs = await gitApi.getPullRequestCommits(prDetails.repository.id, prDetails.pullRequestId);
+                for (let csIndex = 0; csIndex < csRefs.length; csIndex++) {
+                    prDetails.associatedCommits.push ( await gitApi.getCommit(csRefs[csIndex].commitId, prDetails.repository.id));
+                }
+                agentApi.logDebug(`Added ${prDetails.associatedCommits.length} commits for ${prDetails.pullRequestId}, note this includes commits on the PR source branch not associated directly with the build)`);
+
             }
             resolve(pullRequests);
         } catch (err) {
