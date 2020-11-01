@@ -39,6 +39,7 @@ async function run(): Promise<number>  {
             var tags = tl.getInput("tags");
             var overridePat = tl.getInput("overridePat");
             var overrideBuildReleaseId = tl.getInput("overrideBuildReleaseId");
+            var getIndirectPullRequests = tl.getBoolInput("getIndirectPullRequests");
 
             var returnCode = await util.generateReleaseNotes(
                 overridePat,
@@ -74,7 +75,8 @@ async function run(): Promise<number>  {
                 checkStage,
                 getAllParents,
                 tags,
-                overrideBuildReleaseId
+                overrideBuildReleaseId,
+                getIndirectPullRequests
                 );
 
         } catch (err) {
