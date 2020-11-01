@@ -2,6 +2,7 @@
 Generates release notes for a build or release. the file can be a format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 3.29.x provide a new array of `inDirectlyAssociatedPullRequests`, this contains PR associated with PR associated commits 
 * 3.27.x enriches the PR with associated commits 
 * 3.25.x enriches the PR with associated work items references (need to do a lookup into the list of work items to get details see sample template below)
 * 3.24.x adds labels/tags to the PR 
@@ -165,6 +166,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 * **workItems** – the array of work item associated with the release
 * **commits** – the array of commits/changesets associated with the release
 * **pullRequests** - the array of PRs (inc. labels, associated WI links and commits to the source branch) referenced by the commits in the release
+* **inDirectlyAssociatedPullRequests** - the array of PRs (inc. labels, associated WI links and commits to the source branch) referenced by associated commits of the directly linked PRs. #866
 * **tests** - the array of unique tests associated with any of the builds linked to the release or the release itself  
 * **builds** - the array of the build artifacts that CS and WI are associated with. Note that this is a object with three properties 
     - **build**  - the build details
@@ -250,6 +252,28 @@ In addition to the [Handlebars Helpers](https://github.com/helpers/handlebars-he
       - {{this.pullRequestId}} - {{this.title}} 
 {{/with}}
 {{/if}}
+{{/forEach}}
+```
+
+- `get_only_message_firstline` this gets just the first line of a multi-line commit message
+- `lookup_a_pullrequest_by_merge_commit` this looks up a pull request item in an array of pull requests based on a last merge commit ID
+```
+## Associated Pull Requests ({{pullRequests.length}})
+{{#forEach pullRequests}}
+* **[{{this.pullRequestId}}]({{replace (replace this.url "_apis/git/repositories" "_git") "pullRequests" "pullRequest"}})** {{this.title}}
+* Associated Work Items
+{{#forEach this.associatedWorkitems}}
+   {{#with (lookup_a_work_item ../../relatedWorkItems this.url)}}
+    - [{{this.id}}]({{replace this.url "_apis/wit/workItems" "_workitems/edit"}}) - {{lookup this.fields 'System.Title'}} 
+   {{/with}}
+{{/forEach}}
+* Associated Commits (this includes commits on the PR source branch not associated directly with the build)
+{{#forEach this.associatedCommits}}
+    - [{{truncate this.commitId 7}}]({{this.remoteUrl}}) - {{get_only_message_firstline this.comment}}
+    {{#with (lookup_a_pullrequest_by_merge_commit ../../inDirectlyAssociatedPullRequests  this.commitId)}}
+      - Associated PR {{this.pullRequestId}} - {{this.title}} 
+    {{/with}}
+{{/forEach}}
 {{/forEach}}
 ```
 

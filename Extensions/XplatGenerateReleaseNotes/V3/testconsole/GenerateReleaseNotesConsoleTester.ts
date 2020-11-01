@@ -75,6 +75,7 @@ async function run(): Promise<number>  {
                     var checkStage = getBoolean(settings.checkStage);
                     var tags = settings.tags;
                     var overrideBuildReleaseId = settings.overrideBuildReleaseId;
+                    var getIndirectPullRequests = getBoolean(settings.getIndirectPullRequests);
 
                     var returnCode = await util.generateReleaseNotes(
                         pat,
@@ -110,7 +111,8 @@ async function run(): Promise<number>  {
                         checkStage,
                         getAllParents,
                         tags,
-                        overrideBuildReleaseId);
+                        overrideBuildReleaseId,
+                        getIndirectPullRequests);
                 } else {
                     console.log(`Cannot fine settings file ${filename}`);
                 }
