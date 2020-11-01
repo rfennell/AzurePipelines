@@ -610,13 +610,14 @@ export function processTemplate(
     customHandlebarsExtensionCode: string,
     customHandlebarsExtensionFile: string,
     customHandlebarsExtensionFolder: string,
-    pullRequests: GitPullRequest[],
+    pullRequests: EnrichedGitPullRequest[],
     globalBuilds: UnifiedArtifactDetails[],
     globalTests: TestCaseResult[],
     releaseTests: TestCaseResult[],
     relatedWorkItems: WorkItem[],
     compareBuildDetails: Build,
-    currentStage: TimelineRecord
+    currentStage: TimelineRecord,
+    inDirectlyAssociatedPullRequests: EnrichedGitPullRequest[]
     ): string {
 
     var output = "";
@@ -630,6 +631,7 @@ export function processTemplate(
         agentApi.logDebug(`  Global Tests: ${globalTests.length}`);
         agentApi.logDebug(`  Release Tests: ${releaseTests.length}`);
         agentApi.logDebug(`  Related WI: ${relatedWorkItems.length}`);
+        agentApi.logDebug(`  Indirect PR: ${inDirectlyAssociatedPullRequests.length}`);
 
         // it is a handlebar template
         agentApi.logDebug("Processing handlebar template");
@@ -648,16 +650,28 @@ export function processTemplate(
         // add our helper to find children and parents
         handlebars.registerHelper("lookup_a_work_item", function (array, url) {
                 var urlParts = url.split("/");
-                var id = parseInt(urlParts[urlParts.length - 1]);
-                return array.find(element => element.id === id);
+                var wiId = parseInt(urlParts[urlParts.length - 1]);
+                return array.find(element => element.id === wiId);
             }
         );
 
         // add our helper to find PR
         handlebars.registerHelper("lookup_a_pullrequest", function (array, url) {
                 var urlParts = url.split("%2F");
-                var id = parseInt(urlParts[urlParts.length - 1]);
-                return array.find(element => element.pullRequestId === id);
+                var prId = parseInt(urlParts[urlParts.length - 1]);
+                return array.find(element => element.pullRequestId === prId);
+            }
+        );
+
+        // add our helper to get first line of commit message
+        handlebars.registerHelper("get_only_message_firstline", function (msg) {
+                return msg.split(`\n`)[0];
+            }
+        );
+
+        // add our helper to find PR
+        handlebars.registerHelper("lookup_a_pullrequest_by_merge_commit", function (array, commitId) {
+                return array.find(element => element.lastMergeCommit.commitId === commitId);
             }
         );
 
@@ -697,7 +711,8 @@ export function processTemplate(
                 "tests": globalTests,
                 "releaseTests": releaseTests,
                 "relatedWorkItems": relatedWorkItems,
-                "compareBuildDetails": compareBuildDetails
+                "compareBuildDetails": compareBuildDetails,
+                "inDirectlyAssociatedPullRequests": inDirectlyAssociatedPullRequests
             });
             agentApi.logInfo( "Completed processing template");
 
@@ -846,7 +861,8 @@ export async function generateReleaseNotes(
     checkStage: boolean,
     getAllParents: boolean,
     tags: string,
-    overrideBuildReleaseId: string
+    overrideBuildReleaseId: string,
+    getIndirectPullRequests: boolean
     ): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
@@ -868,6 +884,7 @@ export async function generateReleaseNotes(
             var globalCommits: Change[] = [];
             var globalWorkItems: ResourceRef[] = [];
             var globalPullRequests: EnrichedGitPullRequest[] = [];
+            var inDirectlyAssociatedPullRequests: EnrichedGitPullRequest[] = [];
             var globalBuilds: UnifiedArtifactDetails[] = [];
             var globalTests: TestCaseResult[] = [];
             var releaseTests: TestCaseResult[] = [];
@@ -1261,6 +1278,25 @@ export async function generateReleaseNotes(
             agentApi.logInfo(`Enriching known Pull Requests`);
             globalPullRequests = await enrichPullRequest(gitApi, globalPullRequests);
 
+            if (getIndirectPullRequests === true ) {
+                agentApi.logInfo(`Checking the CS associated with the PRs to see if they are inturn associated PRs`);
+                if (allPullRequests && allPullRequests.length > 0 ) {
+                    for (let prIndex = 0; prIndex < globalPullRequests.length; prIndex++) {
+                        const pr = globalPullRequests[prIndex];
+                        for (let csIndex = 0; csIndex < pr.associatedCommits.length; csIndex++) {
+                            const cs =  pr.associatedCommits[csIndex];
+                            var foundPR = allPullRequests.find( e => e.lastMergeCommit.commitId === cs.commitId);
+                            if (foundPR) {
+                            agentApi.logInfo(`Found the PR ${foundPR.pullRequestId} associated wth ${cs.commitId} added to the 'inDirectlyAssociatedPullRequests' array`);
+                            inDirectlyAssociatedPullRequests.push(<EnrichedGitPullRequest>foundPR);
+                            }
+                        }
+                    }
+                }
+                // enrich the founds PRs
+                inDirectlyAssociatedPullRequests = await enrichPullRequest(gitApi, inDirectlyAssociatedPullRequests);
+            }
+
             dumpJsonPayload(
                 dumpPayloadToConsole,
                 dumpPayloadToFile,
@@ -1277,7 +1313,8 @@ export async function generateReleaseNotes(
                     releaseTests: releaseTests,
                     buildDetails: currentBuild,
                     compareBuildDetails: mostRecentSuccessfulBuild,
-                    currentStage: currentStage
+                    currentStage: currentStage,
+                    inDirectlyAssociatedPullRequests: inDirectlyAssociatedPullRequests
                 });
 
             var template = getTemplate (templateLocation, templateFile, inlineTemplate);
@@ -1298,7 +1335,8 @@ export async function generateReleaseNotes(
                     releaseTests,
                     relatedWorkItems,
                     mostRecentSuccessfulBuild,
-                    currentStage);
+                    currentStage,
+                    inDirectlyAssociatedPullRequests);
 
                 writeFile(outputFile, outputString, replaceFile, appendToFile);
 

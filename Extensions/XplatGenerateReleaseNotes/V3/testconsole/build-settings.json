@@ -30,5 +30,6 @@
     "checkStage": "true",
     "Fix349": "true",
     "tags": "",
-    "overrideBuildReleaseId": ""
+    "overrideBuildReleaseId": "",
+    "getIndirectPullRequests": "false"
 }
