@@ -1,24 +1,24 @@
 # Releases
-Generates release notes for a build or release. the file can be a format of your choice
+Generates release notes for a Classic Build or Release, or a YML based build. The generated file can be any text based format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
-* For releases, uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
-* 3.29.x provide a new array of `inDirectlyAssociatedPullRequests`, this contains PR associated with PR associated commits 
-* 3.27.x enriches the PR with associated commits 
-* 3.25.x enriches the PR with associated work items references (need to do a lookup into the list of work items to get details see sample template below)
+* Uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 3.28.x provide a new array of `inDirectlyAssociatedPullRequests`, this contains PR associated with a PR's associated commits. Useful if using a Gitflow work work-flow [x866](https://github.com/rfennell/AzurePipelines/issues/866) (see sample template below)
+* 3.27.x enriches the PR with associated commits (see sample template below)
+* 3.25.x enriches the PR with associated work items references (you need to do a lookup into the list of work items to get details, see sample template below)
 * 3.24.x adds labels/tags to the PR 
 * 3.21.x adds an override for the historic pipeline to compare against
-* 3.8.x adds currentStage variable for multi-stage YAML based builds
-* 3.6.x adds compareBuildDetails variable for YAML based builds
+* 3.8.x adds `currentStage` variable for multi-stage YAML based builds
+* 3.6.x adds `compareBuildDetails` variable for YAML based builds
 * 3.5.x removed the need to enable OAUTH access for the Agent phase
 * 3.4.x adds support for getting full commit messages from Bitbucket
 * 3.1.x adds support for looking for the last successful stage in a multi-stage YAML pipeline. For this to work the stage name must be unique in the pipeline
 * 3.0.x drops support for the legacy template model, only handlebars templates supported.
 * The Azure DevOps REST APIs have a limitation that by default they only return 200 items. As a release could include more Work Items or ChangeSets/Commits. A workaround for this has been added [#349](https://github.com/rfennell/AzurePipelines/issues/349). Since version 2.12.x this feature has been defaulted on. To disable it set the variable `ReleaseNotes.Fix349` to `false`
 
-**IMPORTANT** - There have been three major versions of this extension, this is because
-* V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs. This version is not longer shipped in the extension, but can be download from [GitHub](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9)
-* V2 was a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the Node Azure DevOps SDK, with minor but breaking changes in the template format and that oAuth needs enabling on the agent running the tasks. At 2.27.x KennethScott](https://github.com/KennethScott) added support for [Handlbars](https://handlebarsjs.com/) templates.
-* V3 removed support for the legacy template model, only handlebars templates supported.
+> **IMPORTANT** - There have been three major versions of this extension, this is because
+> * V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs. This version is not longer shipped in the extension, but can be download from [GitHub](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9)
+> * V2 was a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the Node Azure DevOps SDK, with minor but breaking changes in the template format and that oAuth needs enabling on the agent running the tasks. At 2.27.x KennethScott](https://github.com/KennethScott) added support for [Handlbars](https://handlebarsjs.com/) templates.
+> * V3 removed support for the legacy template model, only handlebars templates supported.
 
 # Overview
 This task generates a release notes file based on a template passed into the tool. It can be using inside a [classic Build, a classic Release](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-the-classic-interface) or a [Multistage YAML Pipeline](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-yaml-syntax).
@@ -158,7 +158,7 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 
 ```
 
-> **IMPORTANT** Handlebars based templates have different objects available to the legacy template.
+> **IMPORTANT** Handlebars based templates have different objects available to the legacy template used in V2 of this extension. This is a break change.
 
 What is done behind the scenes is that each `{{properties}}` block in the template is expanded by Handlebars. The property objects available to get data from at runtime are:
 
@@ -166,7 +166,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 * **workItems** – the array of work item associated with the release
 * **commits** – the array of commits/changesets associated with the release
 * **pullRequests** - the array of PRs (inc. labels, associated WI links and commits to the source branch) referenced by the commits in the release
-* **inDirectlyAssociatedPullRequests** - the array of PRs (inc. labels, associated WI links and commits to the source branch) referenced by associated commits of the directly linked PRs. #866
+* **inDirectlyAssociatedPullRequests** - the array of PRs (inc. labels, associated WI links and commits to the source branch) referenced by associated commits of the directly linked PRs. [#866](https://github.com/rfennell/AzurePipelines/issues/866)
 * **tests** - the array of unique tests associated with any of the builds linked to the release or the release itself  
 * **builds** - the array of the build artifacts that CS and WI are associated with. Note that this is a object with three properties 
     - **build**  - the build details
@@ -175,12 +175,12 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
     - **tests**  - the work items associated with the build
 * **relatedWorkItems** – the array of all work item associated with the release plus their direct parents or children and/or all parents depending on task parameters
 
-### Release objects (only available in a UI based Releases)
+### Release objects (only available in a Classic UI based Releases)
 * **releaseDetails** – the release details of the release that the task was triggered for.
 * **compareReleaseDetails** - the the previous successful release that comparisons are being made against
 * **releaseTest** - the list of test associated with the release e.g. integration tests
 
-### Build objects (available for UI based builds and any YAML based pipelines)
+### Build objects (available for Classic UI based builds and any YAML based pipelines)
 * **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
 * **compareBuildDetails** - the previous successful build that comparisons are being made against, only available if checkstage=true
 * **currentStage** - if `checkstage` is enable this object is set to the details of the stage in the current build that is being used for the stage check
@@ -297,7 +297,7 @@ We can call our custom extension {{foo}}
 
 As custom modules allows any JavaScript logic to be inject for bespoke need they can be solution to your own bespoke filtering and sorting needs. You can find sample of custom modules [the the Handlebars section of the sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) e.g. to perform a sorted foreach.
 
-# Parameters
+# Task Parameters
 Once the extension is added to your Azure DevOps Server (TFS) or Azure DevOps Services, the task should be available in the utilities section of 'add tasks'
 
 **IMPORTANT** - The V2 Task requires that oAuth access is enabled on agent running the task, this requirement has been removed in V3
@@ -327,6 +327,7 @@ The task takes the following parameters
 * (Advanced) Get All Parents for associated work items, recursing back to workitems with no parents e.g. up to Epics, defaults to false
 * (Advanced) Tags - a comma separated list of pipeline tags that must all be matched when looking for previous successful builds , only used if checkStage=true
 * (Advanced) OverridePat - a means to inject a Personal Access Token to use in place of the Build Agent OAUTH token. This option will only be used in very rare situations usually after a support issue has been raised, defaults to empty
+* (Advanced) getIndirectPullRequests - if enabled an attempt will be made to populate a list of indirectly associated PRs i.e PR that are associated with a PR's associated commits [#866](https://github.com/rfennell/AzurePipelines/issues/866)
 * (Advanced) OverrideBuildReleaseId - For releases or multi-stage YAML this parameter provides a means to set the ID of the 'last good release' to compare against. If the specified release/build is not found then the task will exit with an error. The override behaviour is as follows
    * (Default) Parameter undefined - Old behaviour, looks for last successful build using optional stage and tag filters
    * Empty string - Old behaviour, looks for last successful build using optional stage and tag filters

@@ -1185,13 +1185,6 @@ export async function generateReleaseNotes(
                 relatedWorkItems = await getAllParentWorkitems(workItemTrackingApi, relatedWorkItems);
             }
 
-            agentApi.logInfo(`Total build artifacts: [${globalBuilds.length}]`);
-            agentApi.logInfo(`Total commits: [${globalCommits.length}]`);
-            agentApi.logInfo(`Total workitems: [${globalWorkItems.length}]`);
-            agentApi.logInfo(`Total related workitems: [${relatedWorkItems.length}]`);
-            agentApi.logInfo(`Total release tests: [${releaseTests.length}]`);
-            agentApi.logInfo(`Total tests: [${globalTests.length}]`);
-
             // by default order by ID, has the option to group by type
             if (sortWi) {
                 agentApi.logInfo("Sorting WI by type then id");
@@ -1273,8 +1266,6 @@ export async function generateReleaseNotes(
                 ))
             );
 
-            agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
-
             agentApi.logInfo(`Enriching known Pull Requests`);
             globalPullRequests = await enrichPullRequest(gitApi, globalPullRequests);
 
@@ -1296,6 +1287,15 @@ export async function generateReleaseNotes(
                 // enrich the founds PRs
                 inDirectlyAssociatedPullRequests = await enrichPullRequest(gitApi, inDirectlyAssociatedPullRequests);
             }
+
+            agentApi.logInfo(`Total Builds: [${globalBuilds.length}]`);
+            agentApi.logInfo(`Total Commits: [${globalCommits.length}]`);
+            agentApi.logInfo(`Total Workitems: [${globalWorkItems.length}]`);
+            agentApi.logInfo(`Total Related Workitems (Parent/Children): [${relatedWorkItems.length}]`);
+            agentApi.logInfo(`Total Release Tests: [${releaseTests.length}]`);
+            agentApi.logInfo(`Total Tests: [${globalTests.length}]`);
+            agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
+            agentApi.logInfo(`Total Indirect Pull Requests: [${inDirectlyAssociatedPullRequests.length}]`);
 
             dumpJsonPayload(
                 dumpPayloadToConsole,
