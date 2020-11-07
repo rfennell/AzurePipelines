@@ -7,10 +7,10 @@ To locally build the project run the the command
 
 ```
 npm install
-mpm run package
+npm run package
 ```
 
-This creates the TS files in the _build folder
+This creates the TS files in the \_build folder
 
 A package is created in the general form, note that the CI/CD process overloads a number of these command line to get the public/private gallery views and the extensionIDs
 
