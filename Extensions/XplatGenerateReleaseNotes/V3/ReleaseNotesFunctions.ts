@@ -322,7 +322,7 @@ export async function enrichChangesWithFileDetails(
                         var url = require("url");
                         // split the url up, check it is the expected format and then get the ID
                         var urlParts = url.parse(change.location);
-                        if (urlParts.host === "dev.azure.com") {
+                        if ((urlParts.host === "dev.azure.com") || (urlParts.host.includes(".visualstudio.com") === true)) {
                             var pathParts = urlParts.path.split("/");
                             var repoId = "";
                             for (let index = 0; index < pathParts.length; index++) {
@@ -335,7 +335,7 @@ export async function enrichChangesWithFileDetails(
                             agentApi.logInfo (`Enriched with details of ${gitDetails.changes.length} files`);
                             extraDetail = gitDetails.changes;
                         } else  {
-                            agentApi.logInfo (`Cannot enriched as location URL not in dev.azure.com format`);
+                            agentApi.logInfo (`Cannot enriched as location URL not in dev.azure.com or xxx.visualstudio.com format`);
                         }
                     } else if (change.type === "TfsVersionControl") {
                         var tfvcDetail = await tfvcApi.getChangesetChanges(parseInt(change.id.substring(1)));
