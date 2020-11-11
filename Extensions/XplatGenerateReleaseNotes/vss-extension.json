@@ -3,7 +3,7 @@
  "id": "BM-VSTS-XplatGenerateReleaseNotes",
  "version": "2.0.0",
  "name": "Generate Release Notes (Crossplatform)",
- "publisher": "richardfennellBM",
+ "publisher": "Tootelo",
   "description": "Generates a Markdown Release notes file.",
   "CustomerQnASupport": {
     "enableqna":"true",
@@ -13,7 +13,7 @@
     "Azure Pipelines"
   ],
   "galleryFlags": [
-        "Public"
+        "Private"
     ],
   "targets": [
          {
