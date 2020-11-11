@@ -21,6 +21,20 @@
             "type": "PowerShell",
             "request": "launch",
             "script": "${file}"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/Extensions/XplatGenerateReleaseNotes\\V3\\testconsole\\GenerateReleaseNotesConsoleTester.ts",
+            "args": ["--filename","${workspaceFolder}/Extensions/XplatGenerateReleaseNotes\\V3\\testconsole\\release-settings.json","--pat", "guoqlvbnin2ietma3kb6uu2xykrd7epozvg4qaro2bnjctr6q3xq","--githubpat", "fa521c9d804066116cd0048cd39a69e21a125adb"],
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ],
+            
         }
     ]
 }

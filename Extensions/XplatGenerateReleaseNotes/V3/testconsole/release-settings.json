@@ -2,7 +2,7 @@
     "TeamFoundationCollectionUri": "https://dev.azure.com/tootelo-bjs",
     "TeamProject": "BJS - CP",
     "buildId": 4270,
-    "releaseDefinitionId": 19,
+    "releaseDefinitionId": 14,
     "releaseId": 520,
     "environmentName":"Prod",
     "templatefile": "C:\\git\\AzurePipelines\\Extensions\\XplatGenerateReleaseNotes\\V3\\testconsole\\release-handlebars-template.md",
@@ -31,6 +31,6 @@
     "checkStage": "true",
     "Fix349": "true",
     "tags": "",
-    "overrideBuildReleaseId": "494",
+    "overrideBuildReleaseId": 494,
     "getIndirectPullRequests": "false"
 }
