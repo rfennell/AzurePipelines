@@ -1006,8 +1006,8 @@ export async function generateReleaseNotes(
                                                     activateFix = "true";
                                                 }
 
-                                                commits = await releaseApi.getReleaseChanges("BJS - CP", releaseId, mostRecentSuccessfulDeployment.release.id);
-                                                workitems = await releaseApi.getReleaseWorkItemsRefs("BJS - CP", releaseId, mostRecentSuccessfulDeployment.release.id);
+                                                commits = await releaseApi.getReleaseChanges(artifactInThisRelease.sourceId, releaseId, mostRecentSuccessfulDeployment.release.id);
+                                                workitems = await releaseApi.getReleaseWorkItemsRefs(artifactInThisRelease.sourceId, releaseId, mostRecentSuccessfulDeployment.release.id);
 
                                                 // enrich what we have with file names
                                                 if (commits) {
