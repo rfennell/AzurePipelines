@@ -50,7 +50,8 @@ import { IReleaseApi } from "azure-devops-node-api/ReleaseApi";
 import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 import * as webApi from "azure-devops-node-api/WebApi";
 import fs  = require("fs");
-import { Build, Change, Timeline, TimelineRecord } from "azure-devops-node-api/interfaces/BuildInterfaces";
+import { Build, Timeline, TimelineRecord } from "azure-devops-node-api/interfaces/BuildInterfaces";
+import { Change } from "azure-devops-node-api/interfaces/ReleaseInterfaces";
 import { IGitApi, GitApi } from "azure-devops-node-api/GitApi";
 import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfaces";
 import { GitCommit, GitPullRequest, GitPullRequestQueryType, GitPullRequestSearchCriteria, PullRequestStatus } from "azure-devops-node-api/interfaces/GitInterfaces";
@@ -191,78 +192,6 @@ export async function getMostRecentSuccessfulDeployment(releaseApi: IReleaseApi,
     });
 }
 
-export async function expandTruncatedCommitMessages(restClient: WebApi, globalCommits: Change[], gitHubPat: string, bitbucketUser: string, bitbucketSecret: string): Promise<Change[]> {
-    return new Promise<Change[]>(async (resolve, reject) => {
-            var expanded: number = 0;
-            agentApi.logInfo(`Expanding the truncated commit messages...`);
-            for (var change of globalCommits) {
-                if (change.messageTruncated) {
-                    try {
-                        agentApi.logDebug(`Expanding commit [${change.id}]`);
-                        let res: restm.IRestResponse<GitCommit>;
-                        if (change.location.startsWith("https://api.github.com/")) {
-                            agentApi.logDebug(`Need to expand details from GitHub`);
-                            // we build PAT auth object even if we have no token
-                            // this will still allow access to public repos
-                            // if we have a token it will allow access to private ones
-                            let auth = new PersonalAccessTokenCredentialHandler(gitHubPat);
-
-                            let rc = new restm.RestClient("rest-client", "", [auth], {});
-                            let gitHubRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
-                            if (gitHubRes.statusCode === 200) {
-                                change.message = gitHubRes.result.commit.message;
-                                change.messageTruncated = false;
-                                expanded++;
-                            } else {
-                                agentApi.logWarn(`Cannot access API ${gitHubRes.statusCode} accessing ${change.location}`);
-                                agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
-                            }
-                        } else if (change.location.startsWith("https://api.bitbucket.org/")) {
-                                agentApi.logDebug(`Need to expand details from BitBucket`);
-                                // we build PAT auth object even if we have no token
-                                // this will still allow access to public repos
-                                // if we have a token it will allow access to private ones
-                                let rc = new restm.RestClient("rest-client");
-                                if (bitbucketUser && bitbucketUser.length > 0 && bitbucketSecret && bitbucketSecret.length > 0 ) {
-                                    let auth = new BasicCredentialHandler(bitbucketUser, bitbucketSecret);
-                                    rc = new restm.RestClient("rest-client", "", [auth], {});
-                                } else {
-                                    agentApi.logInfo(`No Bitbucket user and app secret passed so cannot access private Bitbucket repos`);
-                                }
-
-                                let bitbucketRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
-                                if (bitbucketRes.statusCode === 200) {
-                                    change.message = bitbucketRes.result.message;
-                                    change.messageTruncated = false;
-                                    expanded++;
-                                } else {
-                                    agentApi.logWarn(`Cannot access API ${bitbucketRes.statusCode} accessing ${change.location}`);
-                                    agentApi.logWarn(`The most common reason for this failure is that the Bitbucket Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
-                                }
-                        } else {
-                            agentApi.logDebug(`Need to expand details from Azure DevOps`);
-                            // the REST client is already authorised with the agent token
-                            let vstsRes = await restClient.rest.get<GitCommit>(change.location);
-                            if (vstsRes.statusCode === 200) {
-                                change.message = vstsRes.result.comment;
-                                change.messageTruncated = false;
-                                expanded++;
-                            } else {
-                                agentApi.logWarn(`Cannot access API ${vstsRes.statusCode} accessing ${change.location}`);
-                                agentApi.logWarn(`The most common reason for this failure is that the account defined by the agent access token does not  have rights to read the required repo`);
-                            }
-                        }
-                    } catch (err) {
-                        agentApi.logWarn(`Cannot expand message ${err}`);
-                        agentApi.logWarn(`Using ${change.location}`);
-                    }
-                }
-            }
-            agentApi.logInfo(`Expanded truncated commit messages ${expanded}`);
-            resolve(globalCommits);
-    });
-}
-
 export async function enrichPullRequest(
     gitApi: IGitApi,
     pullRequests: EnrichedGitPullRequest[],
@@ -314,8 +243,8 @@ export async function enrichChangesWithFileDetails(
             for (let index = 0; index < changes.length; index++) {
                 const change = changes[index];
                 try {
-                    agentApi.logInfo (`Enriched change ${change.id} of type ${change.type}`);
-                    if (change.type === "TfsGit") {
+                    agentApi.logInfo (`Enriched change ${change.id} of type ${change.changeType}`);
+                    if (change.changeType === "TfsGit") {
                         // we need the repository ID for the API call
                         // the alternative is to take the basic location value and build a rest call form that
                         // neither are that nice.
@@ -337,11 +266,11 @@ export async function enrichChangesWithFileDetails(
                         } else  {
                             agentApi.logInfo (`Cannot enriched as location URL not in dev.azure.com or xxx.visualstudio.com format`);
                         }
-                    } else if (change.type === "TfsVersionControl") {
+                    } else if (change.changeType === "TfsVersionControl") {
                         var tfvcDetail = await tfvcApi.getChangesetChanges(parseInt(change.id.substring(1)));
                         agentApi.logInfo (`Enriched with details of ${tfvcDetail.length} files`);
                         extraDetail = tfvcDetail;
-                    } else if (change.type === "GitHub") {
+                    } else if (change.changeType === "GitHub") {
                         let res: restm.IRestResponse<GitCommit>;
                         // we build PAT auth object even if we have no token
                         // this will still allow access to public repos
@@ -357,10 +286,10 @@ export async function enrichChangesWithFileDetails(
                             agentApi.logWarn(`Cannot access API ${gitHubRes.statusCode} accessing ${change.location}`);
                             agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
                         }
-                    } else if (change.type === "Bitbucket") {
+                    } else if (change.changeType === "Bitbucket") {
                             agentApi.logWarn(`This task does not currently support getting file details associated to a commit on Bitbucket`);
                     } else {
-                        agentApi.logWarn(`Cannot preform enrichment as type ${change.type} is not supported for enrichment`);
+                        agentApi.logWarn(`Cannot preform enrichment as type ${change.changeType} is not supported for enrichment`);
                     }
                     change["changes"] = extraDetail;
                 } catch (err) {
@@ -1077,25 +1006,8 @@ export async function generateReleaseNotes(
                                                     activateFix = "true";
                                                 }
 
-                                                if (activateFix && activateFix.toLowerCase() === "true") {
-                                                    let baseBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId));
-                                                    agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
-                                                    // There is only a workaround for Git but not for TFVC :(
-                                                    if (baseBuild.repository.type === "TfsGit") {
-                                                        let currentBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId));
-                                                        let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisation, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
-                                                        commits = commitInfo.commits;
-                                                        workitems = commitInfo.workItems;
-                                                    } else {
-                                                        // Fall back to original behavior
-                                                        commits = await buildApi.getChangesBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
-                                                        workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
-                                                    }
-                                                } else {
-                                                    // Issue #349: These APIs are affected by the build API limitation and only return the latest 200 changes and work items associated to those changes
-                                                    commits = await buildApi.getChangesBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
-                                                    workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
-                                                }
+                                                commits = await releaseApi.getReleaseChanges("BJS - CP", releaseId, mostRecentSuccessfulDeployment.release.id);
+                                                workitems = await releaseApi.getReleaseWorkItemsRefs("BJS - CP", releaseId, mostRecentSuccessfulDeployment.release.id);
 
                                                 // enrich what we have with file names
                                                 if (commits) {
@@ -1162,14 +1074,6 @@ export async function generateReleaseNotes(
             agentApi.logInfo("Removing duplicate WorkItems from master list");
             globalWorkItems = removeDuplicates(globalWorkItems);
 
-            let expandedGlobalCommits = await expandTruncatedCommitMessages(organisation, globalCommits, gitHubPat, bitbucketUser, bitbucketSecret);
-
-            if (!expandedGlobalCommits || expandedGlobalCommits.length !== globalCommits.length) {
-                agentApi.logError("Failed to expand the global commits.");
-                resolve(-1);
-                return;
-            }
-
             // get an array of workitem ids
             let fullWorkItems = await getFullWorkItemDetails(workItemTrackingApi, globalWorkItems);
 
@@ -1234,7 +1138,7 @@ export async function generateReleaseNotes(
                 if (allPullRequests && (allPullRequests.length > 0)) {
                     agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps PRs in the repo`);
                     globalCommits.forEach(commit => {
-                        if (commit.type === "TfsGit") {
+                        if (commit.changeType === "TfsGit") {
                             agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
 
                             allPullRequests.forEach(pr => {

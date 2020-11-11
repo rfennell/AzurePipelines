@@ -1,15 +1,9 @@
 # Notes for release  {{releaseDetails.releaseDefinition.name}}    
 **Release Number**  : {{releaseDetails.name}}
 **Release completed** : {{releaseDetails.modifiedOn}}     
-**Build Number**: {{buildDetails.id}}
+**Build Number** : {{buildDetails.id}}
 **Compared Release Number**  : {{compareReleaseDetails.name}}    
-**Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
-
-# Associated Pull Requests ({{pullRequests.length}})
-{{#forEach pullRequests}}
-{{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
-*  **PR {{this.id}}**  {{this.title}}
-{{/forEach}}
+**Build Trigger PR Number** : {{lookup buildDetails.triggerInfo 'pr.number'}} 
 
 # Builds with associated WI/CS ({{builds.length}})
 {{#forEach builds}}
@@ -34,10 +28,12 @@
 {{#forEach workItems}}
 {{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
 *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+   - **Desc** {{{lookup this.fields 'System.Description'}}}
    - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
    - **Tags** {{lookup this.fields 'System.Tags'}}
    - **Assigned** {{#with (lookup this.fields 'System.AssignedTo')}} {{displayName}} {{/with}}
 {{/forEach}}
+
 
 # Global list of WI with parents and children
 {{#forEach this.workItems}}
@@ -52,6 +48,7 @@
 {{#if (contains this.attributes.name 'Parent')}}
 {{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
       - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+      - {{this.id}} - {{{lookup this.fields 'Custom.Notesdeversion'}}} 
 {{/with}}
 {{/if}}
 {{/forEach}} 
@@ -65,54 +62,17 @@
 {{/forEach}} 
 {{/forEach}} 
 
-# WI with 'Tag 1'
-{{#forEach this.workItems}}
-{{#if isFirst}}### WorkItems with 'Tag 1'{{/if}}
-{{#if (contains (lookup this.fields 'System.Tags') 'Tag 1')}}
-*  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
-   - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
-   - **Tags** {{lookup this.fields 'System.Tags'}}
-{{/if}}
-{{/forEach}} 
-
-# WI with 'Tag 1' or 'TAG1'
-{{#forEach this.workItems}}
-{{#if isFirst}}### WorkItems with 'Tag 1' or 'TAG2'{{/if}}
-{{#if (or (contains (lookup this.fields 'System.Tags') 'Tag 1') (contains (lookup this.fields 'System.Tags') 'TAG2'))}}
-*  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
-   - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
-   - **Tags** {{lookup this.fields 'System.Tags'}}
-{{/if}}
-{{/forEach}} 
-
-# WI with 'Tag 1' and 'TAG1'
-{{#forEach this.workItems}}
-{{#if isFirst}}### WorkItems with 'Tag 1' and 'TAG2'{{/if}}
-{{#if (and (contains (lookup this.fields 'System.Tags') 'Tag 1') (contains (lookup this.fields 'System.Tags') 'TAG2'))}}
-*  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
-   - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
-   - **Tags** {{lookup this.fields 'System.Tags'}}
-{{/if}}
-{{/forEach}} 
-
-# Global list of CS ({{commits.length}})
+# Changes
 {{#forEach commits}}
 {{#if isFirst}}### Associated commits{{/if}}
-* ** ID{{this.id}}** 
-   -  **Message:** {{this.message}}
+
+{{#startsWith "Merge " this.message}}
+{{else}}
+* **Message:** {{this.message}}  
    -  **Commited by:** {{this.author.displayName}} 
-   -  **FileCount:** {{this.changes.length}} 
-{{#forEach this.changes}}
-      -  **File path (TFVC or TfsGit):** {{this.item.path}}  
-      -  **File filename (GitHub):** {{this.filename}}  
-{{/forEach}}
+{{/startsWith}}
+   
 {{/forEach}}
 
 
-# Global list of test ({{tests.length}})
-{{#forEach tests}}
-{{#if isFirst}}### Tests {{/if}}
-* ** ID{{this.id}}** 
-   -  Name: {{this.testCase.name}}
-   -  Outcome: {{this.outcome}}
-{{/forEach}}
+
