@@ -85,7 +85,7 @@ stages:
       - task: TfxInstaller@1
         displayName: 'Install Tfx Tool'
         inputs:
-          version: 'v0.7.x'
+          version: 'v0.8.x'
 
       - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
         displayName: 'Package and Publish Extension as a PROD Package '
