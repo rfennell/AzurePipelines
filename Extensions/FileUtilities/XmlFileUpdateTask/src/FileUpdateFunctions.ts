@@ -24,7 +24,7 @@ export function processFiles (filename: string, recurse: string, xpathQuery: str
   files.forEach(file => {
       let rawContent = fs.readFileSync(file).toString();
       let document = processFile(xpathQuery, file, rawContent, value, attribute, logInfo);
-      fs.writeFileSync(file, document);
+      fs.writeFileSync(file, document.toString());
   });
 }
 
@@ -54,7 +54,7 @@ export function findFiles (dir, filenamePattern, recurse, filelist): any {
   return filelist;
 }
 
-export function processFile(xpathQuery, file, rawContent, value, attribute, logFunction): any {
+export function processFile(xpathQuery, file, rawContent, value, attribute, logFunction) {
   const dom = xmldom.DOMParser;
 
   let document = new dom().parseFromString(rawContent);

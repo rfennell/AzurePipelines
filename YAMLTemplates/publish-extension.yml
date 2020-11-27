@@ -8,7 +8,7 @@ parameters:
   type: string
 
 steps:  
-- task: TfxInstaller@1
+- task: TfxInstaller@3
   inputs:
     version: 'v0.8.x'
 
