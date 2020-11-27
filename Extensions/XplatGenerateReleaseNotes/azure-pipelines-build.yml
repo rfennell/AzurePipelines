@@ -203,9 +203,8 @@ stages:
                 message: 'Update from Build'
                 gitname: builduser
                 gitemail: 'build@demo'
-                useAgentToken: false
+                useAgentToken: true
                 user: richardfennell
-                password: '$(pat)'
 
             - task: XplatGenerateReleaseNotes@3
               inputs:
@@ -264,10 +263,8 @@ stages:
                 message: 'Update from Build'
                 gitname: builduser
                 gitemail: 'build@demo'
-                useAgentToken: false
+                useAgentToken: true
                 user: richardfennell
-                password: '$(pat)'
-          
 
   - stage: Test_Linux
     dependsOn: Private 
@@ -412,10 +409,8 @@ stages:
                 message: 'Update from Build'
                 gitname: builduser
                 gitemail: 'build@demo'
-                useAgentToken: false
+                useAgentToken: true
                 user: richardfennell
-                password: '$(pat)'
-
 
   - stage: Test_Manual
     dependsOn:  
