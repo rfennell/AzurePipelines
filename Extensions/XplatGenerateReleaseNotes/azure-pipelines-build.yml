@@ -196,7 +196,7 @@ stages:
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater'
               inputs:
-                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 filename: 'xPlatReleaseNotes/build-Windows-handlebars.md'
                 dataIsFile: true
                 sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
@@ -256,7 +256,7 @@ stages:
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater'
               inputs:
-                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 filename: 'xPlatReleaseNotes/build-Windows-handlebars-multistage.md'
                 dataIsFile: true
                 sourceFile: '$(System.DefaultWorkingDirectory)\releasenotes.md'
@@ -328,7 +328,7 @@ stages:
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater'
               inputs:
-                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 filename: 'xPlatReleaseNotes/build-Linux-handlebars.md'
                 dataIsFile: true
                 sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
@@ -402,7 +402,7 @@ stages:
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater'
               inputs:
-                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 filename: 'xPlatReleaseNotes/build-Mac-handbars.md'
                 dataIsFile: true
                 sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
