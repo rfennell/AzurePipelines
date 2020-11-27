@@ -5,7 +5,7 @@ parameters:
   type: string
 
 steps:  
-- task: Npm@0
+- task: Npm@1
   displayName: 'npm install for ${{parameters.taskName}}'
   inputs:
     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
@@ -18,14 +18,14 @@ steps:
     failOnIssues: true
     testDirectory: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
 
-- task: Npm@0
+- task: Npm@1
   displayName: 'npm run build for ${{parameters.taskName}}'
   inputs:
     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
     command: run
     arguments: build
 
-- task: Npm@0
+- task: Npm@1
   displayName: 'npm run test for ${{parameters.taskName}}'
   inputs:
     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
@@ -38,7 +38,7 @@ steps:
     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
     testRunTitle: '${{parameters.taskName}}'
 
-- task: Npm@0
+- task: Npm@1
   displayName: 'npm run package for ${{parameters.taskName}}'
   inputs:
     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
