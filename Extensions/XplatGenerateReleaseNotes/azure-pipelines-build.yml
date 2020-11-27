@@ -335,9 +335,8 @@ stages:
                 message: 'Update from Build'
                 gitname: builduser
                 gitemail: 'build@demo'
-                useAgentToken: false
+                useAgentToken: true
                 user: richardfennell
-                password: '$(pat)'
 
 
   - stage: Test_Mac
