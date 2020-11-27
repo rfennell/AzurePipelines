@@ -37,7 +37,8 @@ stages:
     jobs:
     - job: Build
       pool: 
-        vmImage: '$(vmImage)'
+        name: default
+        # vmImage: '$(vmImage)'
         demands:
         - npm
         - node.js
