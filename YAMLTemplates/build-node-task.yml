@@ -10,6 +10,13 @@ steps:
   inputs:
     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
 
+- task: Npm@1
+  inputs:
+    command: 'install'
+    workingDir: '''${{parameters.extensionRoot}}\\${{parameters.taskName}}'''
+
+
+
 - task: SnykSecurityScan@0
   inputs:
     serviceConnectionEndpoint: 'Snyk (Apr2020)'
@@ -21,16 +28,14 @@ steps:
 - task: Npm@1
   displayName: 'npm run build for ${{parameters.taskName}}'
   inputs:
-    cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
-    command: run
-    arguments: build
+    workingDir: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
+    customCommand: 'run build'
 
 - task: Npm@1
   displayName: 'npm run test for ${{parameters.taskName}}'
   inputs:
-    cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
-    command: run
-    arguments: test
+    workingDir: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
+    customCommand: 'run test'
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results for ${{parameters.taskName}}'
@@ -41,7 +46,5 @@ steps:
 - task: Npm@1
   displayName: 'npm run package for ${{parameters.taskName}}'
   inputs:
-    cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
-    command: run
-    arguments: package
- 
+    workingDir: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
+    customCommand: 'run package'
