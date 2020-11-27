@@ -10,9 +10,9 @@ parameters:
 steps:  
 - task: TfxInstaller@1
   inputs:
-    version: 'v0.6.x'
+    version: 'v0.8.x'
 
-- task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
+- task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@3
   displayName: 'Publish Extension'
   inputs:
     connectedServiceName: 'Azure DevOps Marketplace (Work MSA)'

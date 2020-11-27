@@ -82,12 +82,12 @@ stages:
           verbose: false
           customCommand: 'run package'
 
-      - task: TfxInstaller@1
+      - task: TfxInstaller@3
         displayName: 'Install Tfx Tool'
         inputs:
-          version: 'v0.6.x'
+          version: 'v0.8.x'
 
-      - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+      - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@3
         displayName: 'Package and Publish Extension as a PROD Package '
         inputs:
           rootFolder: '$(ExtensionRoot)'
@@ -196,16 +196,15 @@ stages:
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater'
               inputs:
-                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 filename: 'xPlatReleaseNotes/build-Windows-handlebars.md'
                 dataIsFile: true
                 sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
                 message: 'Update from Build'
                 gitname: builduser
                 gitemail: 'build@demo'
-                useAgentToken: false
+                useAgentToken: true
                 user: richardfennell
-                password: '$(pat)'
 
             - task: XplatGenerateReleaseNotes@3
               inputs:
@@ -257,17 +256,15 @@ stages:
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater'
               inputs:
-                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 filename: 'xPlatReleaseNotes/build-Windows-handlebars-multistage.md'
                 dataIsFile: true
                 sourceFile: '$(System.DefaultWorkingDirectory)\releasenotes.md'
                 message: 'Update from Build'
                 gitname: builduser
                 gitemail: 'build@demo'
-                useAgentToken: false
+                useAgentToken: true
                 user: richardfennell
-                password: '$(pat)'
-          
 
   - stage: Test_Linux
     dependsOn: Private 
@@ -331,16 +328,15 @@ stages:
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater'
               inputs:
-                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 filename: 'xPlatReleaseNotes/build-Linux-handlebars.md'
                 dataIsFile: true
                 sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
                 message: 'Update from Build'
                 gitname: builduser
                 gitemail: 'build@demo'
-                useAgentToken: false
+                useAgentToken: true
                 user: richardfennell
-                password: '$(pat)'
 
 
   - stage: Test_Mac
@@ -405,17 +401,15 @@ stages:
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater'
               inputs:
-                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 filename: 'xPlatReleaseNotes/build-Mac-handbars.md'
                 dataIsFile: true
                 sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
                 message: 'Update from Build'
                 gitname: builduser
                 gitemail: 'build@demo'
-                useAgentToken: false
+                useAgentToken: true
                 user: richardfennell
-                password: '$(pat)'
-
 
   - stage: Test_Manual
     dependsOn:  
