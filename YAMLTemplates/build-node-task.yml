@@ -6,14 +6,9 @@ parameters:
 
 steps:  
 - task: Npm@1
-  displayName: 'npm install for ${{parameters.taskName}}'
-  inputs:
-    cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
-
-- task: Npm@1
   inputs:
     command: 'install'
-    workingDir: '''${{parameters.extensionRoot}}\\${{parameters.taskName}}'''
+    workingDir: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
 
 
 
