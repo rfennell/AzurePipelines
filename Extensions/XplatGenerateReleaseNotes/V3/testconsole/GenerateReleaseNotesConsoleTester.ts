@@ -77,6 +77,9 @@ async function run(): Promise<number>  {
                     var overrideBuildReleaseId = settings.overrideBuildReleaseId;
                     var getIndirectPullRequests = getBoolean(settings.getIndirectPullRequests);
 
+                    var maxRetries = parseInt(settings.maxRetries);
+                    var pauseTime = parseInt(settings.pauseTime);
+
                     var returnCode = await util.generateReleaseNotes(
                         pat,
                         tpcUri,
@@ -112,7 +115,9 @@ async function run(): Promise<number>  {
                         getAllParents,
                         tags,
                         overrideBuildReleaseId,
-                        getIndirectPullRequests);
+                        getIndirectPullRequests,
+                        maxRetries,
+                        pauseTime);
                 } else {
                     console.log(`Cannot fine settings file ${filename}`);
                 }
