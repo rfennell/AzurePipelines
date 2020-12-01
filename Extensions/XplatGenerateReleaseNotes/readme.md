@@ -2,6 +2,7 @@
 Generates release notes for a Classic Build or Release, or a YML based build. The generated file can be any text based format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * Uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 3.32.x Adds parameters to control the retry logic for timed outed out API calls
 * 3.28.x provide a new array of `inDirectlyAssociatedPullRequests`, this contains PR associated with a PR's associated commits. Useful if using a Gitflow work work-flow [x866](https://github.com/rfennell/AzurePipelines/issues/866) (see sample template below)
 * 3.27.x enriches the PR with associated commits (see sample template below)
 * 3.25.x enriches the PR with associated work items references (you need to do a lookup into the list of work items to get details, see sample template below)
@@ -334,6 +335,8 @@ The task takes the following parameters
    * A valid build ID (int) - Use the build ID as the comparison
    * An invalid build ID (int) -	If a valid build cannot be found then the task exits with a message
    * Any other non empty input value - The task exits with an error message
+* (Advanced) MaxRetries - The number of time to retry any REST API calls that timeout, defaults to 3
+* (Advanced) PauseTime - Interval to wait before attempting a retry of failed API calls, in milliseconds, defaults to 5000
 * (Handlebars) customHandlebars ExtensionCode. A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};
 * (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.
 

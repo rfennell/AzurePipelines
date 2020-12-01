@@ -41,6 +41,9 @@ async function run(): Promise<number>  {
             var overrideBuildReleaseId = tl.getInput("overrideBuildReleaseId");
             var getIndirectPullRequests = tl.getBoolInput("getIndirectPullRequests");
 
+            var maxRetries = parseInt(tl.getInput("maxRetries"));
+            var pauseTime = parseInt(tl.getInput("pauseTime"));
+
             var returnCode = await util.generateReleaseNotes(
                 overridePat,
                 tpcUri,
@@ -76,7 +79,9 @@ async function run(): Promise<number>  {
                 getAllParents,
                 tags,
                 overrideBuildReleaseId,
-                getIndirectPullRequests
+                getIndirectPullRequests,
+                maxRetries,
+                pauseTime
                 );
 
         } catch (err) {
