@@ -291,6 +291,24 @@
       "required": true,
       "helpMarkDown": "If enabled an attempt will be made to populate a list of indirectly associated PRs i.e PR that are associated with a PR's associated commits",
       "groupName":"advanced"
+    },
+    {
+      "name": "maxRetries",
+      "type": "string",
+      "label": "Max. Retries",
+      "defaultValue": "3",
+      "required": false,
+      "helpMarkDown": "The number of time to retry any REST API calls that timeout, defaults to 3",
+      "groupName":"advanced"
+    },
+    {
+      "name": "pauseTime",
+      "type": "string",
+      "label": "Pause Time",
+      "defaultValue": "5000",
+      "required": false,
+      "helpMarkDown": "Interval to wait before attempting a retry of failed API calls, in milliseconds, defaults to 5000",
+      "groupName":"advanced"
     }
 
    ],

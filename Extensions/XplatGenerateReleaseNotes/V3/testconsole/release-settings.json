@@ -32,5 +32,8 @@
     "Fix349": "true",
     "tags": "",
     "overrideBuildReleaseId": "",
-    "getIndirectPullRequests": "false"
+    "getIndirectPullRequests": "false",
+
+    "maxRetries": "3",
+    "pauseTime": "5000"
 }
