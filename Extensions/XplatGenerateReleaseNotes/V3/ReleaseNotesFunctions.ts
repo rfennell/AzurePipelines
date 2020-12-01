@@ -142,7 +142,7 @@ export async function getPullRequests(gitApi: GitApi, projectName: string): Prom
             var skip: number = 0;
             do {
                 agentApi.logDebug(`Get batch of PRs [${skip}] - [${skip + batchSize}]`);
-                var prListBatch = await gitApi.getPullRequestsByProject( projectName, filter, 0 , skip, batchSize);
+                var prListBatch = await retryHandler(gitApi.getPullRequestsByProject( projectName, filter, 0 , skip, batchSize));
                 agentApi.logDebug(`Adding batch of ${prListBatch.length} PRs`);
                 prList.push(...prListBatch);
                 skip += batchSize;
@@ -263,6 +263,36 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
     });
 }
 
+/**
+ * A function to wrapper most of the REST calls
+ * The Azure DevOp API willgie connection errors from time to time
+ * this will allow retrying, which usually fixes the issue
+ */
+async function retryHandler(func) {
+
+    var count = 0;
+    var max = 3;
+    var pause = 1000;
+    while (count < max) {
+        try {
+            return await func;
+        } catch (err) {
+            count ++;
+            agentApi.logWarn(`A error ${err} was thrown, trying retry logic for the async call in case it was a timeout`);
+            // back off for a second
+            await sleep(pause);
+        }
+    }
+    if (count === max) {
+        agentApi.logError(`Max retry limit of ${max} reached`);
+        throw ("Max API retries reached");
+    }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
 export async function enrichPullRequest(
     gitApi: IGitApi,
     pullRequests: EnrichedGitPullRequest[],
@@ -274,11 +304,11 @@ export async function enrichPullRequest(
                 // get any missing labels for all the known PRs we are interested in as getPullRequestById does not populate labels, so get those as well
                 if (!prDetails.labels || prDetails.labels.length === 0 ) {
                     agentApi.logDebug(`Checking for tags for ${prDetails.pullRequestId}`);
-                    const prLabels = await gitApi.getPullRequestLabels(prDetails.repository.id, prDetails.pullRequestId);
+                    const prLabels = await retryHandler(gitApi.getPullRequestLabels(prDetails.repository.id, prDetails.pullRequestId));
                     prDetails.labels = prLabels;
                 }
                 // and added the WI IDs
-                var wiRefs = await gitApi.getPullRequestWorkItemRefs(prDetails.repository.id, prDetails.pullRequestId);
+                var wiRefs = await retryHandler(gitApi.getPullRequestWorkItemRefs(prDetails.repository.id, prDetails.pullRequestId));
                 prDetails.associatedWorkitems = wiRefs.map(wi => {
                     return {
                         id: parseInt(wi.id),
@@ -288,9 +318,9 @@ export async function enrichPullRequest(
                 agentApi.logDebug(`Added ${prDetails.associatedWorkitems.length} work items for ${prDetails.pullRequestId}`);
 
                 prDetails.associatedCommits = [];
-                var csRefs = await gitApi.getPullRequestCommits(prDetails.repository.id, prDetails.pullRequestId);
+                var csRefs = await retryHandler(gitApi.getPullRequestCommits(prDetails.repository.id, prDetails.pullRequestId));
                 for (let csIndex = 0; csIndex < csRefs.length; csIndex++) {
-                    prDetails.associatedCommits.push ( await gitApi.getCommit(csRefs[csIndex].commitId, prDetails.repository.id));
+                    prDetails.associatedCommits.push ( await retryHandler(gitApi.getCommit(csRefs[csIndex].commitId, prDetails.repository.id)));
                 }
                 agentApi.logDebug(`Added ${prDetails.associatedCommits.length} commits for ${prDetails.pullRequestId}, note this includes commits on the PR source branch not associated directly with the build)`);
 
@@ -404,13 +434,13 @@ export async function getTestsForBuild(
     return new Promise<TestCaseResult[]>(async (resolve, reject) => {
         let testList: TestCaseResult[] = [];
         try {
-            let builtTestResults = await testAPI.getTestResultsByBuild(teamProject, buildId);
+            let builtTestResults = await retryHandler(testAPI.getTestResultsByBuild(teamProject, buildId));
             if ( builtTestResults.length > 0 ) {
                 for (let index = 0; index < builtTestResults.length; index++) {
                     const test = builtTestResults[index];
                     if (testList.filter(e => e.testRun.id === `${test.runId}`).length === 0) {
                         tl.debug(`Adding tests for test run ${test.runId}`);
-                        let run = await testAPI.getTestResults(teamProject, test.runId);
+                        let run = await retryHandler(testAPI.getTestResults(teamProject, test.runId));
                         testList.push(...run);
                     } else {
                         tl.debug(`Skipping adding tests for test run ${test.runId} as already added`);
@@ -455,13 +485,13 @@ export async function getTestsForRelease(
         try {
             for (let envIndex = 0; envIndex < release.environments.length; envIndex++) {
                 const env = release.environments[envIndex];
-                    let envTestResults = await testAPI.getTestResultDetailsForRelease(teamProject, release.id, env.id);
+                    let envTestResults = await retryHandler(testAPI.getTestResultDetailsForRelease(teamProject, release.id, env.id));
                     if (envTestResults.resultsForGroup.length > 0) {
                         for (let index = 0; index < envTestResults.resultsForGroup[0].results.length; index++) {
                             const test =  envTestResults.resultsForGroup[0].results[index];
                             if (testList.filter(e => e.testRun.id === `${test.testRun.id}`).length === 0) {
                                 tl.debug(`Adding tests for test run ${test.testRun.id}`);
-                                let run = await testAPI.getTestResults(teamProject, parseInt(test.testRun.id));
+                                let run = await retryHandler(testAPI.getTestResults(teamProject, parseInt(test.testRun.id)));
                                 testList.push(...run);
                             } else {
                                 tl.debug(`Skipping adding tests for test run ${test.testRun.id} as already added`);
@@ -526,7 +556,7 @@ export async function getAllDirectRelatedWorkitems (
                 var id = parseInt(urlParts[urlParts.length - 1]);
                 if (!relatedWorkItems.find(element => element.id === id)) {
                     agentApi.logInfo(`Add ${relation.attributes.name} WI ${id}`);
-                    relatedWorkItems.push(await workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null));
+                    relatedWorkItems.push(await retryHandler(workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null)));
                 } else {
                     agentApi.logInfo(`Skipping ${id} as already in the relations list`);
                 }
@@ -560,7 +590,7 @@ export async function getAllParentWorkitems (
                     var id = parseInt(urlParts[urlParts.length - 1]);
                     if (!allRelatedWorkItems.find(element => element.id === id)) {
                         agentApi.logInfo(`Add ${relation.attributes.name} WI ${id}`);
-                        allRelatedWorkItems.push(await workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null));
+                        allRelatedWorkItems.push(await retryHandler(workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null)));
                         // if we add something add to the count
                         addedOnThisPass ++;
                     } else {
@@ -774,7 +804,7 @@ export async function getLastSuccessfulBuildByStage(
             if (overrideBuild) {
                 agentApi.logInfo(`Found the over ride build ${overrideBuildReleaseId}`);
                 // we need to find the required timeline record
-                let timeline = await buildApi.getBuildTimeline(teamProject, overrideBuild.id);
+                let timeline = await retryHandler(buildApi.getBuildTimeline(teamProject, overrideBuild.id));
                 let record = timeline.records.find(element => element.name === stageName);
                 return {
                     id: overrideBuild.id,
@@ -796,7 +826,7 @@ export async function getLastSuccessfulBuildByStage(
                 if (tags.length === 0 ||
                     (tags.length > 0 && build.tags.sort().join(",") === tags.sort().join(","))) {
                         agentApi.logInfo("Considering build");
-                        let timeline = await buildApi.getBuildTimeline(teamProject, build.id);
+                        let timeline = await retryHandler(buildApi.getBuildTimeline(teamProject, build.id));
                         if (timeline && timeline.records) {
                             for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
                                 const record  = timeline.records[timelineIndex];
@@ -1052,16 +1082,16 @@ export async function generateReleaseNotes(
                                         // Only get the commits and workitems if the builds are different
                                         if (isInitialRelease) {
                                             agentApi.logInfo(`This is the first release so checking what commits and workitems are associated with artifacts`);
-                                            var builds = await buildApi.getBuilds(artifactInThisRelease.sourceId, [parseInt(artifactInThisRelease.buildDefinitionId)]);
+                                            var builds = await retryHandler(buildApi.getBuilds(artifactInThisRelease.sourceId, [parseInt(artifactInThisRelease.buildDefinitionId)]));
                                             commits = [];
                                             workitems = [];
 
                                             for (var build of builds) {
                                                 try {
                                                     agentApi.logInfo(`Getting the details of build ${build.id}`);
-                                                    var buildCommits = await buildApi.getBuildChanges(teamProject, build.id);
+                                                    var buildCommits = await retryHandler(buildApi.getBuildChanges(teamProject, build.id));
                                                     commits.push(...buildCommits);
-                                                    var buildWorkitems = await buildApi.getBuildWorkItemsRefs(teamProject, build.id);
+                                                    var buildWorkitems = await retryHandler(buildApi.getBuildWorkItemsRefs(teamProject, build.id));
                                                     workitems.push(...buildWorkitems);
                                                 } catch (err) {
                                                     agentApi.logWarn(`There was a problem getting the details of the build ${err}`);
@@ -1122,7 +1152,7 @@ export async function generateReleaseNotes(
                                         }
 
                                         // get artifact details for the unified output format
-                                        let artifact = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId));
+                                        let artifact = await retryHandler(buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId)));
                                         agentApi.logInfo(`Adding the build [${artifact.id}] and its association to the unified results object`);
                                         let fullBuildWorkItems = await getFullWorkItemDetails(workItemTrackingApi, workitems);
                                         globalBuilds.push(new UnifiedArtifactDetails(artifact, commits, fullBuildWorkItems, tests));
