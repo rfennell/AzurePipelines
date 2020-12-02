@@ -1,3 +1,16 @@
+// globals so I reset them at will
+// ugly but the easiest way to handle the retry logic as the build in Azure Devops SDK retry does not work
+let credentialHandler: vstsInterfaces.IRequestHandler;
+let organisation: webApi.WebApi;
+var releaseApi: IReleaseApi;
+var buildApi: IBuildApi;
+var gitApi: IGitApi;
+var testApi: ITestApi;
+var workItemTrackingApi: IWorkItemTrackingApi;
+var tfvcApi: ITfvcApi;
+var masterPat: string;
+var masterUri: string;
+
 export interface SimpleArtifact {
     artifactAlias: string;
     buildDefinitionId: string;
@@ -287,6 +300,7 @@ async function retryHandler(
             agentApi.logWarn(`A error ${err} was thrown, trying retry logic for the API call in case it was an intermittent issue after a pause of ${pauseTime}ms`);
             // back off for a second
             await sleep(pauseTime);
+            await SetupAzureDevOpsApi();
         }
     }
     if (count === maxRetries) {
@@ -875,6 +889,20 @@ export async function getLastSuccessfulBuildByStage(
     };
 }
 
+// Creates all the links to the Azure DevOps API
+// these ae stored as globals so it is easy to recreate then if there are timeouts
+async function SetupAzureDevOpsApi() {
+    agentApi.logInfo(`Creating Azure DevOps API connections for ${masterUri}`);
+    credentialHandler = getCredentialHandler(masterPat);
+    organisation = new webApi.WebApi(masterUri, credentialHandler);
+    releaseApi = await organisation.getReleaseApi();
+    buildApi = await organisation.getBuildApi();
+    gitApi = await organisation.getGitApi();
+    testApi = await organisation.getTestApi();
+    workItemTrackingApi = await organisation.getWorkItemTrackingApi();
+    tfvcApi = await organisation.getTfvcApi();
+}
+
 export async function generateReleaseNotes(
     pat: string,
     tpcUri: string,
@@ -922,14 +950,11 @@ export async function generateReleaseNotes(
                 gitHubPat = "";
             }
 
-            let credentialHandler: vstsInterfaces.IRequestHandler = getCredentialHandler(pat);
-            let organisation = new webApi.WebApi(tpcUri, credentialHandler);
-            var releaseApi: IReleaseApi = await organisation.getReleaseApi();
-            var buildApi: IBuildApi = await organisation.getBuildApi();
-            var gitApi: IGitApi = await organisation.getGitApi();
-            var testApi: ITestApi = await organisation.getTestApi();
-            var workItemTrackingApi: IWorkItemTrackingApi = await organisation.getWorkItemTrackingApi();
-            var tfvcApi: ITfvcApi = await organisation.getTfvcApi();
+            // store in  the global so we re use if needed
+            masterPat = pat;
+            masterUri = tpcUri;
+
+            await SetupAzureDevOpsApi();
 
             // the result containers
             var globalCommits: Change[] = [];
@@ -1009,8 +1034,8 @@ export async function generateReleaseNotes(
                        globalTests = await getTestsForBuild(testApi, teamProject, buildId, maxRetries, pauseTime);
                     } else {
                         console.log("There has been no past successful build for this stage, so we can just get details from this build");
-                        globalCommits = await buildApi.getBuildChanges(teamProject, buildId);
-                        globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId);
+                        globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
+                        globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000);
                     }
                 } else {
                     agentApi.logInfo (`Getting items associated with only the current build`);
