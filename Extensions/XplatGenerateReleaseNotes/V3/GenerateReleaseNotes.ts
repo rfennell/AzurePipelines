@@ -42,7 +42,6 @@ async function run(): Promise<number>  {
             var getIndirectPullRequests = tl.getBoolInput("getIndirectPullRequests");
 
             var maxRetries = parseInt(tl.getInput("maxRetries"));
-            var pauseTime = parseInt(tl.getInput("pauseTime"));
 
             var returnCode = await util.generateReleaseNotes(
                 overridePat,
@@ -80,8 +79,7 @@ async function run(): Promise<number>  {
                 tags,
                 overrideBuildReleaseId,
                 getIndirectPullRequests,
-                maxRetries,
-                pauseTime
+                maxRetries
                 );
 
         } catch (err) {
