@@ -18,7 +18,7 @@ Generates release notes for a Classic Build or Release, or a YML based build. Th
 
 > **IMPORTANT** - There have been three major versions of this extension, this is because
 > * V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs. This version is not longer shipped in the extension, but can be download from [GitHub](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9)
-> * V2 was a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the Node Azure DevOps SDK, with minor but breaking changes in the template format and that oAuth needs enabling on the agent running the tasks. At 2.27.x KennethScott](https://github.com/KennethScott) added support for [Handlbars](https://handlebarsjs.com/) templates.
+> * V2 was a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the Node Azure DevOps SDK, with minor but breaking changes in the template format and that oAuth needs enabling on the agent running the tasks. At 2.27.x [KennethScott](https://github.com/KennethScott) added support for [Handlbars](https://handlebarsjs.com/) templates.
 > * V3 removed support for the legacy template model, only handlebars templates supported.
 
 # Overview
@@ -60,12 +60,11 @@ There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/
 Since 2.27.x it has been possible to create your templates using [Handlebars](https://handlebarsjs.com/) syntax. A template written in this format is as follows
 
 ```
-# Notes for release  {{releaseDetails.releaseDefinition.name}}    
-**Release Number**  : {{releaseDetails.name}}
-**Release completed** : {{releaseDetails.modifiedOn}}     
-**Build Number**: {{buildDetails.id}}
-**Compared Release Number**  : {{compareReleaseDetails.name}}    
-**Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
+## Build {{buildDetails.buildNumber}}
+* **Branch**: {{buildDetails.sourceBranch}}
+* **Tags**: {{buildDetails.tags}}
+* **Completed**: {{buildDetails.finishTime}}
+* **Previous Build**: {{compareBuildDetails.buildNumber}}
 
 ## Associated Pull Requests ({{pullRequests.length}})
 {{#forEach pullRequests}}
@@ -80,26 +79,6 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 {{#forEach this.associatedCommits}}
     - [{{this.commitId}}]({{this.remoteUrl}}) -  {{this.comment}}
 {{/forEach}}
-{{/forEach}}
-
-# Builds with associated WI/CS/Tests ({{builds.length}})
-{{#forEach builds}}
-{{#if isFirst}}## Builds {{/if}}
-##  Build {{this.build.buildNumber}}
-{{#forEach this.commits}}
-{{#if isFirst}}### Commits {{/if}}
-- CS {{this.id}}
-{{/forEach}}
-{{#forEach this.workitems}}
-{{#if isFirst}}### Workitems {{/if}}
-- WI {{this.id}}
-{{/forEach}} 
-{{#forEach this.tests}}
-{{#if isFirst}}### Tests {{/if}}
-- Test {{this.id}} 
-   -  Name: {{this.testCase.name}}
-   -  Outcome: {{this.outcome}}
-{{/forEach}} 
 {{/forEach}}
 
 # Global list of WI with PRs, parents and children
@@ -160,6 +139,9 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 ```
 
 > **IMPORTANT** Handlebars based templates have different objects available to the legacy template used in V2 of this extension. This is a break change.
+
+> **IMPORTANT** You can find more sample templates [here](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%203)
+
 
 What is done behind the scenes is that each `{{properties}}` block in the template is expanded by Handlebars. The property objects available to get data from at runtime are:
 
@@ -296,12 +278,12 @@ and can be consumed in a template as shown below
 We can call our custom extension {{foo}}
 ```
 
-As custom modules allows any JavaScript logic to be inject for bespoke need they can be solution to your own bespoke filtering and sorting needs. You can find sample of custom modules [the the Handlebars section of the sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) e.g. to perform a sorted foreach.
+As custom modules allows any JavaScript logic to be inject for bespoke need they can be solution to your own bespoke filtering and sorting needs. You can find sample of custom modules [the the Handlebars section of the sample templates](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%203) e.g. to perform a sorted foreach.
 
 # Task Parameters
 Once the extension is added to your Azure DevOps Server (TFS) or Azure DevOps Services, the task should be available in the utilities section of 'add tasks'
 
-**IMPORTANT** - The V2 Task requires that oAuth access is enabled on agent running the task, this requirement has been removed in V3
+> **IMPORTANT** - The V2 Task requires that oAuth access is enabled on agent running the task, this requirement has been removed in V3
 
 The task takes the following parameters
 
@@ -335,8 +317,7 @@ The task takes the following parameters
    * A valid build ID (int) - Use the build ID as the comparison
    * An invalid build ID (int) -	If a valid build cannot be found then the task exits with a message
    * Any other non empty input value - The task exits with an error message
-* (Advanced) MaxRetries - The number of time to retry any REST API calls that timeout, defaults to 3
-* (Advanced) PauseTime - Interval to wait before attempting a retry of failed API calls, in milliseconds, defaults to 5000
+* (Advanced) MaxRetries - The number of times to retry any REST API calls that timeout. Set to zero for no retries. Defaults to 20
 * (Handlebars) customHandlebars ExtensionCode. A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};
 * (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.
 

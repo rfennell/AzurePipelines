@@ -78,7 +78,7 @@ async function run(): Promise<number>  {
                     var getIndirectPullRequests = getBoolean(settings.getIndirectPullRequests);
 
                     var maxRetries = parseInt(settings.maxRetries);
-                    var pauseTime = parseInt(settings.pauseTime);
+                    var pauseTime = parseInt(settings.pauseTime); // no longer used
 
                     var returnCode = await util.generateReleaseNotes(
                         pat,
@@ -116,8 +116,7 @@ async function run(): Promise<number>  {
                         tags,
                         overrideBuildReleaseId,
                         getIndirectPullRequests,
-                        maxRetries,
-                        pauseTime);
+                        maxRetries);
                 } else {
                     console.log(`Cannot fine settings file ${filename}`);
                 }
