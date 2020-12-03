@@ -1,16 +1,3 @@
-// globals so I reset them at will
-// ugly but the easiest way to handle the retry logic as the build in Azure Devops SDK retry does not work
-let credentialHandler: vstsInterfaces.IRequestHandler;
-let organisation: webApi.WebApi;
-var releaseApi: IReleaseApi;
-var buildApi: IBuildApi;
-var gitApi: IGitApi;
-var testApi: ITestApi;
-var workItemTrackingApi: IWorkItemTrackingApi;
-var tfvcApi: ITfvcApi;
-var masterPat: string;
-var masterUri: string;
-
 export interface SimpleArtifact {
     artifactAlias: string;
     buildDefinitionId: string;
@@ -139,9 +126,7 @@ export function getSimpleArtifactArray(artifacts: Artifact[]): SimpleArtifact[] 
 
 export async function getPullRequests(
     gitApi: GitApi,
-    projectName: string,
-    maxRetries: number,
-    pauseTime: number
+    projectName: string
     ): Promise<GitPullRequest[]> {
     return new Promise<GitPullRequest[]>(async (resolve, reject) => {
         let prList: GitPullRequest[] = [];
@@ -160,7 +145,7 @@ export async function getPullRequests(
             var skip: number = 0;
             do {
                 agentApi.logDebug(`Get batch of PRs [${skip}] - [${skip + batchSize}]`);
-                var prListBatch = await retryHandler(maxRetries, pauseTime, gitApi.getPullRequestsByProject( projectName, filter, 0 , skip, batchSize));
+                var prListBatch = await (gitApi.getPullRequestsByProject( projectName, filter, 0 , skip, batchSize));
                 agentApi.logDebug(`Adding batch of ${prListBatch.length} PRs`);
                 prList.push(...prListBatch);
                 skip += batchSize;
@@ -281,43 +266,9 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
     });
 }
 
-/**
- * A function to wrapper most of the REST calls
- * The Azure DevOp API will get a connection errors from time to time
- * this will allow retrying, which usually fixes the issue
- */
-async function retryHandler(
-    maxRetries: number,
-    pauseTime: number,
-    func) {
-
-    var count = 0;
-    while (count < maxRetries) {
-        try {
-            return await func;
-        } catch (err) {
-            count ++;
-            agentApi.logWarn(`A error ${err} was thrown, trying retry logic for the API call in case it was an intermittent issue after a pause of ${pauseTime}ms`);
-            // back off for a second
-            await sleep(pauseTime);
-            await SetupAzureDevOpsApi();
-        }
-    }
-    if (count === maxRetries) {
-        agentApi.logError(`Max retry limit of ${maxRetries} reached`);
-        throw ("Max API retries reached");
-    }
-}
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
 export async function enrichPullRequest(
     gitApi: IGitApi,
-    pullRequests: EnrichedGitPullRequest[],
-    maxRetries: number,
-    pauseTime: number
+    pullRequests: EnrichedGitPullRequest[]
 ): Promise<EnrichedGitPullRequest[]> {
     return new Promise<EnrichedGitPullRequest[]>(async (resolve, reject) => {
         try {
@@ -326,11 +277,11 @@ export async function enrichPullRequest(
                 // get any missing labels for all the known PRs we are interested in as getPullRequestById does not populate labels, so get those as well
                 if (!prDetails.labels || prDetails.labels.length === 0 ) {
                     agentApi.logDebug(`Checking for tags for ${prDetails.pullRequestId}`);
-                    const prLabels = await retryHandler(maxRetries, pauseTime, gitApi.getPullRequestLabels(prDetails.repository.id, prDetails.pullRequestId));
+                    const prLabels = await (gitApi.getPullRequestLabels(prDetails.repository.id, prDetails.pullRequestId));
                     prDetails.labels = prLabels;
                 }
                 // and added the WI IDs
-                var wiRefs = await retryHandler(maxRetries, pauseTime, gitApi.getPullRequestWorkItemRefs(prDetails.repository.id, prDetails.pullRequestId));
+                var wiRefs = await (gitApi.getPullRequestWorkItemRefs(prDetails.repository.id, prDetails.pullRequestId));
                 prDetails.associatedWorkitems = wiRefs.map(wi => {
                     return {
                         id: parseInt(wi.id),
@@ -340,11 +291,11 @@ export async function enrichPullRequest(
                 agentApi.logDebug(`Added ${prDetails.associatedWorkitems.length} work items for ${prDetails.pullRequestId}`);
 
                 prDetails.associatedCommits = [];
-                var csRefs = await retryHandler(maxRetries, pauseTime, gitApi.getPullRequestCommits(prDetails.repository.id, prDetails.pullRequestId));
+                var csRefs = await (gitApi.getPullRequestCommits(prDetails.repository.id, prDetails.pullRequestId));
                 for (let csIndex = 0; csIndex < csRefs.length; csIndex++) {
-                    prDetails.associatedCommits.push ( await retryHandler(maxRetries, pauseTime, gitApi.getCommit(csRefs[csIndex].commitId, prDetails.repository.id)));
+                    prDetails.associatedCommits.push ( await (gitApi.getCommit(csRefs[csIndex].commitId, prDetails.repository.id)));
                 }
-                agentApi.logDebug(`Added ${prDetails.associatedCommits.length} commits for ${prDetails.pullRequestId}, note this includes commits on the PR source branch not associated directly with the build)`);
+                agentApi.logDebug(`Added ${prDetails.associatedCommits.length} commits for ${prDetails.pullRequestId}, note this includes commits on the PR source branch not associated directly with the build`);
 
             }
             resolve(pullRequests);
@@ -451,25 +402,31 @@ export function getCredentialHandler(pat: string): IRequestHandler {
 export async function getTestsForBuild(
     testAPI: TestApi,
     teamProject: string,
-    buildId: number,
-    maxRetries: number,
-    pauseTime: number
+    buildId: number
 ): Promise<TestCaseResult[]> {
     return new Promise<TestCaseResult[]>(async (resolve, reject) => {
         let testList: TestCaseResult[] = [];
         try {
-            let builtTestResults = await retryHandler(maxRetries, pauseTime, testAPI.getTestResultsByBuild(teamProject, buildId));
-            if ( builtTestResults.length > 0 ) {
-                for (let index = 0; index < builtTestResults.length; index++) {
-                    const test = builtTestResults[index];
+            let buildTestResults = await (testAPI.getTestResultsByBuild(teamProject, buildId));
+            tl.debug(`Found ${buildTestResults.length} test results associated with the build`);
+            if ( buildTestResults.length > 0 ) {
+                for (let index = 0; index < buildTestResults.length; index++) {
+                    const test = buildTestResults[index];
                     if (testList.filter(e => e.testRun.id === `${test.runId}`).length === 0) {
-                        tl.debug(`Adding tests for test run ${test.runId}`);
-                        let run = await retryHandler(maxRetries, pauseTime, testAPI.getTestResults(teamProject, test.runId));
-                        testList.push(...run);
+                        var skip = 0;
+                        var batchSize = 1000; // the API max is 1000
+                        do {
+                            agentApi.logDebug(`Get batch of tests [${skip}] - [${skip + batchSize}] for test run ${test.runId}`);
+                            var runBatch = await (testAPI.getTestResults(teamProject, test.runId, null, skip, batchSize));
+                            tl.debug(`Adding ${runBatch.length} tests`);
+                            testList.push(...runBatch);
+                            skip += batchSize;
+                        } while (batchSize === runBatch.length);
                     } else {
-                        tl.debug(`Skipping adding tests for test run ${test.runId} as already added`);
+                       tl.debug(`Skipping adding tests for test run ${test.runId} as already added`);
                     }
                 }
+                tl.debug(`Test results expanded to unique ${testList.length} test results`);
             } else {
                 tl.debug(`No tests associated with build ${buildId}`);
             }
@@ -502,22 +459,20 @@ export function addUniqueTestToArray (
 export async function getTestsForRelease(
     testAPI: TestApi,
     teamProject: string,
-    release: Release,
-    maxRetries: number,
-    pauseTime: number
+    release: Release
 ): Promise<TestCaseResult[]> {
     return new Promise<TestCaseResult[]>(async (resolve, reject) => {
         let testList: TestCaseResult[] = [];
         try {
             for (let envIndex = 0; envIndex < release.environments.length; envIndex++) {
                 const env = release.environments[envIndex];
-                    let envTestResults = await retryHandler(maxRetries, pauseTime, testAPI.getTestResultDetailsForRelease(teamProject, release.id, env.id));
+                    let envTestResults = await (testAPI.getTestResultDetailsForRelease(teamProject, release.id, env.id));
                     if (envTestResults.resultsForGroup.length > 0) {
                         for (let index = 0; index < envTestResults.resultsForGroup[0].results.length; index++) {
                             const test =  envTestResults.resultsForGroup[0].results[index];
                             if (testList.filter(e => e.testRun.id === `${test.testRun.id}`).length === 0) {
                                 tl.debug(`Adding tests for test run ${test.testRun.id}`);
-                                let run = await retryHandler(maxRetries, pauseTime, testAPI.getTestResults(teamProject, parseInt(test.testRun.id)));
+                                let run = await (testAPI.getTestResults(teamProject, parseInt(test.testRun.id)));
                                 testList.push(...run);
                             } else {
                                 tl.debug(`Skipping adding tests for test run ${test.testRun.id} as already added`);
@@ -567,9 +522,7 @@ export function getTemplate(
 
 export async function getAllDirectRelatedWorkitems (
     workItemTrackingApi: IWorkItemTrackingApi,
-    workItems: WorkItem[],
-    maxRetries: number,
-    pauseTime: number
+    workItems: WorkItem[]
 ) {
     var relatedWorkItems = [...workItems]; // a clone
     for (let wiIndex = 0; wiIndex < workItems.length; wiIndex++) {
@@ -584,7 +537,7 @@ export async function getAllDirectRelatedWorkitems (
                 var id = parseInt(urlParts[urlParts.length - 1]);
                 if (!relatedWorkItems.find(element => element.id === id)) {
                     agentApi.logInfo(`Add ${relation.attributes.name} WI ${id}`);
-                    relatedWorkItems.push(await retryHandler(maxRetries, pauseTime, workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null)));
+                    relatedWorkItems.push(await (workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null)));
                 } else {
                     agentApi.logInfo(`Skipping ${id} as already in the relations list`);
                 }
@@ -598,9 +551,7 @@ export async function getAllDirectRelatedWorkitems (
 
 export async function getAllParentWorkitems (
     workItemTrackingApi: IWorkItemTrackingApi,
-    relatedWorkItems: WorkItem[],
-    maxRetries: number,
-    pauseTime: number
+    relatedWorkItems: WorkItem[]
 ) {
     var allRelatedWorkItems = [...relatedWorkItems]; // a clone
     var knownWI = allRelatedWorkItems.length;
@@ -620,7 +571,7 @@ export async function getAllParentWorkitems (
                     var id = parseInt(urlParts[urlParts.length - 1]);
                     if (!allRelatedWorkItems.find(element => element.id === id)) {
                         agentApi.logInfo(`Add ${relation.attributes.name} WI ${id}`);
-                        allRelatedWorkItems.push(await retryHandler(maxRetries, pauseTime, workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null)));
+                        allRelatedWorkItems.push(await (workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null)));
                         // if we add something add to the count
                         addedOnThisPass ++;
                     } else {
@@ -814,9 +765,7 @@ export async function getLastSuccessfulBuildByStage(
     buildId: number,
     buildDefId: number,
     tags: string[],
-    overrideBuildReleaseId: string,
-    maxRetries: number,
-    pauseTime: number
+    overrideBuildReleaseId: string
 )  {
     if (stageName.length === 0) {
         agentApi.logInfo ("No stage name provided, cannot find last successful build by stage");
@@ -836,7 +785,7 @@ export async function getLastSuccessfulBuildByStage(
             if (overrideBuild) {
                 agentApi.logInfo(`Found the over ride build ${overrideBuildReleaseId}`);
                 // we need to find the required timeline record
-                let timeline = await retryHandler(maxRetries, pauseTime, buildApi.getBuildTimeline(teamProject, overrideBuild.id));
+                let timeline = await (buildApi.getBuildTimeline(teamProject, overrideBuild.id));
                 let record = timeline.records.find(element => element.name === stageName);
                 return {
                     id: overrideBuild.id,
@@ -858,7 +807,7 @@ export async function getLastSuccessfulBuildByStage(
                 if (tags.length === 0 ||
                     (tags.length > 0 && build.tags.sort().join(",") === tags.sort().join(","))) {
                         agentApi.logInfo("Considering build");
-                        let timeline = await retryHandler(maxRetries, pauseTime, buildApi.getBuildTimeline(teamProject, build.id));
+                        let timeline = await (buildApi.getBuildTimeline(teamProject, build.id));
                         if (timeline && timeline.records) {
                             for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
                                 const record  = timeline.records[timelineIndex];
@@ -887,20 +836,6 @@ export async function getLastSuccessfulBuildByStage(
         id: 0,
         stage: null
     };
-}
-
-// Creates all the links to the Azure DevOps API
-// these ae stored as globals so it is easy to recreate then if there are timeouts
-async function SetupAzureDevOpsApi() {
-    agentApi.logInfo(`Creating Azure DevOps API connections for ${masterUri}`);
-    credentialHandler = getCredentialHandler(masterPat);
-    organisation = new webApi.WebApi(masterUri, credentialHandler);
-    releaseApi = await organisation.getReleaseApi();
-    buildApi = await organisation.getBuildApi();
-    gitApi = await organisation.getGitApi();
-    testApi = await organisation.getTestApi();
-    workItemTrackingApi = await organisation.getWorkItemTrackingApi();
-    tfvcApi = await organisation.getTfvcApi();
 }
 
 export async function generateReleaseNotes(
@@ -939,9 +874,7 @@ export async function generateReleaseNotes(
     tags: string,
     overrideBuildReleaseId: string,
     getIndirectPullRequests: boolean,
-    maxRetries: number,
-    pauseTime: number
-
+    maxRetries: number
     ): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
@@ -950,11 +883,19 @@ export async function generateReleaseNotes(
                 gitHubPat = "";
             }
 
-            // store in  the global so we re use if needed
-            masterPat = pat;
-            masterUri = tpcUri;
-
-            await SetupAzureDevOpsApi();
+            agentApi.logInfo(`Creating Azure DevOps API connections for ${tpcUri} with 'allowRetries' set to '${maxRetries > 0}' and 'maxRetries' count to '${maxRetries}'`);
+            const credentialHandler = getCredentialHandler(pat);
+            const options = {
+                allowRetries: maxRetries > 0 ,
+                maxRetries: maxRetries,
+            } as vstsInterfaces.IRequestOptions;
+            const organisation = new webApi.WebApi(tpcUri, credentialHandler, options);
+            const releaseApi = await organisation.getReleaseApi();
+            const buildApi = await organisation.getBuildApi();
+            const gitApi = await organisation.getGitApi();
+            const testApi = await organisation.getTestApi();
+            const workItemTrackingApi = await organisation.getWorkItemTrackingApi();
+            const tfvcApi = await organisation.getTfvcApi();
 
             // the result containers
             var globalCommits: Change[] = [];
@@ -1009,7 +950,7 @@ export async function generateReleaseNotes(
                     }
 
                     agentApi.logInfo (`Getting items associated the builds since the last successful build to the stage '${stageName}'`);
-                    var successfulStageDetails = await getLastSuccessfulBuildByStage(buildApi, teamProject, stageName, buildId, currentBuild.definition.id, tagArray, overrideBuildReleaseId, maxRetries, pauseTime);
+                    var successfulStageDetails = await getLastSuccessfulBuildByStage(buildApi, teamProject, stageName, buildId, currentBuild.definition.id, tagArray, overrideBuildReleaseId);
                     lastGoodBuildId = successfulStageDetails.id;
 
                     if (lastGoodBuildId !== 0) {
@@ -1031,7 +972,7 @@ export async function generateReleaseNotes(
                             globalWorkItems = await buildApi.getWorkItemsBetweenBuilds(teamProject, lastGoodBuildId, buildId);
                         }
 
-                       globalTests = await getTestsForBuild(testApi, teamProject, buildId, maxRetries, pauseTime);
+                       globalTests = await getTestsForBuild(testApi, teamProject, buildId);
                     } else {
                         console.log("There has been no past successful build for this stage, so we can just get details from this build");
                         globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
@@ -1045,7 +986,7 @@ export async function generateReleaseNotes(
                 console.log("Get the file details associated with the commits");
                 globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
                 console.log("Get any test details associated with the build");
-                globalTests = await getTestsForBuild(testApi, teamProject, buildId, maxRetries, pauseTime);
+                globalTests = await getTestsForBuild(testApi, teamProject, buildId);
 
             } else {
                 environmentName = (overrideStageName || environmentName).toLowerCase();
@@ -1128,16 +1069,16 @@ export async function generateReleaseNotes(
                                         // Only get the commits and workitems if the builds are different
                                         if (isInitialRelease) {
                                             agentApi.logInfo(`This is the first release so checking what commits and workitems are associated with artifacts`);
-                                            var builds = await retryHandler(maxRetries, pauseTime, buildApi.getBuilds(artifactInThisRelease.sourceId, [parseInt(artifactInThisRelease.buildDefinitionId)]));
+                                            var builds = await (buildApi.getBuilds(artifactInThisRelease.sourceId, [parseInt(artifactInThisRelease.buildDefinitionId)]));
                                             commits = [];
                                             workitems = [];
 
                                             for (var build of builds) {
                                                 try {
                                                     agentApi.logInfo(`Getting the details of build ${build.id}`);
-                                                    var buildCommits = await retryHandler(maxRetries, pauseTime, buildApi.getBuildChanges(teamProject, build.id));
+                                                    var buildCommits = await (buildApi.getBuildChanges(teamProject, build.id));
                                                     commits.push(...buildCommits);
-                                                    var buildWorkitems = await retryHandler(maxRetries, pauseTime, buildApi.getBuildWorkItemsRefs(teamProject, build.id));
+                                                    var buildWorkitems = await (buildApi.getBuildWorkItemsRefs(teamProject, build.id));
                                                     workitems.push(...buildWorkitems);
                                                 } catch (err) {
                                                     agentApi.logWarn(`There was a problem getting the details of the build ${err}`);
@@ -1189,7 +1130,7 @@ export async function generateReleaseNotes(
 
                                         // look for any test in the current build
                                         agentApi.logInfo(`Getting test associated with the latest build [${artifactInThisRelease.buildId}]`);
-                                        tests = await getTestsForBuild(testApi, teamProject, parseInt(artifactInThisRelease.buildId), maxRetries, pauseTime);
+                                        tests = await getTestsForBuild(testApi, teamProject, parseInt(artifactInThisRelease.buildId));
 
                                         if (tests) {
                                             agentApi.logInfo(`Found ${tests.length} test associated with the build [${artifactInThisRelease.buildId}] adding any not already in the global test list to the list`);
@@ -1198,7 +1139,7 @@ export async function generateReleaseNotes(
                                         }
 
                                         // get artifact details for the unified output format
-                                        let artifact = await retryHandler(maxRetries, pauseTime, buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId)));
+                                        let artifact = await (buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId)));
                                         agentApi.logInfo(`Adding the build [${artifact.id}] and its association to the unified results object`);
                                         let fullBuildWorkItems = await getFullWorkItemDetails(workItemTrackingApi, workitems);
                                         globalBuilds.push(new UnifiedArtifactDetails(artifact, commits, fullBuildWorkItems, tests));
@@ -1226,7 +1167,7 @@ export async function generateReleaseNotes(
                 }
 
                 // checking for test associated with the release
-                releaseTests = await getTestsForRelease(testApi, teamProject, currentRelease, maxRetries, pauseTime);
+                releaseTests = await getTestsForRelease(testApi, teamProject, currentRelease);
                 // we only want to add unique items
                 globalTests = addUniqueTestToArray(globalTests, releaseTests);
 
@@ -1253,12 +1194,12 @@ export async function generateReleaseNotes(
 
             if (getParentsAndChildren) {
                 agentApi.logInfo("Getting direct parents and children of WorkItems");
-                relatedWorkItems = await getAllDirectRelatedWorkitems(workItemTrackingApi, fullWorkItems, maxRetries, pauseTime);
+                relatedWorkItems = await getAllDirectRelatedWorkitems(workItemTrackingApi, fullWorkItems);
             }
 
             if (getAllParents) {
                 agentApi.logInfo("Getting all parents of known WorkItems");
-                relatedWorkItems = await getAllParentWorkitems(workItemTrackingApi, relatedWorkItems, maxRetries, pauseTime);
+                relatedWorkItems = await getAllParentWorkitems(workItemTrackingApi, relatedWorkItems);
             }
 
             // by default order by ID, has the option to group by type
@@ -1306,7 +1247,7 @@ export async function generateReleaseNotes(
             }
 
             try {
-                var allPullRequests: GitPullRequest[] = await getPullRequests(gitApi, prProjectFilter, maxRetries, pauseTime);
+                var allPullRequests: GitPullRequest[] = await getPullRequests(gitApi, prProjectFilter);
                 if (allPullRequests && (allPullRequests.length > 0)) {
                     agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps PRs in the repo`);
                     globalCommits.forEach(commit => {
@@ -1343,7 +1284,7 @@ export async function generateReleaseNotes(
             );
 
             agentApi.logInfo(`Enriching known Pull Requests`);
-            globalPullRequests = await enrichPullRequest(gitApi, globalPullRequests, maxRetries, pauseTime);
+            globalPullRequests = await enrichPullRequest(gitApi, globalPullRequests);
 
             if (getIndirectPullRequests === true ) {
                 agentApi.logInfo(`Checking the CS associated with the PRs to see if they are inturn associated PRs`);
@@ -1361,9 +1302,8 @@ export async function generateReleaseNotes(
                     }
                 }
                 // enrich the founds PRs
-                inDirectlyAssociatedPullRequests = await enrichPullRequest(gitApi, inDirectlyAssociatedPullRequests, maxRetries, pauseTime);
+                await enrichPullRequest(gitApi, inDirectlyAssociatedPullRequests);
             }
-
             agentApi.logInfo(`Total Builds: [${globalBuilds.length}]`);
             agentApi.logInfo(`Total Commits: [${globalCommits.length}]`);
             agentApi.logInfo(`Total Workitems: [${globalWorkItems.length}]`);

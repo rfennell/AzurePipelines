@@ -296,9 +296,9 @@
       "name": "maxRetries",
       "type": "string",
       "label": "Max. Retries",
-      "defaultValue": "3",
+      "defaultValue": "20",
       "required": false,
-      "helpMarkDown": "The number of time to retry any REST API calls that timeout, defaults to 3",
+      "helpMarkDown": "The number of time to retry any REST API calls that timeout. Set to zero for no retries, defaults to 20",
       "groupName":"advanced"
     },
     {
@@ -307,7 +307,7 @@
       "label": "Pause Time",
       "defaultValue": "5000",
       "required": false,
-      "helpMarkDown": "Interval to wait before attempting a retry of failed API calls, in milliseconds, defaults to 5000",
+      "helpMarkDown": "No longer used, but left in to avoid breaking YAML builds",
       "groupName":"advanced"
     }
 
