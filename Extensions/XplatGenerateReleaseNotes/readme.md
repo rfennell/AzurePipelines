@@ -19,7 +19,7 @@ Generates release notes for a Classic Build or Release, or a YML based build. Th
 > **IMPORTANT** - There have been three major versions of this extension, this is because
 > * V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs. This version is not longer shipped in the extension, but can be download from [GitHub](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9)
 > * V2 was a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the Node Azure DevOps SDK, with minor but breaking changes in the template format and that oAuth needs enabling on the agent running the tasks. At 2.27.x [KennethScott](https://github.com/KennethScott) added support for [Handlbars](https://handlebarsjs.com/) templates.
-> * V3 removed support for the legacy template model, only handlebars templates supported.
+> * V3 removed support for the legacy template model, only handlebars templates supported as this is a far more flexible solution and allow much easier enhancement of this task
 
 # Overview
 This task generates a release notes file based on a template passed into the tool. It can be using inside a [classic Build, a classic Release](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-the-classic-interface) or a [Multistage YAML Pipeline](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-yaml-syntax).
@@ -33,7 +33,7 @@ The data source for the generated Release Notes is the Azure DevOps REST API's c
 There are many ways that the task can be used. A common pattern is to use the task multiple times in a pipeline
 
 1. Run once for every build, so you get the build notes of what is in that build
-1. Run as part of a deployment stage, checking against the last successful build, to generate the release notes issued with that release.
+1. Run as part of a deployment stage, checking against the last successful deployment to that stage, to generate the release notes specific to that release.
 
 Possible sets of parameters depending on your usage are summarized below
 
@@ -53,7 +53,7 @@ There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/
 
 <hr/>
 
-**The legacy templating format has been be deprecated in V3. The only templating model supported is Handlebars**
+**Note** The legacy templating format has been be deprecated in V3. The only templating model supported is Handlebars
 <hr/>
 
 ## Handlebar Templates
@@ -138,9 +138,9 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 
 ```
 
-> **IMPORTANT** Handlebars based templates have different objects available to the legacy template used in V2 of this extension. This is a break change.
+> **IMPORTANT** Handlebars based templates have different objects available to the legacy template used in V2 of this extension. This is a break change, so what out if migrating
 
-> **IMPORTANT** You can find more sample templates [here](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%203)
+> **IMPORTANT** You can find more sample templates and extensions [here](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%203)
 
 
 What is done behind the scenes is that each `{{properties}}` block in the template is expanded by Handlebars. The property objects available to get data from at runtime are:
@@ -151,7 +151,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 * **pullRequests** - the array of PRs (inc. labels, associated WI links and commits to the source branch) referenced by the commits in the release
 * **inDirectlyAssociatedPullRequests** - the array of PRs (inc. labels, associated WI links and commits to the source branch) referenced by associated commits of the directly linked PRs. [#866](https://github.com/rfennell/AzurePipelines/issues/866)
 * **tests** - the array of unique tests associated with any of the builds linked to the release or the release itself  
-* **builds** - the array of the build artifacts that CS and WI are associated with. Note that this is a object with three properties 
+* **builds** - the array of the build artifacts that CS and WI are associated with. The associated WI, CS etc. in ths object are also will the main objects above, this is a filtered lits by build. Note that this is a object with three properties.
     - **build**  - the build details
     - **commits**  - the commits associated with this build
     - **workitems**  - the work items associated with the build
@@ -332,3 +332,23 @@ However, within a release there are no such artifacts location. Hence, it is rec
 To speed the development of templates, with version 2.50.x, a [tool](https://github.com/rfennell/AzurePipelines/tree/master/Extensions/XplatGenerateReleaseNotes/V3/testconsole/readme.md) is provided in this repo to allow local testing.
 
 Also there are now parameters (see above) to dump all the REST API payload data to the console or a file to make discovery of the data available in a template easier.
+
+# Troubleshooting
+## OAUTH Scope limiting what Associated Items can be seen
+This task uses the build agent's access OAUTH token to access the Azure DevOps API. The permissions this identity has is dependant upon the [the Job authorization scope](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/access-tokens?view=azure-devops&tabs=yaml#job-authorization-scope).
+
+Cross project permissions are made more complex by the new default settings for recently created Team Projects (created since late 2020). These can effect this task's operation why trying to find associated items from other Team Projects. 
+
+> **Note** This setting is not a problem in older Team Projects, where the default setting to off
+
+So, if you find that the `workItems` and `relatedWorkItems` objects are unexpectedly empty arrays when you expect values from other Team Projects check that the project settings:
+
+`Project Settings > Pipelines > Limit job authorization scope to current project for release pipelines`
+
+and
+
+`Project Settings > Pipelines > Limit job authorization scope to current project for non-release pipelines`
+
+they should both be set to `disabled`
+
+> **Note** If you wish to confirm this is an issue you can inject a different PAT using the `overridePat` parameter. This PAT will be used in place of the OAUTH Token
