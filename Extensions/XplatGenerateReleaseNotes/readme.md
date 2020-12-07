@@ -334,6 +334,16 @@ To speed the development of templates, with version 2.50.x, a [tool](https://git
 Also there are now parameters (see above) to dump all the REST API payload data to the console or a file to make discovery of the data available in a template easier.
 
 # Troubleshooting
+
+## Timeouts
+This task makes many calls to the Azure DevOps REST API, the volume depends on the number of associated items with a build. This volume of calls can result in timeouts, it is assumed this is due to throttling by the API. If a timeout occurs the task fails with an error in the form
+
+```
+Error: connect ETIMEDOUT 13.107.42.18:443
+```
+
+At present, even though the task utilizes retry logic, there is no way to recover from these timeouts. The only solution is to retry the failed job, this will usually work (eventually)
+
 ## OAUTH Scope limiting what Associated Items can be seen
 This task uses the build agent's access OAUTH token to access the Azure DevOps API. The permissions this identity has is dependant upon the [the Job authorization scope](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/access-tokens?view=azure-devops&tabs=yaml#job-authorization-scope).
 
