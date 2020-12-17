@@ -1293,7 +1293,7 @@ export async function generateReleaseNotes(
                         const pr = globalPullRequests[prIndex];
                         for (let csIndex = 0; csIndex < pr.associatedCommits.length; csIndex++) {
                             const cs =  pr.associatedCommits[csIndex];
-                            var foundPR = allPullRequests.find( e => e.lastMergeCommit.commitId === cs.commitId);
+                            var foundPR = allPullRequests.find( e => e.lastMergeCommit && e.lastMergeCommit.commitId === cs.commitId);
                             if (foundPR) {
                             agentApi.logInfo(`Found the PR ${foundPR.pullRequestId} associated wth ${cs.commitId} added to the 'inDirectlyAssociatedPullRequests' array`);
                             inDirectlyAssociatedPullRequests.push(<EnrichedGitPullRequest>foundPR);

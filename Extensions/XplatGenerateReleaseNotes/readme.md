@@ -342,7 +342,9 @@ This task makes many calls to the Azure DevOps REST API, the volume depends on t
 Error: connect ETIMEDOUT 13.107.42.18:443
 ```
 
-At present, even though the task utilizes retry logic, there is no way to recover from these timeouts. The only solution is to retry the failed job, this will usually work (eventually)
+This is an issue with the underlying Azure DevOps Node SDK or REST API endpoints, not this task. Hence, an issue has been raised in the the appropriate [Repo #425](https://github.com/microsoft/azure-devops-node-api/issues/425)
+
+The best workaround at present is to always place this task, and any associated tasks e.g. one that upload the generated release notes to a WIKI, in a dedicated YML pipeline job. This allows the task to be easily retried without rerunning the whole pipeline.
 
 ## OAUTH Scope limiting what Associated Items can be seen
 This task uses the build agent's access OAUTH token to access the Azure DevOps API. The permissions this identity has is dependant upon the [the Job authorization scope](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/access-tokens?view=azure-devops&tabs=yaml#job-authorization-scope).
