@@ -905,10 +905,12 @@ export async function generateReleaseNotes(
             var globalBuilds: UnifiedArtifactDetails[] = [];
             var globalTests: TestCaseResult[] = [];
             var releaseTests: TestCaseResult[] = [];
+            var relatedWorkItems: WorkItem[] = [];
+            var fullWorkItems: WorkItem[] = [];
 
             var mostRecentSuccessfulDeploymentName: string = "";
-            let mostRecentSuccessfulDeploymentRelease: Release;
-            let mostRecentSuccessfulBuild: Build;
+            var mostRecentSuccessfulDeploymentRelease: Release;
+            var mostRecentSuccessfulBuild: Build;
 
             var currentRelease: Release;
             var currentBuild: Build;
@@ -1188,9 +1190,7 @@ export async function generateReleaseNotes(
             }
 
             // get an array of workitem ids
-            let fullWorkItems = await getFullWorkItemDetails(workItemTrackingApi, globalWorkItems);
-
-            let relatedWorkItems = [];
+            fullWorkItems = await getFullWorkItemDetails(workItemTrackingApi, globalWorkItems);
 
             if (getParentsAndChildren) {
                 agentApi.logInfo("Getting direct parents and children of WorkItems");
@@ -1304,6 +1304,14 @@ export async function generateReleaseNotes(
                 // enrich the founds PRs
                 await enrichPullRequest(gitApi, inDirectlyAssociatedPullRequests);
             }
+
+        } catch (ex) {
+            agentApi.logInfo(`The most common reason for the task to fail is due API ECONNRESET issues. To avoid this failing the pipeline these will be treated as warnings and an attempt to generate any release notes possible`);
+            agentApi.logWarn(ex);
+            reject (ex);
+        }
+
+        try {
             agentApi.logInfo(`Total Builds: [${globalBuilds.length}]`);
             agentApi.logInfo(`Total Commits: [${globalCommits.length}]`);
             agentApi.logInfo(`Total Workitems: [${globalWorkItems.length}]`);
