@@ -1308,7 +1308,6 @@ export async function generateReleaseNotes(
         } catch (ex) {
             agentApi.logInfo(`The most common reason for the task to fail is due API ECONNRESET issues. To avoid this failing the pipeline these will be treated as warnings and an attempt to generate any release notes possible`);
             agentApi.logWarn(ex);
-            reject (ex);
         }
 
         try {
