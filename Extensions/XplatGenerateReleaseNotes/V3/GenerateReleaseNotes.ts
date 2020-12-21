@@ -95,7 +95,7 @@ async function run(): Promise<number>  {
 run()
     .then((result) => {
         if (result === -1) {
-            tl.setResult(tl.TaskResult.SucceededWithIssues, "Skipped release notes generation as redeploy");
+            tl.setResult(tl.TaskResult.SucceededWithIssues, "Release notes generation had an issue and was only partially successful");
         } else {
             tl.setResult(tl.TaskResult.Succeeded, "");
         }

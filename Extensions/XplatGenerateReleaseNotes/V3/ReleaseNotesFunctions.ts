@@ -915,6 +915,7 @@ export async function generateReleaseNotes(
             var currentRelease: Release;
             var currentBuild: Build;
             var currentStage: TimelineRecord;
+            var hasBeenTimeout = false;
 
             try {
 
@@ -1308,6 +1309,7 @@ export async function generateReleaseNotes(
         } catch (ex) {
             agentApi.logInfo(`The most common reason for the task to fail is due API ECONNRESET issues. To avoid this failing the pipeline these will be treated as warnings and an attempt to generate any release notes possible`);
             agentApi.logWarn(ex);
+            hasBeenTimeout = true;
         }
 
         try {
@@ -1365,7 +1367,12 @@ export async function generateReleaseNotes(
 
                 agentApi.writeVariable(outputVariableName, outputString.toString());
 
-                resolve(0);
+                if (hasBeenTimeout) {
+                    // we want to return -1 so flagged as succeeded with issues
+                    resolve(-1);
+                } else {
+                    resolve(0);
+                }
             } else {
                 reject ("Missing template file");
             }
