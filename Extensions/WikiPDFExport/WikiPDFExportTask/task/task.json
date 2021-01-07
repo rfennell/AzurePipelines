@@ -97,7 +97,7 @@
       "label": "Local folder",
       "defaultValue": "$(System.DefaultWorkingDirectory)\\repo",
       "required": true,
-      "helpMarkDown": "The Path to clone the repo into, or the folder containing the single file to export"
+      "helpMarkDown": "The path to the root of the cloned the repo if exporting the whole repo, a folder within the repo to export part of the repo or finally the folder containing a single file to export. For this final option the filename must be specified below"
     },
     {
       "name": "outputFile",
