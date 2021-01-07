@@ -165,7 +165,8 @@ export async function ExportRun (
     user,
     password,
     injectExtraHeader,
-    branch
+    branch,
+    rootExportPath
  ) {
 
     if (fs.existsSync(exeCmd)) {
@@ -190,10 +191,10 @@ export async function ExportRun (
      }
 
      if (singleFile && singleFile.length > 0) {
-         console.log(`A filename ${singleFile} has been passed so only processing that file `);
-         ExportPDF (exeCmd, localpath, singleFile, outputFile, extraParams,  logInfo, logError);
+         console.log(`A filename ${singleFile} in the folder ${rootExportPath} has been requested so only processing that file `);
+         ExportPDF (exeCmd, rootExportPath, singleFile, outputFile, extraParams,  logInfo, logError);
      } else  {
-         console.log(`No filename has been passed so cloning the repo `);
-         ExportPDF (exeCmd, localpath, "" , outputFile, extraParams, logInfo, logError);
+         console.log(`Processing the contents of the folder ${rootExportPath} `);
+         ExportPDF (exeCmd, rootExportPath, "" , outputFile, extraParams, logInfo, logError);
      }
  }

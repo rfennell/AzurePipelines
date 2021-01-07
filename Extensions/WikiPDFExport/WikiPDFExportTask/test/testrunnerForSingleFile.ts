@@ -12,6 +12,7 @@ function logError (msg: string) {
 
 // const singleFile = `${__dirname}\\..\\..\\..\\readme.md`;
 const localpath = `C:\\projects\\github\\AzurePipelines.wiki`;
+const rootExportPath = `C:\\projects\\github\\AzurePipelines.wiki`;
 const singleFile = `C:\\projects\\github\\AzurePipelines.wiki\\ArtifactDescription-Tasks.md`;
 const outputFile = "c:\\tmp\\test\\new\\output.pdf";
 const injectExtraHeader = false;
@@ -36,5 +37,6 @@ ExportRun(
     user,
     password,
     injectExtraHeader,
-    branch
+    branch,
+    rootExportPath
 );

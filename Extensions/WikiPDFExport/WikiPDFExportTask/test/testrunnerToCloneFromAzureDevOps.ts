@@ -21,6 +21,7 @@ const password = "<PAT>";
 
 const repo = "dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki";
 const localpath = "c:\\tmp\\test\\repo";
+const rootExportPath = "c:\\tmp\\test\\repo";
 const injectExtraHeaders = false;
 const branch = "";
 const protocol = "https";
@@ -44,5 +45,6 @@ ExportRun(
     user,
     password,
     injectExtraHeader,
-    branch
+    branch,
+    rootExportPath
 );

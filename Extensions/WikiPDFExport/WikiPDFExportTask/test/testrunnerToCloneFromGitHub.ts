@@ -17,6 +17,7 @@ const password = "<PAT>";
 const repo = "github.com/rfennell/demorepo.wiki";
 
 const localpath = "c:\\tmp\\test\\repo";
+const rootExportPath = "c:\\tmp\\test\\repo";
 const injectExtraHeaders = false;
 const branch = "";
 const protocol = "https";
@@ -40,5 +41,6 @@ ExportRun(
     user,
     password,
     injectExtraHeader,
-    branch
+    branch,
+    rootExportPath
 );
