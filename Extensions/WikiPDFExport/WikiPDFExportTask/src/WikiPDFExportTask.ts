@@ -29,7 +29,8 @@ var workingFolder = tl.getVariable("Agent.TempDirectory");
 var rootExportPath = tl.getVariable("rootExportPath");
 
 // make sure that we support older configs where these two parameter were a single setting
-if (rootExportPath.trim().length === 0) {
+if (!rootExportPath) {
+    console.log(`Defaulting variable rootExportPath as not defined`);
     rootExportPath = localpath;
 }
 
