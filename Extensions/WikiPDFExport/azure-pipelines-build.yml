@@ -175,7 +175,7 @@ stages:
                 cloneRepo: true
                 repo: 'https://dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
                 useAgentToken: true
-                outputFile: '$(Build.ArtifactStagingDirectory)\PDF\Azrepo.pdf'
+                outputFile: '$(Build.ArtifactStagingDirectory)\PDF\AzrepoFilter.pdf'
                 localpath: '$(System.DefaultWorkingDirectory)\repo\folder'
             - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@1
               displayName: 'Export Azure DevOps WIKI without downloading tool'
