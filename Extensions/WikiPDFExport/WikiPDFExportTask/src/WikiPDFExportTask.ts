@@ -26,12 +26,19 @@ var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
 var cloneRepo = tl.getBoolInput("cloneRepo");
 var overrideExePath = tl.getInput("overrideExePath");
 var workingFolder = tl.getVariable("Agent.TempDirectory");
+var rootExportPath = tl.getVariable("rootExportPath");
+
+// make sure that we support older configs where these two parameter were a single setting
+if (rootExportPath.trim().length === 0) {
+    rootExportPath = localpath;
+}
 
 console.log(`Variable: Repo [${repo}]`);
 console.log(`Variable: Use Agent Token [${useAgentToken}]`);
 console.log(`Variable: Username [${user}]`);
 console.log(`Variable: Password [${password}]`);
 console.log(`Variable: LocalPath [${localpath}]`);
+console.log(`Variable: rootExportPath [${rootExportPath}]`);
 console.log(`Variable: SingleFile [${singleFile}]`);
 console.log(`Variable: OutputFile [${outputFile}]`);
 console.log(`Variable: Branch [${branch}]`);
@@ -55,7 +62,8 @@ GetExePath(
             user,
             password,
             injectExtraHeader,
-            branch
+            branch,
+            rootExportPath
         );
     } else {
         logError(`Cannot find the 'azuredevops-export-wiki.exe' tool`);

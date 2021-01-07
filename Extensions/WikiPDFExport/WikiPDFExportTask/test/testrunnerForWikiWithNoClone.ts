@@ -11,6 +11,8 @@ function logError (msg: string) {
 }
 
 const localpath = `${__dirname}\\..\\..\\..\\..\\..\\..\\AzurePipelines.wiki`;
+const rootExportPath = `${__dirname}\\..\\..\\..\\..\\..\\..\\AzurePipelines.wiki`;
+
 const outputFile = "c:\\tmp\\test\\output.pdf";
 const injectExtraHeader = false;
 const singleFile = "";
@@ -35,5 +37,6 @@ ExportRun(
     user,
     password,
     injectExtraHeader,
-    branch
+    branch,
+    rootExportPath
 );
