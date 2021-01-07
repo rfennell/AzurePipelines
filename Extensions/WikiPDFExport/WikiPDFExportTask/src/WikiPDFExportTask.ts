@@ -26,7 +26,7 @@ var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
 var cloneRepo = tl.getBoolInput("cloneRepo");
 var overrideExePath = tl.getInput("overrideExePath");
 var workingFolder = tl.getVariable("Agent.TempDirectory");
-var rootExportPath = tl.getVariable("rootExportPath");
+var rootExportPath = tl.getInput("rootExportPath");
 
 // make sure that we support older configs where these two parameter were a single setting
 if (!rootExportPath) {
