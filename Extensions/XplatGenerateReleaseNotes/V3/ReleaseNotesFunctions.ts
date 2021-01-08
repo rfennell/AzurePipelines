@@ -389,12 +389,12 @@ export function getCredentialHandler(pat: string): IRequestHandler {
         } else {
             agentApi.logInfo("Creating the credential handler from the OAUTH token");
             // used for local debugging.  Allows switching between PAT token and Bearer Token for debugging
-            credHandler = webApi.getHandlerFromToken(accessToken);
+            credHandler = webApi.getHandlerFromToken(accessToken, true);
         }
         return credHandler;
     } else {
         agentApi.logInfo("Creating the credential handler using override PAT (suitable for local testing or if the OAUTH token cannot be used)");
-        return webApi.getPersonalAccessTokenHandler(pat);
+        return webApi.getPersonalAccessTokenHandler(pat, true);
     }
 
 }
