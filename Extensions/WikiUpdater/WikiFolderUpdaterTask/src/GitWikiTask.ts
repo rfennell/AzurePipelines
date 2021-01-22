@@ -31,7 +31,6 @@ var tag = tl.getInput("tag");
 var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
 var retriesInput = tl.getInput("retries");
-var fixLineFeeds = tl.getBoolInput("fixLineFeeds");
 
 var retries = 5;
 try {
