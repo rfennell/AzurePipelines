@@ -174,11 +174,11 @@ export async function UpdateGitWikiFile(
         var workingFile = GetWorkingFile(filename, logInfo);
         if (replaceFile) {
             if (fixLineFeeds) {
-              fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
-              logInfo(`Created the ${workingFile} in ${workingPath} - fixing line-endings`);
+                logInfo(`Created the ${workingFile} in ${workingPath} - fixing line-endings`);
+                fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
             } else {
-              fs.writeFileSync(workingFile, contents);
               logInfo(`Created the ${workingFile} in ${workingPath} - without fixing line-endings`);
+              fs.writeFileSync(workingFile, contents );
             }
         } else {
             if (appendToFile) {

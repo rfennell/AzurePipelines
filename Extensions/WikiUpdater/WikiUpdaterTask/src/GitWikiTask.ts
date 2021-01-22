@@ -16,7 +16,7 @@ import {
 var repo = tl.getInput("repo");
 var filename = tl.getInput("filename");
 var localpath = tl.getInput("localpath");
-var contents = tl.getInput("contents");
+var contentsInput = tl.getInput("contents");
 var message = tl.getInput("message");
 var gitname = tl.getInput("gitname");
 var gitemail = tl.getInput("gitemail");
@@ -46,7 +46,7 @@ try {
 
 console.log(`Variable: Repo [${repo}]`);
 console.log(`Variable: Filename [${filename}]`);
-console.log(`Variable: Contents [${contents}]`);
+console.log(`Variable: Contents [${contentsInput}]`);
 console.log(`Variable: Commit Message [${message}]`);
 console.log(`Variable: Git Username [${gitname}]`);
 console.log(`Variable: Git Email [${gitemail}]`);
@@ -76,13 +76,21 @@ var protocol = GetProtocol(repo, logInfo);
 repo = GetTrimmedUrl(repo, logInfo);
 
 var haveData = true;
+var contents; // we late declare as it might be buffer or string
 if (dataIsFile === true) {
     if (fs.existsSync(sourceFile)) {
-        contents = fs.readFileSync(sourceFile, "utf8");
+        if (fixLineFeeds) {
+            contents = fs.readFileSync(sourceFile, "utf8");
+        } else {
+            contents = fs.readFileSync(sourceFile);
+        }
     } else {
         logError(`Cannot find the file ${sourceFile}`);
         haveData = false;
     }
+} else {
+    // we do this late copy so that we can use the same property for different encodings with a type clash
+    contents = contentsInput;
 }
 
 if (haveData) {
