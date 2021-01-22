@@ -114,7 +114,8 @@ export async function UpdateGitWikiFile(
     injectExtraHeader,
     branch,
     maxRetries,
-    trimLeadingSpecialChar) {
+    trimLeadingSpecialChar,
+    fixLineFeeds) {
     const git = simplegit();
 
     let remote = "";
@@ -172,8 +173,13 @@ export async function UpdateGitWikiFile(
         // we need to change any encoded
         var workingFile = GetWorkingFile(filename, logInfo);
         if (replaceFile) {
-            fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
-            logInfo(`Created the ${workingFile} in ${workingPath}`);
+            if (fixLineFeeds) {
+              fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+              logInfo(`Created the ${workingFile} in ${workingPath} - fixing line-endings`);
+            } else {
+              fs.writeFileSync(workingFile, contents);
+              logInfo(`Created the ${workingFile} in ${workingPath} - without fixing line-endings`);
+            }
         } else {
             if (appendToFile) {
                 // fix for #826 where special characters get added between the files being appended
