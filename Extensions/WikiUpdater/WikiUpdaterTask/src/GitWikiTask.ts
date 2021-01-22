@@ -16,7 +16,7 @@ import {
 var repo = tl.getInput("repo");
 var filename = tl.getInput("filename");
 var localpath = tl.getInput("localpath");
-var contents = tl.getInput("contents");
+var contentsInput = tl.getInput("contents");
 var message = tl.getInput("message");
 var gitname = tl.getInput("gitname");
 var gitemail = tl.getInput("gitemail");
@@ -33,6 +33,7 @@ var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
 var retriesInput = tl.getInput("retries");
 var trimLeadingSpecialChar = tl.getBoolInput("trimLeadingSpecialChar");
+var fixLineFeeds = tl.getBoolInput("fixLineFeeds");
 
 // make sure the retries is a number
 
@@ -45,7 +46,7 @@ try {
 
 console.log(`Variable: Repo [${repo}]`);
 console.log(`Variable: Filename [${filename}]`);
-console.log(`Variable: Contents [${contents}]`);
+console.log(`Variable: Contents [${contentsInput}]`);
 console.log(`Variable: Commit Message [${message}]`);
 console.log(`Variable: Git Username [${gitname}]`);
 console.log(`Variable: Git Email [${gitemail}]`);
@@ -63,6 +64,7 @@ console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
 console.log(`Variable: Retries [${retries}]`);
 console.log(`Variable: trimLeadingSpecialChar [${trimLeadingSpecialChar}]`);
+console.log(`Variable: fixLineFeeds [${fixLineFeeds}]`);
 
 if (useAgentToken === true) {
     console.log(`Using OAUTH Agent Token, overriding username and password`);
@@ -74,15 +76,23 @@ var protocol = GetProtocol(repo, logInfo);
 repo = GetTrimmedUrl(repo, logInfo);
 
 var haveData = true;
+var contents; // we late declare as it might be buffer or string
 if (dataIsFile === true) {
     if (fs.existsSync(sourceFile)) {
-        contents = fs.readFileSync(sourceFile, "utf8");
+        if (fixLineFeeds) {
+            contents = fs.readFileSync(sourceFile, "utf8");
+        } else {
+            contents = fs.readFileSync(sourceFile);
+        }
     } else {
         logError(`Cannot find the file ${sourceFile}`);
         haveData = false;
     }
+} else {
+    // we do this late copy so that we can use the same property for different encodings with a type clash
+    contents = contentsInput;
 }
 
 if (haveData) {
-    UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch, retries, trimLeadingSpecialChar);
+    UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch, retries, trimLeadingSpecialChar, fixLineFeeds);
 }
