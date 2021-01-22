@@ -33,6 +33,7 @@ var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
 var retriesInput = tl.getInput("retries");
 var trimLeadingSpecialChar = tl.getBoolInput("trimLeadingSpecialChar");
+var fixLineFeeds = tl.getBoolInput("fixLineFeeds");
 
 // make sure the retries is a number
 
@@ -63,6 +64,7 @@ console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
 console.log(`Variable: Retries [${retries}]`);
 console.log(`Variable: trimLeadingSpecialChar [${trimLeadingSpecialChar}]`);
+console.log(`Variable: fixLineFeeds [${fixLineFeeds}]`);
 
 if (useAgentToken === true) {
     console.log(`Using OAUTH Agent Token, overriding username and password`);
@@ -84,5 +86,5 @@ if (dataIsFile === true) {
 }
 
 if (haveData) {
-    UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch, retries, trimLeadingSpecialChar);
+    UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch, retries, trimLeadingSpecialChar, fixLineFeeds);
 }

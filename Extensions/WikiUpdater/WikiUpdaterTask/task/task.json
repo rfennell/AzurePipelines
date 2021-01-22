@@ -202,7 +202,17 @@
       "required": false,
       "helpMarkDown": "The appending or prepending files prior to uploading a leading special character gets added to the file. Setting this flag to true removes this first character.",
       "groupName": "advanced"
+    },
+    {
+      "name": "fixLineFeeds",
+      "type": "boolean",
+      "label": "Fix Line Feeds",
+      "defaultValue": "True",
+      "required": false,
+      "helpMarkDown": "If set to true, `n are swapped to \\r\\n as this is required for most WIKIs. If false no replacement is made, this should be used for non-text based files e.g. images or PDFs. Only used when replacing the target file",
+      "groupName": "advanced"
     }
+
   ],
   "instanceNameFormat": "Git based WIKI File Updater",
   "execution": {
