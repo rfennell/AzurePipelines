@@ -114,7 +114,8 @@ export async function UpdateGitWikiFile(
     injectExtraHeader,
     branch,
     maxRetries,
-    trimLeadingSpecialChar) {
+    trimLeadingSpecialChar,
+    fixLineFeeds) {
     const git = simplegit();
 
     let remote = "";
@@ -172,7 +173,11 @@ export async function UpdateGitWikiFile(
         // we need to change any encoded
         var workingFile = GetWorkingFile(filename, logInfo);
         if (replaceFile) {
-            fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+            if (fixLineFeeds) {
+              fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+            } else {
+              fs.writeFileSync(workingFile, contents);
+            }
             logInfo(`Created the ${workingFile} in ${workingPath}`);
         } else {
             if (appendToFile) {

@@ -53,6 +53,7 @@ Both tasks can be used in a build or a release
 - InjectExtraHeader -  If set to true, credentials are passed as a header value. If false, the default, they are passed in the URL. This option was added to address the issue [#613](https://github.com/rfennell/AzurePipelines/issues/613) which found that this means of authentication is required when working with an on-prem TFS/Azure DevOps Server
 - Retries - The number of times to retry if a push fails. After a failed push a pull is run prior to the next attempt, default of 5
 - TrimLeadingSpecialChar - As seen in #826, the appending or prepending files prior to uploading a leading special character gets added to the file. Setting this flag to true removes this first character. Default is false
+- fixLineFeeds - If set to true, `n are swapped to \\r\\n as this is required for most WIKIs. If false no replacement is made, this should be used for non-text based files e.g. images or PDFs. Only used when replacing the target file. Default is true
 
 _For more authentication parameters see 'Authentication' section below_
 

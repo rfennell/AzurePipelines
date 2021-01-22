@@ -31,5 +31,6 @@ const branch = "";
 const injectExtraHeaders = false;
 const protocol = "https";
 const retries = "5";
+const fixLineFeeds = true;
 
-UpdateGitWikiFolder(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message,  sourceFolder, filter, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch, retries);
+UpdateGitWikiFolder(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message,  sourceFolder, filter, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch, retries, fixLineFeeds);
