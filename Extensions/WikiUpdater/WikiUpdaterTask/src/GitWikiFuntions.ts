@@ -175,10 +175,11 @@ export async function UpdateGitWikiFile(
         if (replaceFile) {
             if (fixLineFeeds) {
               fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+              logInfo(`Created the ${workingFile} in ${workingPath} - fixing line-endings`);
             } else {
               fs.writeFileSync(workingFile, contents);
+              logInfo(`Created the ${workingFile} in ${workingPath} - without fixing line-endings`);
             }
-            logInfo(`Created the ${workingFile} in ${workingPath}`);
         } else {
             if (appendToFile) {
                 // fix for #826 where special characters get added between the files being appended

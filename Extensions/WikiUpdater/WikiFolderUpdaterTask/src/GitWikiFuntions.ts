@@ -116,8 +116,7 @@ export async function UpdateGitWikiFolder(
     tag,
     injectExtraHeader,
     branch,
-    maxRetries,
-    fixLineFeeds) {
+    maxRetries) {
     const git = simplegit();
 
     let remote = "";
@@ -191,11 +190,7 @@ export async function UpdateGitWikiFolder(
             } else {
                 var contents = fs.readFileSync(files[index], "utf8");
                 if (appendToFile) {
-                    if (fixLineFeeds) {
-                        fs.appendFileSync(targetFile, contents.replace(/`n/g, "\r\n"));
-                    } else {
-                        fs.appendFileSync(targetFile, contents);
-                    }
+                    fs.appendFileSync(targetFile, contents.replace(/`n/g, "\r\n"));
                     logInfo(`Appended to ${targetFile}`);
                 } else {
                     var oldContent = "";

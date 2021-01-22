@@ -58,7 +58,6 @@ console.log(`Variable: Tag [${tag}]`);
 console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
 console.log(`Variable: Retries [${retries}]`);
-console.log(`Variable: fixLineFeeds [${fixLineFeeds}]`);
 
 if (useAgentToken === true) {
     console.log(`Using OAUTH Agent Token, overriding username and password`);
@@ -69,4 +68,4 @@ if (useAgentToken === true) {
 var protocol = GetProtocol(repo, logInfo);
 repo = GetTrimmedUrl(repo, logInfo);
 
-UpdateGitWikiFolder(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message, sourceFolder, filter, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch, retries, fixLineFeeds);
+UpdateGitWikiFolder(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message, sourceFolder, filter, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, branch, retries);

@@ -183,15 +183,6 @@
       "required": false,
       "helpMarkDown": "The number of times to retry if a push fails. After a failed push a pull is run prior to the next attempt",
       "groupName": "advanced"
-    },
-    {
-      "name": "fixLineFeeds",
-      "type": "boolean",
-      "label": "Fix Line Feeds",
-      "defaultValue": "True",
-      "required": false,
-      "helpMarkDown": "If set to true, `n are swapped to \\r\\n as this is required for most WIKIs. If false no replacement is made, this should be used for non-text based files e.g. images or PDFs. Only used when replacing the target file",
-      "groupName": "advanced"
     }
   ],
   "instanceNameFormat": "Git based WIKI Folder Updater",
