@@ -797,12 +797,19 @@ export async function getLastSuccessfulBuildByStage(
             }
         }
 
+        builds.sort((a, b) => <any>b.queueTime - <any>a.queueTime);
+
+        let foundSelf = false;
+
         for (let buildIndex = 0; buildIndex < builds.length; buildIndex++) {
             const build = builds[buildIndex];
             agentApi.logInfo (`Comparing ${build.id} against ${buildId}`);
             // force the cast to string as was getting a type mimatch
             if (build.id.toString() === buildId.toString()) {
                 agentApi.logInfo("Ignore compare against self");
+                foundSelf = true;
+            } else if (!foundSelf) {
+                agentApi.logInfo(`Ignoring ${build.id} (${build.buildNumber}) since not yet reached the current build`);
             } else {
                 if (tags.length === 0 ||
                     (tags.length > 0 && build.tags.sort().join(",") === tags.sort().join(","))) {
