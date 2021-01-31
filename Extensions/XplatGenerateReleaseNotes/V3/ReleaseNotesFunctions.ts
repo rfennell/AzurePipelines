@@ -1113,29 +1113,29 @@ export async function generateReleaseNotes(
                 let isInitialRelease = false;
 
                 agentApi.logInfo(`Getting all artifacts in the current release...`);
-                var arifactsInThisRelease = getSimpleArtifactArray(currentRelease.artifacts);
-                buildId = await restoreAzurePipelineArtifactsBuildInfo(arifactsInThisRelease, organisation) || buildId; // update build id if using pipeline artifacts
-                agentApi.logInfo(`Found ${arifactsInThisRelease.length}`);
+                var artifactsInThisRelease = getSimpleArtifactArray(currentRelease.artifacts);
+                buildId = await restoreAzurePipelineArtifactsBuildInfo(artifactsInThisRelease, organisation) || buildId; // update build id if using pipeline artifacts
+                agentApi.logInfo(`Found ${artifactsInThisRelease.length}`);
 
-                let arifactsInMostRecentRelease: SimpleArtifact[] = [];
+                let artifactsInMostRecentRelease: SimpleArtifact[] = [];
                 if (mostRecentSuccessfulDeployment) {
                     // Get the release that the deployment was a part of - This is required for the templating.
                     mostRecentSuccessfulDeploymentRelease = await releaseApi.getRelease(teamProject, mostRecentSuccessfulDeployment.release.id);
                     agentApi.logInfo(`Getting all artifacts in the most recent successful release [${mostRecentSuccessfulDeployment.release.name}]...`);
-                    arifactsInMostRecentRelease = getSimpleArtifactArray(mostRecentSuccessfulDeployment.release.artifacts);
-                    await restoreAzurePipelineArtifactsBuildInfo(arifactsInMostRecentRelease, organisation);
+                    artifactsInMostRecentRelease = getSimpleArtifactArray(mostRecentSuccessfulDeployment.release.artifacts);
+                    await restoreAzurePipelineArtifactsBuildInfo(artifactsInMostRecentRelease, organisation);
                     mostRecentSuccessfulDeploymentName = mostRecentSuccessfulDeployment.release.name;
-                    agentApi.logInfo(`Found ${arifactsInMostRecentRelease.length}`);
+                    agentApi.logInfo(`Found ${artifactsInMostRecentRelease.length}`);
                 } else {
                     agentApi.logInfo(`Skipping fetching artifact in the most recent successful release as there isn't one.`);
                     // we need to set the last successful as the current release to templates can get some data
                     mostRecentSuccessfulDeploymentRelease = currentRelease;
                     mostRecentSuccessfulDeploymentName = "Initial Deployment";
-                    arifactsInMostRecentRelease = arifactsInThisRelease;
+                    artifactsInMostRecentRelease = artifactsInThisRelease;
                     isInitialRelease = true;
                 }
 
-                for (var artifactInThisRelease of arifactsInThisRelease) {
+                for (var artifactInThisRelease of artifactsInThisRelease) {
                     agentApi.logInfo(`Looking at artifact [${artifactInThisRelease.artifactAlias}]`);
                     agentApi.logInfo(`Artifact type [${artifactInThisRelease.artifactType}]`);
                     agentApi.logInfo(`Build Definition ID [${artifactInThisRelease.buildDefinitionId}]`);
@@ -1143,10 +1143,10 @@ export async function generateReleaseNotes(
                     agentApi.logInfo(`Is Primary: [${artifactInThisRelease.isPrimary}]`);
 
                     if ((showOnlyPrimary === false) || (showOnlyPrimary === true && artifactInThisRelease.isPrimary === true)) {
-                        if (arifactsInMostRecentRelease.length > 0) {
+                        if (artifactsInMostRecentRelease.length > 0) {
                             if (artifactInThisRelease.artifactType === "Build") {
                                 agentApi.logInfo(`Looking for the [${artifactInThisRelease.artifactAlias}] in the most recent successful release [${mostRecentSuccessfulDeploymentName}]`);
-                                for (var artifactInMostRecentRelease of arifactsInMostRecentRelease) {
+                                for (var artifactInMostRecentRelease of artifactsInMostRecentRelease) {
                                     if (artifactInThisRelease.artifactAlias.toLowerCase() === artifactInMostRecentRelease.artifactAlias.toLowerCase()) {
                                         agentApi.logInfo(`Found artifact [${artifactInMostRecentRelease.artifactAlias}] with build number [${artifactInMostRecentRelease.buildNumber}] in release [${mostRecentSuccessfulDeploymentName}]`);
 
