@@ -130,6 +130,7 @@ export async function restoreAzurePipelineArtifactsBuildInfo(artifactsInRelease:
     let existAzurePipelineArtifacts = false;
     for (const artifactInRelease of artifactsInRelease) {
         if (artifactInRelease.artifactType === "PackageManagement") {
+            agentApi.logInfo(`The artifact [${artifactInRelease.artifactAlias}] is an Azure Artifacts, expanding build details`);
             existAzurePipelineArtifacts = true;
             // FIXME #937: workaround for missing PackagingApi library. Should replace with `const packagingApi = await organisation.getPackagingApi();` when available
             interface PackagingPackage { id: string; string; url: string; versions: {id: string; normalizedVersion: string}[]; }
@@ -187,12 +188,13 @@ export async function restoreAzurePipelineArtifactsBuildInfo(artifactsInRelease:
                 const artifactPackageInfo = await packagingApi.getPackage(projectId, feedId, packageId, true);
                 const packageVersionId = (artifactPackageInfo.versions.find((version) => version.normalizedVersion === packageVersion) || {id: ""}).id;
                 const artifactBuildInfo = (await packagingApi.getPackageVersionProvenance(projectId, feedId, packageId, packageVersionId));
+
                 Object.assign(artifactInRelease, {
                     artifactType: "Build",
                     buildId: artifactBuildInfo.provenance.data["Build.BuildId"],
                     buildDefinitionId: artifactBuildInfo.provenance.data["System.DefinitionId"],
                     buildNumber: artifactBuildInfo.provenance.data["Build.BuildNumber"],
-                    sourceId: artifactBuildInfo.TeamProjectId
+                    sourceId: artifactBuildInfo.TeamProjectId && artifactBuildInfo.TeamProjectId || artifactBuildInfo.provenance.data["System.TeamProjectId"]
                 } as SimpleArtifact);
             }
         }
@@ -1115,7 +1117,7 @@ export async function generateReleaseNotes(
                 agentApi.logInfo(`Getting all artifacts in the current release...`);
                 var artifactsInThisRelease = getSimpleArtifactArray(currentRelease.artifacts);
                 buildId = await restoreAzurePipelineArtifactsBuildInfo(artifactsInThisRelease, organisation) || buildId; // update build id if using pipeline artifacts
-                agentApi.logInfo(`Found ${artifactsInThisRelease.length}`);
+                agentApi.logInfo(`Found ${artifactsInThisRelease.length} artifacts for current release`);
 
                 let artifactsInMostRecentRelease: SimpleArtifact[] = [];
                 if (mostRecentSuccessfulDeployment) {
@@ -1125,7 +1127,7 @@ export async function generateReleaseNotes(
                     artifactsInMostRecentRelease = getSimpleArtifactArray(mostRecentSuccessfulDeployment.release.artifacts);
                     await restoreAzurePipelineArtifactsBuildInfo(artifactsInMostRecentRelease, organisation);
                     mostRecentSuccessfulDeploymentName = mostRecentSuccessfulDeployment.release.name;
-                    agentApi.logInfo(`Found ${artifactsInMostRecentRelease.length}`);
+                    agentApi.logInfo(`Found ${artifactsInMostRecentRelease.length} artifacts for most recent successful release`);
                 } else {
                     agentApi.logInfo(`Skipping fetching artifact in the most recent successful release as there isn't one.`);
                     // we need to set the last successful as the current release to templates can get some data
@@ -1183,8 +1185,8 @@ export async function generateReleaseNotes(
                                                 }
 
                                                 if (activateFix && activateFix.toLowerCase() === "true") {
-                                                    let baseBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId));
                                                     agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
+                                                    let baseBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId));
                                                     // There is only a workaround for Git but not for TFVC :(
                                                     if (baseBuild.repository.type === "TfsGit") {
                                                         let currentBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId));
