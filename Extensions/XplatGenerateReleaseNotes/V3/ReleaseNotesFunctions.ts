@@ -41,6 +41,8 @@ export class UnifiedArtifactDetails {
    }
 }
 
+import { ClientApiBase } from "azure-devops-node-api/ClientApiBases";
+import * as vsom from "azure-devops-node-api/VsoClient";
 import * as restm from "typed-rest-client/RestClient";
 import { PersonalAccessTokenCredentialHandler, BasicCredentialHandler } from "typed-rest-client/Handlers";
 import tl = require("azure-pipelines-task-lib/task");
@@ -122,6 +124,80 @@ export function getSimpleArtifactArray(artifacts: Artifact[]): SimpleArtifact[] 
         );
     }
     return result;
+}
+
+export async function restoreAzurePipelineArtifactsBuildInfo(artifactsInRelease: SimpleArtifact[], webApi: WebApi): Promise<number> {
+    let existAzurePipelineArtifacts = false;
+    for (const artifactInRelease of artifactsInRelease) {
+        if (artifactInRelease.artifactType === "PackageManagement") {
+            existAzurePipelineArtifacts = true;
+            // FIXME #937: workaround for missing PackagingApi library. Should replace with `const packagingApi = await organisation.getPackagingApi();` when available
+            interface PackagingPackage { id: string; string; url: string; versions: {id: string; normalizedVersion: string}[]; }
+            interface PackagingVersionProvenance { TeamProjectId: string; provenance: {data: {"System.DefinitionId": string; "Build.BuildId": string; "Build.BuildNumber": string}}; }
+            interface IPackagingApi {
+                getPackage(project: string, feedId: string, packageId: string, includeAllVersions?: boolean): Promise<PackagingPackage>;
+                getPackageVersionProvenance(project: string, feedId: string, packageId: string, packageVersionId: string): Promise<PackagingVersionProvenance>;
+            }
+            const PackagingApi = class extends ClientApiBase implements IPackagingApi {
+                constructor(...args) { super(args[0], args[1], "node-Packaging-api", args[2]); }
+                public static readonly RESOURCE_AREA_ID = "7ab4e64e-c4d8-4f50-ae73-5ef2e21642a5";
+                public async getPackage(project: string, feedId: string, packageId: string, includeAllVersions?: boolean): Promise<PackagingPackage> {
+                    return new Promise<PackagingPackage>(async (resolve, reject) => {
+                        let routeValues: any = {project: project, feedId: feedId, packageId: packageId};
+                        let queryValues: any = {includeAllVersions: includeAllVersions};
+                        try {
+                            let verData: vsom.ClientVersioningData = await this.vsoClient.getVersioningData("6.1-preview.1", "Packaging", "7a20d846-c929-4acc-9ea2-0d5a7df1b197", routeValues, queryValues);
+                            let res = await this.rest.get<PackagingPackage[]>(verData.requestUrl!, this.createRequestOptions("application/json", verData.apiVersion));
+                            resolve(this.formatResponse(res.result, null, true));
+                        } catch (err) {
+                            reject(err);
+                        }
+                    });
+                }
+                public async getPackageVersionProvenance(project: string, feedId: string, packageId: string, packageVersionId: string): Promise<PackagingVersionProvenance> {
+                    return new Promise<PackagingVersionProvenance>(async (resolve, reject) => {
+                        let routeValues: any = {
+                            project: project,
+                            feedId: feedId,
+                            packageId: packageId,
+                            packageVersionId: packageVersionId
+                        };
+                        try {
+                            let verData: vsom.ClientVersioningData = await this.vsoClient.getVersioningData("6.1-preview.1", "Packaging", "0aaeabd4-85cd-4686-8a77-8d31c15690b8", routeValues);
+                            let res = await this.rest.get<PackagingPackage[]>(verData.requestUrl!, this.createRequestOptions("application/json", verData.apiVersion));
+                            resolve(this.formatResponse(res.result, null, true));
+                        } catch (err) {
+                            reject(err);
+                        }
+                    });
+                }
+            };
+            // const packagingApi = await organisation.getPackagingApi();
+            const packagingApi = await(async (serverUrl?: string, handlers?: IRequestHandler[]): Promise<IPackagingApi> => {
+                const this_ = webApi as any;
+                serverUrl = await this_._getResourceAreaUrl(serverUrl || this_.serverUrl, PackagingApi.RESOURCE_AREA_ID);
+                handlers = handlers || [this_.authHandler];
+                return new PackagingApi(serverUrl, handlers, this_.options);
+            })();
+            // END FIXME #937
+            const guids = artifactInRelease.sourceId.match(/([0-9a-f-]{36})\/([0-9a-f-]{36})/u);
+            if (guids !== null) {
+                const [projectId, feedId] = [guids[1], guids[2]];
+                const [packageId, packageVersion] = [artifactInRelease.buildDefinitionId, artifactInRelease.buildNumber];
+                const artifactPackageInfo = await packagingApi.getPackage(projectId, feedId, packageId, true);
+                const packageVersionId = (artifactPackageInfo.versions.find((version) => version.normalizedVersion === packageVersion) || {id: ""}).id;
+                const artifactBuildInfo = (await packagingApi.getPackageVersionProvenance(projectId, feedId, packageId, packageVersionId));
+                Object.assign(artifactInRelease, {
+                    artifactType: "Build",
+                    buildId: artifactBuildInfo.provenance.data["Build.BuildId"],
+                    buildDefinitionId: artifactBuildInfo.provenance.data["System.DefinitionId"],
+                    buildNumber: artifactBuildInfo.provenance.data["Build.BuildNumber"],
+                    sourceId: artifactBuildInfo.TeamProjectId
+                } as SimpleArtifact);
+            }
+        }
+    }
+    return existAzurePipelineArtifacts ? parseInt(artifactsInRelease[0].buildId) : NaN;
 }
 
 export async function getPullRequests(
@@ -797,12 +873,19 @@ export async function getLastSuccessfulBuildByStage(
             }
         }
 
+        builds.sort((a, b) => <any>b.queueTime - <any>a.queueTime);
+
+        let foundSelf = false;
+
         for (let buildIndex = 0; buildIndex < builds.length; buildIndex++) {
             const build = builds[buildIndex];
             agentApi.logInfo (`Comparing ${build.id} against ${buildId}`);
             // force the cast to string as was getting a type mimatch
             if (build.id.toString() === buildId.toString()) {
                 agentApi.logInfo("Ignore compare against self");
+                foundSelf = true;
+            } else if (!foundSelf) {
+                agentApi.logInfo(`Ignoring ${build.id} (${build.buildNumber}) since not yet reached the current build`);
             } else {
                 if (tags.length === 0 ||
                     (tags.length > 0 && build.tags.sort().join(",") === tags.sort().join(","))) {
@@ -1030,27 +1113,29 @@ export async function generateReleaseNotes(
                 let isInitialRelease = false;
 
                 agentApi.logInfo(`Getting all artifacts in the current release...`);
-                var arifactsInThisRelease = getSimpleArtifactArray(currentRelease.artifacts);
-                agentApi.logInfo(`Found ${arifactsInThisRelease.length}`);
+                var artifactsInThisRelease = getSimpleArtifactArray(currentRelease.artifacts);
+                buildId = await restoreAzurePipelineArtifactsBuildInfo(artifactsInThisRelease, organisation) || buildId; // update build id if using pipeline artifacts
+                agentApi.logInfo(`Found ${artifactsInThisRelease.length}`);
 
-                let arifactsInMostRecentRelease: SimpleArtifact[] = [];
+                let artifactsInMostRecentRelease: SimpleArtifact[] = [];
                 if (mostRecentSuccessfulDeployment) {
                     // Get the release that the deployment was a part of - This is required for the templating.
                     mostRecentSuccessfulDeploymentRelease = await releaseApi.getRelease(teamProject, mostRecentSuccessfulDeployment.release.id);
                     agentApi.logInfo(`Getting all artifacts in the most recent successful release [${mostRecentSuccessfulDeployment.release.name}]...`);
-                    arifactsInMostRecentRelease = getSimpleArtifactArray(mostRecentSuccessfulDeployment.release.artifacts);
+                    artifactsInMostRecentRelease = getSimpleArtifactArray(mostRecentSuccessfulDeployment.release.artifacts);
+                    await restoreAzurePipelineArtifactsBuildInfo(artifactsInMostRecentRelease, organisation);
                     mostRecentSuccessfulDeploymentName = mostRecentSuccessfulDeployment.release.name;
-                    agentApi.logInfo(`Found ${arifactsInMostRecentRelease.length}`);
+                    agentApi.logInfo(`Found ${artifactsInMostRecentRelease.length}`);
                 } else {
                     agentApi.logInfo(`Skipping fetching artifact in the most recent successful release as there isn't one.`);
                     // we need to set the last successful as the current release to templates can get some data
                     mostRecentSuccessfulDeploymentRelease = currentRelease;
                     mostRecentSuccessfulDeploymentName = "Initial Deployment";
-                    arifactsInMostRecentRelease = arifactsInThisRelease;
+                    artifactsInMostRecentRelease = artifactsInThisRelease;
                     isInitialRelease = true;
                 }
 
-                for (var artifactInThisRelease of arifactsInThisRelease) {
+                for (var artifactInThisRelease of artifactsInThisRelease) {
                     agentApi.logInfo(`Looking at artifact [${artifactInThisRelease.artifactAlias}]`);
                     agentApi.logInfo(`Artifact type [${artifactInThisRelease.artifactType}]`);
                     agentApi.logInfo(`Build Definition ID [${artifactInThisRelease.buildDefinitionId}]`);
@@ -1058,10 +1143,10 @@ export async function generateReleaseNotes(
                     agentApi.logInfo(`Is Primary: [${artifactInThisRelease.isPrimary}]`);
 
                     if ((showOnlyPrimary === false) || (showOnlyPrimary === true && artifactInThisRelease.isPrimary === true)) {
-                        if (arifactsInMostRecentRelease.length > 0) {
+                        if (artifactsInMostRecentRelease.length > 0) {
                             if (artifactInThisRelease.artifactType === "Build") {
                                 agentApi.logInfo(`Looking for the [${artifactInThisRelease.artifactAlias}] in the most recent successful release [${mostRecentSuccessfulDeploymentName}]`);
-                                for (var artifactInMostRecentRelease of arifactsInMostRecentRelease) {
+                                for (var artifactInMostRecentRelease of artifactsInMostRecentRelease) {
                                     if (artifactInThisRelease.artifactAlias.toLowerCase() === artifactInMostRecentRelease.artifactAlias.toLowerCase()) {
                                         agentApi.logInfo(`Found artifact [${artifactInMostRecentRelease.artifactAlias}] with build number [${artifactInMostRecentRelease.buildNumber}] in release [${mostRecentSuccessfulDeploymentName}]`);
 
