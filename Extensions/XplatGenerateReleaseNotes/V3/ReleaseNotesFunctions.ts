@@ -134,7 +134,7 @@ export async function restoreAzurePipelineArtifactsBuildInfo(artifactsInRelease:
             existAzurePipelineArtifacts = true;
             // FIXME #937: workaround for missing PackagingApi library. Should replace with `const packagingApi = await organisation.getPackagingApi();` when available
             interface PackagingPackage { id: string; string; url: string; versions: {id: string; normalizedVersion: string}[]; }
-            interface PackagingVersionProvenance { TeamProjectId: string; provenance: {data: {"System.DefinitionId": string; "Build.BuildId": string; "Build.BuildNumber": string}}; }
+            interface PackagingVersionProvenance { TeamProjectId: string; provenance: {data: {"System.DefinitionId": string; "System.TeamProjectId": string; "Build.BuildId": string; "Build.BuildNumber": string}}; }
             interface IPackagingApi {
                 getPackage(project: string, feedId: string, packageId: string, includeAllVersions?: boolean): Promise<PackagingPackage>;
                 getPackageVersionProvenance(project: string, feedId: string, packageId: string, packageVersionId: string): Promise<PackagingVersionProvenance>;
@@ -194,7 +194,7 @@ export async function restoreAzurePipelineArtifactsBuildInfo(artifactsInRelease:
                     buildId: artifactBuildInfo.provenance.data["Build.BuildId"],
                     buildDefinitionId: artifactBuildInfo.provenance.data["System.DefinitionId"],
                     buildNumber: artifactBuildInfo.provenance.data["Build.BuildNumber"],
-                    sourceId: artifactBuildInfo.TeamProjectId && artifactBuildInfo.TeamProjectId || artifactBuildInfo.provenance.data["System.TeamProjectId"]
+                    sourceId: artifactBuildInfo.TeamProjectId || artifactBuildInfo.provenance.data["System.TeamProjectId"]
                 } as SimpleArtifact);
             }
         }
