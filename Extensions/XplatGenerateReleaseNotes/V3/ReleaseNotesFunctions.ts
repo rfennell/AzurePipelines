@@ -194,7 +194,7 @@ export async function restoreAzurePipelineArtifactsBuildInfo(artifactsInRelease:
                     buildId: artifactBuildInfo.provenance.data["Build.BuildId"],
                     buildDefinitionId: artifactBuildInfo.provenance.data["System.DefinitionId"],
                     buildNumber: artifactBuildInfo.provenance.data["Build.BuildNumber"],
-                    sourceId: artifactBuildInfo.TeamProjectId && artifactBuildInfo.TeamProjectId || artifactBuildInfo.provenance.data["System.TeamProjectId"]
+                    sourceId: artifactBuildInfo.TeamProjectId || artifactBuildInfo.provenance.data["System.TeamProjectId"]
                 } as SimpleArtifact);
             }
         }
