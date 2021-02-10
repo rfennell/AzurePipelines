@@ -37,7 +37,7 @@ if (!rootExportPath) {
 console.log(`Variable: Repo [${repo}]`);
 console.log(`Variable: Use Agent Token [${useAgentToken}]`);
 console.log(`Variable: Username [${user}]`);
-console.log(`Variable: Password [${password}]`);
+console.log(`Variable: Password [*****]`);
 console.log(`Variable: LocalPath [${localpath}]`);
 console.log(`Variable: rootExportPath [${rootExportPath}]`);
 console.log(`Variable: SingleFile [${singleFile}]`);
