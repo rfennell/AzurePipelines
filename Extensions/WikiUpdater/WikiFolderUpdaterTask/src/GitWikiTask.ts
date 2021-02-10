@@ -48,7 +48,7 @@ console.log(`Variable: Use Agent Token [${useAgentToken}]`);
 console.log(`Variable: Replace File [${replaceFile}]`);
 console.log(`Variable: Append to File [${appendToFile}]`);
 console.log(`Variable: Username [${user}]`);
-console.log(`Variable: Password [${password}]`);
+console.log(`Variable: Password [*****]`);
 console.log(`Variable: Localpath [${localpath}]`);
 console.log(`Variable: SourceFolder [${sourceFolder}]`);
 console.log(`Variable: Filter [${filter}]`);
