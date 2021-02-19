@@ -43,10 +43,16 @@ export async function run() {
 
         // we need to not pass the null param
         var args = [__dirname + "\\BuildVariableTask.ps1",
-                    "-collectionUrl", collectionUrl,
-                    "-teamproject", teamproject,
-                    "-token", token
-                ];
+        "-collectionUrl", collectionUrl,
+        "-token", token
+        ];
+        args.push("-teamproject");
+        if (/\s/.test(teamproject)) {
+            // It has any kind of whitespace
+            args.push(`'${teamproject}'`);
+        } else {
+            args.push(teamproject);
+        }
 
         if (releaseid) {
             args.push("-releaseid");
