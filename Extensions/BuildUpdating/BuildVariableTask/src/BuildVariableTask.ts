@@ -54,7 +54,6 @@ export async function run() {
             args.push(teamproject);
         }
 
-
         if (releaseid) {
             args.push("-releaseid");
             args.push(releaseid);
