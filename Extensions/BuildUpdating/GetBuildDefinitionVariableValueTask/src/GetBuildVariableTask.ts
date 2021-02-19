@@ -38,7 +38,7 @@ export async function run() {
         }
 
         // we need to not pass the null param
-        var args = [__dirname + "\\BuildVariableTask.ps1",
+        var args = [__dirname + "\\GetBuildVariableTask.ps1",
         "-collectionUrl", collectionUrl,
         "-token", token
         ];
