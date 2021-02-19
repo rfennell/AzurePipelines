@@ -41,7 +41,7 @@ export async function run() {
         // we need to not pass the null param
         var args = [__dirname + "\\BuildRetensionTask.ps1",
                     "-collectionUrl", collectionUrl,
-                    "-teamproject", teamproject,
+                    "-teamproject", `'${teamproject}'`,
                     "-token", token
                 ];
 
