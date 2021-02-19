@@ -263,11 +263,11 @@ function Get-Build
 # Output execution parameters.
 $VerbosePreference ='Continue' # equiv to -verbose
 
-Write-Verbose "collectionUrl = [$env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI]"
-Write-Verbose "teamproject = [$env:SYSTEM_TEAMPROJECT]"
-Write-Verbose "releaseid = [$env:RELEASE_RELEASEID]"
-Write-Verbose "builddefid = [$env:BUILD_DEFINITIONID]"
-Write-Verbose "buildid = [$env:BUILD_BUILDID]"
+Write-Verbose "collectionUrl = [$collectionUrl]"
+Write-Verbose "teamproject = [$teamproject]"
+Write-Verbose "releaseid = [$releaseid]"
+Write-Verbose "builddefid = [$builddefid]"
+Write-Verbose "buildid = [$buildid]"
 Write-Verbose "usedefaultcreds = $usedefaultcreds"
 Write-Verbose "artifacts = [$artifacts]"
 Write-Verbose "buildmode = [$buildmode]"
