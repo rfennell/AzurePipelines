@@ -50,7 +50,6 @@ export async function run() {
             args.push(teamproject);
         }
 
-
         if (localVariable) {
             args.push("-localVariable");
             args.push(localVariable);
