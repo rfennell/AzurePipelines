@@ -44,6 +44,7 @@ export class UnifiedArtifactDetails {
 import { ClientApiBase } from "azure-devops-node-api/ClientApiBases";
 import * as vsom from "azure-devops-node-api/VsoClient";
 import * as restm from "typed-rest-client/RestClient";
+import path = require("path");
 import { PersonalAccessTokenCredentialHandler, BasicCredentialHandler } from "typed-rest-client/Handlers";
 import tl = require("azure-pipelines-task-lib/task");
 import { ReleaseEnvironment, Artifact, Deployment, DeploymentStatus, Release } from "azure-devops-node-api/interfaces/ReleaseInterfaces";
@@ -764,24 +765,46 @@ export function processTemplate(
             }
         );
 
-        if (typeof customHandlebarsExtensionCode !== undefined && customHandlebarsExtensionCode && customHandlebarsExtensionCode.length > 0) {
-
-            agentApi.logDebug(`Saving custom Handlebars code to file in folder ${customHandlebarsExtensionFolder}`);
-
-            if (!customHandlebarsExtensionFolder || customHandlebarsExtensionFolder.length === 0) {
-                // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
-                // Note that the name is case sensitive on Mac and Linux
-                // Also #832 found that the temp file has to be under the same folder structure as the main .js files
-                // else you cannot load any modules
-                customHandlebarsExtensionFolder = __dirname;
+        // make sure we have valid file name for the custom extension
+        if (customHandlebarsExtensionFile.length > 0) {
+            if (!customHandlebarsExtensionFile.toLowerCase().endsWith(".js")) {
+                customHandlebarsExtensionFile = customHandlebarsExtensionFile + ".js";
             }
+        } else {
+            customHandlebarsExtensionFile = `${customHandlebarsExtensionFile}.js`;
+        }
 
-            agentApi.logInfo("Loading custom handlebars extension");
-            writeFile(`${customHandlebarsExtensionFolder}/${customHandlebarsExtensionFile}.js`, customHandlebarsExtensionCode, true, false);
-            var tools = require(`${customHandlebarsExtensionFolder}/${customHandlebarsExtensionFile}`);
-            handlebars.registerHelper(tools);
-        } else  {
-            agentApi.logDebug(`No custom Handlebars code to process`);
+        if (!customHandlebarsExtensionFolder || customHandlebarsExtensionFolder.length === 0) {
+            // cannot use process.env.Agent_TempDirectory as only set on Windows agent, so build it up from the agent base
+            // Note that the name is case sensitive on Mac and Linux
+            // Also #832 found that the temp file has to be under the same folder structure as the main .js files
+            // else you cannot load any modules
+            customHandlebarsExtensionFolder = __dirname;
+        } else {
+            if (customHandlebarsExtensionFolder.startsWith(".")) {
+                customHandlebarsExtensionFolder = path.join(__dirname, customHandlebarsExtensionFolder);
+            }
+        }
+
+        var filePath = path.join(customHandlebarsExtensionFolder, customHandlebarsExtensionFile);
+
+        if (typeof customHandlebarsExtensionCode !== undefined && customHandlebarsExtensionCode && customHandlebarsExtensionCode.length > 0) {
+            agentApi.logDebug(`Saving custom Handlebars code passed as a string in the parameter 'customHandlebarsExtensionCode' to file ${filePath}`);
+            writeFile(filePath, customHandlebarsExtensionCode, true, false);
+        }
+
+        agentApi.logDebug(`Attempting to load custom handlebars extension from ${filePath}}`);
+        if (fs.existsSync(filePath)) {
+            var customModule = fs.readFileSync(filePath);
+            if (customModule.toString().trim().length > 0) {
+                var tools = require(filePath);
+                handlebars.registerHelper(tools);
+                agentApi.logInfo("Loaded handlebars extension file");
+            } else {
+                agentApi.logDebug("Custom handlebars extension file is empty");
+            }
+        } else {
+            agentApi.logDebug("Custom handlebars extension file does not exist");
         }
 
         // compile the template

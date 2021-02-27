@@ -28,10 +28,10 @@ async function run(): Promise<number>  {
             } else  {
                 console.log(`Command Line Arguements:`);
                 console.log(`  --filename: ${filename}`);
-                console.log(`  --pat: ${pat}`);
-                console.log(`  --githubpat: ${gitHubPat}`);
-                console.log(`  --bitbucketuser: ${bitbucketUser}`);
-                console.log(`  --bitbucketsecret: ${bitbucketSecret}`);
+                console.log(`  --pat: ${obfuscatePasswordForLog(pat)}`);
+                console.log(`  --githubpat: ${obfuscatePasswordForLog(gitHubPat)}`);
+                console.log(`  --bitbucketuser: ${obfuscatePasswordForLog(bitbucketUser)}`);
+                console.log(`  --bitbucketsecret: ${obfuscatePasswordForLog(bitbucketSecret)}`);
 
                 if (fs.existsSync(filename)) {
                     console.log(`Loading settings from ${filename}`);
@@ -54,13 +54,7 @@ async function run(): Promise<number>  {
 
                     var stopOnRedeploy = settings.stopOnRedeploy;
                     var sortWi = getBoolean(settings.SortWi);
-
                     var customHandlebarsExtensionCode = settings.customHandlebarsExtensionCode;
-                    if (fs.existsSync(settings.customHandlebarsExtensionCode)) {
-                        console.log("customHandlebarsExtensionCode value specifies a file, so loading string from file");
-                        customHandlebarsExtensionCode = fs.readFileSync(settings.customHandlebarsExtensionCode);
-                    }
-
                     var customHandlebarsExtensionFile = settings.customHandlebarsExtensionFile;
                     var customHandlebarsExtensionFolder = settings.customHandlebarsExtensionFolder;
                     var buildId = settings.buildId;
@@ -145,6 +139,14 @@ function getBoolean (value) {
              return false;
      }
  }
+
+function obfuscatePasswordForLog(value: string, charToShow = 4, charToUse = "*") {
+    var returnValue = "";
+    if (value && value.length > 0) {
+        returnValue = `${new Array(value.length - charToShow + 1).join( charToUse )}${value.substring(value.length - charToShow)}`;
+    }
+    return returnValue;
+}
 
 run()
     .then((result) => {

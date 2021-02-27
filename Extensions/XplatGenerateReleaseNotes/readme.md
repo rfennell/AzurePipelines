@@ -261,6 +261,7 @@ In addition to the [Handlebars Helpers](https://github.com/helpers/handlebars-he
 ```
 
 Finally there is also support for your own custom extension libraries. These are provided via an Azure DevOps task parameter holding a block of JavaScript which is loaded into the Handlebars templating engine. They are entered in the YAML as a single line or a multi-line parameter as follows using the `|` operator
+
 ```
 - task: XplatGenerateReleaseNotes@3
    inputs:
@@ -272,7 +273,17 @@ Finally there is also support for your own custom extension libraries. These are
          }};
 ```
 
-and can be consumed in a template as shown below
+Or the custom extension can be passed as file 
+
+```
+- task: XplatGenerateReleaseNotes@3
+   inputs:
+      outputfile: '$(Build.ArtifactStagingDirectory)\releasenotes.md'
+      # all the other parameters required
+      customHandlebarsExtensionFile: $(System.SourceDirectory)\customcode.js
+```
+
+Either way it can be consumed in a template as shown below
 ```
 ## To confirm our custom extension works
 We can call our custom extension {{foo}}
@@ -287,39 +298,35 @@ Once the extension is added to your Azure DevOps Server (TFS) or Azure DevOps Se
 
 The task takes the following parameters
 
-* The output file name, for builds this will normally be set to `$(Build.ArtifactStagingDirectory)\releasenotes.md` as the release notes will usually be part of your build artifacts. For release management usage the parameter should be set to something like `$(System.DefaultWorkingDirectory)\releasenotes.md`. Where you choose to send the created files is down to your deployment needs.
-* A picker allows you to set if the template is provided as a file in source control or an inline file. The setting of this picker effects which other parameters are shown
-    * Either, the template file name, which should point to a file in source control.
-    * Or, the template text.
-* Check Stage - If true a comparison is made against the last build that was successful to the current stage, or overrideStageName if specified (Build Only)
-* (Advanced) Empty set text - the text to place in the results file if there is no changeset/commit or WI content
-* (Advanced) Name of the release stage to look for the last successful release in, defaults to empty value so uses the current stage of the release that the task is running in.
-* (Advanced) Do not generate release notes of a re-deploy. If this is set, and a re-deploy occurs the task will succeeds with a warning
-* (Advanced) Primary Only. If this is set only WI and CS associated with primary artifact are listed, default is false so all artifacts scanned.
-* (Advanced) Replace File. If this is set the output overwrites and file already present.
-* (Advanced) Append To File. If this is set, and replace file is false then then output is appended to the output file. If false it is preprended.
-* (Advanced) Cross Project For PRs. If true will try to match commits to Azure DevOps PR cross project within the organisation, if false only searches the Team Project.
-* (Advanced) Override Stage Name. If set uses this stage name to find the last successful deployment, as opposed to the currently active stage
-* (Advanced) GitHub PAT. (Optional) This [GitHub PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) is only required to expand commit messages stored in a private GitHub repos. This PAT is not required for commit in Azure DevOps public or private repos or public GitHub repos
-* (Advanced) BitBucket User (Optional) To expand commit messages stored in a private Bitbucket repos a [BitBucker user and app password](https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/) need to be provided, it is not required for repo stored in Azure DevOps or public Bitbucket repos.
-* (Advanced) BitBucket Password (Optional) See BitBucket User documentation above
-* (Advanced) Dump Payload to Console - If true the data objects passed to the file generator is dumped to the log.
-* (Advanced) Dump Payload to File - If true the data objects passed to the file generator is dumped to a JSON file.
-* (Advanced) Dump Payload Filename - The filename to dump the data objects passed to the file generator
-* (Advanced) Get Direct Parent and Children for associated work items, defaults to false
-* (Advanced) Get All Parents for associated work items, recursing back to workitems with no parents e.g. up to Epics, defaults to false
-* (Advanced) Tags - a comma separated list of pipeline tags that must all be matched when looking for previous successful builds , only used if checkStage=true
-* (Advanced) OverridePat - a means to inject a Personal Access Token to use in place of the Build Agent OAUTH token. This option will only be used in very rare situations usually after a support issue has been raised, defaults to empty
-* (Advanced) getIndirectPullRequests - if enabled an attempt will be made to populate a list of indirectly associated PRs i.e PR that are associated with a PR's associated commits [#866](https://github.com/rfennell/AzurePipelines/issues/866)
-* (Advanced) OverrideBuildReleaseId - For releases or multi-stage YAML this parameter provides a means to set the ID of the 'last good release' to compare against. If the specified release/build is not found then the task will exit with an error. The override behaviour is as follows
-   * (Default) Parameter undefined - Old behaviour, looks for last successful build using optional stage and tag filters
-   * Empty string - Old behaviour, looks for last successful build using optional stage and tag filters
-   * A valid build ID (int) - Use the build ID as the comparison
-   * An invalid build ID (int) -	If a valid build cannot be found then the task exits with a message
-   * Any other non empty input value - The task exits with an error message
-* (Advanced) MaxRetries - The number of times to retry any REST API calls that timeout. Set to zero for no retries. Defaults to 20
-* (Handlebars) customHandlebars ExtensionCode. A custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo: function () {return 'Returns foo';}};
-* (Outputs) Optional: Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.
+| Parameter | Description |
+|-|-|
+| OutputFile | for builds this will normally be set to `$(Build.ArtifactStagingDirectory)\releasenotes.md` as the release notes will usually be part of your build artifacts. For release management usage the parameter should be set to something like `$(System.DefaultWorkingDirectory)\releasenotes.md`. Where you choose to send the created files is down to your deployment needs. |
+| templateLocation | A picker allows you to set if the template is provided as a file in source control or an inline file. The setting of this picker effects which other parameters are shown. Either, the template file name, which should point to a file in source control, or, the template text. |
+| CheckStage | If true a comparison is made against the last build that was successful to the current stage, or overrideStageName if specified (Build Only) |
+| EmptySetText | the text to place in the results file if there is no changeset/commit or WI content |
+| stopOnRedeploy | Do not generate release notes of a re-deploy. If this is set, and a re-deploy occurs the task will succeeds with a warning |
+| showOnlyPrimary | If this is set only WI and CS associated with primary artifact are listed, default is false so all artifacts scanned. |
+| ReplaceFile | If this is set the output overwrites and file already present.Z
+| AppendToFile |If this is set, and replace file is false then then output is appended to the output file. If false it is preprended. |
+| searchCrossProjectForPRs |If true will try to match commits to Azure DevOps PR cross project within the organisation, if false only searches the Team Project.|
+| OverrideStageName |If set uses this stage name to find the last successful deployment, as opposed to the currently active stage |
+| GitHubPAT. | (Optional) This [GitHub PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) is only required to expand commit messages stored in a private GitHub repos. This PAT is not required for commit in Azure DevOps public or private repos or public GitHub repos|
+| BitBucketUser | (Optional) To expand commit messages stored in a private Bitbucket repos a [BitBucker user and app password](https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/) need to be provided, it is not required for repo stored in Azure DevOps or public Bitbucket repos.|
+|BitBucketPassword| (Optional) See BitBucket User documentation above|
+| DumpPayloadToConsole | If true the data objects passed to the file generator is dumped to the log.|
+| DumpPayloadToFile | If true the data objects passed to the file generator is dumped to a JSON file.|
+| DumpPayloadFilename | The filename to dump the data objects passed to the file generator|
+| getParentsAndChildren |Get Direct Parent and Children for associated work items, defaults to false|
+| getAllParents | Get All Parents for associated work items, recursing back to workitems with no parents e.g. up to Epics, defaults to false |
+|Tags | A comma separated list of pipeline tags that must all be matched when looking for previous successful builds , only used if checkStage=true |
+| OverridePat | A means to inject a Personal Access Token to use in place of the Build Agent OAUTH token. This option will only be used in very rare situations usually after a support issue has been raised, defaults to empty|
+| getIndirectPullRequests | If enabled an attempt will be made to populate a list of indirectly associated PRs i.e PR that are associated with a PR's associated commits [#866](https://github.com/rfennell/AzurePipelines/issues/866)|
+| OverrideBuildReleaseId | For releases or multi-stage YAML this parameter provides a means to set the ID of the 'last good release' to compare against. If the specified release/build is not found then the task will exit with an error. The override behaviour is as follows.<br>- (Default) Parameter undefined - Old behaviour, looks for last successful build using optional stage and tag filters <br>- Empty string - Old behaviour, looks for last successful build using optional stage and tag filters<br>- A valid build ID (int) - Use the build ID as the comparison<br>- An invalid build ID (int) -	If a valid build cannot be found then the task exits with a message <br>- Any other non empty input value - The task exits with an error message
+| MaxRetries | The number of times to retry any REST API calls that timeout. Set to zero for no retries. Defaults to 20|
+| customHandlebarsExtensionCode | A string containing custom Handlebars extension written as a JavaScript module e.g. <br> `module.exports = {foo: function () {return 'Returns foo';}};`. <br>Note: If any text is set in this parameter it overwrites any contents of the customHandlebarsExtensionFile parameter |
+| customHandlebarsExtensionFolder | The folder to look for, or create, the customHandlebarsExtensionFile in. If not set defaults to the task's current directory |
+| customHandlebarsExtensionFile | The filename to save the customHandlebarsExtensionCode into if set. If there is no text in the  customHandlebarsExtensionCode parameter the an attempt will be made to load any custom extensions from from this file. This allows custom extensions to loaded like any other source file under source control. |
+| outputVariableName | Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.|
 
 # Output location 
 
