@@ -19,6 +19,6 @@
     },
     "dependencies": {
         "child_process": "^1.0.2",
-        "handlebars": "^4.7.3"
+        "handlebars": "^4.7.7"
     }
 }
