@@ -161,7 +161,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 | **inDirectlyAssociatedPullRequests** | the array of PRs (inc. labels, associated WI links and commits to the source branch) referenced by associated commits of the directly linked PRs. [#866](https://github.com/rfennell/AzurePipelines/issues/866) |
 |**tests** | the array of unique automated tests associated with any of the builds linked to the release or the release itself  |
 |**manualtests** | the array of manual Test Plan runs associated with any of the builds linked to the release |
-|**manualTestConfigurations** | the array of manual test configuration |
+|**manualTestConfigurations** | the array of manual test configurations |
 | **relatedWorkItems** | the array of all work item associated with the release plus their direct parents or children and/or all parents depending on task parameters |
 
 ### Release objects (only available in a Classic UI based Releases)

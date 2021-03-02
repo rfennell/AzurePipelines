@@ -544,7 +544,18 @@ export async function getManualTestsForBuild(
             let usedConfigurations = [];
             do {
                 agentApi.logDebug(`Get batch of manual test runs [${runSkip}] - [${runSkip + batchSize}]`);
-                var runs = await (testAPI.getTestRuns(teamProject, `vstfs:///Build/Build/${buildid}`, null, null, null, true, false, runSkip, batchSize));
+                var runs = await (testAPI.getTestRuns(
+                    teamProject,
+                    `vstfs:///Build/Build/${buildid}`,
+                    null, // owner
+                    null, // tmpiRunId
+                    null, // planId
+                    true, // include details
+                    false, // shows both manual and automated
+                    runSkip,
+                    batchSize));
+                // this returns both manual and automated we need to filter
+                runs = runs.filter(run => run.isAutomated === false);
                 buildTestRuns.push(...runs);
             } while (batchSize === runs.length);
             tl.debug(`Found ${buildTestRuns.length} manual test runs associated with the build`);
@@ -1357,7 +1368,7 @@ export async function generateReleaseNotes(
                                         }
 
                                         agentApi.logInfo(`Detected ${commits.length} commits/changesets and ${workitems.length} workitems between the current build and the last successful one`);
-                                        agentApi.logInfo(`Detected ${tests.length} tests associated within the current build.`);
+                                        agentApi.logInfo(`Detected ${tests.length} automated tests associated within the current build.`);
 
                                         var manualtests = await getManualTestsForBuild(
                                             organisation.rest,
