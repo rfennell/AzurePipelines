@@ -2,6 +2,7 @@
 Generates release notes for a Classic Build or Release, or a YML based build. The generated file can be any text based format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * Uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 3.6.x Added `manualtest` and `manualTestConfigurations` to the available options in the template
 * 3.32.x Adds parameters to control the retry logic for timed outed out API calls
 * 3.28.x provide a new array of `inDirectlyAssociatedPullRequests`, this contains PR associated with a PR's associated commits. Useful if using a Gitflow work work-flow [x866](https://github.com/rfennell/AzurePipelines/issues/866) (see sample template below)
 * 3.27.x enriches the PR with associated commits (see sample template below)
@@ -135,6 +136,12 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 {{/forEach}}
 {{/forEach}}
 
+## Manual Test Plans
+| Run ID | Name | State | Total Tests | Passed Tests |
+| --- | --- | --- | --- | --- |
+{{#forEach manualTests}}
+| [{{this.id}}]({{this.webAccessUrl}}) | {{this.name}} | {{this.state}} | {{this.totalTests}} | {{this.passedTests}} |
+{{/forEach}}
 
 ```
 
@@ -146,27 +153,31 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 What is done behind the scenes is that each `{{properties}}` block in the template is expanded by Handlebars. The property objects available to get data from at runtime are:
 
 ## Common objects 
-* **workItems** – the array of work item associated with the release
-* **commits** – the array of commits/changesets associated with the release
-* **pullRequests** - the array of PRs (inc. labels, associated WI links and commits to the source branch) referenced by the commits in the release
-* **inDirectlyAssociatedPullRequests** - the array of PRs (inc. labels, associated WI links and commits to the source branch) referenced by associated commits of the directly linked PRs. [#866](https://github.com/rfennell/AzurePipelines/issues/866)
-* **tests** - the array of unique tests associated with any of the builds linked to the release or the release itself  
-* **builds** - the array of the build artifacts that CS and WI are associated with. The associated WI, CS etc. in ths object are also will the main objects above, this is a filtered lits by build. Note that this is a object with three properties.
-    - **build**  - the build details
-    - **commits**  - the commits associated with this build
-    - **workitems**  - the work items associated with the build
-    - **tests**  - the work items associated with the build
-* **relatedWorkItems** – the array of all work item associated with the release plus their direct parents or children and/or all parents depending on task parameters
+| Object | Description |
+| -| -|
+|**workItems** | the array of work item associated with the release|
+|**commits** | the array of commits/changesets associated with the build/release |
+| **pullRequests** | the array of PRs (inc. labels, associated WI links and commits to the source branch) referenced by the commits in the release|
+| **inDirectlyAssociatedPullRequests** | the array of PRs (inc. labels, associated WI links and commits to the source branch) referenced by associated commits of the directly linked PRs. [#866](https://github.com/rfennell/AzurePipelines/issues/866) |
+|**tests** | the array of unique automated tests associated with any of the builds linked to the release or the release itself  |
+|**manualtests** | the array of manual Test Plan runs associated with any of the builds linked to the release |
+|**manualTestConfigurations** | the array of manual test configuration |
+| **relatedWorkItems** | the array of all work item associated with the release plus their direct parents or children and/or all parents depending on task parameters |
 
 ### Release objects (only available in a Classic UI based Releases)
-* **releaseDetails** – the release details of the release that the task was triggered for.
-* **compareReleaseDetails** - the the previous successful release that comparisons are being made against
-* **releaseTest** - the list of test associated with the release e.g. integration tests
+| Object | Description |
+| -| -|
+| **releaseDetails** | the release details of the release that the task was triggered for.|
+| **compareReleaseDetails** | the the previous successful release that comparisons are being made against |
+| **releaseTest** | the list of test associated with the release e.g. integration tests |
+| **builds** | the array of the build artifacts that CS and WI are associated with. The associated WI, CS etc. in ths object are also will the main objects above, this is a filtered lits by build. Note that this is a object with multiple child properties. <br> - **build**  - the build details <br> -- **commits**  - the commits associated with this build <br> -- **workitems**  - the work items associated with the build<br> -- **tests**  - the work items associated with the build <br> -- **manualtests**  - the manual test runs associated with the build
 
 ### Build objects (available for Classic UI based builds and any YAML based pipelines)
-* **buildDetails** – if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
-* **compareBuildDetails** - the previous successful build that comparisons are being made against, only available if checkstage=true
-* **currentStage** - if `checkstage` is enable this object is set to the details of the stage in the current build that is being used for the stage check
+| Object | Description |
+| -| -|
+| **buildDetails** | if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
+| **compareBuildDetails** | the previous successful build that comparisons are being made against, only available if checkstage=true
+| **currentStage** | if `checkstage` is enable this object is set to the details of the stage in the current build that is being used for the stage check
 
 > **Note:** To dump all possible values via the template using the custom Handlebars extension `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion. There are also options to dump these raw values to the build console log or to a file. (See below)
 
@@ -256,6 +267,19 @@ In addition to the [Handlebars Helpers](https://github.com/helpers/handlebars-he
     {{#with (lookup_a_pullrequest_by_merge_commit ../../inDirectlyAssociatedPullRequests  this.commitId)}}
       - Associated PR {{this.pullRequestId}} - {{this.title}} 
     {{/with}}
+{{/forEach}}
+{{/forEach}}
+```
+- `lookup_a_test_configuration` this gets the test configuration related to a manual test
+```
+## Manual Test Plans with test details
+{{#forEach manualTests}}
+### [{{this.id}}]({{this.webAccessUrl}}) {{this.name}} - {{this.state}}
+
+| Test | Outcome | Configuration |
+| - | - | - |
+{{#forEach this.TestResults}}
+| {{this.testCaseTitle}} | {{this.outcome}} | {{#with (lookup_a_test_configuration ../../manualTestConfigurations this.configuration.id)}} {{this.name}} {{/with}} |
 {{/forEach}}
 {{/forEach}}
 ```
