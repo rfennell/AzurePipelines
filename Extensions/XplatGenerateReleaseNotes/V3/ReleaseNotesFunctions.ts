@@ -16,12 +16,17 @@ interface EnrichedGitPullRequest extends GitPullRequest {
     associatedWorkitems: WorkItemInfo[];
     associatedCommits: GitCommit[];
 }
+
+interface EnrichedTestRun extends TestRun {
+    TestResults: TestCaseResult[];
+}
 export class UnifiedArtifactDetails {
     build: Build;
     commits: Change[];
     workitems: WorkItem[];
     tests: TestCaseResult[];
-    constructor ( build: Build, commits: Change[], workitems: WorkItem[], tests: TestCaseResult[]) {
+    manualtests: EnrichedTestRun[];
+    constructor ( build: Build, commits: Change[], workitems: WorkItem[], tests: TestCaseResult[], manualtests: EnrichedTestRun[]) {
         this.build = build;
         if (commits) {
             this.commits = commits;
@@ -37,6 +42,11 @@ export class UnifiedArtifactDetails {
             this.tests = tests;
         } else {
             this.tests = [];
+        }
+        if (manualtests) {
+            this.manualtests = manualtests;
+        } else {
+            this.manualtests = [];
         }
    }
 }
@@ -60,7 +70,7 @@ import { GitCommit, GitPullRequest, GitPullRequestQueryType, GitPullRequestSearc
 import { WebApi } from "azure-devops-node-api";
 import { TestApi } from "azure-devops-node-api/TestApi";
 import { timeout, async } from "q";
-import { TestCaseResult } from "azure-devops-node-api/interfaces/TestInterfaces";
+import { ResultDetails, TestCaseResult, TestResolutionState, TestRun } from "azure-devops-node-api/interfaces/TestInterfaces";
 import { IWorkItemTrackingApi } from "azure-devops-node-api/WorkItemTrackingApi";
 import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import { ITfvcApi } from "azure-devops-node-api/TfvcApi";
@@ -68,9 +78,10 @@ import * as issue349 from "./Issue349Workaround";
 import { ITestApi } from "azure-devops-node-api/TestApi";
 import { IBuildApi, BuildApi } from "azure-devops-node-api/BuildApi";
 import * as vstsInterfaces from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
-import { time } from "console";
+import { Console, time } from "console";
 import { InstalledExtensionQuery } from "azure-devops-node-api/interfaces/ExtensionManagementInterfaces";
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "constants";
+import { stringify } from "querystring";
 
 let agentApi = new AgentSpecificApi();
 
@@ -487,7 +498,7 @@ export async function getTestsForBuild(
         let testList: TestCaseResult[] = [];
         try {
             let buildTestResults = await (testAPI.getTestResultsByBuild(teamProject, buildId));
-            tl.debug(`Found ${buildTestResults.length} test results associated with the build`);
+            tl.debug(`Found ${buildTestResults.length} automated test results associated with the build`);
             if ( buildTestResults.length > 0 ) {
                 for (let index = 0; index < buildTestResults.length; index++) {
                     const test = buildTestResults[index];
@@ -495,7 +506,7 @@ export async function getTestsForBuild(
                         var skip = 0;
                         var batchSize = 1000; // the API max is 1000
                         do {
-                            agentApi.logDebug(`Get batch of tests [${skip}] - [${skip + batchSize}] for test run ${test.runId}`);
+                            agentApi.logDebug(`Get batch of automated tests [${skip}] - [${skip + batchSize}] for test run ${test.runId}`);
                             var runBatch = await (testAPI.getTestResults(teamProject, test.runId, null, skip, batchSize));
                             tl.debug(`Adding ${runBatch.length} tests`);
                             testList.push(...runBatch);
@@ -507,9 +518,86 @@ export async function getTestsForBuild(
                 }
                 tl.debug(`Test results expanded to unique ${testList.length} test results`);
             } else {
-                tl.debug(`No tests associated with build ${buildId}`);
+                tl.debug(`No automated tests associated with build ${buildId}`);
             }
             resolve(testList);
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
+export async function getManualTestsForBuild(
+    restClient: restm.RestClient,
+    testAPI: TestApi,
+    tpcUri: string,
+    teamProject: string,
+    buildid: number,
+    globalManualTestConfigurations
+): Promise<EnrichedTestRun[]> {
+    return new Promise<EnrichedTestRun[]>(async (resolve, reject) => {
+        let testRunList: EnrichedTestRun[] = [];
+        try {
+            let buildTestRuns = [];
+            var runSkip = 0;
+            var batchSize = 1000; // the API max
+            let usedConfigurations = [];
+            do {
+                agentApi.logDebug(`Get batch of manual test runs [${runSkip}] - [${runSkip + batchSize}]`);
+                var runs = await (testAPI.getTestRuns(
+                    teamProject,
+                    `vstfs:///Build/Build/${buildid}`,
+                    null, // owner
+                    null, // tmpiRunId
+                    null, // planId
+                    true, // include details
+                    false, // shows both manual and automated
+                    runSkip,
+                    batchSize));
+                // this returns both manual and automated we need to filter
+                runs = runs.filter(run => run.isAutomated === false);
+                buildTestRuns.push(...runs);
+            } while (batchSize === runs.length);
+            tl.debug(`Found ${buildTestRuns.length} manual test runs associated with the build`);
+
+            if ( buildTestRuns.length > 0 ) {
+                for (let index = 0; index < buildTestRuns.length; index++) {
+                    const testRun = <EnrichedTestRun>buildTestRuns[index];
+                    testRun.TestResults = [];
+                    var resultSkip = 0;
+                    do {
+                        agentApi.logDebug(`Get batch of tests [${resultSkip}] - [${resultSkip + batchSize}] for test run ${testRun.id}`);
+                        // get the test steps
+                        var batch = await testAPI.getTestResults(teamProject, testRun.id, ResultDetails.Point, resultSkip, batchSize );
+                        testRun.TestResults.push (...batch);
+                        // get the list of unique configurations
+                        var uniqueIDs = [...new Set(batch.map(item => item.configuration.id))];
+                        uniqueIDs.forEach(id => {
+                            if (!usedConfigurations.includes(id)) {
+                                usedConfigurations.push(id);
+                            }
+                        });
+                    } while (batchSize === batch.length);
+                    testRunList.push(testRun);
+                    tl.debug(`Manual Test Run ${testRun.id} enriched with ${testRun.TestResults.length} individual test results`);
+                }
+
+                // get the details of the test configurations. There is no SDK call for this, so making a base REST call
+                try {
+                    // extract a URL to use with the client
+                    for (let index = 0; index < usedConfigurations.length; index++) {
+                        tl.debug(`Getting details of the test configuration ${usedConfigurations[index]}`);
+                        let response = await restClient.get(`${tpcUri}/${teamProject}/_apis/test/configurations/${usedConfigurations[index]}?api-version=5.0-preview.2`);
+                        globalManualTestConfigurations.push(response.result);
+                    }
+                } catch (err) {
+                    tl.warning(`Cannot get the details of the test configuration`);
+                }
+
+            } else {
+                tl.debug(`No manual test plans associated with build`);
+            }
+            resolve(testRunList);
         } catch (err) {
             reject(err);
         }
@@ -707,7 +795,9 @@ export function processTemplate(
     relatedWorkItems: WorkItem[],
     compareBuildDetails: Build,
     currentStage: TimelineRecord,
-    inDirectlyAssociatedPullRequests: EnrichedGitPullRequest[]
+    inDirectlyAssociatedPullRequests: EnrichedGitPullRequest[],
+    globalManualTests: EnrichedTestRun[],
+    globalManualTestConfigurations: []
     ): string {
 
     var output = "";
@@ -718,7 +808,8 @@ export function processTemplate(
         agentApi.logDebug(`  CS: ${commits.length}`);
         agentApi.logDebug(`  PR: ${pullRequests.length}`);
         agentApi.logDebug(`  Builds: ${globalBuilds.length}`);
-        agentApi.logDebug(`  Global Tests: ${globalTests.length}`);
+        agentApi.logDebug(`  Manual Tests: ${globalManualTests.length}`);
+        agentApi.logDebug(`  Manual TestConfigurations: ${globalManualTestConfigurations.length}`);
         agentApi.logDebug(`  Release Tests: ${releaseTests.length}`);
         agentApi.logDebug(`  Related WI: ${relatedWorkItems.length}`);
         agentApi.logDebug(`  Indirect PR: ${inDirectlyAssociatedPullRequests.length}`);
@@ -739,31 +830,32 @@ export function processTemplate(
 
         // add our helper to find children and parents
         handlebars.registerHelper("lookup_a_work_item", function (array, url) {
-                var urlParts = url.split("/");
-                var wiId = parseInt(urlParts[urlParts.length - 1]);
-                return array.find(element => element.id === wiId);
-            }
-        );
+            var urlParts = url.split("/");
+            var wiId = parseInt(urlParts[urlParts.length - 1]);
+            return array.find(element => element.id === wiId);
+        });
+
+        // add our helper to find test configuration
+        handlebars.registerHelper("lookup_a_test_configuration", function (array, id) {
+            return array.find(element => element.id === Number(id));
+        });
 
         // add our helper to find PR
         handlebars.registerHelper("lookup_a_pullrequest", function (array, url) {
-                var urlParts = url.split("%2F");
-                var prId = parseInt(urlParts[urlParts.length - 1]);
-                return array.find(element => element.pullRequestId === prId);
-            }
-        );
+            var urlParts = url.split("%2F");
+            var prId = parseInt(urlParts[urlParts.length - 1]);
+            return array.find(element => element.pullRequestId === prId);
+        });
 
         // add our helper to get first line of commit message
         handlebars.registerHelper("get_only_message_firstline", function (msg) {
-                return msg.split(`\n`)[0];
-            }
-        );
+            return msg.split(`\n`)[0];
+        });
 
         // add our helper to find PR
         handlebars.registerHelper("lookup_a_pullrequest_by_merge_commit", function (array, commitId) {
-                return array.find(element => element.lastMergeCommit.commitId === commitId);
-            }
-        );
+            return array.find(element => element.lastMergeCommit.commitId === commitId);
+        });
 
         // make sure we have valid file name for the custom extension
         if (! customHandlebarsExtensionFile || customHandlebarsExtensionFile.length === 0) {
@@ -824,7 +916,9 @@ export function processTemplate(
                 "releaseTests": releaseTests,
                 "relatedWorkItems": relatedWorkItems,
                 "compareBuildDetails": compareBuildDetails,
-                "inDirectlyAssociatedPullRequests": inDirectlyAssociatedPullRequests
+                "inDirectlyAssociatedPullRequests": inDirectlyAssociatedPullRequests,
+                "manualTests": globalManualTests,
+                "manualTestConfigurations": globalManualTestConfigurations
             });
             agentApi.logInfo( "Completed processing template");
 
@@ -1015,6 +1109,8 @@ export async function generateReleaseNotes(
             var releaseTests: TestCaseResult[] = [];
             var relatedWorkItems: WorkItem[] = [];
             var fullWorkItems: WorkItem[] = [];
+            var globalManualTests: EnrichedTestRun[] = [];
+            var globalManualTestConfigurations: [] = [];
 
             var mostRecentSuccessfulDeploymentName: string = "";
             var mostRecentSuccessfulDeploymentRelease: Release;
@@ -1065,7 +1161,8 @@ export async function generateReleaseNotes(
                     lastGoodBuildId = successfulStageDetails.id;
 
                     if (lastGoodBuildId !== 0) {
-                        console.log(`Getting the details between ${lastGoodBuildId} and ${buildId}`);
+                        agentApi.logInfo
+(`Getting the details between ${lastGoodBuildId} and ${buildId}`);
                         currentStage = successfulStageDetails.stage;
 
                         mostRecentSuccessfulBuild = await buildApi.getBuild(teamProject, lastGoodBuildId);
@@ -1083,9 +1180,8 @@ export async function generateReleaseNotes(
                             globalWorkItems = await buildApi.getWorkItemsBetweenBuilds(teamProject, lastGoodBuildId, buildId);
                         }
 
-                       globalTests = await getTestsForBuild(testApi, teamProject, buildId);
                     } else {
-                        console.log("There has been no past successful build for this stage, so we can just get details from this build");
+                        agentApi.logInfo("There has been no past successful build for this stage, so we can just get details from this build");
                         globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
                         globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000);
                     }
@@ -1094,11 +1190,18 @@ export async function generateReleaseNotes(
                     globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
                     globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000);
                 }
-                console.log("Get the file details associated with the commits");
+                agentApi.logInfo("Get the file details associated with the commits");
                 globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
-                console.log("Get any test details associated with the build");
+                agentApi.logInfo("Get any test details associated with the build");
                 globalTests = await getTestsForBuild(testApi, teamProject, buildId);
-
+                agentApi.logInfo("Get any manual test run details associated with the build");
+                globalManualTests = await getManualTestsForBuild(
+                    organisation.rest,
+                    testApi,
+                    tpcUri,
+                    teamProject,
+                    buildId,
+                    globalManualTestConfigurations);
             } else {
                 environmentName = (overrideStageName || environmentName).toLowerCase();
 
@@ -1255,7 +1358,6 @@ export async function generateReleaseNotes(
                                         let artifact = await (buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId)));
                                         agentApi.logInfo(`Adding the build [${artifact.id}] and its association to the unified results object`);
                                         let fullBuildWorkItems = await getFullWorkItemDetails(workItemTrackingApi, workitems);
-                                        globalBuilds.push(new UnifiedArtifactDetails(artifact, commits, fullBuildWorkItems, tests));
 
                                         if (commits) {
                                             globalCommits = globalCommits.concat(commits);
@@ -1266,7 +1368,23 @@ export async function generateReleaseNotes(
                                         }
 
                                         agentApi.logInfo(`Detected ${commits.length} commits/changesets and ${workitems.length} workitems between the current build and the last successful one`);
-                                        agentApi.logInfo(`Detected ${tests.length} tests associated within the current build.`);
+                                        agentApi.logInfo(`Detected ${tests.length} automated tests associated within the current build.`);
+
+                                        var manualtests = await getManualTestsForBuild(
+                                            organisation.rest,
+                                            testApi,
+                                            tpcUri,
+                                            teamProject,
+                                            artifact.id,
+                                            globalManualTestConfigurations);
+                                        if (manualtests) {
+                                            globalManualTests = globalManualTests.concat(manualtests);
+                                        }
+
+                                        agentApi.logInfo(`Detected ${manualtests.length} test plans associated within the current build.`);
+
+                                        globalBuilds.push(new UnifiedArtifactDetails(artifact, commits, fullBuildWorkItems, tests, manualtests));
+
                                     }
                                 }
                             } else {
@@ -1417,7 +1535,7 @@ export async function generateReleaseNotes(
             }
 
         } catch (ex) {
-            agentApi.logInfo(`The most common reason for the task to fail is due API ECONNRESET issues. To avoid this failing the pipeline these will be treated as warnings and an attempt to generate any release notes possible`);
+            agentApi.logInfo(`The most common runtime reason for the task to fail is due API ECONNRESET issues. To avoid this failing the pipeline these will be treated as warnings and an attempt to generate any release notes possible`);
             agentApi.logWarn(ex);
             hasBeenTimeout = true;
         }
@@ -1429,6 +1547,8 @@ export async function generateReleaseNotes(
             agentApi.logInfo(`Total Related Workitems (Parent/Children): [${relatedWorkItems.length}]`);
             agentApi.logInfo(`Total Release Tests: [${releaseTests.length}]`);
             agentApi.logInfo(`Total Tests: [${globalTests.length}]`);
+            agentApi.logInfo(`Total Manual Test Runs: [${globalManualTests.length}]`);
+            agentApi.logInfo(`Total Manual Test Configurations: [${globalManualTestConfigurations.length}]`);
             agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
             agentApi.logInfo(`Total Indirect Pull Requests: [${inDirectlyAssociatedPullRequests.length}]`);
 
@@ -1449,7 +1569,9 @@ export async function generateReleaseNotes(
                     buildDetails: currentBuild,
                     compareBuildDetails: mostRecentSuccessfulBuild,
                     currentStage: currentStage,
-                    inDirectlyAssociatedPullRequests: inDirectlyAssociatedPullRequests
+                    inDirectlyAssociatedPullRequests: inDirectlyAssociatedPullRequests,
+                    manualTests: globalManualTests,
+                    manualTestConfigurations: globalManualTestConfigurations
                 });
 
             var template = getTemplate (templateLocation, templateFile, inlineTemplate);
@@ -1471,7 +1593,9 @@ export async function generateReleaseNotes(
                     relatedWorkItems,
                     mostRecentSuccessfulBuild,
                     currentStage,
-                    inDirectlyAssociatedPullRequests);
+                    inDirectlyAssociatedPullRequests,
+                    globalManualTests,
+                    globalManualTestConfigurations);
 
                 writeFile(outputFile, outputString, replaceFile, appendToFile);
 
