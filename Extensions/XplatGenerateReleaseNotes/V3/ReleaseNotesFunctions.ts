@@ -530,8 +530,9 @@ export async function getTestsForBuild(
 export async function getManualTestsForBuild(
     restClient: restm.RestClient,
     testAPI: TestApi,
+    tpcUri: string,
     teamProject: string,
-    buildUri: string,
+    buildid: number,
     globalManualTestConfigurations
 ): Promise<EnrichedTestRun[]> {
     return new Promise<EnrichedTestRun[]>(async (resolve, reject) => {
@@ -543,7 +544,7 @@ export async function getManualTestsForBuild(
             let usedConfigurations = [];
             do {
                 agentApi.logDebug(`Get batch of manual test runs [${runSkip}] - [${runSkip + batchSize}]`);
-                var runs = await (testAPI.getTestRuns(teamProject, buildUri, null, null, null, true, false, runSkip, batchSize));
+                var runs = await (testAPI.getTestRuns(teamProject, `vstfs:///Build/Build/${buildid}`, null, null, null, true, false, runSkip, batchSize));
                 buildTestRuns.push(...runs);
             } while (batchSize === runs.length);
             tl.debug(`Found ${buildTestRuns.length} manual test runs associated with the build`);
@@ -573,10 +574,9 @@ export async function getManualTestsForBuild(
                 // get the details of the test configurations. There is no SDK call for this, so making a base REST call
                 try {
                     // extract a URL to use with the client
-                    var baseUri = (<any>buildUri).href.substring(0, (<any>buildUri).href.indexOf("_apis"));
                     for (let index = 0; index < usedConfigurations.length; index++) {
                         tl.debug(`Getting details of the test configuration ${usedConfigurations[index]}`);
-                        let response = await restClient.get(`${baseUri}/_apis/test/configurations/${usedConfigurations[index]}?api-version=5.0-preview.2`);
+                        let response = await restClient.get(`${tpcUri}/${teamProject}/_apis/test/configurations/${usedConfigurations[index]}?api-version=5.0-preview.2`);
                         globalManualTestConfigurations.push(response.result);
                     }
                 } catch (err) {
@@ -1150,7 +1150,8 @@ export async function generateReleaseNotes(
                     lastGoodBuildId = successfulStageDetails.id;
 
                     if (lastGoodBuildId !== 0) {
-                        console.log(`Getting the details between ${lastGoodBuildId} and ${buildId}`);
+                        agentApi.logInfo
+(`Getting the details between ${lastGoodBuildId} and ${buildId}`);
                         currentStage = successfulStageDetails.stage;
 
                         mostRecentSuccessfulBuild = await buildApi.getBuild(teamProject, lastGoodBuildId);
@@ -1169,7 +1170,7 @@ export async function generateReleaseNotes(
                         }
 
                     } else {
-                        console.log("There has been no past successful build for this stage, so we can just get details from this build");
+                        agentApi.logInfo("There has been no past successful build for this stage, so we can just get details from this build");
                         globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
                         globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000);
                     }
@@ -1178,13 +1179,18 @@ export async function generateReleaseNotes(
                     globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
                     globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000);
                 }
-                console.log("Get the file details associated with the commits");
+                agentApi.logInfo("Get the file details associated with the commits");
                 globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
-                console.log("Get any test details associated with the build");
+                agentApi.logInfo("Get any test details associated with the build");
                 globalTests = await getTestsForBuild(testApi, teamProject, buildId);
-                console.log("Get any manual test run details associated with the build");
-                globalManualTests = await getManualTestsForBuild(organisation.rest, testApi, teamProject, currentBuild._links.self, globalManualTestConfigurations);
-
+                agentApi.logInfo("Get any manual test run details associated with the build");
+                globalManualTests = await getManualTestsForBuild(
+                    organisation.rest,
+                    testApi,
+                    tpcUri,
+                    teamProject,
+                    buildId,
+                    globalManualTestConfigurations);
             } else {
                 environmentName = (overrideStageName || environmentName).toLowerCase();
 
@@ -1353,7 +1359,13 @@ export async function generateReleaseNotes(
                                         agentApi.logInfo(`Detected ${commits.length} commits/changesets and ${workitems.length} workitems between the current build and the last successful one`);
                                         agentApi.logInfo(`Detected ${tests.length} tests associated within the current build.`);
 
-                                        var manualtests = await getManualTestsForBuild(organisation.rest, testApi, teamProject, artifact._links.self, globalManualTestConfigurations);
+                                        var manualtests = await getManualTestsForBuild(
+                                            organisation.rest,
+                                            testApi,
+                                            tpcUri,
+                                            teamProject,
+                                            artifact.id,
+                                            globalManualTestConfigurations);
                                         if (manualtests) {
                                             globalManualTests = globalManualTests.concat(manualtests);
                                         }
