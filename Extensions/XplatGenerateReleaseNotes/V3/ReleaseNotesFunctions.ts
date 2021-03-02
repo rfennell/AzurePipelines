@@ -766,12 +766,12 @@ export function processTemplate(
         );
 
         // make sure we have valid file name for the custom extension
-        if (customHandlebarsExtensionFile.length > 0) {
+        if (! customHandlebarsExtensionFile || customHandlebarsExtensionFile.length === 0) {
+            customHandlebarsExtensionFile = "customHandlebarsExtension.js";
+        } else {
             if (!customHandlebarsExtensionFile.toLowerCase().endsWith(".js")) {
                 customHandlebarsExtensionFile = customHandlebarsExtensionFile + ".js";
             }
-        } else {
-            customHandlebarsExtensionFile = `${customHandlebarsExtensionFile}.js`;
         }
 
         if (!customHandlebarsExtensionFolder || customHandlebarsExtensionFolder.length === 0) {
