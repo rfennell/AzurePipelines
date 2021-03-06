@@ -410,12 +410,12 @@ export async function enrichChangesWithFileDetails(
                     agentApi.logInfo (`Enriched change ${change.id} of type ${change.type}`);
                     if (change.type === "TfsGit") {
                         // we need the repository ID for the API call
-                        // the alternative is to take the basic location value and build a rest call form that
+                        // the alternative is to take the basic location value and build a rest call from that
                         // neither are that nice.
                         var url = require("url");
                         // split the url up, check it is the expected format and then get the ID
                         var urlParts = url.parse(change.location);
-                        if ((urlParts.host === "dev.azure.com") || (urlParts.host.includes(".visualstudio.com") === true)) {
+                        try {
                             var pathParts = urlParts.path.split("/");
                             var repoId = "";
                             for (let index = 0; index < pathParts.length; index++) {
@@ -427,8 +427,8 @@ export async function enrichChangesWithFileDetails(
                             let gitDetails = await gitApi.getChanges(change.id, repoId);
                             agentApi.logInfo (`Enriched with details of ${gitDetails.changes.length} files`);
                             extraDetail = gitDetails.changes;
-                        } else  {
-                            agentApi.logInfo (`Cannot enriched as location URL not in dev.azure.com or xxx.visualstudio.com format`);
+                        } catch (ex)  {
+                            agentApi.logInfo (`Cannot enriched ${ex}`);
                         }
                     } else if (change.type === "TfsVersionControl") {
                         var tfvcDetail = await tfvcApi.getChangesetChanges(parseInt(change.id.substring(1)));
