@@ -32,5 +32,6 @@ const protocol = "https";
 const retries = "5";
 const trimLeadingSpecialChar = true;
 const fixLineFeeds = true;
+const fixSpaces = true;
 
-UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch, retries, trimLeadingSpecialChar, fixLineFeeds);
+UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch, retries, trimLeadingSpecialChar, fixLineFeeds, fixSpaces);
