@@ -210,6 +210,24 @@ stages:
                 password: '$(githubPAT)'
                 localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              displayName: 'Git based WIKI Updater - GitHub folder with spaces'
+              inputs:
+                repo: github.com/rfennell/demorepo.wiki
+                filename: TestFolder/Page From Wiki Updater and Spaces.md
+                contents: |
+                  Header
+                  ---
+                  $(OutputText)
+                  ---
+                  Footer
+                  message: 'Update from Release - $(Release.ReleaseName)'
+                gitname: builduser
+                gitemail: 'build@demo'
+                user: rfennell
+                password: '$(githubPAT)'
+                localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
+                fixSpaces: true
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater - Azure DevOps with Creds'
               inputs:
                 repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'

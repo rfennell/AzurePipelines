@@ -115,7 +115,8 @@ export async function UpdateGitWikiFile(
     branch,
     maxRetries,
     trimLeadingSpecialChar,
-    fixLineFeeds) {
+    fixLineFeeds,
+    fixSpaces) {
     const git = simplegit();
 
     let remote = "";
@@ -155,6 +156,17 @@ export async function UpdateGitWikiFile(
         await git.addConfig("user.name", name);
         await git.addConfig("user.email", email);
         logInfo(`Set GIT values in ${localpath}`);
+
+        // issue 969 - remove spaces
+        if (fixSpaces) {
+           var name = GetWorkingFile(filename, logInfo);
+           if (name.includes(" ")) {
+                logInfo(`The target filename contains spaces which are not valid in WIKIs filename '${name}'`);
+                // we only update the filename portion, not the path
+                filename = filename.replace(name, name.replace(" ", "-"));
+                logInfo(`Update filename '${filename}'`);
+           }
+        }
 
         // move to the working folder
         var workingPath = GetWorkingFolder(localpath, filename, logInfo);
