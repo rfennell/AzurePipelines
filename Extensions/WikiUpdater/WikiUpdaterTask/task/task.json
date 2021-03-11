@@ -212,6 +212,16 @@
       "helpMarkDown": "If set to true, `n are swapped to \\r\\n as this is required for most WIKIs. If false no replacement is made, this should be used for non-text based files e.g. images or PDFs. Only used when replacing the target file",
       "groupName": "advanced"
     }
+    ,
+    {
+      "name": "fixSpaces",
+      "type": "boolean",
+      "label": "Fix spaces in filename",
+      "defaultValue": "Dalse",
+      "required": false,
+      "helpMarkDown": "If set to true, and space in the target filename are replaced by -",
+      "groupName": "advanced"
+    }
 
   ],
   "instanceNameFormat": "Git based WIKI File Updater",
