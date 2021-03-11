@@ -162,8 +162,8 @@ export async function UpdateGitWikiFile(
            var name = GetWorkingFile(filename, logInfo);
            if (name.includes(" ")) {
                 logInfo(`The target filename contains spaces which are not valid in WIKIs filename '${name}'`);
-                // we only update the filename portion, not the path
-                filename = filename.replace(name, name.replace(" ", "-"));
+                // we only update the filename portion, not the path. Need to use regex else only first instance changed
+                filename = filename.replace(name, name.replace(/\s/g, "-"));
                 logInfo(`Update filename '${filename}'`);
            }
         }
@@ -186,10 +186,10 @@ export async function UpdateGitWikiFile(
         var workingFile = GetWorkingFile(filename, logInfo);
         if (replaceFile) {
             if (fixLineFeeds) {
-                logInfo(`Created the ${workingFile} in ${workingPath} - fixing line-endings`);
+                logInfo(`Created the '${workingFile}' in '${workingPath}' - fixing line-endings`);
                 fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
             } else {
-              logInfo(`Created the ${workingFile} in ${workingPath} - without fixing line-endings`);
+              logInfo(`Created the '${workingFile}' in '${workingPath}' - without fixing line-endings`);
               fs.writeFileSync(workingFile, contents );
             }
         } else {
