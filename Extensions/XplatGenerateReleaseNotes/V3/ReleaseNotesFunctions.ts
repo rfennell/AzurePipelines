@@ -1330,11 +1330,6 @@ export async function generateReleaseNotes(
                                                     workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                                 }
 
-                                                // enrich what we have with file names
-                                                if (commits) {
-                                                    commits = await enrichChangesWithFileDetails(gitApi, tfvcApi, commits, gitHubPat);
-                                                }
-
                                             } catch (err) {
                                                 agentApi.logWarn(`There was a problem getting the details of the CS/WI for the build ${err}`);
                                             }
@@ -1342,6 +1337,11 @@ export async function generateReleaseNotes(
                                             commits = [];
                                             workitems = [];
                                             agentApi.logInfo(`Build for artifact [${artifactInThisRelease.artifactAlias}] has not changed.  Nothing to do`);
+                                        }
+
+                                        // enrich what we have with file names
+                                        if (commits) {
+                                            commits = await enrichChangesWithFileDetails(gitApi, tfvcApi, commits, gitHubPat);
                                         }
 
                                         // look for any test in the current build
