@@ -156,6 +156,7 @@ export async function GetExePath (
         if (!isWindows) {
             // swap the slashes
             exeCmd = exeCmd.replace(/\\/g, "/");
+            fs.chmodSync(exeCmd, 700);
         }
 
         return `${exeCmd}`;
