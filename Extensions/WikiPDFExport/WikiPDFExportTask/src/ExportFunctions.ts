@@ -135,7 +135,7 @@ export async function GetExePath (
     if (overrideExePath &&  overrideExePath.length > 0) {
         if (fs.existsSync(overrideExePath)) {
             logInfo(`Using the overrideExePath`);
-            return `"${overrideExePath}"`;
+            return `${overrideExePath}`;
         } else {
             logWarning(`Attempting to use the overrideExePath of ${overrideExePath} but cannot find the file`);
             return "";
@@ -155,7 +155,7 @@ export async function GetExePath (
             exeCmd = exeCmd.replace(/\\/g, "/");
         }
 
-        return `"${exeCmd}"`;
+        return `${exeCmd}`;
     }
 }
 
@@ -175,13 +175,15 @@ export async function ExportRun (
     rootExportPath
  ) {
 
-    // we pass the exe with enclosing " as thi is needed for the execute, but not here
-    if (fs.existsSync(exeCmd.replace(/\"/g, ""))) {
+    if (fs.existsSync(exeCmd)) {
         logInfo(`Using the EXE path of ${exeCmd} for AzureDevOps.WikiPDFExport`);
     } else {
         logError(`Cannot find the AzureDevOps.WikiPDFExport tool in ${exeCmd}`);
         return;
     }
+
+    // add quotes in case of spaces
+    exeCmd = `"${exeCmd}"`;
 
      if (cloneRepo) {
          console.log(`Cloning Repo`);
