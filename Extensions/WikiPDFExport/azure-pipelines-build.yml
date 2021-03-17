@@ -115,21 +115,30 @@ stages:
         # name: default
         vmImage: 'windows-latest'
       strategy:
-        template: test-stage.yml
+        runOnce:
+          deploy:
+            steps:
+            - template: test-stage.yml
     - deployment: Private_Tests_Linux
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
       pool:
         vmImage: 'ubuntu-latest'
       strategy:
-        template: test-stage.yml
+        runOnce:
+          deploy:
+            steps:
+            - template: test-stage.yml
     - deployment: Private_Tests_Mac
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
       pool:
         vmImage: 'macOS-latest'
       strategy:
-        template: test-stage.yml
+        runOnce:
+          deploy:
+            steps:
+            - template: test-stage.yml
   - stage: Documentation
     dependsOn: Test 
     pool:
