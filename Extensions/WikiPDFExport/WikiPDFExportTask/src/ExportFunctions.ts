@@ -66,9 +66,6 @@ export async function ExportPDF(
             }
         }
 
-        // wrapper the exe in quote to handle space in the path
-        command = `"${command}"`;
-
         var args = "";
         if (wikiRootPath.length > 0) {
             if (!fs.existsSync(`${wikiRootPath}`)) {
@@ -133,11 +130,12 @@ export async function ExportPDF(
 export async function GetExePath (
     overrideExePath,
     workingFolder,
+    isWindows: boolean
 ) {
     if (overrideExePath &&  overrideExePath.length > 0) {
         if (fs.existsSync(overrideExePath)) {
             logInfo(`Using the overrideExePath`);
-            return overrideExePath;
+            return `"${overrideExePath}"`;
         } else {
             logWarning(`Attempting to use the overrideExePath of ${overrideExePath} but cannot find the file`);
             return "";
@@ -145,14 +143,19 @@ export async function GetExePath (
     } else {
         logInfo(`Start Download for AzureDevOps.WikiPDFExport release`);
         await DownloadGitHubArtifact("MaxMelcher", "AzureDevOps.WikiPDFExport", workingFolder, logInfo, logError);
-        var exeCmd = `${workingFolder}/azuredevops-export-wiki.exe`;
+        var exeCmd = `${workingFolder}\\azuredevops-export-wiki.exe`;
 
         // `Pause to avoid 'The process cannot access the file because it is being used by another process.' error`
         // It seems that even though we wait for the download the file is not available to run for a short period.
         // This is a nasty solution but appears to work
         await new Promise(resolve => setTimeout(resolve, 5000));
 
-        return exeCmd;
+        if (!isWindows) {
+            // swap the slashes
+            exeCmd = exeCmd.replace(/\\/g, "/");
+        }
+
+        return `"${exeCmd}"`;
     }
 }
 
