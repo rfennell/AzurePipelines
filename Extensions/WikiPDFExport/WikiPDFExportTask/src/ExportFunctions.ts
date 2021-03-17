@@ -175,10 +175,11 @@ export async function ExportRun (
     rootExportPath
  ) {
 
-    if (fs.existsSync(exeCmd)) {
+    // we pass the exe with enclosing " as thi is needed for the execute, but not here
+    if (fs.existsSync(exeCmd.replace(/\"/g, ""))) {
         logInfo(`Using the EXE path of ${exeCmd} for AzureDevOps.WikiPDFExport`);
     } else {
-        logError(`Cannot find the the AzureDevOps.WikiPDFExport tool in ${exeCmd}`);
+        logError(`Cannot find the AzureDevOps.WikiPDFExport tool in ${exeCmd}`);
         return;
     }
 
