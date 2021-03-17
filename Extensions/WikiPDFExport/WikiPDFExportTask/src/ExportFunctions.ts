@@ -66,6 +66,9 @@ export async function ExportPDF(
             }
         }
 
+        // add quotes in case of spaces
+        command = `"${command}"`;
+
         var args = "";
         if (wikiRootPath.length > 0) {
             if (!fs.existsSync(`${wikiRootPath}`)) {
@@ -176,16 +179,13 @@ export async function ExportRun (
  ) {
 
     if (fs.existsSync(exeCmd)) {
-        logInfo(`Using the EXE path of ${exeCmd} for AzureDevOps.WikiPDFExport`);
+        logInfo(`Using the EXE path of '${exeCmd}' for AzureDevOps.WikiPDFExport`);
     } else {
-        logError(`Cannot find the AzureDevOps.WikiPDFExport tool in ${exeCmd}`);
+        logError(`Cannot find the AzureDevOps.WikiPDFExport tool in '${exeCmd}'`);
         return;
     }
 
-    // add quotes in case of spaces
-    exeCmd = `"${exeCmd}"`;
-
-     if (cloneRepo) {
+    if (cloneRepo) {
          console.log(`Cloning Repo`);
          if (useAgentToken === true) {
              console.log(`Using OAUTH Agent Token, overriding username and password`);
@@ -200,10 +200,10 @@ export async function ExportRun (
      }
 
      if (singleFile && singleFile.length > 0) {
-         console.log(`A filename ${singleFile} in the folder ${rootExportPath} has been requested so only processing that file `);
+         console.log(`A filename '${singleFile}' in the folder '${rootExportPath}' has been requested so only processing that file `);
          ExportPDF (exeCmd, rootExportPath, singleFile, outputFile, extraParams,  logInfo, logError);
      } else  {
-         console.log(`Processing the contents of the folder ${rootExportPath} `);
+         console.log(`Processing the contents of the folder '${rootExportPath}' `);
          ExportPDF (exeCmd, rootExportPath, "" , outputFile, extraParams, logInfo, logError);
      }
  }
