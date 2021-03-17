@@ -66,13 +66,16 @@ export async function ExportPDF(
             }
         }
 
+        // wrapper the exe in quote to handle space in the path
+        command = `"${command}"`;
+
         var args = "";
         if (wikiRootPath.length > 0) {
             if (!fs.existsSync(`${wikiRootPath}`)) {
                 logError(`Cannot find wiki folder ${wikiRootPath}`);
                 return;
             } else {
-                args += ` -p ${wikiRootPath}`;
+                args += ` -p "${wikiRootPath}"`;
             }
         }
 
@@ -81,7 +84,7 @@ export async function ExportPDF(
                 logError(`Cannot find the requested file ${singleFile} to export`);
                 return;
             } else {
-                args += ` -s ${singleFile}`;
+                args += ` -s "${singleFile}"`;
             }
         } else {
             if (!fs.existsSync(`${wikiRootPath}/.order`)) {
@@ -90,7 +93,7 @@ export async function ExportPDF(
         }
 
         if (outputFile.length > 0) {
-            args += ` -o ${outputFile}`;
+            args += ` -o "${outputFile}"`;
         } else {
             logError("No output file name provided");
             return;
