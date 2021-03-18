@@ -66,13 +66,16 @@ export async function ExportPDF(
             }
         }
 
+        // add quotes in case of spaces
+        command = `"${command}"`;
+
         var args = "";
         if (wikiRootPath.length > 0) {
             if (!fs.existsSync(`${wikiRootPath}`)) {
                 logError(`Cannot find wiki folder ${wikiRootPath}`);
                 return;
             } else {
-                args += ` -p ${wikiRootPath}`;
+                args += ` -p "${wikiRootPath}"`;
             }
         }
 
@@ -81,7 +84,7 @@ export async function ExportPDF(
                 logError(`Cannot find the requested file ${singleFile} to export`);
                 return;
             } else {
-                args += ` -s ${singleFile}`;
+                args += ` -s "${singleFile}"`;
             }
         } else {
             if (!fs.existsSync(`${wikiRootPath}/.order`)) {
@@ -90,7 +93,7 @@ export async function ExportPDF(
         }
 
         if (outputFile.length > 0) {
-            args += ` -o ${outputFile}`;
+            args += ` -o "${outputFile}"`;
         } else {
             logError("No output file name provided");
             return;
@@ -130,11 +133,12 @@ export async function ExportPDF(
 export async function GetExePath (
     overrideExePath,
     workingFolder,
+    isWindows: boolean
 ) {
     if (overrideExePath &&  overrideExePath.length > 0) {
         if (fs.existsSync(overrideExePath)) {
             logInfo(`Using the overrideExePath`);
-            return overrideExePath;
+            return `${overrideExePath}`;
         } else {
             logWarning(`Attempting to use the overrideExePath of ${overrideExePath} but cannot find the file`);
             return "";
@@ -149,7 +153,13 @@ export async function GetExePath (
         // This is a nasty solution but appears to work
         await new Promise(resolve => setTimeout(resolve, 5000));
 
-        return exeCmd;
+        if (!isWindows) {
+            // swap the slashes
+            exeCmd = exeCmd.replace(/\\/g, "/");
+            fs.chmodSync(exeCmd, 700);
+        }
+
+        return `${exeCmd}`;
     }
 }
 
@@ -170,13 +180,13 @@ export async function ExportRun (
  ) {
 
     if (fs.existsSync(exeCmd)) {
-        logInfo(`Using the EXE path of ${exeCmd} for AzureDevOps.WikiPDFExport`);
+        logInfo(`Using the EXE path of '${exeCmd}' for AzureDevOps.WikiPDFExport`);
     } else {
-        logError(`Cannot find the the AzureDevOps.WikiPDFExport tool in ${exeCmd}`);
+        logError(`Cannot find the AzureDevOps.WikiPDFExport tool in '${exeCmd}'`);
         return;
     }
 
-     if (cloneRepo) {
+    if (cloneRepo) {
          console.log(`Cloning Repo`);
          if (useAgentToken === true) {
              console.log(`Using OAUTH Agent Token, overriding username and password`);
@@ -191,10 +201,10 @@ export async function ExportRun (
      }
 
      if (singleFile && singleFile.length > 0) {
-         console.log(`A filename ${singleFile} in the folder ${rootExportPath} has been requested so only processing that file `);
+         console.log(`A filename '${singleFile}' in the folder '${rootExportPath}' has been requested so only processing that file `);
          ExportPDF (exeCmd, rootExportPath, singleFile, outputFile, extraParams,  logInfo, logError);
      } else  {
-         console.log(`Processing the contents of the folder ${rootExportPath} `);
+         console.log(`Processing the contents of the folder '${rootExportPath}' `);
          ExportPDF (exeCmd, rootExportPath, "" , outputFile, extraParams, logInfo, logError);
      }
  }

@@ -48,7 +48,8 @@ console.log(`Variable: OverrideExePath [${overrideExePath}]`);
 
 GetExePath(
     overrideExePath,
-    workingFolder
+    workingFolder,
+    tl.getVariable("AGENT.OS") === "Windows_NT"
 ).then((exePath) => {
     if (exePath.length > 0) {
         ExportRun(
