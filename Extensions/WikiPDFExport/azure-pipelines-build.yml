@@ -120,6 +120,7 @@ stages:
             steps:
             - template: test-stage.yml
     - deployment: Private_Tests_Linux
+      condition: eq (1,2) # this is currently commented out as the AzureDevOps.WikiPDFExport.exe is not formally supported on this platform
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
       pool:
@@ -130,6 +131,7 @@ stages:
             steps:
             - template: test-stage.yml
     - deployment: Private_Tests_Mac
+      condition: eq (1,2) # this is currently commented out as the AzureDevOps.WikiPDFExport.exe is not formally supported on this platform
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
       pool:
