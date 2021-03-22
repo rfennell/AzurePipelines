@@ -82,6 +82,7 @@ import { Console, time } from "console";
 import { InstalledExtensionQuery } from "azure-devops-node-api/interfaces/ExtensionManagementInterfaces";
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "constants";
 import { stringify } from "querystring";
+import { Exception } from "handlebars";
 
 let agentApi = new AgentSpecificApi();
 
@@ -797,7 +798,8 @@ export function processTemplate(
     currentStage: TimelineRecord,
     inDirectlyAssociatedPullRequests: EnrichedGitPullRequest[],
     globalManualTests: EnrichedTestRun[],
-    globalManualTestConfigurations: []
+    globalManualTestConfigurations: [],
+    stopOnError: boolean
     ): string {
 
     var output = "";
@@ -924,6 +926,9 @@ export function processTemplate(
 
         } catch (err) {
             agentApi.logError(`Error Processing handlebars [${err}]`);
+            if (stopOnError) {
+                throw new Exception(`Error Processing handlebars [${err}]`);
+            }
         }
     } else {
         agentApi.logError( `Cannot load template file [${template}] or it is empty`);
@@ -1076,7 +1081,8 @@ export async function generateReleaseNotes(
     tags: string,
     overrideBuildReleaseId: string,
     getIndirectPullRequests: boolean,
-    maxRetries: number
+    maxRetries: number,
+    stopOnError: boolean
     ): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
@@ -1595,7 +1601,8 @@ export async function generateReleaseNotes(
                     currentStage,
                     inDirectlyAssociatedPullRequests,
                     globalManualTests,
-                    globalManualTestConfigurations);
+                    globalManualTestConfigurations,
+                    stopOnError);
 
                 writeFile(outputFile, outputString, replaceFile, appendToFile);
 
