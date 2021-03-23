@@ -925,13 +925,21 @@ export function processTemplate(
             agentApi.logInfo( "Completed processing template");
 
         } catch (err) {
-            agentApi.logError(`Error Processing handlebars [${err}]`);
             if (stopOnError) {
-                throw new Exception(`Error Processing handlebars [${err}]`);
+                throw (`Error Processing handlebars [${err}]`);
+            } else {
+                agentApi.logError(`Error Processing handlebars [${err}]`);
+                agentApi.logWarn(`As the parameter 'stopOnError' is set to false the above Handlebars processing error has been logged but the task not marked as failed. To fail the task when this occurs, change the parameter to true`);
             }
         }
     } else {
-        agentApi.logError( `Cannot load template file [${template}] or it is empty`);
+        if (stopOnError) {
+            throw (`Cannot load template file [${template}] or it is empty`);
+        } else {
+            agentApi.logError( `Cannot load template file [${template}] or it is empty`);
+            agentApi.logWarn(`As the parameter 'stopOnError' is set to false the above Handlebars processing error has been logged but the task not marked as failed. To fail the task when this occurs, change the parameter to true`);
+        }
+
     }  // if no template
 
     return output;
