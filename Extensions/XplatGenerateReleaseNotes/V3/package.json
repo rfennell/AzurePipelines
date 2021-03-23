@@ -20,7 +20,7 @@
     "minimist": "^1.2.5",
     "ncp": "^2.0.0",
     "request": "^2.88.2",
-    "tsd": "^0.6.5",
+    "tsd": "^0.14.0",
     "typed-rest-client": "^1.8.1"
   },
   "devDependencies": {
@@ -29,9 +29,9 @@
     "@types/node": "^10.17.54",
     "chai": "^3.5.0",
     "del": "^4.1.1",
-    "mocha": "^5.2.0",
+    "mocha": "^8.3.2",
     "mocha-junit-reporter": "^1.23.3",
-    "tap": "^11.1.5",
+    "tap": "^14.11.0",
     "ts-loader": "^2.0.3",
     "ts-node": "^3.3.0",
     "tslint": "^5.20.1",
