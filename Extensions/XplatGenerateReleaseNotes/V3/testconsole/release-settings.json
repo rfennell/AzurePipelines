@@ -35,5 +35,7 @@
     "getIndirectPullRequests": "false",
 
     "maxRetries": "3",
-    "pauseTime": "5000"
+    "pauseTime": "5000",
+
+    "stopOnError": "false"
 }
