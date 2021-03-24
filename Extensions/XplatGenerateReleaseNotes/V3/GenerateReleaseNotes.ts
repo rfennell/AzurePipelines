@@ -40,6 +40,7 @@ async function run(): Promise<number>  {
             var overridePat = tl.getInput("overridePat");
             var overrideBuildReleaseId = tl.getInput("overrideBuildReleaseId");
             var getIndirectPullRequests = tl.getBoolInput("getIndirectPullRequests");
+            var stopOnError = tl.getBoolInput("stopOnError");
 
             var maxRetries = parseInt(tl.getInput("maxRetries"));
 
@@ -79,7 +80,8 @@ async function run(): Promise<number>  {
                 tags,
                 overrideBuildReleaseId,
                 getIndirectPullRequests,
-                maxRetries
+                maxRetries,
+                stopOnError
                 );
 
         } catch (err) {
