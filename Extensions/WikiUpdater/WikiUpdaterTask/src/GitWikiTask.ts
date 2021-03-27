@@ -35,6 +35,7 @@ var retriesInput = tl.getInput("retries");
 var trimLeadingSpecialChar = tl.getBoolInput("trimLeadingSpecialChar");
 var fixLineFeeds = tl.getBoolInput("fixLineFeeds");
 var fixSpaces = tl.getBoolInput("fixSpaces");
+var insertLinefeed = tl.getBoolInput("insertLinefeed");
 
 // make sure the retries is a number
 
@@ -67,6 +68,7 @@ console.log(`Variable: Retries [${retries}]`);
 console.log(`Variable: trimLeadingSpecialChar [${trimLeadingSpecialChar}]`);
 console.log(`Variable: fixLineFeeds [${fixLineFeeds}]`);
 console.log(`Variable: fixSpaces [${fixSpaces}]`);
+console.log(`Variable: insertLinefeed [${insertLinefeed}]`);
 
 if (useAgentToken === true) {
     console.log(`Using OAUTH Agent Token, overriding username and password`);
@@ -118,5 +120,6 @@ if (haveData) {
         retries,
         trimLeadingSpecialChar,
         fixLineFeeds,
-        fixSpaces);
+        fixSpaces,
+        insertLinefeed);
 }

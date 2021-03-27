@@ -116,7 +116,8 @@ export async function UpdateGitWikiFile(
     maxRetries,
     trimLeadingSpecialChar,
     fixLineFeeds,
-    fixSpaces) {
+    fixSpaces,
+    insertLinefeed) {
     const git = simplegit();
 
     let remote = "";
@@ -194,6 +195,10 @@ export async function UpdateGitWikiFile(
             }
         } else {
             if (appendToFile) {
+                if (insertLinefeed) {
+                    // fix for #988 trailing new lines are trimmed from inline content
+                    fs.appendFileSync(workingFile, "\r\n");
+                }
                 // fix for #826 where special characters get added between the files being appended
                 fs.appendFileSync(workingFile, FixedFormatOfNewContent(contents, trimLeadingSpecialChar));
                 logInfo(`Appended to the ${workingFile} in ${workingPath}`);
@@ -201,6 +206,10 @@ export async function UpdateGitWikiFile(
                 var oldContent = "";
                 if (fs.existsSync(workingFile)) {
                     oldContent = fs.readFileSync(workingFile, "utf8");
+                }
+                if (insertLinefeed) {
+                    // fix for #988 trailing new lines are trimmed from inline content
+                    fs.appendFileSync(workingFile, "\r\n");
                 }
                 fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
                 fs.appendFileSync(workingFile, FixedFormatOfNewContent(oldContent, trimLeadingSpecialChar));
