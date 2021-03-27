@@ -33,5 +33,6 @@ const retries = 5;
 const trimLeadingSpecialChar = true;
 const fixLineFeeds = true;
 const fixSpaces = true;
+const insertLinefeed = false;
 
-UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch, retries, trimLeadingSpecialChar, fixLineFeeds, fixSpaces);
+UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch, retries, trimLeadingSpecialChar, fixLineFeeds, fixSpaces, insertLinefeed);
