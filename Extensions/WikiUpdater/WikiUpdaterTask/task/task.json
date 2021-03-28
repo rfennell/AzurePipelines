@@ -217,12 +217,24 @@
       "name": "fixSpaces",
       "type": "boolean",
       "label": "Fix spaces in filename",
-      "defaultValue": "Dalse",
+      "defaultValue": "False",
       "required": false,
       "helpMarkDown": "If set to true, and space in the target filename are replaced by -",
       "groupName": "advanced"
     }
+    ,
+    {
+      "name": "insertLinefeed",
+      "type": "boolean",
+      "label": "Insert Linefeed",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If set to true, when appending or prepending content a newline is inserted between the old and new content",
+      "groupName": "advanced"
+    }
 
+
+        
   ],
   "instanceNameFormat": "Git based WIKI File Updater",
   "execution": {
