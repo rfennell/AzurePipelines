@@ -197,6 +197,7 @@ export async function UpdateGitWikiFile(
             if (appendToFile) {
                 if (insertLinefeed) {
                     // fix for #988 trailing new lines are trimmed from inline content
+                    logInfo(`Injecting linefeed between existing and new content`);
                     fs.appendFileSync(workingFile, "\r\n");
                 }
                 // fix for #826 where special characters get added between the files being appended
@@ -207,11 +208,12 @@ export async function UpdateGitWikiFile(
                 if (fs.existsSync(workingFile)) {
                     oldContent = fs.readFileSync(workingFile, "utf8");
                 }
+                fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
                 if (insertLinefeed) {
                     // fix for #988 trailing new lines are trimmed from inline content
+                    logInfo(`Injecting linefeed between existing and new content`);
                     fs.appendFileSync(workingFile, "\r\n");
                 }
-                fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
                 fs.appendFileSync(workingFile, FixedFormatOfNewContent(oldContent, trimLeadingSpecialChar));
                 logInfo(`Prepending to the ${workingFile} in ${workingPath}`);
             }
