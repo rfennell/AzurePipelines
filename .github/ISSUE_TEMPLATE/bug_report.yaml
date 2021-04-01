@@ -48,7 +48,7 @@ body:
     placeholder: "e.g. 1.2.3"
   validations:
     required: false
- - type: textarea
+- type: textarea
   id: Description
   attributes:
     label:  Describe the bug
