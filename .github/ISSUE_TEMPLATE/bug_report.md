@@ -1,37 +1,91 @@
----
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: bug
-assignees: ''
-
----
-
-**Describe the bug**
-A clear and concise description of what the bug is. 
-
-*Remember that there are a number of Azure DevOps (VSTS) extensions in this repo so please say which one you are using, and if an extension contains multiple tasks which task also*
-
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
-
-**Expected behavior**
-A clear and concise description of what you expected to happen.
-
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
-
-**Logs**
-Please provide debug logs of the problem, remember you can get these by setting a build/release variable `system.debug=true`. If you don't provide detailed logs when you raise the issue it will almost certainly be the first request I make to diagnose the problem*
-
-**What is the issue see:**
- - Azure DevOps Services (VSTS)
- - Azure DevOps Server (TFS) - Specify Version
- - Version [e.g. 22]
-
-**Additional context**
-Add any other context about the problem here.
+name: Bug Report
+description: File a bug report
+title: ""
+labels: [bug]
+assignees:
+issue_body: true
+body:
+- type: dropdown
+  id: extension
+  attributes:
+    label: Azure DevOps Extensions
+    description: "There are a number of Azure DevOps extensions in this repo so please state which one the bug relates to"
+    options:
+      - Artifact PR Description
+      - Built Utilities
+      - DevTest Labs 
+      - File Copier
+      - Generate Release Notes (Node Cross Platform)
+      - Generate Release Notes (Legacy PowerShell)
+      - Manifest Versioning
+      - WIKI Updater
+      - WIKI PDF Generator
+      - YAML Generator 
+      - Other
+  validations:
+    required: true
+- type: dropdown
+  id: platform
+  attributes:
+    label: Platform
+    description: "Where is the extension being used"
+    options:
+      - Azure DevOps Services
+      - Azure DevOps Server (TFS) - Specify Version
+  validations:
+    required: true
+- type: input
+  id: Serverversion
+  attributes:
+    label: Azure DevOps Server (TFS) Version
+    description: "If using the extension on premises provide the server version"
+    placeholder: "e.g. Azure DevOps Server 2020.1"
+  validations:
+    required: false
+- type: input
+  id: extensionversion
+  attributes:
+    label: Extension Version
+    description: "If using the extension on premises provide the extension version"
+    placeholder: "e.g. 1.2.3"
+  validations:
+    required: false
+ - type: textarea
+  id: Description
+  attributes:
+    label:  Describe the bug
+    description: "Describe the bug"
+    value: |
+      A clear and concise description of what the bug is
+      ...
+    render: bash
+  validations:
+    required: true
+- type: textarea
+  id: RepoSteps
+  attributes:
+    label:  Repo Steps
+    description: "Repo Steps"
+    value: |
+      Steps to reproduce the behavior:
+      1. Go to '...'
+      2. Click on '....'
+      3. Scroll down to '....'
+      4. See error
+      ...
+    render: bash
+  validations:
+    required: true
+- type: textarea
+  id: extraInfo
+  attributes:
+    label:  Expected Behavior
+    description: "Add any other context about the problem here"
+    value: |
+      A clear and concise description of what you expected to happen.
+      If applicable, add screenshots to help explain your problem.
+      Please provide debug logs of the problem, remember you can get these by setting a build/release variable `system.debug=true`. If you don't provide detailed logs when you raise the issue it will almost certainly be the first request I make to diagnose the problem
+      ...
+    render: bash
+  validations:
+    required: false
