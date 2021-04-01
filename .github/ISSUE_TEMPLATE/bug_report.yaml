@@ -1,5 +1,7 @@
-name: Cat Lady Membership Application
-description: Tell us what qualifies you to be a registered cat fancier.
+name: Bug Report
+description: File a bug report
+labels: [bug]
+issue_body: true
 body:
 - type: textarea
   attributes:
