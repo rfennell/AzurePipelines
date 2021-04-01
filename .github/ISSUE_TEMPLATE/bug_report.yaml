@@ -71,13 +71,20 @@ body:
   validations:
     required: true
 - type: textarea
-  id: extraInfo
+  id: expected
   attributes:
     label:  Expected Behavior
+    description: A clear and concise description of what you expected to happen.
+    render: bash
+  validations:
+    required: false
+- type: textarea
+  id: extraInfo
+  attributes:
+    label:  Logging Information
     description: |
-      A clear and concise description of what you expected to happen.
-      If applicable, add screenshots to help explain your problem.
-      Please provide debug logs of the problem, remember you can get these by setting a build/release variable `system.debug=true`. If you don't provide detailed logs when you raise the issue it will almost certainly be the first request I make to diagnose the problem
+      - Please provide debug logs of the problem, remember you can get these by setting a build/release variable `system.debug=true`. If you don't provide detailed logs when you raise the issue it will almost certainly be the first request I make to diagnose the problem
+      - If applicable, add screenshots to help explain your problem.
     render: bash
   validations:
     required: false
