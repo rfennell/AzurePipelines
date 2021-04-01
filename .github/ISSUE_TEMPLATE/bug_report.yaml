@@ -52,10 +52,7 @@ body:
   id: Description
   attributes:
     label:  Describe the bug
-    description: "Describe the bug"
-    value: |
-      A clear and concise description of what the bug is
-      ...
+    description: "A clear and concise description of the bug"
     render: bash
   validations:
     required: true
@@ -63,9 +60,8 @@ body:
   id: RepoSteps
   attributes:
     label:  Repo Steps
-    description: "Repo Steps"
+    description: "Steps to reproduce the behavior"
     value: |
-      Steps to reproduce the behavior:
       1. Go to '...'
       2. Click on '....'
       3. Scroll down to '....'
@@ -78,12 +74,10 @@ body:
   id: extraInfo
   attributes:
     label:  Expected Behavior
-    description: "Add any other context about the problem here"
-    value: |
+    description: |
       A clear and concise description of what you expected to happen.
       If applicable, add screenshots to help explain your problem.
       Please provide debug logs of the problem, remember you can get these by setting a build/release variable `system.debug=true`. If you don't provide detailed logs when you raise the issue it will almost certainly be the first request I make to diagnose the problem
-      ...
     render: bash
   validations:
     required: false
