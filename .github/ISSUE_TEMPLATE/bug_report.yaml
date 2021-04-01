@@ -22,3 +22,21 @@ body:
       - Other
   validations:
     required: true
+- type: dropdown
+  id: platform
+  attributes:
+    label: Platform
+    description: "Where is the extension being used"
+    options:
+      - Azure DevOps Services
+      - Azure DevOps Server (TFS) - Specify Version
+  validations:
+    required: true
+- type: input
+  id: Serverversion
+  attributes:
+    label: Azure DevOps Server (TFS) Version
+    description: "If using the extension on premises provide the server version"
+    placeholder: "e.g. Azure DevOps Server 2020.1"
+  validations:
+    required: false
