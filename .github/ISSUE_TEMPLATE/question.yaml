@@ -1,7 +1,7 @@
 name: Question
 description: Ask a question about usage of an extension in this project
 labels: [question]
-title: Please don't create an quesiton issue, open a discussion
+title: "Please don't create an quesiton issue, rather open a discussion"
 issue_body: true
 body:
 - type: markdown
