@@ -160,6 +160,11 @@ stages:
                   *  **PR {{this.id}}**  {{this.title}}
                   {{/forEach}}
 
+                  ## Global list of ConsumedArtifacts ({{consumedArtifacts.length}})
+                  {{#forEach consumedArtifacts}}
+                  * {{json this}} 
+                  {{/forEach}}
+
                   # Builds with associated WI/CS ({{builds.length}})
                   {{#forEach builds}}
                   {{#if isFirst}}## Builds {{/if}}
