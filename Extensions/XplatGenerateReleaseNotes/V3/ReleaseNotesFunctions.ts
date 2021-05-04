@@ -605,6 +605,46 @@ export async function getManualTestsForBuild(
     });
 }
 
+export async function getConsumedArtifactsForBuild(
+    restClient: restm.RestClient,
+    tpcUri: string,
+    teamProject: string,
+    buildid: number
+): Promise<[]> {
+    return new Promise<[]>(async (resolve, reject) => {
+        let consumedArtifacts: [] = [];
+        try {
+            var payload = {
+                "contributionIds": [
+                    "ms.vss-build-web.run-consumed-artifacts-data-provider"
+                ],
+                "dataProviderContext": {
+                    "properties": {
+                        "buildId": `${buildid}`,
+                        "sourcePage": {
+                            "url": `${tpcUri}/${teamProject}/_build/results?buildId=${buildid}&view=results`,
+                            "routeId": "ms.vss-build-web.ci-results-hub-route",
+                            "routeValues": {
+                                "project": `${teamProject}`,
+                                "viewname": "build-results",
+                                "controller": "ContributedPage",
+                                "action": "Execute"
+                            }
+                        }
+                    }
+                }
+            };
+            let response = await restClient.create(
+                `${tpcUri}/_apis/Contribution/HierarchyQuery/project/${teamProject}?api-version=6.1-preview`,
+                payload);
+            var result = response.result;
+            resolve(response.result["dataProviders"]["ms.vss-build-web.run-consumed-artifacts-data-provider"].consumedSources);
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
 export function addUniqueTestToArray (
     masterArray: TestCaseResult[],
     newArray: TestCaseResult[]
@@ -799,7 +839,8 @@ export function processTemplate(
     inDirectlyAssociatedPullRequests: EnrichedGitPullRequest[],
     globalManualTests: EnrichedTestRun[],
     globalManualTestConfigurations: [],
-    stopOnError: boolean
+    stopOnError: boolean,
+    globalConsumedArtifacts: []
     ): string {
 
     var output = "";
@@ -815,6 +856,7 @@ export function processTemplate(
         agentApi.logDebug(`  Release Tests: ${releaseTests.length}`);
         agentApi.logDebug(`  Related WI: ${relatedWorkItems.length}`);
         agentApi.logDebug(`  Indirect PR: ${inDirectlyAssociatedPullRequests.length}`);
+        agentApi.logDebug(`  Consumed Artifacts: ${globalConsumedArtifacts.length}`);
 
         // it is a handlebar template
         agentApi.logDebug("Processing handlebar template");
@@ -920,7 +962,8 @@ export function processTemplate(
                 "compareBuildDetails": compareBuildDetails,
                 "inDirectlyAssociatedPullRequests": inDirectlyAssociatedPullRequests,
                 "manualTests": globalManualTests,
-                "manualTestConfigurations": globalManualTestConfigurations
+                "manualTestConfigurations": globalManualTestConfigurations,
+                "consumedArtifacts": globalConsumedArtifacts
             });
             agentApi.logInfo( "Completed processing template");
 
@@ -1105,13 +1148,13 @@ export async function generateReleaseNotes(
                 allowRetries: maxRetries > 0 ,
                 maxRetries: maxRetries,
             } as vstsInterfaces.IRequestOptions;
-            const organisation = new webApi.WebApi(tpcUri, credentialHandler, options);
-            const releaseApi = await organisation.getReleaseApi();
-            const buildApi = await organisation.getBuildApi();
-            const gitApi = await organisation.getGitApi();
-            const testApi = await organisation.getTestApi();
-            const workItemTrackingApi = await organisation.getWorkItemTrackingApi();
-            const tfvcApi = await organisation.getTfvcApi();
+            const organisationWebApi = new webApi.WebApi(tpcUri, credentialHandler, options);
+            const releaseApi = await organisationWebApi.getReleaseApi();
+            const buildApi = await organisationWebApi.getBuildApi();
+            const gitApi = await organisationWebApi.getGitApi();
+            const testApi = await organisationWebApi.getTestApi();
+            const workItemTrackingApi = await organisationWebApi.getWorkItemTrackingApi();
+            const tfvcApi = await organisationWebApi.getTfvcApi();
 
             // the result containers
             var globalCommits: Change[] = [];
@@ -1125,6 +1168,7 @@ export async function generateReleaseNotes(
             var fullWorkItems: WorkItem[] = [];
             var globalManualTests: EnrichedTestRun[] = [];
             var globalManualTestConfigurations: [] = [];
+            var globalConsumedArtifacts: [] = [];
 
             var mostRecentSuccessfulDeploymentName: string = "";
             var mostRecentSuccessfulDeploymentRelease: Release;
@@ -1185,7 +1229,7 @@ export async function generateReleaseNotes(
                         if (mostRecentSuccessfulBuild.repository.type === "TfsGit") {
                             agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
                             let currentBuild = await buildApi.getBuild(teamProject, buildId);
-                            let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisation, mostRecentSuccessfulBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
+                            let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisationWebApi, mostRecentSuccessfulBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
                             globalCommits = commitInfo.commits;
                             globalWorkItems = commitInfo.workItems;
                         } else {
@@ -1210,12 +1254,19 @@ export async function generateReleaseNotes(
                 globalTests = await getTestsForBuild(testApi, teamProject, buildId);
                 agentApi.logInfo("Get any manual test run details associated with the build");
                 globalManualTests = await getManualTestsForBuild(
-                    organisation.rest,
+                    organisationWebApi.rest,
                     testApi,
                     tpcUri,
                     teamProject,
                     buildId,
                     globalManualTestConfigurations);
+                agentApi.logInfo("Get the artifacts consumed by the build");
+                globalConsumedArtifacts = await getConsumedArtifactsForBuild(
+                        organisationWebApi.rest,
+                        tpcUri,
+                        teamProject,
+                        buildId);
+
             } else {
                 environmentName = (overrideStageName || environmentName).toLowerCase();
 
@@ -1256,7 +1307,7 @@ export async function generateReleaseNotes(
 
                 agentApi.logInfo(`Getting all artifacts in the current release...`);
                 var artifactsInThisRelease = getSimpleArtifactArray(currentRelease.artifacts);
-                buildId = await restoreAzurePipelineArtifactsBuildInfo(artifactsInThisRelease, organisation) || buildId; // update build id if using pipeline artifacts
+                buildId = await restoreAzurePipelineArtifactsBuildInfo(artifactsInThisRelease, organisationWebApi) || buildId; // update build id if using pipeline artifacts
                 agentApi.logInfo(`Found ${artifactsInThisRelease.length} artifacts for current release`);
 
                 let artifactsInMostRecentRelease: SimpleArtifact[] = [];
@@ -1265,7 +1316,7 @@ export async function generateReleaseNotes(
                     mostRecentSuccessfulDeploymentRelease = await releaseApi.getRelease(teamProject, mostRecentSuccessfulDeployment.release.id);
                     agentApi.logInfo(`Getting all artifacts in the most recent successful release [${mostRecentSuccessfulDeployment.release.name}]...`);
                     artifactsInMostRecentRelease = getSimpleArtifactArray(mostRecentSuccessfulDeployment.release.artifacts);
-                    await restoreAzurePipelineArtifactsBuildInfo(artifactsInMostRecentRelease, organisation);
+                    await restoreAzurePipelineArtifactsBuildInfo(artifactsInMostRecentRelease, organisationWebApi);
                     mostRecentSuccessfulDeploymentName = mostRecentSuccessfulDeployment.release.name;
                     agentApi.logInfo(`Found ${artifactsInMostRecentRelease.length} artifacts for most recent successful release`);
                 } else {
@@ -1330,7 +1381,7 @@ export async function generateReleaseNotes(
                                                     // There is only a workaround for Git but not for TFVC :(
                                                     if (baseBuild.repository.type === "TfsGit") {
                                                         let currentBuild = await buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId));
-                                                        let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisation, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
+                                                        let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisationWebApi, baseBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
                                                         commits = commitInfo.commits;
                                                         workitems = commitInfo.workItems;
                                                     } else {
@@ -1385,7 +1436,7 @@ export async function generateReleaseNotes(
                                         agentApi.logInfo(`Detected ${tests.length} automated tests associated within the current build.`);
 
                                         var manualtests = await getManualTestsForBuild(
-                                            organisation.rest,
+                                            organisationWebApi.rest,
                                             testApi,
                                             tpcUri,
                                             teamProject,
@@ -1424,7 +1475,7 @@ export async function generateReleaseNotes(
             agentApi.logInfo("Removing duplicate WorkItems from master list");
             globalWorkItems = removeDuplicates(globalWorkItems);
 
-            let expandedGlobalCommits = await expandTruncatedCommitMessages(organisation, globalCommits, gitHubPat, bitbucketUser, bitbucketSecret);
+            let expandedGlobalCommits = await expandTruncatedCommitMessages(organisationWebApi, globalCommits, gitHubPat, bitbucketUser, bitbucketSecret);
 
             if (!expandedGlobalCommits || expandedGlobalCommits.length !== globalCommits.length) {
                 agentApi.logError("Failed to expand the global commits.");
@@ -1565,6 +1616,7 @@ export async function generateReleaseNotes(
             agentApi.logInfo(`Total Manual Test Configurations: [${globalManualTestConfigurations.length}]`);
             agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
             agentApi.logInfo(`Total Indirect Pull Requests: [${inDirectlyAssociatedPullRequests.length}]`);
+            agentApi.logInfo(`Total Consumed Artifacts: [${globalConsumedArtifacts.length}]`);
 
             dumpJsonPayload(
                 dumpPayloadToConsole,
@@ -1585,7 +1637,8 @@ export async function generateReleaseNotes(
                     currentStage: currentStage,
                     inDirectlyAssociatedPullRequests: inDirectlyAssociatedPullRequests,
                     manualTests: globalManualTests,
-                    manualTestConfigurations: globalManualTestConfigurations
+                    manualTestConfigurations: globalManualTestConfigurations,
+                    consumedArtifacts: globalConsumedArtifacts
                 });
 
             var template = getTemplate (templateLocation, templateFile, inlineTemplate);
@@ -1610,7 +1663,8 @@ export async function generateReleaseNotes(
                     inDirectlyAssociatedPullRequests,
                     globalManualTests,
                     globalManualTestConfigurations,
-                    stopOnError);
+                    stopOnError,
+                    globalConsumedArtifacts);
 
                 writeFile(outputFile, outputString, replaceFile, appendToFile);
 
