@@ -2,7 +2,8 @@
 Generates release notes for a Classic Build or Release, or a YML based build. The generated file can be any text based format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * Uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
-* 3.6.x Added `manualtest` and `manualTestConfigurations` to the available options in the template
+* 3.50.x Added `consumedArtifacts` to the available options in the template
+* 3.46.x Added `manualtest` and `manualTestConfigurations` to the available options in the template
 * 3.32.x Adds parameters to control the retry logic for timed outed out API calls
 * 3.28.x provide a new array of `inDirectlyAssociatedPullRequests`, this contains PR associated with a PR's associated commits. Useful if using a Gitflow work work-flow [x866](https://github.com/rfennell/AzurePipelines/issues/866) (see sample template below)
 * 3.27.x enriches the PR with associated commits (see sample template below)
