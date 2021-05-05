@@ -635,12 +635,13 @@ export async function getConsumedArtifactsForBuild(
                 }
             };
             let response = await restClient.create(
-                `${tpcUri}/_apis/Contribution/HierarchyQuery/project/${teamProject}?api-version=6.1-preview`,
+                `${tpcUri}/_apis/Contribution/HierarchyQuery/project/${teamProject}?api-version=5.1-preview`,
                 payload);
             var result = response.result;
             resolve(response.result["dataProviders"]["ms.vss-build-web.run-consumed-artifacts-data-provider"].consumedSources);
         } catch (err) {
-            reject(err);
+            tl.warning(`Cannot get the details of the consumed artifacts ${err}`);
+            resolve([]);
         }
     });
 }
@@ -1219,8 +1220,7 @@ export async function generateReleaseNotes(
                     lastGoodBuildId = successfulStageDetails.id;
 
                     if (lastGoodBuildId !== 0) {
-                        agentApi.logInfo
-(`Getting the details between ${lastGoodBuildId} and ${buildId}`);
+                        agentApi.logInfo(`Getting the details between ${lastGoodBuildId} and ${buildId}`);
                         currentStage = successfulStageDetails.stage;
 
                         mostRecentSuccessfulBuild = await buildApi.getBuild(teamProject, lastGoodBuildId);
