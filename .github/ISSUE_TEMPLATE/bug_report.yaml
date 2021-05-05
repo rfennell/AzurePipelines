@@ -1,7 +1,6 @@
 name: Bug Report
 description: File a bug report
 labels: [bug]
-issue_body: true
 body:
 - type: dropdown
   id: extension
