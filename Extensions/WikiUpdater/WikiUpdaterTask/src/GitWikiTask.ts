@@ -36,6 +36,8 @@ var trimLeadingSpecialChar = tl.getBoolInput("trimLeadingSpecialChar");
 var fixLineFeeds = tl.getBoolInput("fixLineFeeds");
 var fixSpaces = tl.getBoolInput("fixSpaces");
 var insertLinefeed = tl.getBoolInput("insertLinefeed");
+var prependEntryToOrderFile = tl.getBoolInput("prependEntryToOrderFile");
+var updateOrderFile = tl.getBoolInput("updateOrderFile");
 
 // make sure the retries is a number
 
@@ -69,6 +71,8 @@ console.log(`Variable: trimLeadingSpecialChar [${trimLeadingSpecialChar}]`);
 console.log(`Variable: fixLineFeeds [${fixLineFeeds}]`);
 console.log(`Variable: fixSpaces [${fixSpaces}]`);
 console.log(`Variable: insertLinefeed [${insertLinefeed}]`);
+console.log(`Variable: updateOrderFile [${updateOrderFile}]`);
+console.log(`Variable: prependEntryToOrderFile [${prependEntryToOrderFile}]`);
 
 if (useAgentToken === true) {
     console.log(`Using OAUTH Agent Token, overriding username and password`);
@@ -121,5 +125,7 @@ if (haveData) {
         trimLeadingSpecialChar,
         fixLineFeeds,
         fixSpaces,
-        insertLinefeed);
+        insertLinefeed,
+        updateOrderFile,
+        prependEntryToOrderFile);
 }
