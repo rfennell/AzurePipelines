@@ -117,7 +117,9 @@ export async function UpdateGitWikiFile(
     trimLeadingSpecialChar,
     fixLineFeeds,
     fixSpaces,
-    insertLinefeed) {
+    insertLinefeed,
+    updateOrderFile,
+    prependEntryToOrderFile) {
     const git = simplegit();
 
     let remote = "";
@@ -221,6 +223,36 @@ export async function UpdateGitWikiFile(
 
         await git.add(filename);
         logInfo(`Added ${filename} to repo ${localpath}`);
+
+        if (updateOrderFile) {
+            var orderFile = `${localpath}/.order`;
+            // we need the name without the extension
+            var entry = filename.replace(/.md/i, "");
+
+            if (prependEntryToOrderFile) {
+                // prepending the entry
+                if (fs.existsSync(orderFile)) {
+                    oldContent = fs.readFileSync(orderFile, "utf8");
+                    // as we are pre-pending we alway need a line feed
+                    fs.writeFileSync(orderFile, `${entry}\r\n`);
+                    fs.appendFileSync(orderFile, oldContent);
+                }
+                logInfo(`Preppending entry to the .order file`);
+            } else {
+                // appending the entry
+                if (fs.existsSync(orderFile)) {
+                    // check the content to make sure we have the required line feed
+                    oldContent = fs.readFileSync(orderFile, "utf8");
+                    if (!oldContent.endsWith("\r\n")) {
+                        fs.appendFileSync(orderFile, "\r\n");
+                    }
+                }
+                fs.appendFileSync(orderFile, entry);
+                logInfo(`Appending entry to the .order file`);
+            }
+
+            await git.add(orderFile);
+        }
 
         var summary = await git.commit(message);
         if (summary.commit.length > 0) {
