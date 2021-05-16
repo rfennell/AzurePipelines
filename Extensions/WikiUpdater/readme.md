@@ -56,7 +56,9 @@ Both tasks can be used in a build or a release
 #### Advanced (Single File Task)
 - fixLineFeeds - If set to true, `n are swapped to \\r\\n as this is required for most WIKIs. If false no replacement is made, this should be used for non-text based files e.g. images or PDFs. Only used when replacing the target file. Default is true
 - TrimLeadingSpecialChar - As seen in #826, the appending or prepending files prior to uploading a leading special character gets added to the file. Setting this flag to true removes this first character. Default is false
-- insertLinefeed - If set to true, when appending or prepending content a newline is inserted between the old and new content (See #988). Default is false
+- insertLinefeed - If set to true, when appending or prepending content to a page file a newline is inserted between the old and new content (See #988). Default is false
+- updateOrderFile - As requested in #1009 - If set to true, when appending or prepending a entry in the Azure DevOps WIKI .order file. Default is false
+- prependEntryToOrderFile - As requested in #1009 -If updateOrderFile is set to true, this parameter control whether the entry is appended (when this is set to false) or prepending (when this is set to true). Default is false i.e append mode
 
 _For more authentication parameters see 'Authentication' section below_
 
