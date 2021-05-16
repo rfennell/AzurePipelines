@@ -231,7 +231,7 @@ stages:
               displayName: 'Git based WIKI Updater - Azure DevOps with Creds'
               inputs:
                 repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
-                filename: TestPageWithCreds.md
+                filename: TestPageWithCreds-$(build.buildid).md
                 contents: |
                   Header
                   ---
@@ -244,6 +244,7 @@ stages:
                 user: richardfennell
                 password: '$(AzureDevOpsPAT)'
                 localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
+                updateOrderFile: true
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater - Azure DevOps in branch'
               inputs:

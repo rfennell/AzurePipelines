@@ -232,6 +232,26 @@
       "helpMarkDown": "If set to true, when appending or prepending content a newline is inserted between the old and new content",
       "groupName": "advanced"
     }
+    ,
+    {
+      "name": "updateOrderFile",
+      "type": "boolean",
+      "label": "Update .order file",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If set to true, when appending or prepending a entry in the Azure DevOps WIKI .order file",
+      "groupName": "advanced"
+    }
+    ,
+    {
+      "name": "prependEntryToOrderFile",
+      "type": "boolean",
+      "label": "Prepend .order file entry",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If updateOrderFile is set to true, this parameter control whether the entry is appended (when this is set to false) or prepending (when this is set to true)",
+      "groupName": "advanced"
+    }
 
 
         
