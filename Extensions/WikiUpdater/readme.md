@@ -4,7 +4,9 @@ The extension contains two tasks that can be used to update pages in Git based W
 
 The WIKI Updater task allows the updating of a Git based WIKI using either an inputted string as the file contents data or a filename. This can be usefully paired with my [Generate Release Notes Extension](https://marketplace.visualstudio.com/items?itemName=richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes)
 
-This can be used with both Azure DevOps and GitHub hosted WIKIs
+This can be used with both Azure DevOps and GitHub hosted WIKIs.
+
+__Note:__ When working with Azure DevOps WIKIs, this task has the optional feature that it can update the WIKIs `.order` file. The `.order` file is used to [set the order of the Wiki pages ](https://docs.microsoft.com/en-us/azure/devops/project/wiki/wiki-file-structure?view=azure-devops#order-file) - See [#1009](https://github.com/rfennell/AzurePipelines/issues/1009) for more details.
 
 ## Update a WIKI with a set of pages defined by a wildcard 
 
@@ -55,10 +57,10 @@ Both tasks can be used in a build or a release
 
 #### Advanced (Single File Task)
 - fixLineFeeds - If set to true, `n are swapped to \\r\\n as this is required for most WIKIs. If false no replacement is made, this should be used for non-text based files e.g. images or PDFs. Only used when replacing the target file. Default is true
-- TrimLeadingSpecialChar - As seen in #826, the appending or prepending files prior to uploading a leading special character gets added to the file. Setting this flag to true removes this first character. Default is false
-- insertLinefeed - If set to true, when appending or prepending content to a page file a newline is inserted between the old and new content (See #988). Default is false
-- updateOrderFile - As requested in #1009 - If set to true, when appending or prepending a entry in the Azure DevOps WIKI .order file. Default is false
-- prependEntryToOrderFile - As requested in #1009 -If updateOrderFile is set to true, this parameter control whether the entry is appended (when this is set to false) or prepending (when this is set to true). Default is false i.e append mode
+- TrimLeadingSpecialChar - See [#826](https://github.com/rfennell/AzurePipelines/issues/826), the appending or prepending files prior to uploading a leading special character gets added to the file. Setting this flag to true removes this first character. Default is false
+- insertLinefeed - If set to true, when appending or prepending content to a page file a newline is inserted between the old and new content (See [#988](https://github.com/rfennell/AzurePipelines/issues/988)). Default is false
+- updateOrderFile - See [#1009](https://github.com/rfennell/AzurePipelines/issues/1009) - If set to true, an new line for the uploaded file will be appending, or prepending, in the Azure DevOps WIKI .order file in the root of the repo. If the file does not exist it will be created. Default is false
+- prependEntryToOrderFile - See [#1009](https://github.com/rfennell/AzurePipelines/issues/1009) -If `updateOrderFile` is set to true, this parameter will control whether the new entry is appended (when this is set to false) or prepending (when this is set to true). Default is false i.e append mode
 
 _For more authentication parameters see 'Authentication' section below_
 
