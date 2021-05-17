@@ -229,6 +229,12 @@ export async function UpdateGitWikiFile(
             // we need the name without the extension
             var entry = filename.replace(/.md/i, "");
 
+            if (fs.existsSync(orderFile)) {
+                logInfo(`Updating the existing .order file`);
+            } else {
+                logInfo(`Creating a new .order file`);
+            }
+
             if (prependEntryToOrderFile) {
                 // prepending the entry
                 if (fs.existsSync(orderFile)) {

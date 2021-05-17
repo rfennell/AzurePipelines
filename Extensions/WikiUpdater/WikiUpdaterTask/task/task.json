@@ -239,7 +239,7 @@
       "label": "Update .order file",
       "defaultValue": "False",
       "required": false,
-      "helpMarkDown": "If set to true, when appending or prepending a entry in the Azure DevOps WIKI .order file",
+      "helpMarkDown": "If set to true, an new line for the uploaded file will be appending, or prepending, in the Azure DevOps WIKI .order file in the root of the repo. If the file does not exist it will be created",
       "groupName": "advanced"
     }
     ,
@@ -249,7 +249,7 @@
       "label": "Prepend .order file entry",
       "defaultValue": "False",
       "required": false,
-      "helpMarkDown": "If updateOrderFile is set to true, this parameter control whether the entry is appended (when this is set to false) or prepending (when this is set to true)",
+      "helpMarkDown": "If updateOrderFile is set to true, this parameter control whether the new entry is appended (when this is set to false) or prepending (when this is set to true)",
       "groupName": "advanced"
     }
 
