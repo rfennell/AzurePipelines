@@ -841,7 +841,7 @@ export function processTemplate(
     globalManualTests: EnrichedTestRun[],
     globalManualTestConfigurations: [],
     stopOnError: boolean,
-    globalConsumedArtifacts: []
+    globalConsumedArtifacts: any[]
     ): string {
 
     var output = "";
@@ -1169,7 +1169,7 @@ export async function generateReleaseNotes(
             var fullWorkItems: WorkItem[] = [];
             var globalManualTests: EnrichedTestRun[] = [];
             var globalManualTestConfigurations: [] = [];
-            var globalConsumedArtifacts: [] = [];
+            var globalConsumedArtifacts: any[] = [];
 
             var mostRecentSuccessfulDeploymentName: string = "";
             var mostRecentSuccessfulDeploymentRelease: Release;
@@ -1266,6 +1266,22 @@ export async function generateReleaseNotes(
                         tpcUri,
                         teamProject,
                         buildId);
+
+                for (let index = 0; index < globalConsumedArtifacts.length; index++) {
+                    const artifact = globalConsumedArtifacts[index];
+                    if (artifact["artifactCategory"] === "Pipeline") {
+                        agentApi.logInfo(`Getting the details of the ${artifact["artifactCategory"]} artifact ${artifact["alias"]} ${artifact["versionName"]}`);
+                        try {
+                            var artifactTeamProjectId = artifact["properties"]["projectId"];
+                            artifact["commits"] = await (buildApi.getBuildChanges(artifactTeamProjectId, artifact["versionId"]));
+                            artifact["workitems"] = await getFullWorkItemDetails(workItemTrackingApi, await (buildApi.getBuildWorkItemsRefs(artifactTeamProjectId, artifact["versionId"])));
+                        } catch (err) {
+                           agentApi.logWarn(`Cannot retried commit or work item information ${err}`);
+                        }
+                    } else {
+                        agentApi.logInfo(`Cannot get extra details of the ${artifact["artifactCategory"]} artifact ${artifact["alias"]} ${artifact["versionName"]}`);
+                    }
+                }
 
             } else {
                 environmentName = (overrideStageName || environmentName).toLowerCase();
