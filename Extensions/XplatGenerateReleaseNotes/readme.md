@@ -187,7 +187,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 | **buildDetails** | if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
 | **compareBuildDetails** | the previous successful build that comparisons are being made against, only available if `checkstage=true`
 | **currentStage** | if `checkstage` is enable this object is set to the details of the stage in the current build that is being used for the stage check
-| **consumedArtifacts** | the artifacts consumed by the pipeline 
+| **consumedArtifacts** | the artifacts consumed by the pipeline, enriched with details of commits and workitems if available
 
 > **Note:** To dump all possible values via the template using the custom Handlebars extension `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion. There are also options to dump these raw values to the build console log or to a file. (See below)
 
