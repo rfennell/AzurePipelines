@@ -2,6 +2,7 @@
 Generates release notes for a Classic Build or Release, or a YML based build. The generated file can be any text based format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * Uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 3.52.x Added enrichement of pipeline `consumedArtifacts` to include commits and workitem associated where possible
 * 3.50.x Added `consumedArtifacts` to the available options in the template
 * 3.46.x Added `manualtest` and `manualTestConfigurations` to the available options in the template
 * 3.32.x Adds parameters to control the retry logic for timed outed out API calls
@@ -144,6 +145,13 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 | [{{this.id}}]({{this.webAccessUrl}}) | {{this.name}} | {{this.state}} | {{this.totalTests}} | {{this.passedTests}} |
 {{/forEach}}
 
+## Global list of ConsumedArtifacts ({{consumedArtifacts.length}})
+| Category | Type | Version Name | Version Id | Commits | Workitems |
+|-|-|-|-|-|-|
+{{#forEach consumedArtifacts}}
+ |{{this.artifactCategory}} | {{this.artifactType}} | {{#if versionName}}{{versionName}}{{/if}} | {{truncate versionId 7}} | {{#if this.commits}} {{this.commits.length}} {{/if}} | {{#if this.workitems}} {{this.workitems.length}} {{/if}} |
+{{/forEach}}
+
 ```
 
 > **IMPORTANT** Handlebars based templates have different objects available to the legacy template used in V2 of this extension. This is a break change, so what out if migrating
@@ -179,7 +187,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 | **buildDetails** | if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
 | **compareBuildDetails** | the previous successful build that comparisons are being made against, only available if `checkstage=true`
 | **currentStage** | if `checkstage` is enable this object is set to the details of the stage in the current build that is being used for the stage check
-| **consumedArtifacts** | the artifacts consumed by the pipeline 
+| **consumedArtifacts** | the artifacts consumed by the pipeline, enriched with details of commits and workitems if available
 
 > **Note:** To dump all possible values via the template using the custom Handlebars extension `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion. There are also options to dump these raw values to the build console log or to a file. (See below)
 
