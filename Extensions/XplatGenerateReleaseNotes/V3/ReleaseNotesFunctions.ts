@@ -1272,8 +1272,9 @@ export async function generateReleaseNotes(
                     if (artifact["artifactCategory"] === "Pipeline") {
                         agentApi.logInfo(`Getting the details of the ${artifact["artifactCategory"]} artifact ${artifact["alias"]} ${artifact["versionName"]}`);
                         try {
-                            artifact["Commits"] = await (buildApi.getBuildChanges(teamProject, artifact["versionId"]));
-                            artifact["Workitems"] = await getFullWorkItemDetails(workItemTrackingApi, await (buildApi.getBuildWorkItemsRefs(teamProject, artifact["versionId"])));
+                            var artifactTeamProjectId = artifact["properties"]["projectId"];
+                            artifact["commits"] = await (buildApi.getBuildChanges(artifactTeamProjectId, artifact["versionId"]));
+                            artifact["workitems"] = await getFullWorkItemDetails(workItemTrackingApi, await (buildApi.getBuildWorkItemsRefs(artifactTeamProjectId, artifact["versionId"])));
                         } catch (err) {
                            agentApi.logWarn(`Cannot retried commit or work item information ${err}`);
                         }

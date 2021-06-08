@@ -24,3 +24,10 @@
   -  **Message:** {{this.message}}
   -  **Commited by:** {{this.author.displayName}} 
 {{/forEach}}
+
+## Global list of ConsumedArtifacts ({{consumedArtifacts.length}})
+| Category | Type | Version Name | Version Id | Commits | Workitems |
+|-|-|-|-|-|-|
+{{#forEach consumedArtifacts}}
+ |{{this.artifactCategory}} | {{this.artifactType}} | {{#if versionName}}{{versionName}}{{/if}} | {{truncate versionId 7}} | {{#if this.commits}} {{this.commits.length}} {{/if}} | {{#if this.workitems}} {{this.workitems.length}} {{/if}} |
+{{/forEach}}

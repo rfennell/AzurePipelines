@@ -2,7 +2,7 @@
 Generates release notes for a Classic Build or Release, or a YML based build. The generated file can be any text based format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * Uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
-* 3.53.x Added enriched of pipeline `consumedArtifacts` to include commits and workitem associated 
+* 3.52.x Added enrichement of pipeline `consumedArtifacts` to include commits and workitem associated where possible
 * 3.50.x Added `consumedArtifacts` to the available options in the template
 * 3.46.x Added `manualtest` and `manualTestConfigurations` to the available options in the template
 * 3.32.x Adds parameters to control the retry logic for timed outed out API calls
@@ -143,6 +143,13 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 | --- | --- | --- | --- | --- |
 {{#forEach manualTests}}
 | [{{this.id}}]({{this.webAccessUrl}}) | {{this.name}} | {{this.state}} | {{this.totalTests}} | {{this.passedTests}} |
+{{/forEach}}
+
+## Global list of ConsumedArtifacts ({{consumedArtifacts.length}})
+| Category | Type | Version Name | Version Id | Commits | Workitems |
+|-|-|-|-|-|-|
+{{#forEach consumedArtifacts}}
+ |{{this.artifactCategory}} | {{this.artifactType}} | {{#if versionName}}{{versionName}}{{/if}} | {{truncate versionId 7}} | {{#if this.commits}} {{this.commits.length}} {{/if}} | {{#if this.workitems}} {{this.workitems.length}} {{/if}} |
 {{/forEach}}
 
 ```
