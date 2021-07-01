@@ -964,7 +964,8 @@ export function processTemplate(
                 "inDirectlyAssociatedPullRequests": inDirectlyAssociatedPullRequests,
                 "manualTests": globalManualTests,
                 "manualTestConfigurations": globalManualTestConfigurations,
-                "consumedArtifacts": globalConsumedArtifacts
+                "consumedArtifacts": globalConsumedArtifacts,
+                "currentStage": currentStage
             });
             agentApi.logInfo( "Completed processing template");
 
@@ -1240,6 +1241,20 @@ export async function generateReleaseNotes(
 
                     } else {
                         agentApi.logInfo("There has been no past successful build for this stage, so we can just get details from this build");
+
+                        let timeline = await (buildApi.getBuildTimeline(teamProject, buildId));
+                        if (timeline && timeline.records) {
+                            for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
+                                const record  = timeline.records[timelineIndex];
+                                if (record.type === "Stage") {
+                                    if (record.name === stageName) { // succeeded
+                                        agentApi.logInfo (`Found the current stage ${record.name} in build ${buildId}`);
+                                        currentStage = record;
+                                    }
+                                }
+                            }
+                        }
+
                         globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
                         globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000);
                     }
