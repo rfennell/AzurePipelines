@@ -1758,11 +1758,17 @@ async function addGitHubLinkedWI(workItemTrackingApi: IWorkItemTrackingApi, glob
                     // this is a commit from github, so check for AB#123 links
                     if (commit.message) {
                         var linkedWIs = commit.message.match(/(ab#)[0-9]+/ig);
-                        agentApi.logInfo(`Found ${linkedWIs.length} workitems linked using the AB#123 format`);
+                        agentApi.logInfo(`Found ${linkedWIs.length} workitems linked using the AB#123 format, attempting to find details`);
                         if (linkedWIs) {
                             for (let wiIndex = 0; wiIndex < linkedWIs.length; wiIndex++) {
                                 const wi = Number(linkedWIs[wiIndex].substr(3));
-                                workItems.push(await workItemTrackingApi.getWorkItem(wi, null, null, WorkItemExpand.All, null));
+                                var wiDetail = await workItemTrackingApi.getWorkItem(wi, null, null, WorkItemExpand.All, null);
+                                if (wiDetail) {
+                                    agentApi.logDebug(`Adding details of workitem ${wi}`);
+                                    workItems.push();
+                                } else {
+                                    agentApi.logDebug(`Cannot find workitem with Id ${wi}`);
+                                }
                             }
                         }
                     }
