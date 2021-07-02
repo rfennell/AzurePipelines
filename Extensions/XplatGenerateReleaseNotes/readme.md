@@ -2,6 +2,7 @@
 Generates release notes for a Classic Build or Release, or a YML based build. The generated file can be any text based format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * Uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 3.54.x Added support to find WI linked from GitHub using the `AB#123` syntax and adding them to the `workitems` array
 * 3.52.x Added enrichement of pipeline `consumedArtifacts` to include commits and workitem associated where possible
 * 3.50.x Added `consumedArtifacts` to the available options in the template
 * 3.46.x Added `manualtest` and `manualTestConfigurations` to the available options in the template
