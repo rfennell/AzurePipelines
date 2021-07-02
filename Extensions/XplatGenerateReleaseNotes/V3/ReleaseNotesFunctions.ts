@@ -1752,28 +1752,32 @@ async function addGitHubLinkedWI(workItemTrackingApi: IWorkItemTrackingApi, glob
     return new Promise<ResourceRef[]>(async (resolve, reject) => {
         var workItems = [];
         try {
-            for (var commitIndex = 0; commitIndex < globalCommits.length; commitIndex++) {
-                var commit = globalCommits[commitIndex];
-                if (commit.type && commit.type === "GitHub") {
-                    // this is a commit from github, so check for AB#123 links
-                    if (commit.message) {
-                        var linkedWIs = commit.message.match(/(ab#)[0-9]+/ig);
-                        agentApi.logInfo(`Found ${linkedWIs.length} workitems linked using the AB#123 format, attempting to find details`);
-                        if (linkedWIs) {
-                            for (let wiIndex = 0; wiIndex < linkedWIs.length; wiIndex++) {
-                                const wi = Number(linkedWIs[wiIndex].substr(3));
-                                var wiDetail = await workItemTrackingApi.getWorkItem(wi, null, null, WorkItemExpand.All, null);
-                                if (wiDetail) {
-                                    agentApi.logDebug(`Adding details of workitem ${wi}`);
-                                    workItems.push();
-                                } else {
-                                    agentApi.logDebug(`Cannot find workitem with Id ${wi}`);
+            if (globalCommits) {
+                for (var commitIndex = 0; commitIndex < globalCommits.length; commitIndex++) {
+                    var commit = globalCommits[commitIndex];
+                    if (commit.type && commit.type === "GitHub") {
+                        // this is a commit from github, so check for AB#123 links
+                        agentApi.logDebug(`The commit ${commit.id.substring(0, 7)} is from a GitHub hosted repo`);
+                        if (commit.message) {
+                            var linkedWIs = commit.message.match(/(ab#)[0-9]+/ig);
+                            if (linkedWIs) {
+                                agentApi.logDebug(`Found ${linkedWIs.length} workitems linked using the AB#123 format, attempting to find details`);
+                                for (let wiIndex = 0; wiIndex < linkedWIs.length; wiIndex++) {
+                                    const wi = Number(linkedWIs[wiIndex].substr(3));
+                                    var wiDetail = await workItemTrackingApi.getWorkItem(wi, null, null, WorkItemExpand.All, null);
+                                    if (wiDetail) {
+                                        agentApi.logDebug(`Adding details of workitem ${wi}`);
+                                        workItems.push();
+                                    } else {
+                                        agentApi.logDebug(`Cannot find workitem with Id ${wi}`);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            agentApi.logInfo(`Adding ${workItems.length} found using AB#123 links in GitHub comments`);
             resolve (workItems);
         } catch (err) {
             reject (err);
