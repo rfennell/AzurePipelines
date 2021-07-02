@@ -1503,8 +1503,6 @@ export async function generateReleaseNotes(
             // remove duplicates
             agentApi.logInfo("Removing duplicate Commits from master list");
             globalCommits = removeDuplicates(globalCommits);
-            agentApi.logInfo("Removing duplicate WorkItems from master list");
-            globalWorkItems = removeDuplicates(globalWorkItems);
 
             let expandedGlobalCommits = await expandTruncatedCommitMessages(organisationWebApi, globalCommits, gitHubPat, bitbucketUser, bitbucketSecret);
 
@@ -1513,6 +1511,12 @@ export async function generateReleaseNotes(
                 resolve(-1);
                 return;
             }
+
+            agentApi.logInfo("Find any WorkItems linked from GitHub using the AB#123 format");
+            globalWorkItems = globalWorkItems.concat(await addGitHubLinkedWI(workItemTrackingApi, globalCommits));
+
+            agentApi.logInfo("Removing duplicate WorkItems from master list");
+            globalWorkItems = removeDuplicates(globalWorkItems);
 
             // get an array of workitem ids
             fullWorkItems = await getFullWorkItemDetails(workItemTrackingApi, globalWorkItems);
@@ -1742,4 +1746,31 @@ function removeDuplicates(array: any[]): any[] {
     t.id === thing.id
     )));
     return array;
+}
+
+async function addGitHubLinkedWI(workItemTrackingApi: IWorkItemTrackingApi, globalCommits: Change[]): Promise<ResourceRef[]> {
+    return new Promise<ResourceRef[]>(async (resolve, reject) => {
+        var workItems = [];
+        try {
+            for (var commitIndex = 0; commitIndex < globalCommits.length; commitIndex++) {
+                var commit = globalCommits[commitIndex];
+                if (commit.type && commit.type === "GitHub") {
+                    // this is a commit from github, so check for AB#123 links
+                    if (commit.message) {
+                        var linkedWIs = commit.message.match(/(ab#)[0-9]+/ig);
+                        agentApi.logInfo(`Found ${linkedWIs.length} workitems linked using the AB#123 format`);
+                        if (linkedWIs) {
+                            for (let wiIndex = 0; wiIndex < linkedWIs.length; wiIndex++) {
+                                const wi = Number(linkedWIs[wiIndex].substr(3));
+                                workItems.push(await workItemTrackingApi.getWorkItem(wi, null, null, WorkItemExpand.All, null));
+                            }
+                        }
+                    }
+                }
+            }
+            resolve (workItems);
+        } catch (err) {
+            reject (err);
+        }
+    });
 }
