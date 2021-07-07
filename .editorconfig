@@ -1,0 +1,25 @@
+# Rules in this file were inferred by Visual Studio IntelliCode from the C:\S\tuServ\src\BlackMarble.Victory.Ux codebase based on best match to current usage at 01/07/2019
+# You can learn more about editorconfig here: https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference
+
+##########################################
+# Common Settings
+##########################################
+
+# This file is the top-most EditorConfig file
+root=true
+
+# All Files
+
+[*]
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = false
+
+[*.ts]
+indent_style = space
+
+[{*.json,*.md,*.yml}]
+indent_style = space
+indent_size = 2
+
+

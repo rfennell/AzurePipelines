@@ -1239,29 +1239,103 @@ export async function generateReleaseNotes(
                             globalWorkItems = await buildApi.getWorkItemsBetweenBuilds(teamProject, lastGoodBuildId, buildId);
                         }
 
+                        // get the consumed artifacts for the current build
+                        var currentBuildArtifacts = await getConsumedArtifactsForBuild(
+                            organisationWebApi.rest,
+                            tpcUri,
+                            teamProject,
+                            buildId);
+
+                        var lastGoodBuildArtifacts = await getConsumedArtifactsForBuild(
+                            organisationWebApi.rest,
+                            tpcUri,
+                            teamProject,
+                            lastGoodBuildId);
+
+                        // we can't use the standard enrichConsumedArtifacts because we need to get the artifacts from the last good build
+                        for (let artifactIndex = 0; artifactIndex < currentBuildArtifacts.length; artifactIndex++) {
+                            const currentBuildArtifact = currentBuildArtifacts[artifactIndex];
+
+                            // need to find the matching artifact in the past release
+                            const lastGoodBuildArtifact = lastGoodBuildArtifacts.find(artifactInLastGoodBuild => (artifactInLastGoodBuild as any).alias === (currentBuildArtifact as any).alias);
+
+                            if (lastGoodBuildArtifact) {
+                                agentApi.logInfo(`Getting changes for the artifact ${(currentBuildArtifact as any).alias} between ${(lastGoodBuildArtifact as any).versionId} and ${(currentBuildArtifact as any).versionId}`);
+                                globalConsumedArtifacts.push({
+                                    "artifactCategory": "Pipeline",
+                                    "artifactType": "Pipeline",
+                                    "alias": (currentBuildArtifact as any).alias,
+                                    "properties": {
+                                        "projectId": (currentBuildArtifact as any).properties.projectId
+                                    },
+                                    "commits":	await enrichChangesWithFileDetails(
+                                        gitApi,
+                                        tfvcApi,
+                                        await buildApi.getChangesBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId),
+                                        gitHubPat),
+                                    "workitems": await getFullWorkItemDetails(
+                                        workItemTrackingApi,
+                                        await buildApi.getWorkItemsBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId))
+                                });
+                            } else {
+                                agentApi.logInfo(`Cannot find a matching artifact for ${(currentBuildArtifact as any).alias} in the build ${lastGoodBuildId}, so just getting directly associated commits and wi wit the build`);
+                                globalConsumedArtifacts.push({
+                                    "artifactCategory": "Pipeline",
+                                    "artifactType": "Pipeline",
+                                    "alias": (currentBuildArtifact as any).alias,
+                                    "properties": {
+                                        "projectId": (currentBuildArtifact as any).properties.projectId
+                                    },
+                                    "commits":	await enrichChangesWithFileDetails(
+                                        gitApi,
+                                        tfvcApi,
+                                        await (buildApi.getBuildChanges((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId)),
+                                        gitHubPat),
+                                    "workitems": await getFullWorkItemDetails(
+                                        workItemTrackingApi,
+                                        await (buildApi.getBuildWorkItemsRefs((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId)))
+                                });
+
+                            }
+
+                        }
+
                     } else {
                         agentApi.logInfo("There has been no past successful build for this stage, so we can just get details from this build");
 
-                        let timeline = await (buildApi.getBuildTimeline(teamProject, buildId));
-                        if (timeline && timeline.records) {
-                            for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
-                                const record  = timeline.records[timelineIndex];
-                                if (record.type === "Stage") {
-                                    if (record.name === stageName) { // succeeded
-                                        agentApi.logInfo (`Found the current stage ${record.name} in build ${buildId}`);
-                                        currentStage = record;
-                                    }
-                                }
-                            }
-                        }
-
                         globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
                         globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000);
+
+                        agentApi.logInfo("Get the artifacts consumed by the build");
+                        globalConsumedArtifacts = await getConsumedArtifactsForBuild(
+                            organisationWebApi.rest,
+                            tpcUri,
+                            teamProject,
+                            buildId);
+
+                        globalConsumedArtifacts = await enrichConsumedArtifacts(
+                            globalConsumedArtifacts,
+                            buildApi,
+                            workItemTrackingApi);
+
                     }
                 } else {
                     agentApi.logInfo (`Getting items associated with only the current build`);
                     globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
                     globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000);
+
+                    agentApi.logInfo("Get the artifacts consumed by the build");
+                    globalConsumedArtifacts = await getConsumedArtifactsForBuild(
+                        organisationWebApi.rest,
+                        tpcUri,
+                        teamProject,
+                        buildId);
+
+                    globalConsumedArtifacts = await enrichConsumedArtifacts(
+                        globalConsumedArtifacts,
+                        buildApi,
+                        workItemTrackingApi);
+
                 }
                 agentApi.logInfo("Get the file details associated with the commits");
                 globalCommits = await enrichChangesWithFileDetails(gitApi, tfvcApi, globalCommits, gitHubPat);
@@ -1275,28 +1349,6 @@ export async function generateReleaseNotes(
                     teamProject,
                     buildId,
                     globalManualTestConfigurations);
-                agentApi.logInfo("Get the artifacts consumed by the build");
-                globalConsumedArtifacts = await getConsumedArtifactsForBuild(
-                        organisationWebApi.rest,
-                        tpcUri,
-                        teamProject,
-                        buildId);
-
-                for (let index = 0; index < globalConsumedArtifacts.length; index++) {
-                    const artifact = globalConsumedArtifacts[index];
-                    if (artifact["artifactCategory"] === "Pipeline") {
-                        agentApi.logInfo(`Getting the details of the ${artifact["artifactCategory"]} artifact ${artifact["alias"]} ${artifact["versionName"]}`);
-                        try {
-                            var artifactTeamProjectId = artifact["properties"]["projectId"];
-                            artifact["commits"] = await (buildApi.getBuildChanges(artifactTeamProjectId, artifact["versionId"]));
-                            artifact["workitems"] = await getFullWorkItemDetails(workItemTrackingApi, await (buildApi.getBuildWorkItemsRefs(artifactTeamProjectId, artifact["versionId"])));
-                        } catch (err) {
-                           agentApi.logWarn(`Cannot retried commit or work item information ${err}`);
-                        }
-                    } else {
-                        agentApi.logInfo(`Cannot get extra details of the ${artifact["artifactCategory"]} artifact ${artifact["alias"]} ${artifact["versionName"]}`);
-                    }
-                }
 
             } else {
                 environmentName = (overrideStageName || environmentName).toLowerCase();
@@ -1746,6 +1798,34 @@ function removeDuplicates(array: any[]): any[] {
     t.id === thing.id
     )));
     return array;
+}
+
+async function enrichConsumedArtifacts(
+    consumedArtifacts,
+    buildApi,
+    workItemTrackingApi): Promise<[]> {
+    return new Promise<[]>(async (resolve, reject) => {
+    try {
+        for (let index = 0; index < consumedArtifacts.length; index++) {
+            const artifact = consumedArtifacts[index];
+            if (artifact["artifactCategory"] === "Pipeline") {
+                agentApi.logInfo(`Getting the details of the ${artifact["artifactCategory"]} artifact ${artifact["alias"]} ${artifact["versionName"]}`);
+                try {
+                    var artifactTeamProjectId = artifact["properties"]["projectId"];
+                    artifact["commits"] = await (buildApi.getBuildChanges(artifactTeamProjectId, artifact["versionId"]));
+                    artifact["workitems"] = await getFullWorkItemDetails(workItemTrackingApi, await (buildApi.getBuildWorkItemsRefs(artifactTeamProjectId, artifact["versionId"])));
+                } catch (err) {
+                    agentApi.logWarn(`Cannot retried commit or work item information ${err}`);
+                }
+            } else {
+                agentApi.logInfo(`Cannot get extra details of the ${artifact["artifactCategory"]} artifact ${artifact["alias"]} ${artifact["versionName"]}`);
+            }
+        }
+        resolve(consumedArtifacts);
+    } catch (err) {
+        reject (err);
+    }
+});
 }
 
 async function addGitHubLinkedWI(workItemTrackingApi: IWorkItemTrackingApi, globalCommits: Change[]): Promise<ResourceRef[]> {
