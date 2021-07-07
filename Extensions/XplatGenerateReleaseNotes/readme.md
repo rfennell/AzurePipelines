@@ -2,15 +2,16 @@
 Generates release notes for a Classic Build or Release, or a YML based build. The generated file can be any text based format of your choice
 * Can be used on any type of Azure DevOps Agents (Windows, Mac or Linux)
 * Uses same logic as Azure DevOps Release UI to work out the work items and commits/changesets associated with the release
+* 3.55.x Further enrichment of pipeline `consumedArtifacts` so that when `checkstage=true` changes between the versions of the consumed artifacts are expanded.
 * 3.54.x Added support to find WI linked from GitHub using the `AB#123` syntax and adding them to the `workitems` array
-* 3.52.x Added enrichement of pipeline `consumedArtifacts` to include commits and workitem associated where possible
+* 3.52.x Added enrichment of pipeline `consumedArtifacts` to include commits and workitem associated where possible
 * 3.50.x Added `consumedArtifacts` to the available options in the template
 * 3.46.x Added `manualtest` and `manualTestConfigurations` to the available options in the template
 * 3.32.x Adds parameters to control the retry logic for timed outed out API calls
 * 3.28.x provide a new array of `inDirectlyAssociatedPullRequests`, this contains PR associated with a PR's associated commits. Useful if using a Gitflow work work-flow [x866](https://github.com/rfennell/AzurePipelines/issues/866) (see sample template below)
 * 3.27.x enriches the PR with associated commits (see sample template below)
 * 3.25.x enriches the PR with associated work items references (you need to do a lookup into the list of work items to get details, see sample template below)
-* 3.24.x adds labels/tags to the PR 
+* 3.24.x adds labels/tags to the PR
 * 3.21.x adds an override for the historic pipeline to compare against
 * 3.8.x adds `currentStage` variable for multi-stage YAML based builds
 * 3.6.x adds `compareBuildDetails` variable for YAML based builds
@@ -28,9 +29,9 @@ Generates release notes for a Classic Build or Release, or a YML based build. Th
 # Overview
 This task generates a release notes file based on a template passed into the tool. It can be using inside a [classic Build, a classic Release](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-the-classic-interface) or a [Multistage YAML Pipeline](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-yaml-syntax).
 
-The data source for the generated Release Notes is the Azure DevOps REST API's comparison calls that are also used by the Azure DevOps UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of work items and commits/changesets as the Azure DevOps UI, though it can enrich this core data with extra information. 
+The data source for the generated Release Notes is the Azure DevOps REST API's comparison calls that are also used by the Azure DevOps UI to show the associated Work items and commit/changesets between two releases. Hence this task should generate the same list of work items and commits/changesets as the Azure DevOps UI, though it can enrich this core data with extra information.
 
-> **Note:** 
+> **Note:**
 >  - That this comparison is only done against the primary build artifact linked to a Classic Release
 >  - If used in the build or non-multistage YAML pipeline the release notes are based on the current build only.
 
@@ -45,13 +46,13 @@ Possible sets of parameters depending on your usage are summarized below
 |-|-|-|
 | Generate notes for just the current build | Requires `checkstages=false` parameter| Run inside the build |
 | Generate notes since the last successful release.  <br>Option 1. Place the task in a stage that is only run when you wish to generate release notes. Usually this will be guarded by branch based filters or manual approvals.  |  Requires `checkstages=true` parameter | Run inside the release. Supported and you can override the stage name used for comparison using the `overrideStageName` parameter
-| Generate notes since the last successful release.  <br>Option 2. Set the task to look back for the last successful build that has a given tag |  Requires `checkstages=true` and the `tags` parameters| Not supported 
+| Generate notes since the last successful release.  <br>Option 2. Set the task to look back for the last successful build that has a given tag |  Requires `checkstages=true` and the `tags` parameters| Not supported
 | Generate notes since the last successful release.  <br>Option 3. Override the build that the task uses for comparison with a fixed value |  Requires `checkstages=true` and the `overrideBuildReleaseId` parameters | Run inside the release. Requires the `overrideBuildReleaseId` parameter
 
 You can see the documentation for all the features in the [WIKI ](https://github.com/rfennell/AzurePipelines/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task) and the YAML usage [here](https://github.com/rfennell/AzurePipelines/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task-YAML)
 
 
-# The Template 
+# The Template
 
 There are [sample templates](https://github.com/rfennell/vNextBuild/tree/master/SampleTemplates) that just produce basic releases notes for both Git and TFVC based releases. Most samples are for Markdown file generation, but it is possible to generate any other format such as HTML
 
@@ -76,7 +77,7 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 * Associated Work Items
 {{#forEach this.associatedWorkitems}}
    {{#with (lookup_a_work_item ../../relatedWorkItems this.url)}}
-    - [{{this.id}}]({{replace this.url "_apis/wit/workItems" "_workitems/edit"}}) - {{lookup this.fields 'System.Title'}} 
+    - [{{this.id}}]({{replace this.url "_apis/wit/workItems" "_workitems/edit"}}) - {{lookup this.fields 'System.Title'}}
    {{/with}}
 {{/forEach}}
 * Associated Commits (this includes commits on the PR source branch not associated directly with the build)
@@ -89,7 +90,7 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 {{#forEach this.workItems}}
 {{#if isFirst}}### WorkItems {{/if}}
 *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
-   - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
+   - **WIT** {{lookup this.fields 'System.WorkItemType'}}
    - **Tags** {{lookup this.fields 'System.Tags'}}
    - **Assigned** {{#with (lookup this.fields 'System.AssignedTo')}} {{displayName}} {{/with}}
    - **Description** {{{lookup this.fields 'System.Description'}}}
@@ -97,45 +98,45 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 {{#forEach this.relations}}
 {{#if (contains this.attributes.name 'Pull Request')}}
 {{#with (lookup_a_pullrequest ../../pullRequests  this.url)}}
-      - {{this.pullRequestId}} - {{this.title}} 
+      - {{this.pullRequestId}} - {{this.title}}
 {{/with}}
 {{/if}}
-{{/forEach}} 
+{{/forEach}}
    - **Parents**
 {{#forEach this.relations}}
 {{#if (contains this.attributes.name 'Parent')}}
 {{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
-      - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+      - {{this.id}} - {{lookup this.fields 'System.Title'}}
       {{#forEach this.relations}}
       {{#if (contains this.attributes.name 'Parent')}}
       {{#with (lookup_a_work_item ../../../../relatedWorkItems  this.url)}}
-         - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+         - {{this.id}} - {{lookup this.fields 'System.Title'}}
       {{/with}}
       {{/if}}
-      {{/forEach}} 
+      {{/forEach}}
 {{/with}}
 {{/if}}
-{{/forEach}} 
+{{/forEach}}
    - **Children**
 {{#forEach this.relations}}
 {{#if (contains this.attributes.name 'Child')}}
 {{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
-      - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+      - {{this.id}} - {{lookup this.fields 'System.Title'}}
 {{/with}}
 {{/if}}
-{{/forEach}} 
+{{/forEach}}
 {{/forEach}}
 
 # Global list of CS ({{commits.length}})
 {{#forEach commits}}
 {{#if isFirst}}### Associated commits{{/if}}
-* ** ID{{this.id}}** 
+* ** ID{{this.id}}**
    -  **Message:** {{this.message}}
-   -  **Commited by:** {{this.author.displayName}} 
-   -  **FileCount:** {{this.changes.length}} 
+   -  **Commited by:** {{this.author.displayName}}
+   -  **FileCount:** {{this.changes.length}}
 {{#forEach this.changes}}
-      -  **File path (TFVC or TfsGit):** {{this.item.path}}  
-      -  **File filename (GitHub):** {{this.filename}}  
+      -  **File path (TFVC or TfsGit):** {{this.item.path}}
+      -  **File filename (GitHub):** {{this.filename}}
 {{/forEach}}
 {{/forEach}}
 
@@ -162,7 +163,7 @@ Since 2.27.x it has been possible to create your templates using [Handlebars](ht
 
 What is done behind the scenes is that each `{{properties}}` block in the template is expanded by Handlebars. The property objects available to get data from at runtime are:
 
-## Common objects 
+## Common objects
 | Object | Description |
 | -| -|
 |**workItems** | the array of work item associated with the release|
@@ -185,14 +186,14 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 ### Build objects (available for Classic UI based builds and any YAML based pipelines)
 | Object | Description |
 | -| -|
-| **buildDetails** | if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release. 
+| **buildDetails** | if running in a build, the build details of the build that the task is running in. If running in a release it is the build that triggered the release.
 | **compareBuildDetails** | the previous successful build that comparisons are being made against, only available if `checkstage=true`
 | **currentStage** | if `checkstage` is enable this object is set to the details of the stage in the current build that is being used for the stage check
-| **consumedArtifacts** | the artifacts consumed by the pipeline, enriched with details of commits and workitems if available
+| **consumedArtifacts** | the artifacts consumed by the pipeline, enriched with details of commits and workitems if available. If `checkStage=true` is set then this list should include all changes between the version of the artifact in the current and last successful run of the containing stage
 
 > **Note:** To dump all possible values via the template using the custom Handlebars extension `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion. There are also options to dump these raw values to the build console log or to a file. (See below)
 
-> **Note:** if a field contains escaped HTML encode data this can be returned its original format with triple brackets format `{{{lookup this.fields 'System.Description'}}}` 
+> **Note:** if a field contains escaped HTML encode data this can be returned its original format with triple brackets format `{{{lookup this.fields 'System.Description'}}}`
 
 ## Handlebar Extensions
 With 2.28.x support was added for Handlebars extensions in a number of ways:
@@ -201,7 +202,7 @@ With 2.28.x support was added for Handlebars extensions in a number of ways:
 
 ```
 ## To confirm the Handlebars-helpers is work
-The year is {{year}} 
+The year is {{year}}
 We can capitalize "foo bar baz" {{capitalizeAll "foo bar baz"}}
 ```
 
@@ -219,17 +220,17 @@ In addition to the [Handlebars Helpers](https://github.com/helpers/handlebars-he
 {{#forEach this.relations}}
 {{#if (contains this.attributes.name 'Parent')}}
 {{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
-      - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+      - {{this.id}} - {{lookup this.fields 'System.Title'}}
       {{#forEach this.relations}}
       {{#if (contains this.attributes.name 'Parent')}}
       {{#with (lookup_a_work_item ../../../../relatedWorkItems  this.url)}}
-         - {{this.id}} - {{lookup this.fields 'System.Title'}} 
+         - {{this.id}} - {{lookup this.fields 'System.Title'}}
       {{/with}}
       {{/if}}
-      {{/forEach}} 
+      {{/forEach}}
 {{/with}}
 {{/if}}
-{{/forEach}} 
+{{/forEach}}
 ```
 
 ```
@@ -239,7 +240,7 @@ In addition to the [Handlebars Helpers](https://github.com/helpers/handlebars-he
 * Associated Work Items
 {{#forEach this.associatedWorkitems}}
    {{#with (lookup_a_work_item ../../relatedWorkItems this.url)}}
-    - [{{this.id}}]({{replace this.url "_apis/wit/workItems" "_workitems/edit"}}) - {{lookup this.fields 'System.Title'}} 
+    - [{{this.id}}]({{replace this.url "_apis/wit/workItems" "_workitems/edit"}}) - {{lookup this.fields 'System.Title'}}
    {{/with}}
 {{/forEach}}
 * Associated Commits (this s commits on the PR source branch not associated directly with the build)
@@ -254,7 +255,7 @@ In addition to the [Handlebars Helpers](https://github.com/helpers/handlebars-he
 {{#forEach this.relations}}
 {{#if (contains this.attributes.name 'Pull Request')}}
 {{#with (lookup_a_pullrequest ../../pullRequests  this.url)}}
-      - {{this.pullRequestId}} - {{this.title}} 
+      - {{this.pullRequestId}} - {{this.title}}
 {{/with}}
 {{/if}}
 {{/forEach}}
@@ -269,14 +270,14 @@ In addition to the [Handlebars Helpers](https://github.com/helpers/handlebars-he
 * Associated Work Items
 {{#forEach this.associatedWorkitems}}
    {{#with (lookup_a_work_item ../../relatedWorkItems this.url)}}
-    - [{{this.id}}]({{replace this.url "_apis/wit/workItems" "_workitems/edit"}}) - {{lookup this.fields 'System.Title'}} 
+    - [{{this.id}}]({{replace this.url "_apis/wit/workItems" "_workitems/edit"}}) - {{lookup this.fields 'System.Title'}}
    {{/with}}
 {{/forEach}}
 * Associated Commits (this includes commits on the PR source branch not associated directly with the build)
 {{#forEach this.associatedCommits}}
     - [{{truncate this.commitId 7}}]({{this.remoteUrl}}) - {{get_only_message_firstline this.comment}}
     {{#with (lookup_a_pullrequest_by_merge_commit ../../inDirectlyAssociatedPullRequests  this.commitId)}}
-      - Associated PR {{this.pullRequestId}} - {{this.title}} 
+      - Associated PR {{this.pullRequestId}} - {{this.title}}
     {{/with}}
 {{/forEach}}
 {{/forEach}}
@@ -308,7 +309,7 @@ Finally there is also support for your own custom extension libraries. These are
          }};
 ```
 
-Or the custom extension can be passed as file 
+Or the custom extension can be passed as file
 
 ```
 - task: XplatGenerateReleaseNotes@3
@@ -364,7 +365,7 @@ The task takes the following parameters
 | customHandlebarsExtensionFile | The filename to save the customHandlebarsExtensionCode into if set. If there is no text in the  customHandlebarsExtensionCode parameter the an attempt will be made to load any custom extensions from from this file. This allows custom extensions to loaded like any other source file under source control. |
 | outputVariableName | Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.|
 
-# Output location 
+# Output location
 
 When using this task within a build then it is sensible to place the release notes files as a build artifacts.
 
@@ -392,7 +393,7 @@ Historically the only workaround has been to always place this task, and any ass
 ## OAUTH Scope limiting what Associated Items can be seen
 This task uses the build agent's access OAUTH token to access the Azure DevOps API. The permissions this identity has is dependant upon the [the Job authorization scope](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/access-tokens?view=azure-devops&tabs=yaml#job-authorization-scope).
 
-Cross project permissions are made more complex by the new default settings for recently created Team Projects (created since late 2020). These can effect this task's operation why trying to find associated items from other Team Projects. 
+Cross project permissions are made more complex by the new default settings for recently created Team Projects (created since late 2020). These can effect this task's operation why trying to find associated items from other Team Projects.
 
 > **Note** This setting is not a problem in older Team Projects, where the default setting to off
 
