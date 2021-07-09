@@ -1270,6 +1270,7 @@ export async function generateReleaseNotes(
                                         "properties": {
                                             "projectId": (currentBuildArtifact as any).properties.projectId
                                         },
+                                        "versionName": `${(lastGoodBuildArtifact as any).versionName} - ${(currentBuildArtifact as any).versionName}`,
                                         "commits":	await enrichChangesWithFileDetails(
                                             gitApi,
                                             tfvcApi,
@@ -1288,6 +1289,7 @@ export async function generateReleaseNotes(
                                         "properties": {
                                             "projectId": (currentBuildArtifact as any).properties.projectId
                                         },
+                                        "versionName": (currentBuildArtifact as any).versionName,
                                         "commits":	await enrichChangesWithFileDetails(
                                             gitApi,
                                             tfvcApi,
