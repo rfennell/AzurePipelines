@@ -9,7 +9,7 @@
 
 # Included Packages
 {{#forEach consumedArtifacts}}
-## {{this.alias}} ({{this.artifactCategory}})
+## {{this.versionName}} ({{this.artifactCategory}})
 ### Commits
 | SHA | Message |
 |-|-|
