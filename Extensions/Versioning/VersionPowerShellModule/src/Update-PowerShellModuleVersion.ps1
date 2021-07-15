@@ -65,6 +65,8 @@ if ($Prerelease) {
     Write-Verbose -Message "Found prerelease flag: $Prerelease"
 }
 
+Write-Verbose -Message "Loading Metadata module shipped with tasks"
+Import-Module "$PSScriptRoot\metadata\1.5.0\metadata.psd1" -force
 Write-Verbose -Message "Loading Configuration module shipped with tasks"
 Import-Module "$PSScriptRoot\Configuration\1.5.0\Configuration.psd1" -force
 $Null = Get-Command -Module Configuration
