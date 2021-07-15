@@ -65,37 +65,9 @@ if ($Prerelease) {
     Write-Verbose -Message "Found prerelease flag: $Prerelease"
 }
 
-Write-Verbose -Message "Loading Configuration module for applying the version number"
-if (Get-Module -Name PowerShellGet -ListAvailable) {
-    try {
-        Write-Verbose -Message "Attempting to use already configured NuGet provider"
-        $null = Get-PackageProvider -Name NuGet -ErrorAction Stop
-    }
-    catch {
-        try {
-            Write-Verbose -Message "No NuGet provider found, installing it first"
-            Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false -ErrorAction Stop
-        }
-        catch {
-            Write-Host "##vos[task.logissue type=warning]Falling back to version of Configuration shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
-            Import-Module "$PSScriptRoot\1.3.0\Configuration.psd1" -force
-        }
-    }
-
-    Write-Verbose -Message "Finding the latest version of the Configuration module on the PSGallery"
-    $NewestConfiguration = Find-Module -Name Configuration | Sort-Object Version -Descending | Select-Object -First 1
-    If (-not(Get-Module Configuration) -or (Get-Module Configuration -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestConfiguration.Version) {
-        Write-Verbose -Message "Newer version of the module is available online, installing as current user"
-        Install-Module -Name Configuration -Scope CurrentUser -Force -Repository $NewestConfiguration.Repository
-        Import-Module Configuration -force
-        $Null = Get-Command -Module Configuration
-    }
-}
-else {
-    Write-Verbose -Message "PowerShellGet is unavailable, using Configuration module shipped with task instead"
-    Import-Module "$PSScriptRoot\1.3.0\Configuration.psd1" -force
-    $Null = Get-Command -Module Configuration
-}
+Write-Verbose -Message "Loading Configuration module shipped with task instead"
+Import-Module "$PSScriptRoot\1.3.0\Configuration.psd1" -force
+$Null = Get-Command -Module Configuration
 
 Write-Verbose -Message "Finding all the module psd1 files in the specified path"
 $ModuleFiles = Get-ChildItem -Path $Path -Filter *.psd1 -Recurse |
