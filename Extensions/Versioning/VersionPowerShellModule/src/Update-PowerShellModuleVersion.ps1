@@ -65,7 +65,7 @@ if ($Prerelease) {
     Write-Verbose -Message "Found prerelease flag: $Prerelease"
 }
 
-Write-Verbose -Message "Loading Configuration module shipped with task instead"
+Write-Verbose -Message "Loading Configuration module shipped with tasks"
 Import-Module "$PSScriptRoot\1.3.0\Configuration.psd1" -force
 $Null = Get-Command -Module Configuration
 
