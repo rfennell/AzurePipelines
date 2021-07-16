@@ -1,6 +1,6 @@
 name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
-trigger: 
+trigger:
   branches:
     include: [ main ] # branch names which will trigger a build
   paths:
@@ -17,7 +17,7 @@ variables:
   #  major
   #  minor
   - group:  'Versioning Extension'
-    # this group includes the following variablea  
+    # this group includes the following variablea
     #  ExtensionRoot - working folder
     #  PublisherID  - Marketplace publisher
     #  ExtensionID - Marketplace extension id
@@ -30,9 +30,9 @@ stages:
   - stage: Build
     jobs:
     - job: Build
-      pool: 
-        # vmImage: '$(vmImage)'
-        name: default
+      pool:
+        vmImage: '$(vmImage)'
+        #name: default
         demands: npm
       steps:
       # version all the task in the extension
@@ -71,7 +71,7 @@ stages:
           testResultsFiles: '$(Build.SourcesDirectory)\Test-VersionPowerShellTaskPester.XML'
           testRunTitle: 'PowerShellModule Pester Tests'
         condition: succeededOrFailed()
-     
+
       # for each Node based task we must transpile it
       - template: ..\..\YAMLTemplates\build-node-task.yml
         parameters:
@@ -138,12 +138,12 @@ stages:
             # we don't need to DownloadPipelineArtifact as this is done automatically
             - template: ..\..\YAMLTemplates\publish-extension.yml
               parameters:
-                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
-                 extensionTag: '$(privateExtentionsTag)' 
-                 extensionVisibility: private    
+                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
+                 extensionTag: '$(privateExtentionsTag)'
+                 extensionVisibility: private
 
   - stage: Test_Windows
-    dependsOn: Private 
+    dependsOn: Private
     jobs:
     - deployment: Private_Test
       timeoutInMinutes: 0
@@ -192,7 +192,7 @@ stages:
                   password: $(System.AccessToken)
 
   - stage: Test_Linux
-    dependsOn: Private 
+    dependsOn: Private
     jobs:
     - deployment: Private_Test
       timeoutInMinutes: 0
@@ -214,7 +214,7 @@ stages:
                   password: $(System.AccessToken)
 
   - stage: Test_Mac
-    dependsOn: Private 
+    dependsOn: Private
     jobs:
     - deployment: Private_Test
       timeoutInMinutes: 0
@@ -236,7 +236,7 @@ stages:
                   password: $(System.AccessToken)
 
   - stage: Documentation
-    dependsOn: 
+    dependsOn:
     - Test_Windows
     - Test_Linux
     - Test_Mac
@@ -256,7 +256,7 @@ stages:
         vmImage: '$(vmImage)'
       strategy:
         runOnce:
-          deploy:   
+          deploy:
             steps:
               - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
                 parameters:
@@ -284,17 +284,16 @@ stages:
               # we don't need to DownloadPipelineArtifact as this is done automatically
               - template: ..\..\YAMLTemplates\publish-extension.yml
                 parameters:
-                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
-                   extensionTag: '' 
-                   extensionVisibility: public    
+                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
+                   extensionTag: ''
+                   extensionVisibility: public
 
     - job: Post_Publish
-      dependsOn: Public_Deployment 
+      dependsOn: Public_Deployment
       pool:
         vmImage: '$(vmImage)'
       steps:
         - template: ..\..\YAMLTemplates\post-publish.yml
           parameters:
-              buildNumber: $(Build.BuildNumber)  
-              extensionName: $(Build.DefinitionName)      
-                
+              buildNumber: $(Build.BuildNumber)
+              extensionName: $(Build.DefinitionName)
