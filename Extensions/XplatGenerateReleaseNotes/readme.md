@@ -180,7 +180,7 @@ What is done behind the scenes is that each `{{properties}}` block in the templa
 | -| -|
 | **releaseDetails** | the release details of the release that the task was triggered for.|
 | **compareReleaseDetails** | the the previous successful release that comparisons are being made against |
-| **releaseTest** | the list of test associated with the release e.g. integration tests |
+| **releaseTests** | the list of test associated with the release e.g. integration tests |
 | **builds** | the array of the build artifacts that CS and WI are associated with. The associated WI, CS etc. in ths object are also will the main objects above, this is a filtered lits by build. Note that this is a object with multiple child properties. <br> - **build**  - the build details <br> -- **commits**  - the commits associated with this build <br> -- **workitems**  - the work items associated with the build<br> -- **tests**  - the work items associated with the build <br> -- **manualtests**  - the manual test runs associated with the build
 
 ### Build objects (available for Classic UI based builds and any YAML based pipelines)
