@@ -405,61 +405,65 @@ export async function enrichChangesWithFileDetails(
     return new Promise<Change[]>(async (resolve, reject) => {
         try {
             var extraDetail = [];
-            for (let index = 0; index < changes.length; index++) {
-                const change = changes[index];
-                try {
-                    agentApi.logInfo (`Enriched change ${change.id} of type ${change.type}`);
-                    if (change.type === "TfsGit") {
-                        // we need the repository ID for the API call
-                        // the alternative is to take the basic location value and build a rest call from that
-                        // neither are that nice.
-                        var url = require("url");
-                        // split the url up, check it is the expected format and then get the ID
-                        var urlParts = url.parse(change.location);
-                        try {
-                            var pathParts = urlParts.path.split("/");
-                            var repoId = "";
-                            for (let index = 0; index < pathParts.length; index++) {
-                                if (pathParts[index] === "repositories") {
-                                    repoId = pathParts[index + 1];
-                                    break;
+            if (changes && changes.length > 0) {
+                for (let index = 0; index < changes.length; index++) {
+                    const change = changes[index];
+                    try {
+                        agentApi.logInfo (`Enriched change ${change.id} of type ${change.type}`);
+                        if (change.type === "TfsGit") {
+                            // we need the repository ID for the API call
+                            // the alternative is to take the basic location value and build a rest call from that
+                            // neither are that nice.
+                            var url = require("url");
+                            // split the url up, check it is the expected format and then get the ID
+                            var urlParts = url.parse(change.location);
+                            try {
+                                var pathParts = urlParts.path.split("/");
+                                var repoId = "";
+                                for (let index = 0; index < pathParts.length; index++) {
+                                    if (pathParts[index] === "repositories") {
+                                        repoId = pathParts[index + 1];
+                                        break;
+                                    }
                                 }
+                                let gitDetails = await gitApi.getChanges(change.id, repoId);
+                                agentApi.logInfo (`Enriched with details of ${gitDetails.changes.length} files`);
+                                extraDetail = gitDetails.changes;
+                            } catch (ex)  {
+                                agentApi.logInfo (`Cannot enriched ${ex}`);
                             }
-                            let gitDetails = await gitApi.getChanges(change.id, repoId);
-                            agentApi.logInfo (`Enriched with details of ${gitDetails.changes.length} files`);
-                            extraDetail = gitDetails.changes;
-                        } catch (ex)  {
-                            agentApi.logInfo (`Cannot enriched ${ex}`);
-                        }
-                    } else if (change.type === "TfsVersionControl") {
-                        var tfvcDetail = await tfvcApi.getChangesetChanges(parseInt(change.id.substring(1)));
-                        agentApi.logInfo (`Enriched with details of ${tfvcDetail.length} files`);
-                        extraDetail = tfvcDetail;
-                    } else if (change.type === "GitHub") {
-                        let res: restm.IRestResponse<GitCommit>;
-                        // we build PAT auth object even if we have no token
-                        // this will still allow access to public repos
-                        // if we have a token it will allow access to private ones
-                        let auth = new PersonalAccessTokenCredentialHandler(gitHubPat);
-                        let rc = new restm.RestClient("rest-client", "", [auth], {});
-                        let gitHubRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
-                        if (gitHubRes.statusCode === 200) {
-                            var gitHubFiles = gitHubRes.result.files;
-                            agentApi.logInfo (`Enriched with details of ${gitHubFiles.length} files`);
-                            extraDetail = gitHubFiles;
+                        } else if (change.type === "TfsVersionControl") {
+                            var tfvcDetail = await tfvcApi.getChangesetChanges(parseInt(change.id.substring(1)));
+                            agentApi.logInfo (`Enriched with details of ${tfvcDetail.length} files`);
+                            extraDetail = tfvcDetail;
+                        } else if (change.type === "GitHub") {
+                            let res: restm.IRestResponse<GitCommit>;
+                            // we build PAT auth object even if we have no token
+                            // this will still allow access to public repos
+                            // if we have a token it will allow access to private ones
+                            let auth = new PersonalAccessTokenCredentialHandler(gitHubPat);
+                            let rc = new restm.RestClient("rest-client", "", [auth], {});
+                            let gitHubRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
+                            if (gitHubRes.statusCode === 200) {
+                                var gitHubFiles = gitHubRes.result.files;
+                                agentApi.logInfo (`Enriched with details of ${gitHubFiles.length} files`);
+                                extraDetail = gitHubFiles;
+                            } else {
+                                agentApi.logWarn(`Cannot access API ${gitHubRes.statusCode} accessing ${change.location}`);
+                                agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
+                            }
+                        } else if (change.type === "Bitbucket") {
+                                agentApi.logWarn(`This task does not currently support getting file details associated to a commit on Bitbucket`);
                         } else {
-                            agentApi.logWarn(`Cannot access API ${gitHubRes.statusCode} accessing ${change.location}`);
-                            agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
+                            agentApi.logWarn(`Cannot preform enrichment as type ${change.type} is not supported for enrichment`);
                         }
-                    } else if (change.type === "Bitbucket") {
-                            agentApi.logWarn(`This task does not currently support getting file details associated to a commit on Bitbucket`);
-                    } else {
-                        agentApi.logWarn(`Cannot preform enrichment as type ${change.type} is not supported for enrichment`);
+                        change["changes"] = extraDetail;
+                    } catch (err) {
+                        agentApi.logWarn(`Error ${err} enriching ${change.location}`);
                     }
-                    change["changes"] = extraDetail;
-                } catch (err) {
-                    agentApi.logWarn(`Error ${err} enriching ${change.location}`);
                 }
+            } else {
+               changes = [];
             }
             resolve(changes);
         } catch (err) {
