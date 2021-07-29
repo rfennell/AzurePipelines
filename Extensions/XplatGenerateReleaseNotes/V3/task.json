@@ -93,7 +93,7 @@
         "required": false,
         "helpMarkDown": "If true a comparison is made against the last build that was successful to the current stage, or overrideStageName if specified (Build Only, for this to work the stage name must be unique in the pipeline)"
       },
-   
+
       {
       "name": "overrideStageName",
       "type": "string",
@@ -319,7 +319,17 @@
       "required": true,
       "helpMarkDown": "If enabled will stop the pipeline if there is a Handlebars template error, if false the task will log the error but continue",
       "groupName":"advanced"
+    },
+    {
+      "name": "considerPartiallySuccessfulReleases",
+      "type": "boolean",
+      "label": "Consider Partially Successful Release",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "If enabled both successful and partial successful release will be considered when looking for historic releases",
+      "groupName":"advanced"
     }
+
 
 
 

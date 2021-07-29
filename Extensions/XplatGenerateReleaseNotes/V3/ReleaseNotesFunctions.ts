@@ -83,6 +83,7 @@ import { InstalledExtensionQuery } from "azure-devops-node-api/interfaces/Extens
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "constants";
 import { stringify } from "querystring";
 import { Exception } from "handlebars";
+import { IdentityDisplayFormat } from "azure-devops-node-api/interfaces/WorkInterfaces";
 
 let agentApi = new AgentSpecificApi();
 
@@ -248,19 +249,53 @@ export async function getPullRequests(
     });
 }
 
-export async function getMostRecentSuccessfulDeployment(releaseApi: IReleaseApi, teamProject: string, releaseDefinitionId: number, environmentId: number, overrideBuildReleaseId: string): Promise<Deployment> {
+export async function getMostRecentSuccessfulDeployment(
+    releaseApi: IReleaseApi,
+    teamProject: string,
+    releaseDefinitionId: number,
+    environmentId: number,
+    overrideBuildReleaseId: string,
+    considerPartiallySuccessfulReleases: boolean): Promise<Deployment> {
     return new Promise<Deployment>(async (resolve, reject) => {
 
         let mostRecentDeployment: Deployment = null;
         try {
             // Gets the latest successful deployments - the api returns the deployments in the correct order
+            agentApi.logInfo (`Finding successful deployments`);
             var successfulDeployments = await releaseApi.getDeployments(teamProject, releaseDefinitionId, environmentId, null, null, null, DeploymentStatus.Succeeded, null, true, null, null, null, null).catch((reason) => {
                 reject(reason);
                 return;
             });
 
+            if (considerPartiallySuccessfulReleases === true) {
+                agentApi.logInfo (`Finding partially successful deployments`);
+                var partialSuccessfulDeployments = await releaseApi.getDeployments(teamProject, releaseDefinitionId, environmentId, null, null, null, DeploymentStatus.Failed, null, true, null, null, null, null).catch((reason) => {
+                    reject(reason);
+                    return;
+                });
+
+                // merge the arrays
+                if (successfulDeployments && successfulDeployments.length > 0) {
+                    if (partialSuccessfulDeployments && partialSuccessfulDeployments.length > 0) {
+                        agentApi.logInfo (`Merging and sorting successful and partially successful deployments`);
+                        successfulDeployments.push(...partialSuccessfulDeployments);
+                        successfulDeployments.sort((a, b) => { if (a && b) { return b.id - a.id; } return 0; });
+                    } else {
+                        agentApi.logInfo (`No partially successful deployments to consider only using successful deployments`);
+                    }
+                } else {
+                    agentApi.logInfo (`No successful deployments using partially successful deployments`);
+                    successfulDeployments = partialSuccessfulDeployments;
+                }
+
+            }
+
             if (successfulDeployments && successfulDeployments.length > 0) {
-                agentApi.logInfo (`Found ${successfulDeployments.length} successful releases`);
+                agentApi.logInfo (`Found ${successfulDeployments.length} releases to consider`);
+                successfulDeployments.forEach(deployment => {
+                    agentApi.logDebug (`Found ReleaseID ${deployment.id} with the Status ${deployment.deploymentStatus}`);
+                });
+
                 if (overrideBuildReleaseId && !isNaN(parseInt(overrideBuildReleaseId))) {
                     agentApi.logInfo (`Trying to find successful deployment with the override release ID of '${overrideBuildReleaseId}'`);
                     mostRecentDeployment = successfulDeployments.find (element => element.release.id === parseInt(overrideBuildReleaseId));
@@ -1139,7 +1174,8 @@ export async function generateReleaseNotes(
     overrideBuildReleaseId: string,
     getIndirectPullRequests: boolean,
     maxRetries: number,
-    stopOnError: boolean
+    stopOnError: boolean,
+    considerPartiallySuccessfulReleases: boolean
     ): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
@@ -1406,7 +1442,13 @@ export async function generateReleaseNotes(
                     }
                 }
 
-                let mostRecentSuccessfulDeployment = await getMostRecentSuccessfulDeployment(releaseApi, teamProject, releaseDefinitionId, environmentId, overrideBuildReleaseId);
+                let mostRecentSuccessfulDeployment = await getMostRecentSuccessfulDeployment(
+                    releaseApi,
+                    teamProject,
+                    releaseDefinitionId,
+                    environmentId,
+                    overrideBuildReleaseId,
+                    considerPartiallySuccessfulReleases);
                 let isInitialRelease = false;
 
                 agentApi.logInfo(`Getting all artifacts in the current release...`);

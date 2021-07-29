@@ -74,6 +74,7 @@ async function run(): Promise<number>  {
                     var maxRetries = parseInt(settings.maxRetries);
                     var pauseTime = parseInt(settings.pauseTime); // no longer used
                     var stopOnError = getBoolean(settings.stopOnError);
+                    var considerPartiallySuccessfulReleases = getBoolean(settings.considerPartiallySuccessfulReleases);
 
                     var returnCode = await util.generateReleaseNotes(
                         pat,
@@ -112,7 +113,8 @@ async function run(): Promise<number>  {
                         overrideBuildReleaseId,
                         getIndirectPullRequests,
                         maxRetries,
-                        stopOnError);
+                        stopOnError,
+                        considerPartiallySuccessfulReleases);
                 } else {
                     console.log(`Cannot fine settings file ${filename}`);
                 }

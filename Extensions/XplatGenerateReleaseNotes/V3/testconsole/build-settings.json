@@ -7,7 +7,7 @@
     "environmentName":"Windows",
     "templatefile": "build-handlebars-template.md",
     "outputfile": "output.md",
-    
+
     "dumpPayloadToConsole": "false",
     "dumpPayloadToFile": "true",
     "dumpPayloadFileName": "payload.json",
@@ -32,6 +32,7 @@
     "tags": "",
     "overrideBuildReleaseId": "",
     "getIndirectPullRequests": "false",
+    "considerPartiallySuccessfulReleases": "false",
 
     "maxRetries": "3",
     "pauseTime": "5000",
