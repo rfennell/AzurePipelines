@@ -20,7 +20,7 @@
     "appendToFile": "false",
     "getParentsAndChildren": "true",
     "getAllParents": "true",
-    
+
     "searchCrossProjectForPRs": "true",
     "stopOnRedeploy": "false",
     "SortWi": "true",
@@ -33,6 +33,8 @@
     "tags": "",
     "overrideBuildReleaseId": "",
     "getIndirectPullRequests": "false",
+    "considerPartiallySuccessfulReleases": "false",
+
 
     "maxRetries": "3",
     "pauseTime": "5000",
