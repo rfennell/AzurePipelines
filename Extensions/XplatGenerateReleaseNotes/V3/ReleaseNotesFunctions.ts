@@ -957,7 +957,9 @@ export function processTemplate(
             // else you cannot load any modules
             customHandlebarsExtensionFolder = __dirname;
         } else {
-            if (customHandlebarsExtensionFolder.startsWith(".")) {
+            // check if a relative path is used and prepend the current directory. If not done the load fails
+            if (!path.isAbsolute(customHandlebarsExtensionFolder)) {
+                agentApi.logDebug(`An absolute path has not been provided for the customHandlebarsExtensionFolder, pre-pending the current working directory`);
                 customHandlebarsExtensionFolder = path.join(__dirname, customHandlebarsExtensionFolder);
             }
         }
