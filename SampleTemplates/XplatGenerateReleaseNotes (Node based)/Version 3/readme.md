@@ -44,3 +44,4 @@ module.exports = {
 - [replace_text.js](replace_text.js) - a helper to replace some text value with another
 - [return_parents_only.js](return_parents_only.js) - a helper to list just the parents of associated workitems
 - [lookup_PR_by_LastCommitId](lookup_PR_by_LastCommitId) - a helper to lookup a PR from an array based on it's last commit Id
+- [date_formatter](date_formatter) - a helper to convert a date to the current locality value
