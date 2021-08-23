@@ -1912,7 +1912,7 @@ async function addGitHubLinkedWI(workItemTrackingApi: IWorkItemTrackingApi, glob
                                     var wiDetail = await workItemTrackingApi.getWorkItem(wi, null, null, WorkItemExpand.All, null);
                                     if (wiDetail) {
                                         agentApi.logDebug(`Adding details of workitem ${wi}`);
-                                        workItems.push();
+                                        workItems.push(wiDetail);
                                     } else {
                                         agentApi.logDebug(`Cannot find workitem with Id ${wi}`);
                                     }
