@@ -1360,10 +1360,37 @@ export async function generateReleaseNotes(
                         }
 
                     } else {
-                        agentApi.logInfo("There has been no past successful build for this stage, so we can just get details from this build");
+                        agentApi.logInfo("There has been no past successful build for this stage, we need to get the details for all past builds");
 
-                        globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
-                        globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000);
+                        // We need to get the details of the first build then all all the subseq
+                        let builds = await buildApi.getBuilds(teamProject, [currentBuild.definition.id]);
+                        agentApi.logDebug(`Found ${builds.length} builds of this definition`);
+                        if (builds.length > 2 ) {
+                          var firstBuild = builds[builds.length - 1 ];
+                          agentApi.logDebug(`Getting the details of the first build ${firstBuild.id}`);
+                          globalCommits = await buildApi.getBuildChanges(teamProject, firstBuild.id, "", 5000);
+                          globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, firstBuild.id, 5000);
+
+                          agentApi.logDebug(`Getting the details of the changes between the first build ${firstBuild.id} and the current build ${currentBuild.id}`);
+                          // There is only a workaround for Git but not for TFVC :(
+                          if (firstBuild.repository.type === "TfsGit") {
+                            agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
+                            let currentBuild = await buildApi.getBuild(teamProject, buildId);
+                            let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisationWebApi, firstBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
+                            globalCommits.push (... commitInfo.commits);
+                            globalWorkItems.push (... commitInfo.workItems);
+                          } else {
+                            // Fall back to original behavior
+                            globalCommits.push (... await buildApi.getChangesBetweenBuilds(teamProject, firstBuild.id, buildId));
+                            globalWorkItems.push (... await buildApi.getWorkItemsBetweenBuilds(teamProject, firstBuild.id, buildId));
+                          }
+
+                        } else {
+                          agentApi.logInfo("There have been no past builds for this definition just getting details of the current build");
+
+                          globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
+                          globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000);
+                        }
 
                         agentApi.logInfo("Get the artifacts consumed by the build");
                         globalConsumedArtifacts = await getConsumedArtifactsForBuild(
