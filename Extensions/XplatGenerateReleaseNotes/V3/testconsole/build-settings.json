@@ -23,6 +23,7 @@
     "searchCrossProjectForPRs": "true",
     "stopOnRedeploy": "false",
     "SortWi": "true",
+    "SortCS": "true",
     "customHandlebarsExtensionCode": "",
     "customHandlebarsExtensionFile": "customHandlebars.js",
     "customHandlebarsExtensionFolder": ".\\testconsole",

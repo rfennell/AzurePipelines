@@ -25,6 +25,7 @@ async function run(): Promise<number>  {
             var overrideStageName = tl.getInput("overrideStageName");
             var stopOnRedeploy = tl.getBoolInput("stopOnRedeploy");
             var sortWi = tl.getBoolInput("SortWi");
+            var sortCS = tl.getBoolInput("SortCS");
             var customHandlebarsExtensionCode = tl.getInput("customHandlebarsExtensionCode");
             var customHandlebarsExtensionFile = tl.getInput("customHandlebarsExtensionFile");
             var customHandlebarsExtensionFolder = tl.getInput("customHandlebarsExtensionFolder");
@@ -83,7 +84,8 @@ async function run(): Promise<number>  {
                 getIndirectPullRequests,
                 maxRetries,
                 stopOnError,
-                considerPartiallySuccessfulReleases
+                considerPartiallySuccessfulReleases,
+                sortCS
                 );
 
         } catch (err) {

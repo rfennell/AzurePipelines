@@ -113,6 +113,15 @@
       "groupName":"advanced"
      },
      {
+      "name": "sortCS",
+      "type": "boolean",
+      "label": "Sort CS",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true will Changeset/Commits by data, if false then it will leave them in the API default order",
+      "groupName":"advanced"
+     },
+     {
       "name": "sortWi",
       "type": "boolean",
       "label": "Sort WI",

@@ -331,6 +331,7 @@ The task takes the following parameters
 | EmptySetText | the text to place in the results file if there is no changeset/commit or WI content |
 | OverrideStageName |If set uses this stage name to find the last successful deployment, as opposed to the currently active stage |
 | stopOnRedeploy | Do not generate release notes of a re-deploy. If this is set, and a re-deploy occurs the task will succeeds with a warning |
+| sortCS |If true will sort commits/changesets by date, if false then it will leave them in the API default order |
 | sortWi |If true will sort work items by type, if false then it will leave the work items in default order |
 | showOnlyPrimary | If this is set only WI and CS associated with primary artifact are listed, default is false so all artifacts scanned. |
 | searchCrossProjectForPRs |If true will try to match commits to Azure DevOps PR cross project within the organisation, if false only searches the Team Project.|
