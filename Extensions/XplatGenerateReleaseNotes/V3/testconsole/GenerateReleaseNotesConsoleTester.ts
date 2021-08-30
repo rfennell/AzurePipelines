@@ -54,6 +54,7 @@ async function run(): Promise<number>  {
 
                     var stopOnRedeploy = settings.stopOnRedeploy;
                     var sortWi = getBoolean(settings.SortWi);
+                    var sortCS = getBoolean(settings.SortCS);
                     var customHandlebarsExtensionCode = settings.customHandlebarsExtensionCode;
                     var customHandlebarsExtensionFile = settings.customHandlebarsExtensionFile;
                     var customHandlebarsExtensionFolder = settings.customHandlebarsExtensionFolder;
@@ -114,7 +115,8 @@ async function run(): Promise<number>  {
                         getIndirectPullRequests,
                         maxRetries,
                         stopOnError,
-                        considerPartiallySuccessfulReleases);
+                        considerPartiallySuccessfulReleases,
+                        sortCS);
                 } else {
                     console.log(`Cannot fine settings file ${filename}`);
                 }
