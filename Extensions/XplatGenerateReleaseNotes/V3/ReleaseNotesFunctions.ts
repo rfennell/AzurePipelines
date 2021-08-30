@@ -1177,7 +1177,8 @@ export async function generateReleaseNotes(
     getIndirectPullRequests: boolean,
     maxRetries: number,
     stopOnError: boolean,
-    considerPartiallySuccessfulReleases: boolean
+    considerPartiallySuccessfulReleases: boolean,
+    sortCS: boolean
     ): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
@@ -1654,6 +1655,16 @@ export async function generateReleaseNotes(
                 agentApi.logError("Failed to expand the global commits.");
                 resolve(-1);
                 return;
+            }
+
+            // by default order as returned by API
+            if (sortCS) {
+                agentApi.logInfo("Sorting CS by created date");
+                globalCommits = globalCommits.sort(function(a, b) {
+                    return a.timestamp < b.timestamp ? -1 : a.timestamp > b.timestamp ? 1 : 0;
+                });
+            } else {
+                agentApi.logInfo("Leaving CS in default order as returned by API");
             }
 
             agentApi.logInfo("Find any WorkItems linked from GitHub using the AB#123 format");
