@@ -10,14 +10,13 @@ body:
     options:
       - Artifact PR Description
       - Built Utilities
-      - DevTest Labs 
+      - DevTest Labs
       - File Copier
       - Generate Release Notes (Node Cross Platform)
-      - Generate Release Notes (Legacy PowerShell)
       - Manifest Versioning
       - WIKI Updater
       - WIKI PDF Generator
-      - YAML Generator 
+      - YAML Generator
       - Other
   validations:
     required: true
@@ -25,7 +24,7 @@ body:
   id: request
   attributes:
     label: Is your feature request related to a problem? Please describe.
-    description: A clear and concise description of what the problem is. 
+    description: A clear and concise description of what the problem is.
     placeholder: Ex. I'm always frustrated when [...]
   validations:
     required: true
@@ -33,7 +32,7 @@ body:
   id: solution
   attributes:
     label: Describe the solution you'd like
-    description: A clear and concise description of what you want to happen. 
+    description: A clear and concise description of what you want to happen.
   validations:
     required: true
 - type: textarea
