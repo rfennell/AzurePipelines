@@ -10,14 +10,13 @@ body:
     options:
       - Artifact PR Description
       - Built Utilities
-      - DevTest Labs 
+      - DevTest Labs
       - File Copier
       - Generate Release Notes (Node Cross Platform)
-      - Generate Release Notes (Legacy PowerShell)
       - Manifest Versioning
       - WIKI Updater
       - WIKI PDF Generator
-      - YAML Generator 
+      - YAML Generator
       - Other
   validations:
     required: true

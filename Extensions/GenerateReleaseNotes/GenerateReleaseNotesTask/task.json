@@ -1,10 +1,10 @@
 {
   "id": "661BC005-61BE-430F-B994-065BF08C0F39",
   "name": "GenerateReleaseNotes",
-  "friendlyName": "Generate Release Notes for Pipeline Builds or Releases (PowerShell)",
-  "description": "Generates a release notes file in a format of your choice for Azure DevOps Pipeline Builds or Releases. Windows based agents only",
+  "friendlyName": "(deprecated) Generate Release Notes for Pipeline Builds or Releases (PowerShell)",
+  "description": "(deprecated) Task is now deprecated. Please consider my Cross Platform Version https://marketplace.visualstudio.com/items?itemName=richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes ",
     "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes%20-Tasks/)",
-
+  "deprecated": true,
   "category": "Utility",
   "visibility": [
                 "Build"
