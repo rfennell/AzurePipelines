@@ -2,13 +2,13 @@
  "manifestVersion": 1,
  "id": "BM-VSTS-GenerateReleaseNotes-Task",
  "version": "1.0.0",
- "name": "Generate Release Notes Build Task (PowerShell)",
+ "name": "(deprecated) Generate Release Notes Build Task (PowerShell)",
  "publisher": "richardfennellBM",
-  "description": "Generates a Markdown Release notes file.",
+  "description": "(deprecated) Generates a Markdown Release notes file.",
   "CustomerQnASupport": {
     "enableqna":"true",
     "url": "https://github.com/rfennell/AzurePipelines/issues"
-  }, 
+  },
  "categories": [
     "Build and release"
   ],
@@ -24,7 +24,7 @@
     "Release",
     "Package",
     "Publish"
-  ],   
+  ],
   "branding": {
         "color": "#f97923",
         "theme": "dark"
