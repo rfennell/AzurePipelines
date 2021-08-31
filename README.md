@@ -19,14 +19,10 @@ WIKI Updater | [![Release Status](https://dev.azure.com/richardfennell/github/_a
 WIKI PDF Exporter | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/extensions/WikiPDFExportExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=92)
 YAML Generator | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/extensions/YamlGenerator?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=83)
 
-## Supported but planned to deprecate in not too distant future
-Extension | Public Deployment Status
-----------|------------------
-GenerateReleaseNotes (PowerShell) | [![Release Status - GenerateReleaseNotes Extension (PowerShell)](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/3/5)](https://richardfennell.visualstudio.com/GitHub/GitHub%20Team/_releases2?definitionId=3&view=mine&_a=releases)
-
 ## Not supported as deprecated
 Extension | Public Deployment Status
 ----------|------------------
+GenerateReleaseNotes (PowerShell) | [![Release Status - GenerateReleaseNotes Extension (PowerShell)](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/3/5)](https://richardfennell.visualstudio.com/GitHub/GitHub%20Team/_releases2?definitionId=3&view=mine&_a=releases)
 Pester | [![Release Status - Pester Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/8/14)](https://richardfennell.visualstudio.com/GitHub/GitHub%20Team/_releases2?definitionId=8&view=mine&_a=releases)  
 StyleCop  | [![Release Status - StyleCop Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/7/12)](https://richardfennell.visualstudio.com/GitHub/GitHub%20Team/_releases2?definitionId=7&view=mine&_a=releases)
 Typemock Runner  | [![Release Status - Typemock Runner Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/5/8)](https://richardfennell.visualstudio.com/GitHub/GitHub%20Team/_releases2?definitionId=5&view=mine&_a=releases)
