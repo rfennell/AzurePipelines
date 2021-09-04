@@ -31,7 +31,7 @@ steps:
     cloneRepo: false
     localpath: '$(System.DefaultWorkingDirectory)'
     singleFile: 'inline.md'
-    outputFile: '$(Build.ArtifactStagingDirectory)/PDF/singleFile.pdf'
+    outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFile.pdf'
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@1
   displayName: 'Export Public GitHub WIKI'
   condition: succeededOrFailed()
@@ -40,7 +40,7 @@ steps:
     repo: 'https://github.com/rfennell/AzurePipelines.wiki.git'
     useAgentToken: false
     localpath: '$(System.DefaultWorkingDirectory)/GitHubRepo'
-    outputFile: '$(Build.ArtifactStagingDirectory)/PDF/publicGitHub.pdf'
+    outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-publicGitHub.pdf'
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@1
   displayName: 'Export Azure DevOps WIKI'
   condition: succeededOrFailed()
@@ -48,7 +48,7 @@ steps:
     cloneRepo: true
     repo: 'https://dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
     useAgentToken: true
-    outputFile: '$(Build.ArtifactStagingDirectory)/PDF/Azrepo.pdf'
+    outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-Azrepo.pdf'
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@1
   displayName: 'Export part of the Azure DevOps WIKI'
   condition: succeededOrFailed()
@@ -56,7 +56,7 @@ steps:
     cloneRepo: true
     repo: 'https://dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
     useAgentToken: true
-    outputFile: '$(Build.ArtifactStagingDirectory)/PDF/AzrepoFilter.pdf'
+    outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-AzrepoFilter.pdf'
     localpath: '$(System.DefaultWorkingDirectory)/repopartial'
     rootExportPath: '$(System.DefaultWorkingDirectory)/repopartial/folder'
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@1
@@ -67,7 +67,7 @@ steps:
     overrideExePath: '$(System.DefaultWorkingDirectory)/tools/azuredevops-export-wiki.exe'
     repo: 'https://dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
     useAgentToken: true
-    outputFile: '$(Build.ArtifactStagingDirectory)/PDF/Azrepo-nodownload.pdf'
+    outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-Azrepo-nodownload.pdf'
 - task: PublishPipelineArtifact@0
   condition: succeededOrFailed()
   inputs:

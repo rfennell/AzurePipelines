@@ -123,8 +123,7 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
       pool:
-        # vmImage: 'ubuntu-latest'
-        name: default
+        vmImage: 'ubuntu-latest'
       strategy:
         runOnce:
           deploy:
