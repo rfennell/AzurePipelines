@@ -13,6 +13,7 @@ import {
     logWarning,
     getSystemAccessToken
     }  from "./agentSpecific";
+import { filePathSupplied } from "azure-pipelines-task-lib";
 
 // Define a function to filter releases.
 function filterRelease(release) {
@@ -147,6 +148,9 @@ export async function GetExePath (
         logInfo(`Start Download for AzureDevOps.WikiPDFExport release`);
         await DownloadGitHubArtifact("MaxMelcher", "AzureDevOps.WikiPDFExport", workingFolder, logInfo, logError);
         var exeCmd = `${workingFolder}\\azuredevops-export-wiki.exe`;
+
+        // set the execute permissions
+        fs.chmodSync(exeCmd, "755");
 
         // `Pause to avoid 'The process cannot access the file because it is being used by another process.' error`
         // It seems that even though we wait for the download the file is not available to run for a short period.
