@@ -1,6 +1,6 @@
 name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
-trigger: 
+trigger:
   branches:
     include: [ main ] # branch names which will trigger a build
   paths:
@@ -24,7 +24,7 @@ variables:
   #  major
   #  minor
   - group:  'WIKIPDFExport Extension'
-    # this group includes the following variables  
+    # this group includes the following variables
     #  ExtensionRoot - working folder
     #  PublisherID  - Marketplace publisher
     #  ExtensionID - Marketplace extension id
@@ -39,7 +39,7 @@ stages:
   - stage: Build
     jobs:
     - job: Build
-      pool: 
+      pool:
         vmImage: '$(vmImage)'
         demands: npm
       steps:
@@ -49,7 +49,7 @@ stages:
         inputs:
           rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
           targetFiles: '**\\task.json'
-      
+
       # for each Node based task we must transpile it
       - template: ..\..\YAMLTemplates\build-node-task.yml
         parameters:
@@ -101,12 +101,12 @@ stages:
             # we don't need to DownloadPipelineArtifact as this is done automatically
             - template: ..\..\YAMLTemplates\publish-extension.yml
               parameters:
-                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
-                 extensionTag: '$(privateExtentionsTag)' 
-                 extensionVisibility: private    
+                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
+                 extensionTag: '$(privateExtentionsTag)'
+                 extensionVisibility: private
 
   - stage: Test
-    dependsOn: Private 
+    dependsOn: Private
     jobs:
     - deployment: Private_Tests_Windows
       timeoutInMinutes: 0
@@ -120,7 +120,6 @@ stages:
             steps:
             - template: test-stage.yml
     - deployment: Private_Tests_Linux
-      condition: eq (1,2) # this is currently commented out as the AzureDevOps.WikiPDFExport.exe is not formally supported on this platform
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
       pool:
@@ -131,7 +130,6 @@ stages:
             steps:
             - template: test-stage.yml
     - deployment: Private_Tests_Mac
-      condition: eq (1,2) # this is currently commented out as the AzureDevOps.WikiPDFExport.exe is not formally supported on this platform
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
       pool:
@@ -142,7 +140,7 @@ stages:
             steps:
             - template: test-stage.yml
   - stage: Documentation
-    dependsOn: Test 
+    dependsOn: Test
     pool:
       vmImage: '$(vmImage)'
     variables:
@@ -161,7 +159,7 @@ stages:
         vmImage: '$(vmImage)'
       strategy:
         runOnce:
-          deploy:   
+          deploy:
             steps:
               - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
                 parameters:
@@ -189,18 +187,17 @@ stages:
               # we don't need to DownloadPipelineArtifact as this is done automatically
               - template: ..\..\YAMLTemplates\publish-extension.yml
                 parameters:
-                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
-                   extensionTag: '' 
-                   extensionVisibility: public    
+                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
+                   extensionTag: ''
+                   extensionVisibility: public
 
     - job: Post_Publish
-      dependsOn: Public_Deployment 
+      dependsOn: Public_Deployment
       pool:
         vmImage: '$(vmImage)'
       steps:
-      
+
         - template: ..\..\YAMLTemplates\post-publish.yml
           parameters:
-              buildNumber: $(Build.BuildNumber)  
-              extensionName: $(Build.DefinitionName)      
-      
+              buildNumber: $(Build.BuildNumber)
+              extensionName: $(Build.DefinitionName)
