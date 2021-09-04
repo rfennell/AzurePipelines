@@ -17,7 +17,7 @@ import {
 // Define a function to filter releases.
 function filterRelease(release) {
     // Filter out prereleases.
-    return release.prerelease === false;
+    return release.prerelease === true;
 }
 
 // Define a function to filter assets.
