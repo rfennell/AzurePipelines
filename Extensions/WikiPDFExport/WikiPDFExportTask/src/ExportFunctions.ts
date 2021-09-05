@@ -148,7 +148,7 @@ export async function GetExePath (
         logInfo(`Start Download for AzureDevOps.WikiPDFExport release`);
         await DownloadGitHubArtifact("MaxMelcher", "AzureDevOps.WikiPDFExport", workingFolder, logInfo, logError);
 
-        var exeCmd = path.join(${workingFolder} `azuredevops-export-wiki.exe`);
+        var exeCmd = path.join(workingFolder, `azuredevops-export-wiki.exe`);
 
         // `Pause to avoid 'The process cannot access the file because it is being used by another process.' error`
         // It seems that even though we wait for the download the file is not available to run for a short period.
