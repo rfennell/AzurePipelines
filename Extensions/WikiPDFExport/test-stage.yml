@@ -29,6 +29,7 @@ steps:
   displayName: 'Export Single File'
   inputs:
     cloneRepo: false
+    usePreRelease: true
     localpath: '$(System.DefaultWorkingDirectory)'
     singleFile: 'inline.md'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFile.pdf'
@@ -71,5 +72,5 @@ steps:
 - task: PublishPipelineArtifact@0
   condition: succeededOrFailed()
   inputs:
-    artifactName: 'PDFs'
+    artifactName: '$(Agent.OS)-PDFs'
     targetPath: '$(Build.ArtifactStagingDirectory)/PDF'

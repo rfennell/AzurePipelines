@@ -27,6 +27,7 @@ var cloneRepo = tl.getBoolInput("cloneRepo");
 var overrideExePath = tl.getInput("overrideExePath");
 var workingFolder = tl.getVariable("Agent.TempDirectory");
 var rootExportPath = tl.getInput("rootExportPath");
+var usePreRelease = tl.getBoolInput("usePreRelease");
 
 // make sure that we support older configs where these two parameter were a single setting
 if (!rootExportPath) {
@@ -45,11 +46,15 @@ console.log(`Variable: OutputFile [${outputFile}]`);
 console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
 console.log(`Variable: OverrideExePath [${overrideExePath}]`);
+console.log(`Variable: UsePreRelease [${usePreRelease}]`);
+
+var isWindows = tl.getVariable("AGENT.OS") === "Windows_NT";
 
 GetExePath(
     overrideExePath,
     workingFolder,
-    tl.getVariable("AGENT.OS") === "Windows_NT"
+    usePreRelease,
+    isWindows
 ).then((exePath) => {
     if (exePath.length > 0) {
         ExportRun(
@@ -65,9 +70,10 @@ GetExePath(
             password,
             injectExtraHeader,
             branch,
-            rootExportPath
+            rootExportPath,
+            isWindows
         );
     } else {
-        logError(`Cannot find the 'azuredevops-export-wiki.exe' tool`);
+        logError(`Cannot find the 'azuredevops-export-wiki' tool`);
     }
 });

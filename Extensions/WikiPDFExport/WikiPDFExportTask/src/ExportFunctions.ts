@@ -15,22 +15,11 @@ import {
     }  from "./agentSpecific";
 import { filePathSupplied } from "azure-pipelines-task-lib";
 
-// Define a function to filter releases.
-function filterRelease(release) {
-    // Filter out prereleases.
-    return release.prerelease === true;
-}
-
-// Define a function to filter assets.
-function filterAsset(asset) {
-    // Select assets that contain the string .
-    return asset.name.indexOf("azuredevops-export-wiki.exe") >= 0;
-}
-
 async function DownloadGitHubArtifact(
     user,
     repo,
     folder,
+    usePreRelease,
     logInfo,
     logError) {
 
@@ -40,8 +29,14 @@ async function DownloadGitHubArtifact(
         user,
         repo,
         folder,
-        filterRelease,
-        filterAsset,
+        function filterRelease(release) {
+            // Filter out prereleases.
+            return release.prerelease === usePreRelease;
+        },
+        function filterAsset(asset) {
+            // Select assets that contain the string .
+            return asset.name.indexOf("azuredevops-export-wiki.exe") >= 0;
+        },
         false)
     .then(function() {
         logInfo("Download done");
@@ -57,6 +52,7 @@ export async function ExportPDF(
     singleFile,
     outputFile,
     extraParams,
+    isWindows,
     logInfo,
     logError) {
 
@@ -68,7 +64,11 @@ export async function ExportPDF(
         }
 
         // add quotes in case of spaces
-        command = `"${command}"`;
+        if (isWindows) {
+            command = `"${command}"`;
+        } else {
+            command = `dotnet "${command}" -- `;
+        }
 
         var args = "";
         if (wikiRootPath.length > 0) {
@@ -134,6 +134,7 @@ export async function ExportPDF(
 export async function GetExePath (
     overrideExePath,
     workingFolder,
+    usePreRelease,
     isWindows: boolean
 ) {
     if (overrideExePath &&  overrideExePath.length > 0) {
@@ -146,19 +147,18 @@ export async function GetExePath (
         }
     } else {
         logInfo(`Start Download for AzureDevOps.WikiPDFExport release`);
-        await DownloadGitHubArtifact("MaxMelcher", "AzureDevOps.WikiPDFExport", workingFolder, logInfo, logError);
+        await DownloadGitHubArtifact("MaxMelcher", "AzureDevOps.WikiPDFExport", workingFolder, usePreRelease, logInfo, logError);
 
-        var exeCmd = path.join(workingFolder, `azuredevops-export-wiki.exe`);
+        var fileExtension = "dll";
+        if (isWindows) {
+            fileExtension = "exe";
+        }
+        var exeCmd = path.join(workingFolder, `azuredevops-export-wiki.${fileExtension}`);
 
         // `Pause to avoid 'The process cannot access the file because it is being used by another process.' error`
         // It seems that even though we wait for the download the file is not available to run for a short period.
         // This is a nasty solution but appears to work
         await new Promise(resolve => setTimeout(resolve, 5000));
-
-        if (!isWindows) {
-            logInfo(`Set the execute permission`);
-             fs.chmodSync(exeCmd, "755");
-        }
 
         return `${exeCmd}`;
     }
@@ -177,7 +177,8 @@ export async function ExportRun (
     password,
     injectExtraHeader,
     branch,
-    rootExportPath
+    rootExportPath,
+    isWindows
  ) {
 
     if (fs.existsSync(exeCmd)) {
@@ -203,9 +204,9 @@ export async function ExportRun (
 
      if (singleFile && singleFile.length > 0) {
          console.log(`A filename '${singleFile}' in the folder '${rootExportPath}' has been requested so only processing that file `);
-         ExportPDF (exeCmd, rootExportPath, singleFile, outputFile, extraParams,  logInfo, logError);
+         ExportPDF (exeCmd, rootExportPath, singleFile, outputFile, extraParams, isWindows, logInfo, logError);
      } else  {
          console.log(`Processing the contents of the folder '${rootExportPath}' `);
-         ExportPDF (exeCmd, rootExportPath, "" , outputFile, extraParams, logInfo, logError);
+         ExportPDF (exeCmd, rootExportPath, "" , outputFile, extraParams, isWindows, logInfo, logError);
      }
  }
