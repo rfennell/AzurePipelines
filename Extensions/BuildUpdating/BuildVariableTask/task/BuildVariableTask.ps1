@@ -3,15 +3,15 @@ param
 (
     # Get the build and release details
     $collectionUrl,
-    $teamproject, 
-    $releaseid, 
-    $builddefid, 
+    $teamproject,
+    $releaseid,
+    $builddefid,
     $buildid,
     $buildmode,
     $variable,
     $mode,
     $value,
-    $usedefaultcreds, 
+    $usedefaultcreds,
     $artifacts,
     $token
 )
@@ -154,12 +154,12 @@ function Update-Build
 					$item =$group.variables.$variable
 					$foundGroup = $group
 					break
-				}  
+				}
 			}
 		} else {
 			Write-verbose "No Variable present to check"
        }
-    } 
+    }
 
     if ($item -ne $null)
     {
@@ -219,7 +219,7 @@ function Get-BuildsDefsForRelease
 
     # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up
     $rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
-    
+
     # at september 2018 this API is also available at vsrm.dev.azure.com
     $rmtfsUri = $rmtfsUri -replace "dev.azure.com", "vsrm.dev.azure.com"
 
@@ -264,6 +264,8 @@ function Get-Build
 $VerbosePreference ='Continue' # equiv to -verbose
 
 Write-Verbose "collectionUrl = [$collectionUrl]"
+# we may have added quotes as we passed through PSCore
+$teamproject = $teamproject.Trim("'")
 Write-Verbose "teamproject = [$teamproject]"
 Write-Verbose "releaseid = [$releaseid]"
 Write-Verbose "builddefid = [$builddefid]"
@@ -288,7 +290,7 @@ write-verbose "API Version is $apiversion"
 if ( [string]::IsNullOrEmpty($releaseid))
 {
     Write-Verbose "Running inside a build so updating current build $buildid"
-    	
+
     write-Verbose "Using API-Verison $apiVersion"
 
     $builddefid = $build.definition.id
@@ -310,7 +312,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
     {
         Write-Verbose ("Updating only primary artifact")
         Update-Build -tfsuri $collectionUrl -teamproject $teamproject -builddefid $builddefid -mode $mode -value $value -variable $variable -usedefaultcreds $usedefaultcreds -apiVersion $apiVersion -token $token
-    } else 
+    } else
     {
         Write-Verbose ("Updating only named artifacts")
         if ([string]::IsNullOrEmpty($artifacts) -eq $true) {
@@ -330,7 +332,7 @@ if ( [string]::IsNullOrEmpty($releaseid))
                     }
                 }
             } else {
-                Write-Error ("The artifacts list cannot be split") 
+                Write-Error ("The artifacts list cannot be split")
             }
         }
     }
