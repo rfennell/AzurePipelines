@@ -3,10 +3,10 @@ param
 (
     $collectionUrl,
     $teamproject,
-    $builddefid, 
+    $builddefid,
     $builddefinitionname,
     $variable,
-    $localVariable, 
+    $localVariable,
     $usedefaultcreds,
     $token
 )
@@ -48,7 +48,7 @@ function Get-BuildDefinition
     Write-Verbose "tfsUri: $tfsuri"
     Write-Verbose "teamProject: $teamproject"
     Write-Verbose "buildDefinitionName: $buildDefName"
-    
+
     $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds -token $token
 
     write-verbose "Getting Build Definition $buildDefName "
@@ -70,15 +70,15 @@ function Get-BuildDefinition
 
     if($null -ne $definitionsResponse){
         $definition = ($definitionsResponse.value | Where-Object {$_.Name -eq $buildDefName})
-    
+
         if($null -ne $definition ){
             $uri = "$($tfsUri)/$($teamproject)/_apis/build/definitions/$($definition.id)?api-version=$apiversion"
             Write-Verbose "Initiating GET Request to URI: $uri"
             $buildResponse = $webclient.DownloadString($uri) | ConvertFrom-Json
-            
+
             Write-Verbose "DEFINITION RESPONSE: $buildResponse"
             return $buildResponse
-           
+
         }
         if ($null -eq $definition ) {
             Write-Verbose "Failed to find the specified definition $buildDefName."
@@ -143,6 +143,8 @@ $VerbosePreference ='Continue' # equiv to -verbose
 
 # Get the build details
 Write-Verbose "collectionUrl = [$collectionUrl]"
+# we may have added quotes as we passed through PSCore
+$teamproject = $teamproject.Trim("'")
 Write-Verbose "teamproject = [$teamproject]"
 Write-Verbose "builddefid = [$builddefid]"
 Write-Verbose "usedefaultcreds = $usedefaultcreds"
