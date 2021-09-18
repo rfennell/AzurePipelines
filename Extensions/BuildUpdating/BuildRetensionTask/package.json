@@ -10,10 +10,10 @@
     "lint": "tslint -c tslint.json src/*.ts test/*.ts",
     "test": "mocha -r ts-node/register ./test/*.test.ts --reporter mocha-junit-reporter --reporter-options mochaFile=./test-output/test-results.xml ",
     "test-no-logger": "mocha -r ts-node/register ./test/*.test.ts "
- },
+  },
   "main": "test.js",
   "dependencies": {
-    "azure-devops-node-api": "^8.0.0",
+    "azure-devops-node-api": "^10.2.1",
     "fs": "0.0.1-security",
     "ncp": "^2.0.0",
     "rimraf": "^2.6.2",

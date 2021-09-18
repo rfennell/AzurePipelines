@@ -2,7 +2,7 @@
 Param(
     $mode,
     $usedefaultcreds,
-    $artifacts, 
+    $artifacts,
     $keepForever,
     $collectionUrl,
     $teamproject,
@@ -10,7 +10,7 @@ Param(
     $buildid,
     $token
 )
-   
+
 function Set-BuildRetension
 {
     param
@@ -26,14 +26,14 @@ function Set-BuildRetension
     $boolKeepForever = [System.Convert]::ToBoolean($keepForever)
 
     $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds -token $token
-    
+
     write-verbose "Setting BuildID $buildID with retension set to $boolKeepForever"
 
     try {
         $uri = "$($tfsUri)/$($teamproject)/_apis/build/builds/$($buildID)?api-version=2.0"
         $data = @{keepForever = $boolKeepForever} | ConvertTo-Json
-        $response = $webclient.UploadString($uri,"PATCH", $data) 
-    } catch 
+        $response = $webclient.UploadString($uri,"PATCH", $data)
+    } catch
     {
         Write-Error "Cannot update the build, probably a rights issues see https://github.com/rfennell/AzurePipelines/wiki/BuildTasks-Task (foot of page) to see notes on granting rights"
     }
@@ -51,12 +51,12 @@ function Get-BuildsForRelease
     )
 
     $webclient = Get-WebClient -usedefaultcreds $usedefaultcreds -token $token
-    
+
     write-verbose "Getting Builds for Release releaseID"
 
-    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up   
+    # at present Jun 2016 this API is in preview and in different places in VSTS hence this fix up
     $rmtfsUri = $tfsUri -replace ".visualstudio.com",  ".vsrm.visualstudio.com/defaultcollection"
-    
+
     # at september 2018 this API is also available at vsrm.dev.azure.com
     $rmtfsUri = $rmtfsUri -replace "dev.azure.com", "vsrm.dev.azure.com"
 
@@ -85,7 +85,7 @@ function Get-WebClient
     )
 
     $webclient = new-object System.Net.WebClient
-	
+
     if ([System.Convert]::ToBoolean($usedefaultcreds) -eq $true)
     {
         Write-Verbose "Using default credentials"
@@ -106,6 +106,8 @@ function Get-WebClient
 $VerbosePreference ='Continue' # equiv to -verbose
 
 Write-Verbose "collectionUrl = [$collectionUrl]"
+# we may have added quotes as we passed through PSCore
+$teamproject = $teamproject.Trim("'")
 Write-Verbose "teamproject = [$teamproject]"
 Write-Verbose "releaseid = [$releaseid]"
 Write-Verbose "buildid = [$buildid]"
@@ -129,11 +131,11 @@ if ($mode -eq "AllArtifacts")
         Write-Verbose ("Updating artifact $build.name")
         Set-BuildRetension -tfsUri $collectionUrl -teamproject $teamproject -buildid $build.id -keepForever $keepForever -usedefaultcreds $usedefaultcreds -token $token
     }
-} elseif ($mode -eq "Prime") 
+} elseif ($mode -eq "Prime")
 {
     Write-Verbose ("Updating only primary artifact")
     Set-BuildRetension -tfsUri $collectionUrl -teamproject $teamproject -buildid $buildid -keepForever $keepForever -usedefaultcreds $usedefaultcreds -token $token
-} else 
+} else
 {
     Write-Verbose ("Updating only named artifacts")
     if ([string]::IsNullOrEmpty($artifacts) -eq $true) {
@@ -153,7 +155,7 @@ if ($mode -eq "AllArtifacts")
                 }
             }
         } else {
-            Write-Error ("The artifacts list cannot be split") 
+            Write-Error ("The artifacts list cannot be split")
         }
     }
 }
