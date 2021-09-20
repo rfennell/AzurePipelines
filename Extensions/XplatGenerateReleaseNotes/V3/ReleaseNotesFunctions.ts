@@ -839,20 +839,22 @@ export async function getFullWorkItemDetails (
     workItemTrackingApi: IWorkItemTrackingApi,
     workItemRefs: ResourceRef[]
 ) {
-    var workItemIds = workItemRefs.map(wi => parseInt(wi.id));
     let fullWorkItems: WorkItem[] = [];
-    agentApi.logInfo(`Get details of [${workItemIds.length}] WIs`);
-    if (workItemIds && workItemIds.length > 0) {
-        var indexStart = 0;
-        var indexEnd = (workItemIds.length > 200) ? 200 : workItemIds.length ;
-        while ((indexEnd <= workItemIds.length) && (indexStart !== indexEnd)) {
-            var subList = workItemIds.slice(indexStart, indexEnd);
-            agentApi.logInfo(`Getting full details of WI batch from index: [${indexStart}] to [${indexEnd}]`);
-            var subListDetails = await workItemTrackingApi.getWorkItems(subList, null, null, WorkItemExpand.All, null);
-            agentApi.logInfo(`Adding [${subListDetails.length}] items`);
-            fullWorkItems = fullWorkItems.concat(subListDetails);
-            indexStart = indexEnd;
-            indexEnd = ((workItemIds.length - indexEnd) > 200) ? indexEnd + 200 : workItemIds.length;
+    if (workItemRefs && workItemRefs.length > 0) {
+        var workItemIds = workItemRefs.map(wi => parseInt(wi.id));
+        agentApi.logInfo(`Get details of [${workItemIds.length}] WIs`);
+        if (workItemIds && workItemIds.length > 0) {
+            var indexStart = 0;
+            var indexEnd = (workItemIds.length > 200) ? 200 : workItemIds.length ;
+            while ((indexEnd <= workItemIds.length) && (indexStart !== indexEnd)) {
+                var subList = workItemIds.slice(indexStart, indexEnd);
+                agentApi.logInfo(`Getting full details of WI batch from index: [${indexStart}] to [${indexEnd}]`);
+                var subListDetails = await workItemTrackingApi.getWorkItems(subList, null, null, WorkItemExpand.All, null);
+                agentApi.logInfo(`Adding [${subListDetails.length}] items`);
+                fullWorkItems = fullWorkItems.concat(subListDetails);
+                indexStart = indexEnd;
+                indexEnd = ((workItemIds.length - indexEnd) > 200) ? indexEnd + 200 : workItemIds.length;
+            }
         }
     }
     return fullWorkItems;
@@ -1597,7 +1599,7 @@ export async function generateReleaseNotes(
 
                                         // get artifact details for the unified output format
                                         let artifact = await (buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId)));
-                                        agentApi.logInfo(`Adding the build [${artifact.id}] and its association to the unified results object`);
+                                        agentApi.logInfo(`Adding the build [${artifact.id}] and its associations to the unified results object`);
                                         let fullBuildWorkItems = await getFullWorkItemDetails(workItemTrackingApi, workitems);
 
                                         if (commits) {
