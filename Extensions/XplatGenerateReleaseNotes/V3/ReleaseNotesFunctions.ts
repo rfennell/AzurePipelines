@@ -1591,27 +1591,25 @@ export async function generateReleaseNotes(
                                         agentApi.logInfo(`Getting test associated with the latest build [${artifactInThisRelease.buildId}]`);
                                         tests = await getTestsForBuild(testApi, teamProject, parseInt(artifactInThisRelease.buildId));
 
-                                        if (tests) {
-                                            agentApi.logInfo(`Found ${tests.length} test associated with the build [${artifactInThisRelease.buildId}] adding any not already in the global test list to the list`);
-                                            // we only want to add unique items
-                                            globalTests = addUniqueTestToArray(globalTests, tests);
-                                        }
-
                                         // get artifact details for the unified output format
                                         let artifact = await (buildApi.getBuild(artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildId)));
                                         agentApi.logInfo(`Adding the build [${artifact.id}] and its associations to the unified results object`);
-                                        let fullBuildWorkItems = await getFullWorkItemDetails(workItemTrackingApi, workitems);
 
                                         if (commits) {
                                             globalCommits = globalCommits.concat(commits);
+                                            agentApi.logInfo(`Detected ${commits.length} commits/changesets between the current build and the last successful one`);
                                         }
 
                                         if (workitems) {
                                             globalWorkItems = globalWorkItems.concat(workitems);
+                                            agentApi.logInfo(`Detected  ${workitems.length} workitems between the current build and the last successful one`);
                                         }
 
-                                        agentApi.logInfo(`Detected ${commits.length} commits/changesets and ${workitems.length} workitems between the current build and the last successful one`);
-                                        agentApi.logInfo(`Detected ${tests.length} automated tests associated within the current build.`);
+                                        if (tests) {
+                                            agentApi.logInfo(`Found ${tests.length} tests associated with the build [${artifactInThisRelease.buildId}] adding any not already in the global test list to the list`);
+                                            // we only want to add unique items
+                                            globalTests = addUniqueTestToArray(globalTests, tests);
+                                        }
 
                                         var manualtests = await getManualTestsForBuild(
                                             organisationWebApi.rest,
@@ -1621,10 +1619,12 @@ export async function generateReleaseNotes(
                                             artifact.id,
                                             globalManualTestConfigurations);
                                         if (manualtests) {
+                                            agentApi.logInfo(`Found ${manualtests.length} manual tests associated with the build [${artifactInThisRelease.buildId}] adding any not already in the global test list to the list`);
                                             globalManualTests = globalManualTests.concat(manualtests);
                                         }
 
-                                        agentApi.logInfo(`Detected ${manualtests.length} test plans associated within the current build.`);
+                                        // we need to enrich the WI before we associate with the build
+                                        let fullBuildWorkItems = await getFullWorkItemDetails(workItemTrackingApi, workitems);
 
                                         globalBuilds.push(new UnifiedArtifactDetails(artifact, commits, fullBuildWorkItems, tests, manualtests));
 
