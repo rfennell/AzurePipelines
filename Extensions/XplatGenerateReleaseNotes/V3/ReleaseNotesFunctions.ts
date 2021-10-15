@@ -1071,7 +1071,26 @@ export async function getLastSuccessfulBuildByStage(
         };
     }
 
-    let builds = await buildApi.getBuilds(teamProject, [buildDefId]);
+    // #1095
+    // there is a default of 1000 builds per definition returned returned by the API
+    // but the continuation token is not supported, so we cannot get the next batch
+    // we could all the API using the raw REST call, but building the url will be a bit more complex
+    // so now just force the top value to it's max of 5000
+    // this has no effect when there are fewer than 5000 builds in the definition
+
+    let builds = await buildApi.getBuilds(teamProject, [buildDefId],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        5000);
+
     if (builds.length > 1 ) {
         agentApi.logInfo(`Found '${builds.length}' matching builds to consider`);
         // check of we are using an override
@@ -1366,7 +1385,25 @@ export async function generateReleaseNotes(
                         agentApi.logInfo("There has been no past successful build for this stage, we need to get the details for all past builds");
 
                         // We need to get the details of the first build then all all the subseq
-                        let builds = await buildApi.getBuilds(teamProject, [currentBuild.definition.id]);
+                        // #1095
+                        // there is a default of 1000 builds per definition returned returned by the API
+                        // but the continuation token is not supported, so we cannot get the next batch
+                        // we could all the API using the raw REST call, but building the url will be a bit more complex
+                        // so now just force the top value to it's max of 5000
+                        // this has no effect when there are fewer than 5000 builds in the definition
+                        let builds = await buildApi.getBuilds(teamProject, [currentBuild.definition.id],
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            5000);
+
                         agentApi.logDebug(`Found ${builds.length} builds of this definition`);
                         if (builds.length > 2 ) {
                           var firstBuild = builds[builds.length - 1 ];
@@ -1528,7 +1565,25 @@ export async function generateReleaseNotes(
                                         // Only get the commits and workitems if the builds are different
                                         if (isInitialRelease) {
                                             agentApi.logInfo(`This is the first release so checking what commits and workitems are associated with artifacts`);
-                                            var builds = await (buildApi.getBuilds(artifactInThisRelease.sourceId, [parseInt(artifactInThisRelease.buildDefinitionId)]));
+
+                                            // there is a default of 1000 builds per definition returned returned by the API
+                                            // but the continuation token is not supported, so we cannot get the next batch
+                                            // we could all the API using the raw REST call, but building the url will be a bit more complex
+                                            // so now just force the top value to it's max of 5000
+                                            // this has no effect when there are fewer than 5000 builds in the definition
+                                            let builds = await buildApi.getBuilds(artifactInThisRelease.sourceId, [parseInt(artifactInThisRelease.buildDefinitionId)],
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                5000);
+
                                             commits = [];
                                             workitems = [];
 
@@ -1923,7 +1978,7 @@ async function enrichConsumedArtifacts(
                     agentApi.logWarn(`Cannot retried commit or work item information ${err}`);
                 }
             } else {
-                agentApi.logInfo(`Cannot get extra commit ir work item details of the ${artifact["artifactCategory"]} artifact ${artifact["alias"]} ${artifact["versionName"]}`);
+                agentApi.logInfo(`Cannot get extra commit or work item details of the ${artifact["artifactCategory"]} artifact ${artifact["alias"]} ${artifact["versionName"]}`);
             }
         }
         resolve(consumedArtifacts);
