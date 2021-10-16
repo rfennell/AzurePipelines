@@ -1089,7 +1089,12 @@ export async function getLastSuccessfulBuildByStage(
         undefined,
         undefined,
         undefined,
-        5000);
+        5000,
+        undefined,
+        undefined,
+        undefined,
+        6 // startTimeDescending
+    );
 
     if (builds.length > 1 ) {
         agentApi.logInfo(`Found '${builds.length}' matching builds to consider`);
@@ -1402,7 +1407,12 @@ export async function generateReleaseNotes(
                             undefined,
                             undefined,
                             undefined,
-                            5000);
+                            5000,
+                            undefined,
+                            undefined,
+                            undefined,
+                            6 // startTimeDescending
+                        );
 
                         agentApi.logDebug(`Found ${builds.length} builds of this definition`);
                         if (builds.length > 2 ) {
@@ -1572,17 +1582,22 @@ export async function generateReleaseNotes(
                                             // so now just force the top value to it's max of 5000
                                             // this has no effect when there are fewer than 5000 builds in the definition
                                             let builds = await buildApi.getBuilds(artifactInThisRelease.sourceId, [parseInt(artifactInThisRelease.buildDefinitionId)],
-                                                undefined,
-                                                undefined,
-                                                undefined,
-                                                undefined,
-                                                undefined,
-                                                undefined,
-                                                undefined,
-                                                undefined,
-                                                undefined,
-                                                undefined,
-                                                5000);
+                                            undefined,
+                                            undefined,
+                                            undefined,
+                                            undefined,
+                                            undefined,
+                                            undefined,
+                                            undefined,
+                                            undefined,
+                                            undefined,
+                                            undefined,
+                                            5000,
+                                            undefined,
+                                            undefined,
+                                            undefined,
+                                            6 // startTimeDescending
+                                        );
 
                                             commits = [];
                                             workitems = [];
