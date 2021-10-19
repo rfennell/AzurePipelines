@@ -1,7 +1,7 @@
 # Local Test Harness
 The testing cycle for Release Notes Templates can be slow, requiring a build and/or release cycle. To try to speed this process for users I have created a local test harness that allows the same calls to be made from a development machine as would be made within a build or release. To in effect re-run the release notes generation for a previous build or release from the command line as many times as you wish.
 
-However, running this tool is not as simple was you might expect so please read the instruction before proceeding
+However, running this tool is not as simple was you might expect so **please read the instructions** before proceeding.
 
 ## Setup and Build
 1. Clone the repo contain this code.
@@ -15,9 +15,15 @@ However, running this tool is not as simple was you might expect so please read 
    ```
 
 ## Running the Tool
-The task takes many parameters and reads runtime environment variables. These have to be passing into the local tester. Given the number, and the fact that most probably won't need to be altered, they are provided in a settings JSON file. Samples are provided for a build (for Classic Build and all YAML Pipelines) and a release (Classic Release).
+The task takes many parameters and reads runtime environment variables. These all have to be passing into the local tester. 
 
-For details on the parameters in the JSON file see the [task documentation](https://github.com/rfennell/AzurePipelines/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task)
+Given the number, and the fact that most probably won't need to be altered, they are provided in a settings JSON file as opposed to command line parameters. Samples JSON files are provided for a [build](build-settings.json) (for Classic Build and all YAML Pipelines) and a [release](release-settings.json) (Classic Release).
+
+**Note:** You will have to update the settings JSON file you are using with values appropriate to your Azure DevOps organisation.
+
+The values in the JSON file related to two categories
+- Environment variables set by Azure DevOps. These should be obtained from the build/release log of the run you are going to repeat. You might need to run the build/release with the variable `syste,debug=true` to see the detailed logging.
+- Task parameters you would set in the build/release pipeline. For details on all the parameters avaliable in the JSON file see the project WIKI [task documentation](https://github.com/rfennell/AzurePipelines/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task) 
 
 The only value not stored in the JSON files are the PATs required to access the REST API. This reduces the chance of them being copied onto source control by mistake.
 
@@ -29,21 +35,21 @@ The only value not stored in the JSON files are the PATs required to access the 
 ### Testing a Classic Build or YAML Pipeline
 To run the tool against a Classic Build or YAML Pipeline
 
-1. In the settings file make sure the `TeamFoundationCollectionUri`, `TeamProject` and `BuildID` are set to the build you wish to run against, and that the `ReleaseID` is empty.
+1. In the [settings file](build-settings.json) make sure the `TeamFoundationCollectionUri`, `TeamProject` and `BuildID` are set to the build you wish to run against, and that the `ReleaseID` is empty.
 1. Run the command
 
-   `node GenerateReleaseNotesConsoleTester.js --filename settings.json --pat <Azure-DevOps-PAT> --githubpat <Optional GitHub-PAT> --bitbucketuser <Optional Bitbucket User> --bitbucketsecret <Optional Bitbucket App Secret>`
+   `node GenerateReleaseNotesConsoleTester.js --filename build-settings.json --pat <Azure-DevOps-PAT> --githubpat <Optional GitHub-PAT> --bitbucketuser <Optional Bitbucket User> --bitbucketsecret <Optional Bitbucket App Secret>`
 1. Assuming you are using the sample settings you should get an `output.md` file with your release notes.
 
 ### Test a Classic Release
-To run the tool against a Classic Release is but more complex. This is because the logic looks back to see the most recent successful run. So if you release ran to completion you will get no notes as there has been no change.
+To run the tool against a Classic Release is bit more complex. This is because the logic looks back to see the most recent successful run. So if you release ran to completion you will get no release notes as there has been no changes.
 
 You have two options:
 - Allow a release a trigger, but cancel it. You can then use its `ReleaseID` to compare with the last release
 - Add a stage to your release this is skipped, only run on a manual request and use this as the comparison stage to look for difference
 
 To run the tool...
-1. In the settings file make sure the `TeamFoundationCollectionUri`, `TeamProject`, `EnvironmentName` (a stage in your process), `ReleaseID` and `releaseDefinitionId` are set for the release you wish to run against.
+1. In the [settings file](release-settings.json) make sure the `TeamFoundationCollectionUri`, `TeamProject`, `overrideStageName` (a stage in your process), `ReleaseID` and `releaseDefinitionId` are set for the release you wish to run against.
 1. Run the command
 
    `node .\GenerateReleaseNotesConsoleTester.js release-settings.json <your-Azure-DevOps-PAT> < your GitHub PAT>`
