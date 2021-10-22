@@ -43,6 +43,7 @@ async function run(): Promise<number>  {
             var getIndirectPullRequests = tl.getBoolInput("getIndirectPullRequests");
             var stopOnError = tl.getBoolInput("stopOnError");
             var considerPartiallySuccessfulReleases = tl.getBoolInput("considerPartiallySuccessfulReleases");
+            var checkForManuallyLinkedWI = tl.getBoolInput("checkForManuallyLinkedWI");
 
             var maxRetries = parseInt(tl.getInput("maxRetries"));
 
@@ -85,7 +86,8 @@ async function run(): Promise<number>  {
                 maxRetries,
                 stopOnError,
                 considerPartiallySuccessfulReleases,
-                sortCS
+                sortCS,
+                checkForManuallyLinkedWI
                 );
 
         } catch (err) {

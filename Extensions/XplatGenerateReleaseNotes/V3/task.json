@@ -337,6 +337,15 @@
       "required": true,
       "helpMarkDown": "If enabled both successful and partial successful release will be considered when looking for historic releases",
       "groupName":"advanced"
+    },
+    {
+      "name": "checkForManuallyLinkedWI",
+      "type": "boolean",
+      "label": "Check for Manually Linked WI",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "By default WI associated manually with a build/release will not appear in release notes. If this parameter is true they will be added.",
+      "groupName":"advanced"
     }
 
 
