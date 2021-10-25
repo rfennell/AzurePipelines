@@ -2079,7 +2079,7 @@ async function addMissingManuallyLinkedWI(buildApi: IBuildApi, TeamProjectId: an
                 }
             }
 
-            agentApi.logDebug(`Adding ${workItems.length} found with manual links`);
+            agentApi.logDebug(`Adding ${workItems.length} found with potential manual links, these will be added to the global list and duplicates removed later`);
             resolve (workItems);
     } catch (err) {
         reject (err);
