@@ -1206,7 +1206,8 @@ export async function generateReleaseNotes(
     maxRetries: number,
     stopOnError: boolean,
     considerPartiallySuccessfulReleases: boolean,
-    sortCS: boolean
+    sortCS: boolean,
+    checkForManuallyLinkedWI: boolean
     ): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
@@ -1321,6 +1322,10 @@ export async function generateReleaseNotes(
                             // Fall back to original behavior
                             globalCommits = await buildApi.getChangesBetweenBuilds(teamProject, lastGoodBuildId, buildId);
                             globalWorkItems = await buildApi.getWorkItemsBetweenBuilds(teamProject, lastGoodBuildId, buildId);
+
+                            if (checkForManuallyLinkedWI) {
+                                globalWorkItems = globalWorkItems.concat(await addMissingManuallyLinkedWI(buildApi, teamProject, currentBuild.definition.id, lastGoodBuildId, buildId));
+                            }
                         }
 
                         // get the consumed artifacts for the current build
@@ -1347,6 +1352,18 @@ export async function generateReleaseNotes(
 
                                 if (lastGoodBuildArtifact) {
                                     agentApi.logInfo(`Getting changes for the '${(currentBuildArtifact as any).artifactCategory}' artifact '${(currentBuildArtifact as any).alias}' between ${(lastGoodBuildArtifact as any).versionId} and ${(currentBuildArtifact as any).versionId}`);
+
+                                    var wi = await buildApi.getWorkItemsBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId);
+
+                                    if (checkForManuallyLinkedWI) {
+                                        wi = wi.concat(await addMissingManuallyLinkedWI(
+                                            buildApi,
+                                            (currentBuildArtifact as any).properties.projectId,
+                                            (lastGoodBuildArtifact as any).definitionId,
+                                            (lastGoodBuildArtifact as any).versionId,
+                                            (currentBuildArtifact as any).versionId));
+                                     }
+
                                     globalConsumedArtifacts.push({
                                         "artifactCategory": (currentBuildArtifact as any).artifactCategory,
                                         "artifactType": (currentBuildArtifact as any).artifactType,
@@ -1360,9 +1377,7 @@ export async function generateReleaseNotes(
                                             tfvcApi,
                                             await buildApi.getChangesBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId),
                                             gitHubPat),
-                                        "workitems": await getFullWorkItemDetails(
-                                            workItemTrackingApi,
-                                            await buildApi.getWorkItemsBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId))
+                                        "workitems": await getFullWorkItemDetails(workItemTrackingApi, wi)
                                     });
                                 } else {
                                     agentApi.logInfo(`Cannot find a matching '${(currentBuildArtifact as any).artifactCategory}' artifact for '${(currentBuildArtifact as any).alias}' in the build ${lastGoodBuildId}, so just getting directly associated commits and wi wit the build`);
@@ -1444,10 +1459,19 @@ export async function generateReleaseNotes(
                             let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisationWebApi, firstBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
                             globalCommits.push (... commitInfo.commits);
                             globalWorkItems.push (... commitInfo.workItems);
-                          } else {
+
+                            if (checkForManuallyLinkedWI) {
+                                globalWorkItems = globalWorkItems.concat(await addMissingManuallyLinkedWI(buildApi, teamProject,  firstBuild.definition.id, firstBuild.id, currentBuild.id));
+                            }
+
+                        } else {
                             // Fall back to original behavior
                             globalCommits.push (... await buildApi.getChangesBetweenBuilds(teamProject, firstBuild.id, buildId));
                             globalWorkItems.push (... await buildApi.getWorkItemsBetweenBuilds(teamProject, firstBuild.id, buildId));
+
+                            if (checkForManuallyLinkedWI) {
+                                globalWorkItems = globalWorkItems.concat(await addMissingManuallyLinkedWI(buildApi, teamProject,  firstBuild.definition.id, firstBuild.id, buildId));
+                            }
                           }
 
                         } else {
@@ -1651,11 +1675,20 @@ export async function generateReleaseNotes(
                                                         // Fall back to original behavior
                                                         commits = await buildApi.getChangesBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                                         workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+
+                                                        if (checkForManuallyLinkedWI) {
+                                                            globalWorkItems = globalWorkItems.concat(await addMissingManuallyLinkedWI(buildApi, artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildDefinitionId),  parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId)));
+                                                        }
+
                                                     }
                                                 } else {
                                                     // Issue #349: These APIs are affected by the build API limitation and only return the latest 200 changes and work items associated to those changes
                                                     commits = await buildApi.getChangesBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
                                                     workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                                    if (checkForManuallyLinkedWI) {
+                                                        globalWorkItems = globalWorkItems.concat(await addMissingManuallyLinkedWI(buildApi, artifactInThisRelease.sourceId,  parseInt(artifactInThisRelease.buildDefinitionId), parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId)));
+                                                    }
+
                                                 }
 
                                             } catch (err) {
@@ -2018,6 +2051,36 @@ async function enrichConsumedArtifacts(
             }
         }
         resolve(consumedArtifacts);
+    } catch (err) {
+        reject (err);
+    }
+});
+}
+
+// #1103 this function is a belt an braces means to get all the WI associated with a build
+// ones manually link to a build are not found with the wi between builds call
+// this block is only called when the extra flag is abled as it is expensive on the API
+// we return duplicates WI, but they will be filtered before being passed to the processor
+async function addMissingManuallyLinkedWI(buildApi: IBuildApi, TeamProjectId: any,  BuildDefId: number, FromBuild: number, ToBuild: number): Promise<ResourceRef[]> {
+    return new Promise<ResourceRef[]>(async (resolve, reject) => {
+        var workItems = [];
+        try {
+            agentApi.logInfo(`Getting WI associated with builds between ${FromBuild} to ${ToBuild} to make sure we find ones manually linked to build`);
+
+            // this is expensive, but we need to get the work items that are not linked to the build
+            var builds = await buildApi.getBuilds(TeamProjectId, [BuildDefId]);
+
+            for (let index = 0; index < builds.length; index++) {
+                const build = builds[index];
+                if (build.id > FromBuild && build.id <= ToBuild) {
+                    var buildWi = await buildApi.getBuildWorkItemsRefs(TeamProjectId, build.id, 5000);
+                    agentApi.logDebug(`Checking build ${build.id} found ${buildWi.length} WI`);
+                    workItems = workItems.concat(buildWi);
+                }
+            }
+
+            agentApi.logDebug(`Adding ${workItems.length} found with potential manual links, these will be added to the global list and duplicates removed later`);
+            resolve (workItems);
     } catch (err) {
         reject (err);
     }

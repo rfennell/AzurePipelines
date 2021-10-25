@@ -336,6 +336,7 @@ The task takes the following parameters
 | sortCS |If true will sort commits/changesets by date, if false then it will leave them in the API default order |
 | sortWi |If true will sort work items by type, if false then it will leave the work items in default order |
 | showOnlyPrimary | If this is set only WI and CS associated with primary artifact are listed, default is false so all artifacts scanned. |
+| checkForManuallyLinkedWI | By default WI associated manually with a build/release will not appear in release notes. If this parameter is true they will be added. |
 | searchCrossProjectForPRs |If true will try to match commits to Azure DevOps PR cross project within the organisation, if false only searches the Team Project.|
 | GitHubPAT. | (Optional) This [GitHub PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) is only required to expand commit messages stored in a private GitHub repos. This PAT is not required for commit in Azure DevOps public or private repos or public GitHub repos|
 | BitBucketUser | (Optional) To expand commit messages stored in a private Bitbucket repos a [BitBucker user and app password](https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/) need to be provided, it is not required for repo stored in Azure DevOps or public Bitbucket repos.|

@@ -76,6 +76,7 @@ async function run(): Promise<number>  {
                     var pauseTime = parseInt(settings.pauseTime); // no longer used
                     var stopOnError = getBoolean(settings.stopOnError);
                     var considerPartiallySuccessfulReleases = getBoolean(settings.considerPartiallySuccessfulReleases);
+                    var checkForManuallyLinkedWI = getBoolean(settings.checkForManuallyLinkedWI);
 
                     var returnCode = await util.generateReleaseNotes(
                         pat,
@@ -116,7 +117,8 @@ async function run(): Promise<number>  {
                         maxRetries,
                         stopOnError,
                         considerPartiallySuccessfulReleases,
-                        sortCS);
+                        sortCS,
+                        checkForManuallyLinkedWI);
                 } else {
                     console.log(`Cannot fine settings file ${filename}`);
                 }
