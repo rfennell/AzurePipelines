@@ -138,8 +138,7 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (XplatGenerateReleaseNotes)'
       pool:
-        # vmImage: '$(vmImage)'
-        name: default
+        vmImage: '$(vmImage)'
       strategy:
         runOnce:
           deploy:
@@ -155,8 +154,7 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (XplatGenerateReleaseNotes)'
       pool:
-        # vmImage: 'ubuntu-18.04'
-        name: default
+        vmImage: 'ubuntu-18.04'
       strategy:
         runOnce:
           deploy:
