@@ -1,6 +1,6 @@
 name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
-trigger: 
+trigger:
   branches:
     include: [ main ] # branch names which will trigger a build
   paths:
@@ -17,7 +17,7 @@ variables:
   #  major
   #  minor
   - group:  'XplatGenerateReleaseNotes Extension'
-    # this group includes the following variables  
+    # this group includes the following variables
     #  ExtensionRoot - working folder
     #  PublisherID  - Marketplace publisher
     #  ExtensionID - Marketplace extension id
@@ -30,7 +30,7 @@ stages:
   - stage: Build
     jobs:
     - job: Build
-      pool: 
+      pool:
         vmImage: '$(vmImage)'
         demands: npm
       steps:
@@ -56,7 +56,7 @@ stages:
             $taskJson.Version.Patch = $parts[2]
             $output = $taskjson | ConvertTo-JSON -Depth 100
             $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($False)
-            [System.IO.File]::WriteAllText($file, $output, $Utf8NoBomEncoding)    
+            [System.IO.File]::WriteAllText($file, $output, $Utf8NoBomEncoding)
 
       - task: Npm@1
         displayName: 'npm install'
@@ -127,12 +127,12 @@ stages:
             # we don't need to DownloadPipelineArtifact as this is done automatically
             - template: ..\..\YAMLTemplates\publish-extension.yml
               parameters:
-                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
-                 extensionTag: '$(privateExtentionsTag)' 
-                 extensionVisibility: private    
+                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
+                 extensionTag: '$(privateExtentionsTag)'
+                 extensionVisibility: private
 
   - stage: Test_Windows
-    dependsOn: Private 
+    dependsOn: Private
     jobs:
     - deployment: Private_Test
       timeoutInMinutes: 0
@@ -143,136 +143,12 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@3
-              displayName: 'Generate Release Notes based on Release Comparison API V2'
-              inputs:
-                outputfile: '$(System.DefaultWorkingDirectory)\inline.md'
-                outputVariableName: OutputText
-                templateLocation: InLine
-                inlinetemplate: |
-                  # Notes for build 
-                  **Build Number**: {{buildDetails.id}}
-                  **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
-
-                  # Associated Pull Requests ({{pullRequests.length}})
-                  {{#forEach pullRequests}}
-                  {{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
-                  *  **PR {{this.id}}**  {{this.title}}
-                  {{/forEach}}
-
-                  ## Global list of ConsumedArtifacts ({{consumedArtifacts.length}})
-                  {{#forEach consumedArtifacts}}
-                  * {{json this}} 
-                  {{/forEach}}
-
-                  # Builds with associated WI/CS ({{builds.length}})
-                  {{#forEach builds}}
-                  {{#if isFirst}}## Builds {{/if}}
-                  ##  Build {{this.build.buildNumber}}
-                  {{#forEach this.commits}}
-                  {{#if isFirst}}### Commits {{/if}}
-                  - CS {{this.id}}
-                  {{/forEach}}
-                  {{#forEach this.workitems}}
-                  {{#if isFirst}}### Workitems {{/if}}
-                  - WI {{this.id}}
-                  {{/forEach}} 
-                  {{/forEach}}
-
-                  # Global list of WI ({{workItems.length}})
-                  {{#forEach workItems}}
-                  {{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
-                  *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
-                    - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
-                    - **Tags** {{lookup this.fields 'System.Tags'}}
-                  {{/forEach}}
-
-                  {{#forEach commits}}
-                  {{#if isFirst}}### Associated commits{{/if}}
-                  * ** ID{{this.id}}** 
-                    -  **Message:** {{this.message}}
-                    -  **Commited by:** {{this.author.displayName}} 
-                    -  **FileCount:** {{this.changes.length}} 
-                  {{#forEach this.changes}}
-                        -  **File path (TFVC or TfsGit):** {{this.item.path}}  
-                        -  **File filename (GitHub):** {{this.filename}}  
-                  {{/forEach}}
-                  {{/forEach}}
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater'
-              inputs:
-                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
-                filename: 'xPlatReleaseNotes/build-Windows-handlebars.md'
-                dataIsFile: true
-                sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
-                message: 'Update from Build'
-                gitname: builduser
-                gitemail: 'build@demo'
-                useAgentToken: true
-                user: richardfennell
-
-            - task: XplatGenerateReleaseNotes@3
-              inputs:
-                outputfile: '$(System.DefaultWorkingDirectory)\releasenotes.md'
-                outputVariableName: 'outputvar'
-                templateLocation: 'InLine'
-                checkStage: true
-                overrideStageName: Test
-                inlinetemplate: |
-                  # Notes for build 
-                  **Build Number**: {{buildDetails.id}}
-                  **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
-      
-                  # Associated Pull Requests ({{pullRequests.length}})
-                  {{#forEach pullRequests}}
-                  {{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
-                  *  **PR {{this.id}}**  {{this.title}}
-                  {{/forEach}}
-      
-                  # Builds with associated WI/CS ({{builds.length}})
-                  {{#forEach builds}}
-                  {{#if isFirst}}## Builds {{/if}}
-                  ##  Build {{this.build.buildNumber}}
-                  {{#forEach this.commits}}
-                  {{#if isFirst}}### Commits {{/if}}
-                  - CS {{this.id}}
-                  {{/forEach}}
-                  {{#forEach this.workitems}}
-                  {{#if isFirst}}### Workitems {{/if}}
-                  - WI {{this.id}}
-                  {{/forEach}} 
-                  {{/forEach}}
-      
-                  # Global list of WI ({{workItems.length}})
-                  {{#forEach workItems}}
-                  {{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
-                  *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
-                    - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
-                    - **Tags** {{lookup this.fields 'System.Tags'}}
-                  {{/forEach}}
-      
-                  # Global list of CS ({{commits.length}})
-                  {{#forEach commits}}
-                  {{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
-                  * ** ID{{this.id}}** 
-                    -  **Message:** {{this.message}}
-                    -  **Commited by:** {{this.author.displayName}} 
-                  {{/forEach}}
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater'
-              inputs:
-                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
-                filename: 'xPlatReleaseNotes/build-Windows-handlebars-multistage.md'
-                dataIsFile: true
-                sourceFile: '$(System.DefaultWorkingDirectory)\releasenotes.md'
-                message: 'Update from Build'
-                gitname: builduser
-                gitemail: 'build@demo'
-                useAgentToken: true
-                user: richardfennell
+            - template: .\pipeline-test-steps.yml
+              parameters:
+                platform: windows
 
   - stage: Test_Linux
-    dependsOn: Private 
+    dependsOn: Private
     jobs:
     - deployment: Private_Test
       timeoutInMinutes: 0
@@ -283,69 +159,12 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@3
-              displayName: 'Generate Release Notes based on Release Comparison API V2'
-              inputs:
-                outputfile: '$(System.DefaultWorkingDirectory)\inline.md'
-                outputVariableName: OutputText
-                templateLocation: InLine
-                inlinetemplate: |
-                  # Notes for build 
-                  **Build Number**: {{buildDetails.id}}
-                  **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
-
-                  # Associated Pull Requests ({{pullRequests.length}})
-                  {{#forEach pullRequests}}
-                  {{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
-                  *  **PR {{this.id}}**  {{this.title}}
-                  {{/forEach}}
-
-                  # Builds with associated WI/CS ({{builds.length}})
-                  {{#forEach builds}}
-                  {{#if isFirst}}## Builds {{/if}}
-                  ##  Build {{this.build.buildNumber}}
-                  {{#forEach this.commits}}
-                  {{#if isFirst}}### Commits {{/if}}
-                  - CS {{this.id}}
-                  {{/forEach}}
-                  {{#forEach this.workitems}}
-                  {{#if isFirst}}### Workitems {{/if}}
-                  - WI {{this.id}}
-                  {{/forEach}} 
-                  {{/forEach}}
-
-                  # Global list of WI ({{workItems.length}})
-                  {{#forEach workItems}}
-                  {{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
-                  *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
-                    - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
-                    - **Tags** {{lookup this.fields 'System.Tags'}}
-                  {{/forEach}}
-
-                  # Global list of CS ({{commits.length}})
-                  {{#forEach commits}}
-                  {{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
-                  * ** ID{{this.id}}** 
-                    -  **Message:** {{this.message}}
-                    -  **Commited by:** {{this.author.displayName}} 
-                  {{/forEach}}
-
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater'
-              inputs:
-                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
-                filename: 'xPlatReleaseNotes/build-Linux-handlebars.md'
-                dataIsFile: true
-                sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
-                message: 'Update from Build'
-                gitname: builduser
-                gitemail: 'build@demo'
-                useAgentToken: true
-                user: richardfennell
-
+            - template: .\pipeline-test-steps.yml
+              parameters:
+                platform: linux
 
   - stage: Test_Mac
-    dependsOn: Private 
+    dependsOn: Private
     jobs:
     - deployment: Private_Test
       timeoutInMinutes: 0
@@ -356,68 +175,12 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@3
-              displayName: 'Generate Release Notes based on Release Comparision API V2'
-              inputs:
-                outputfile: '$(System.DefaultWorkingDirectory)\inline.md'
-                outputVariableName: OutputText
-                templateLocation: InLine
-                inlinetemplate: |
-                  # Notes for build 
-                  **Build Number**: {{buildDetails.id}}
-                  **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}} 
-
-                  # Associated Pull Requests ({{pullRequests.length}})
-                  {{#forEach pullRequests}}
-                  {{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
-                  *  **PR {{this.id}}**  {{this.title}}
-                  {{/forEach}}
-
-                  # Builds with associated WI/CS ({{builds.length}})
-                  {{#forEach builds}}
-                  {{#if isFirst}}## Builds {{/if}}
-                  ##  Build {{this.build.buildNumber}}
-                  {{#forEach this.commits}}
-                  {{#if isFirst}}### Commits {{/if}}
-                  - CS {{this.id}}
-                  {{/forEach}}
-                  {{#forEach this.workitems}}
-                  {{#if isFirst}}### Workitems {{/if}}
-                  - WI {{this.id}}
-                  {{/forEach}} 
-                  {{/forEach}}
-
-                  # Global list of WI ({{workItems.length}})
-                  {{#forEach workItems}}
-                  {{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
-                  *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
-                    - **WIT** {{lookup this.fields 'System.WorkItemType'}} 
-                    - **Tags** {{lookup this.fields 'System.Tags'}}
-                  {{/forEach}}
-
-                  # Global list of CS ({{commits.length}})
-                  {{#forEach commits}}
-                  {{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
-                  * ** ID{{this.id}}** 
-                    -  **Message:** {{this.message}}
-                    -  **Commited by:** {{this.author.displayName}} 
-                  {{/forEach}}
-
-            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater'
-              inputs:
-                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
-                filename: 'xPlatReleaseNotes/build-Mac-handbars.md'
-                dataIsFile: true
-                sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
-                message: 'Update from Build'
-                gitname: builduser
-                gitemail: 'build@demo'
-                useAgentToken: true
-                user: richardfennell
+            - template: .\pipeline-test-steps.yml
+              parameters:
+                platform: mac
 
   - stage: Test_Manual
-    dependsOn:  
+    dependsOn:
     - Test_Windows
     - Test_Mac
     - Test_Linux
@@ -434,7 +197,7 @@ stages:
             - bash: "echo 'Should have run manual test to check various edge cased'"
 
   - stage: Documentation
-    dependsOn: 
+    dependsOn:
     - Test_Manual
     variables:
     - group: 'WIKI Updater'
@@ -452,7 +215,7 @@ stages:
         vmImage: '$(vmImage)'
       strategy:
         runOnce:
-          deploy:   
+          deploy:
             steps:
               - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
                 parameters:
@@ -480,17 +243,17 @@ stages:
               # we don't need to DownloadPipelineArtifact as this is done automatically
               - template: ..\..\YAMLTemplates\publish-extension.yml
                 parameters:
-                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
-                   extensionTag: '' 
-                   extensionVisibility: public    
+                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
+                   extensionTag: ''
+                   extensionVisibility: public
 
     - job: Post_Publish
-      dependsOn: Public_Deployment 
+      dependsOn: Public_Deployment
       pool:
         vmImage: '$(vmImage)'
       steps:
         - template: ..\..\YAMLTemplates\post-publish.yml
           parameters:
-              buildNumber: $(Build.BuildNumber)  
-              extensionName: $(Build.DefinitionName)      
-                
+              buildNumber: $(Build.BuildNumber)
+              extensionName: $(Build.DefinitionName)
+
