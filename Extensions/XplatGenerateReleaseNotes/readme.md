@@ -36,7 +36,7 @@ Possible sets of parameters depending on your usage are summarized below
 
 There are [sample Handlebar templates in the project code repo](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%203) that just produce basic releases notes for both Git and TFVC based releases. Most samples are for Markdown file generation, but it is possible to generate any other format such as HTML by altering the static entries in the templates.
 
-> **Note** With V3.69.x it is possible to pass more than one template into the task. Thus allowing multiple documents to be generated from a single copy of the task. To do this provide a comma separated list of files in both the `templatefile` and `outputfile` parameter.
+> **Note** With V3.68.x it is possible to pass more than one template into the task. Thus allowing multiple documents to be generated from a single copy of the task. To do this provide a comma separated list of files in both the `templatefile` and `outputfile` parameter.
 
 > **Note** Remember, the legacy `@@LOOP@@` templating format has been be deprecated in V3. The only templating model supported is [Handlbars](https://handlebarsjs.com/)
 
