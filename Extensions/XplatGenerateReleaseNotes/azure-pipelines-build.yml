@@ -138,7 +138,8 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (XplatGenerateReleaseNotes)'
       pool:
-        vmImage: '$(vmImage)'
+        # vmImage: '$(vmImage)'
+        name: default
       strategy:
         runOnce:
           deploy:
