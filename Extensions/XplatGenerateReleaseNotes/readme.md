@@ -36,6 +36,8 @@ Possible sets of parameters depending on your usage are summarized below
 
 There are [sample Handlebar templates in the project code repo](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%203) that just produce basic releases notes for both Git and TFVC based releases. Most samples are for Markdown file generation, but it is possible to generate any other format such as HTML by altering the static entries in the templates.
 
+> **Note** With V3.68.x it is possible to pass more than one template into the task. Thus allowing multiple documents to be generated from a single copy of the task. To do this provide a comma separated list of files in both the `templatefile` and `outputfile` parameter.
+
 > **Note** Remember, the legacy `@@LOOP@@` templating format has been be deprecated in V3. The only templating model supported is [Handlbars](https://handlebarsjs.com/)
 
 ## Handlebar Templates
@@ -321,9 +323,9 @@ The task takes the following parameters
 
 | Parameter | Description |
 |-|-|
-| OutputFile | for builds this will normally be set to `$(Build.ArtifactStagingDirectory)\releasenotes.md` as the release notes will usually be part of your build artifacts. For release management usage the parameter should be set to something like `$(System.DefaultWorkingDirectory)\releasenotes.md`. Where you choose to send the created files is down to your deployment needs. |
+| OutputFile | for builds this will normally be set to `$(Build.ArtifactStagingDirectory)\releasenotes.md` as the release notes will usually be part of your build artifacts. For release management usage the parameter should be set to something like `$(System.DefaultWorkingDirectory)\releasenotes.md`. Where you choose to send the created files is down to your deployment needs. This parameter can be a comma separated list if you wish to generate multiple documents. The number of output files listed must match the number of template files|
 | templateLocation | A picker allows you to set if the template is provided as a file in source control or an inline file. The setting of this picker effects which other parameters are shown. Either, the template file name, which should point to a file in source control, or, the template text. |
-| templatefile |The name of the Markdown template, if an inline template is not being used |
+| templatefile |The name of the Markdown template, if an inline template is not being used. This parameter can be a comma separated list if you wish to generate multiple documents. The number of output files listed must match the number of template files |
 | inlinetemplate | The Markdown template, if an inline template is being used |
 | CheckStage | If true a comparison is made against the last build that was successful to the current stage, or overrideStageName if specified (Build Only) |
 | ReplaceFile | If this is set the output overwrites and file already present.Z
@@ -352,7 +354,7 @@ The task takes the following parameters
 | customHandlebarsExtensionCode | A string containing custom Handlebars extension written as a JavaScript module e.g. <br> `module.exports = {foo: function () {return 'Returns foo';}};`. <br>Note: If any text is set in this parameter it overwrites any contents of the customHandlebarsExtensionFile parameter |
 | customHandlebarsExtensionFolder | The folder to look for, or create, the customHandlebarsExtensionFile in. If not set defaults to the task's current directory |
 | customHandlebarsExtensionFile | The filename to save the customHandlebarsExtensionCode into if set. If there is no text in the  customHandlebarsExtensionCode parameter the an attempt will be made to load any custom extensions from from this file. This allows custom extensions to loaded like any other source file under source control. |
-| outputVariableName | Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable.|
+| outputVariableName | Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable. Note that if generating multiple document then this output variable is set to the value of the first document generated|
 
 # Output location
 

@@ -739,24 +739,26 @@ export async function getTestsForRelease(
 
 export function getTemplate(
         templateLocation: string,
-        templatefile: string ,
+        templateFile: string ,
         inlinetemplate: string
     ): Array<string> {
         agentApi.logDebug(`Using template mode ${templateLocation}`);
         var template;
         const handlebarIndicator = "{{";
+
         if (templateLocation === "File") {
-            if (fs.existsSync(templatefile)) {
-                agentApi.logInfo (`Loading template file ${templatefile}`);
-                template = fs.readFileSync(templatefile, "utf8").toString();
+            if (fs.existsSync(templateFile)) {
+                agentApi.logInfo (`Loading template file ${templateFile}`);
+                template = fs.readFileSync(templateFile, "utf8").toString();
             } else {
-                agentApi.logError (`Cannot find template file ${templatefile}`);
+                agentApi.logError (`Cannot find template file ${templateFile}`);
                 return template;
             }
         } else {
             agentApi.logInfo ("Using in-line template");
             template = inlinetemplate;
         }
+
         // we now only handle handlebar templates
         if (template.includes(handlebarIndicator)) {
             agentApi.logDebug("Loading handlebar template");
@@ -1207,6 +1209,19 @@ export async function generateReleaseNotes(
     sortCS: boolean
     ): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
+
+            // check if we have multiple templates to process
+            var templateFiles = templateFile.split(",").map(function(item) {
+                return item.trim();
+              });
+            var outputFiles = outputFile.split(",").map(function(item) {
+                return item.trim();
+            });
+
+            if (templateFiles.length !== outputFiles.length) {
+                reject("The number of template files and output files must be the same");
+                return;
+            }
 
             if (!gitHubPat) {
                 // a check to make sure we don't get a null
@@ -1903,43 +1918,49 @@ export async function generateReleaseNotes(
                     consumedArtifacts: globalConsumedArtifacts
                 });
 
-            var template = getTemplate (templateLocation, templateFile, inlineTemplate);
-            if ((template) && (template.length > 0)) {
-                var outputString = processTemplate(
-                    template,
-                    fullWorkItems,
-                    globalCommits,
-                    currentBuild,
-                    currentRelease,
-                    mostRecentSuccessfulDeploymentRelease,
-                    customHandlebarsExtensionCode,
-                    customHandlebarsExtensionFile,
-                    customHandlebarsExtensionFolder,
-                    globalPullRequests,
-                    globalBuilds,
-                    globalTests,
-                    releaseTests,
-                    relatedWorkItems,
-                    mostRecentSuccessfulBuild,
-                    currentStage,
-                    inDirectlyAssociatedPullRequests,
-                    globalManualTests,
-                    globalManualTestConfigurations,
-                    stopOnError,
-                    globalConsumedArtifacts);
+            agentApi.logInfo(`Generating the release notes, the are ${templateFiles.length} template(s) to process`);
+            for (let i = 0; i < templateFiles.length; i++) {
+                var template = getTemplate (templateLocation, templateFiles[i], inlineTemplate);
+                if ((template) && (template.length > 0)) {
+                    var outputString = processTemplate(
+                        template,
+                        fullWorkItems,
+                        globalCommits,
+                        currentBuild,
+                        currentRelease,
+                        mostRecentSuccessfulDeploymentRelease,
+                        customHandlebarsExtensionCode,
+                        customHandlebarsExtensionFile,
+                        customHandlebarsExtensionFolder,
+                        globalPullRequests,
+                        globalBuilds,
+                        globalTests,
+                        releaseTests,
+                        relatedWorkItems,
+                        mostRecentSuccessfulBuild,
+                        currentStage,
+                        inDirectlyAssociatedPullRequests,
+                        globalManualTests,
+                        globalManualTestConfigurations,
+                        stopOnError,
+                        globalConsumedArtifacts);
 
-                writeFile(outputFile, outputString, replaceFile, appendToFile);
+                    writeFile(outputFiles[i], outputString, replaceFile, appendToFile);
 
-                agentApi.writeVariable(outputVariableName, outputString.toString());
+                    if (i === 0) {
+                        agentApi.logInfo(`Output variable '${outputVariableName}' set to value of first generated release notes`);
+                        agentApi.writeVariable(outputVariableName, outputString.toString());
+                    }
 
-                if (hasBeenTimeout) {
-                    // we want to return -1 so flagged as succeeded with issues
-                    resolve(-1);
+                    if (hasBeenTimeout) {
+                        // we want to return -1 so flagged as succeeded with issues
+                        resolve(-1);
+                    } else {
+                        resolve(0);
+                    }
                 } else {
-                    resolve(0);
+                    reject ("Missing template file");
                 }
-            } else {
-                reject ("Missing template file");
             }
         } catch (ex) {
             agentApi.logError(ex);
