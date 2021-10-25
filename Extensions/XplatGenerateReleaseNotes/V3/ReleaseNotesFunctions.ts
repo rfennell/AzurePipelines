@@ -2073,9 +2073,9 @@ async function addMissingManuallyLinkedWI(buildApi: IBuildApi, TeamProjectId: an
             for (let index = 0; index < builds.length; index++) {
                 const build = builds[index];
                 if (build.id > FromBuild && build.id <= ToBuild) {
-                    var wi = workItems.concat(await buildApi.getBuildWorkItemsRefs(TeamProjectId, build.id, 5000));
-                    agentApi.logDebug(`Checking build ${build.id} found ${wi.length} WI`);
-                    workItems = workItems.concat(wi);
+                    var buildWi = await buildApi.getBuildWorkItemsRefs(TeamProjectId, build.id, 5000);
+                    agentApi.logDebug(`Checking build ${build.id} found ${buildWi.length} WI`);
+                    workItems = workItems.concat(buildWi);
                 }
             }
 
