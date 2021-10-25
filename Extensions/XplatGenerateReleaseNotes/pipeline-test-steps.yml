@@ -3,6 +3,8 @@ parameters:
 
 steps:
 
+  - checkout: self  # get the repo as we have templates
+
   - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@3
     displayName: 'Generate Release Notes based on Release Comparison API V2'
     inputs:
