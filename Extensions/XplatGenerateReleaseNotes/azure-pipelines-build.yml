@@ -155,7 +155,8 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (XplatGenerateReleaseNotes)'
       pool:
-        vmImage: 'ubuntu-18.04'
+        # vmImage: 'ubuntu-18.04'
+        name: default
       strategy:
         runOnce:
           deploy:
