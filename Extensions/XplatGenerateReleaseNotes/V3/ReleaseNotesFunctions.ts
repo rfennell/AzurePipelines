@@ -269,7 +269,7 @@ export async function getMostRecentSuccessfulDeployment(
 
             if (considerPartiallySuccessfulReleases === true) {
                 agentApi.logInfo (`Finding partially successful deployments`);
-                var partialSuccessfulDeployments = await releaseApi.getDeployments(teamProject, releaseDefinitionId, environmentId, null, null, null, DeploymentStatus.Failed, null, true, null, null, null, null).catch((reason) => {
+                var partialSuccessfulDeployments = await releaseApi.getDeployments(teamProject, releaseDefinitionId, environmentId, null, null, null, DeploymentStatus.PartiallySucceeded, null, true, null, null, null, null).catch((reason) => {
                     reject(reason);
                     return;
                 });
