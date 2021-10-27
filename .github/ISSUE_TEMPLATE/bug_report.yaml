@@ -51,7 +51,6 @@ body:
   attributes:
     label:  Describe the bug
     description: "A clear and concise description of the bug"
-    render: bash
   validations:
     required: true
 - type: textarea
@@ -65,7 +64,6 @@ body:
       3. Scroll down to '....'
       4. See error
       ...
-    render: bash
   validations:
     required: true
 - type: textarea
@@ -73,7 +71,6 @@ body:
   attributes:
     label:  Expected Behavior
     description: A clear and concise description of what you expected to happen.
-    render: bash
   validations:
     required: false
 - type: textarea
@@ -83,6 +80,5 @@ body:
     description: |
       - Please provide debug logs of the problem, remember you can get these by setting a build/release variable `system.debug=true`. If you don't provide detailed logs when you raise the issue it will almost certainly be the first request I make to diagnose the problem
       - If applicable, add screenshots to help explain your problem.
-    render: bash
   validations:
     required: false
