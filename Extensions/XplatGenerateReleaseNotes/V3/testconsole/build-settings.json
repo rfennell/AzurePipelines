@@ -34,6 +34,7 @@
     "overrideBuildReleaseId": "",
     "getIndirectPullRequests": "false",
     "considerPartiallySuccessfulReleases": "false",
+    "checkForManuallyLinkedWI": "false",
 
     "maxRetries": "3",
     "pauseTime": "5000",
