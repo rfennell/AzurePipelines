@@ -44,6 +44,7 @@ async function run(): Promise<number>  {
             var stopOnError = tl.getBoolInput("stopOnError");
             var considerPartiallySuccessfulReleases = tl.getBoolInput("considerPartiallySuccessfulReleases");
             var checkForManuallyLinkedWI = tl.getBoolInput("checkForManuallyLinkedWI");
+            var wiqlWhereClause = tl.getInput("wiqlWhereClause");
 
             var maxRetries = parseInt(tl.getInput("maxRetries"));
 
@@ -87,7 +88,8 @@ async function run(): Promise<number>  {
                 stopOnError,
                 considerPartiallySuccessfulReleases,
                 sortCS,
-                checkForManuallyLinkedWI
+                checkForManuallyLinkedWI,
+                wiqlWhereClause
                 );
 
         } catch (err) {
