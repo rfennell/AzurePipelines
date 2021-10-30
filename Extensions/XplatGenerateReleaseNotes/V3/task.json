@@ -352,7 +352,7 @@
       "name": "wiqlWhereClause",
       "type": "string",
       "label": "WIQL Where Clause",
-      "defaultValue": "False",
+      "defaultValue": "",
       "required": false,
       "helpMarkDown": "A where clause to get a get a list of work items using a WIQL Query e.g. `[System.TeamProject] = 'Project Name' and [System.WorkItemType] = 'Product Backlog Item'`. Note you cannot use the all the @ parameter such as `@project`, `@currentIteration` or `@Me`, but `@Today` works.",
       "groupName":"advanced"
