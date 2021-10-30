@@ -77,6 +77,7 @@ async function run(): Promise<number>  {
                     var stopOnError = getBoolean(settings.stopOnError);
                     var considerPartiallySuccessfulReleases = getBoolean(settings.considerPartiallySuccessfulReleases);
                     var checkForManuallyLinkedWI = getBoolean(settings.checkForManuallyLinkedWI);
+                    var wiqlWhereClause = settings.wiqlWhereClause;
 
                     var returnCode = await util.generateReleaseNotes(
                         pat,
@@ -118,7 +119,8 @@ async function run(): Promise<number>  {
                         stopOnError,
                         considerPartiallySuccessfulReleases,
                         sortCS,
-                        checkForManuallyLinkedWI);
+                        checkForManuallyLinkedWI,
+                        wiqlWhereClause);
                 } else {
                     console.log(`Cannot fine settings file ${filename}`);
                 }

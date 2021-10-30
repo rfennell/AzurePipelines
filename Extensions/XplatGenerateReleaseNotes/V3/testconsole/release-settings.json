@@ -37,6 +37,8 @@
     "considerPartiallySuccessfulReleases": "false",
     "checkForManuallyLinkedWI": "false",
 
+    "wiqlWhereClause": "",
+
     "maxRetries": "3",
     "pauseTime": "5000",
 

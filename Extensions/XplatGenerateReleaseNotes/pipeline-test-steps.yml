@@ -10,6 +10,7 @@ steps:
     inputs:
       outputfile: '$(System.DefaultWorkingDirectory)\inline.md'
       outputVariableName: OutputText
+      wiqlWhereClause: '[System.TeamProject] = "GitHub" and [System.WorkItemType] = "Product Backlog Item"'
       templateLocation: InLine
       inlinetemplate: |
         # Notes for build
@@ -47,6 +48,11 @@ steps:
         *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
           - **WIT** {{lookup this.fields 'System.WorkItemType'}}
           - **Tags** {{lookup this.fields 'System.Tags'}}
+        {{/forEach}}
+
+        # WIQL list of WI ({{queryWorkItems.length}})
+        {{#forEach queryWorkItems}}
+        *  **{{this.id}}** {{lookup this.fields 'System.Title'}}
         {{/forEach}}
 
         {{#forEach commits}}
