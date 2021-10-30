@@ -36,9 +36,7 @@ Possible sets of parameters depending on your usage are summarized below
 
 There are [sample Handlebar templates in the project code repo](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%203) that just produce basic releases notes for both Git and TFVC based releases. Most samples are for Markdown file generation, but it is possible to generate any other format such as HTML by altering the static entries in the templates.
 
-> **Note** With V3.68.x it is possible to pass more than one template into the task. Thus allowing multiple documents to be generated from a single copy of the task. To do this provide a comma separated list of files in both the `templatefile` and `outputfile` parameter.
-
-> **Note** Remember, the legacy `@@LOOP@@` templating format has been be deprecated in V3. The only templating model supported is [Handlbars](https://handlebarsjs.com/)
+> **Note** With V3.68.x it is possible to pass more than one template into the task. Thus allowing multiple documents to be generated from a single copy of the task. To do this provide a comma separated list of files in both the `templatefile` and `outputfile` parameters.
 
 ## Handlebar Templates
 A basic [Handlebars](https://handlebarsjs.com/) template is as follows. What is done behind the scenes is that each `{{properties}}` block in the template is expanded by Handlebars. The `{{properties}}` can be placed inside `{{#foreach}}` loops to process array based properties e.g list of Work Items.
@@ -119,6 +117,11 @@ A basic [Handlebars](https://handlebarsjs.com/) template is as follows. What is 
 {{/forEach}}
 {{/forEach}}
 
+## List of WI returned by WIQL ({{queryWorkItems.length}})
+{{#forEach queryWorkItems}}
+*  **{{this.id}}** {{lookup this.fields 'System.Title'}}
+{{/forEach}}
+
 ## Manual Test Plans
 | Run ID | Name | State | Total Tests | Passed Tests |
 | --- | --- | --- | --- | --- |
@@ -156,6 +159,7 @@ The are a wide range of objects available to get data from within templates. Som
 |**manualtests** | the array of manual Test Plan runs associated with any of the builds linked to the release |
 |**manualTestConfigurations** | the array of manual test configurations |
 | **relatedWorkItems** | the array of all work item associated with the release plus their direct parents or children and/or all parents depending on task parameters |
+| **queryWorkItems** | the array of WI returned by by the WIQL, if a `wiqlWhereClause` is defined. Note that this array is completely independent of all other WI arrays.
 
 ### Release objects (only available in a Classic UI based Releases)
 | Object | Description |
@@ -336,6 +340,7 @@ The task takes the following parameters
 | sortCS |If true will sort commits/changesets by date, if false then it will leave them in the API default order |
 | sortWi |If true will sort work items by type, if false then it will leave the work items in default order |
 | showOnlyPrimary | If this is set only WI and CS associated with primary artifact are listed, default is false so all artifacts scanned. |
+| wiqlWhereClause | A where clause to get a get a list of work items using a WIQL Query e.g. `[System.TeamProject] = 'Project Name' and [System.WorkItemType] = 'Product Backlog Item'`. Note you cannot use the all the @ parameter such as `@project`, `@currentIteration` or `@Me`, but `@Today` works. To aid in the creation of  your WIQL Where clauses the [WIQL Editor](https://marketplace.visualstudio.com/items?itemName=ottostreifel.wiql-editor) extension is highly recommended |
 | checkForManuallyLinkedWI | By default WI associated manually with a build/release will not appear in release notes. If this parameter is true they will be added. |
 | searchCrossProjectForPRs |If true will try to match commits to Azure DevOps PR cross project within the organisation, if false only searches the Team Project.|
 | GitHubPAT. | (Optional) This [GitHub PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) is only required to expand commit messages stored in a private GitHub repos. This PAT is not required for commit in Azure DevOps public or private repos or public GitHub repos|
@@ -355,6 +360,7 @@ The task takes the following parameters
 | customHandlebarsExtensionCode | A string containing custom Handlebars extension written as a JavaScript module e.g. <br> `module.exports = {foo: function () {return 'Returns foo';}};`. <br>Note: If any text is set in this parameter it overwrites any contents of the customHandlebarsExtensionFile parameter |
 | customHandlebarsExtensionFolder | The folder to look for, or create, the customHandlebarsExtensionFile in. If not set defaults to the task's current directory |
 | customHandlebarsExtensionFile | The filename to save the customHandlebarsExtensionCode into if set. If there is no text in the  customHandlebarsExtensionCode parameter the an attempt will be made to load any custom extensions from from this file. This allows custom extensions to loaded like any other source file under source control. |
+| wiqlWhereClause | An optional where clause to get a get a list of work items using a WIQL Query e.g. `[System.TeamProject] = 'Project Name' and [System.WorkItemType] = 'Product Backlog Item'`. The results of this query are availble in the template in the `queryWorkItems` array. Note that this list of WI is independent of all other WI arrays. |
 | outputVariableName | Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable. Note that if generating multiple document then this output variable is set to the value of the first document generated|
 
 # Output location

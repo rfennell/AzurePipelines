@@ -72,7 +72,7 @@ import { TestApi } from "azure-devops-node-api/TestApi";
 import { timeout, async } from "q";
 import { ResultDetails, TestCaseResult, TestResolutionState, TestRun } from "azure-devops-node-api/interfaces/TestInterfaces";
 import { IWorkItemTrackingApi } from "azure-devops-node-api/WorkItemTrackingApi";
-import { WorkItemExpand, WorkItem, ArtifactUriQuery } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
+import { WorkItemExpand, WorkItem, ArtifactUriQuery, Wiql } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import { ITfvcApi } from "azure-devops-node-api/TfvcApi";
 import * as issue349 from "./Issue349Workaround";
 import { ITestApi } from "azure-devops-node-api/TestApi";
@@ -884,7 +884,8 @@ export function processTemplate(
     globalManualTests: EnrichedTestRun[],
     globalManualTestConfigurations: [],
     stopOnError: boolean,
-    globalConsumedArtifacts: any[]
+    globalConsumedArtifacts: any[],
+    queryWorkItems: WorkItem[]
     ): string {
 
     var output = "";
@@ -901,6 +902,7 @@ export function processTemplate(
         agentApi.logDebug(`  Related WI: ${relatedWorkItems.length}`);
         agentApi.logDebug(`  Indirect PR: ${inDirectlyAssociatedPullRequests.length}`);
         agentApi.logDebug(`  Consumed Artifacts: ${globalConsumedArtifacts.length}`);
+        agentApi.logDebug(`  Query WI: ${queryWorkItems.length}`);
 
         // it is a handlebar template
         agentApi.logDebug("Processing handlebar template");
@@ -1010,7 +1012,8 @@ export function processTemplate(
                 "manualTests": globalManualTests,
                 "manualTestConfigurations": globalManualTestConfigurations,
                 "consumedArtifacts": globalConsumedArtifacts,
-                "currentStage": currentStage
+                "currentStage": currentStage,
+                "queryWorkItems": queryWorkItems
             });
             agentApi.logInfo( "Completed processing template");
 
@@ -1207,7 +1210,8 @@ export async function generateReleaseNotes(
     stopOnError: boolean,
     considerPartiallySuccessfulReleases: boolean,
     sortCS: boolean,
-    checkForManuallyLinkedWI: boolean
+    checkForManuallyLinkedWI: boolean,
+    wiqlWhereClause: string
     ): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
@@ -1253,6 +1257,7 @@ export async function generateReleaseNotes(
             var releaseTests: TestCaseResult[] = [];
             var relatedWorkItems: WorkItem[] = [];
             var fullWorkItems: WorkItem[] = [];
+            var queryWorkItems: WorkItem[] = [];
             var globalManualTests: EnrichedTestRun[] = [];
             var globalManualTestConfigurations: [] = [];
             var globalConsumedArtifacts: any[] = [];
@@ -1806,10 +1811,36 @@ export async function generateReleaseNotes(
                 relatedWorkItems = await getAllParentWorkitems(workItemTrackingApi, relatedWorkItems);
             }
 
+            if (wiqlWhereClause && wiqlWhereClause.length > 0) {
+               var wiqlQuery = `SELECT [System.Id] FROM workitems WHERE ${wiqlWhereClause} ORDER BY [System.ID] DESC`;
+               agentApi.logInfo(`Getting WorkItems using WIQL`);
+               agentApi.logDebug(`SELECT [System.Id] FROM workitems WHERE ${wiqlWhereClause} ORDER BY [System.ID] DESC`);
+               try {
+                var queryResponse = await workItemTrackingApi.queryByWiql(
+                    { query: wiqlQuery},
+                    undefined,
+                    undefined,
+                    5000);
+                    // need to get the result into the same format as used to enrich other WI arrays
+                    var wiRefArray: ResourceRef[] = queryResponse.workItems.map(wi => ({id: wi.id.toString(), url: undefined})) as ResourceRef[];
+                    // enrich the items
+                    queryWorkItems = await getFullWorkItemDetails(workItemTrackingApi, wiRefArray);
+
+                    agentApi.logInfo(`Found ${queryWorkItems.length} WI using WIQL`);
+
+               } catch (ex) {
+                   reject(ex);
+                   agentApi.logError(`Failed to run WIQL ${ex.message}`);
+                   resolve(-1);
+                   return;
+               }
+            }
+
             // by default order by ID, has the option to group by type
             if (sortWi) {
                 agentApi.logInfo("Sorting WI by type then id");
                 fullWorkItems = fullWorkItems.sort((a, b) => (a.fields["System.WorkItemType"] > b.fields["System.WorkItemType"]) ? 1 : (a.fields["System.WorkItemType"] === b.fields["System.WorkItemType"]) ? ((a.id > b.id) ? 1 : -1) : -1 );
+                queryWorkItems = queryWorkItems.sort((a, b) => (a.fields["System.WorkItemType"] > b.fields["System.WorkItemType"]) ? 1 : (a.fields["System.WorkItemType"] === b.fields["System.WorkItemType"]) ? ((a.id > b.id) ? 1 : -1) : -1 );
             } else {
                 agentApi.logInfo("Leaving WI in default order as returned by API");
             }
@@ -1927,6 +1958,7 @@ export async function generateReleaseNotes(
             agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
             agentApi.logInfo(`Total Indirect Pull Requests: [${inDirectlyAssociatedPullRequests.length}]`);
             agentApi.logInfo(`Total Consumed Artifacts: [${globalConsumedArtifacts.length}]`);
+            agentApi.logInfo(`Total WIQL Workitems: [${queryWorkItems.length}]`);
 
             dumpJsonPayload(
                 dumpPayloadToConsole,
@@ -1948,7 +1980,8 @@ export async function generateReleaseNotes(
                     inDirectlyAssociatedPullRequests: inDirectlyAssociatedPullRequests,
                     manualTests: globalManualTests,
                     manualTestConfigurations: globalManualTestConfigurations,
-                    consumedArtifacts: globalConsumedArtifacts
+                    consumedArtifacts: globalConsumedArtifacts,
+                    queryWorkItems: queryWorkItems
                 });
 
             agentApi.logInfo(`Generating the release notes, the are ${templateFiles.length} template(s) to process`);
@@ -1976,7 +2009,8 @@ export async function generateReleaseNotes(
                         globalManualTests,
                         globalManualTestConfigurations,
                         stopOnError,
-                        globalConsumedArtifacts);
+                        globalConsumedArtifacts,
+                        queryWorkItems);
 
                     writeFile(outputFiles[i], outputString, replaceFile, appendToFile);
 
