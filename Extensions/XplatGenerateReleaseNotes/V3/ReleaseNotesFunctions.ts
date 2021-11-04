@@ -1397,11 +1397,11 @@ export async function generateReleaseNotes(
                                         "commits":	await enrichChangesWithFileDetails(
                                             gitApi,
                                             tfvcApi,
-                                            await (buildApi.getBuildChanges((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId)),
+                                            await (buildApi.getBuildChanges((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId, "", 5000)),
                                             gitHubPat),
                                         "workitems": await getFullWorkItemDetails(
                                             workItemTrackingApi,
-                                            await (buildApi.getBuildWorkItemsRefs((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId)))
+                                            await (buildApi.getBuildWorkItemsRefs((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId, 5000)))
                                     });
 
                                 }
@@ -1649,9 +1649,9 @@ export async function generateReleaseNotes(
                                             for (var build of builds) {
                                                 try {
                                                     agentApi.logInfo(`Getting the details of build ${build.id}`);
-                                                    var buildCommits = await (buildApi.getBuildChanges(teamProject, build.id));
+                                                    var buildCommits = await (buildApi.getBuildChanges(teamProject, build.id, "", 5000));
                                                     commits.push(...buildCommits);
-                                                    var buildWorkitems = await (buildApi.getBuildWorkItemsRefs(teamProject, build.id));
+                                                    var buildWorkitems = await (buildApi.getBuildWorkItemsRefs(teamProject, build.id, 5000));
                                                     workitems.push(...buildWorkitems);
                                                 } catch (err) {
                                                     agentApi.logWarn(`There was a problem getting the details of the build ${err}`);
@@ -2075,8 +2075,8 @@ async function enrichConsumedArtifacts(
                 agentApi.logInfo(`Getting the commit and work item details of the '${artifact["artifactCategory"]}' artifact '${artifact["alias"]}' with the version name '${artifact["versionName"]}'`);
                 try {
                     var artifactTeamProjectId = artifact["properties"]["projectId"];
-                    artifact["commits"] = await (buildApi.getBuildChanges(artifactTeamProjectId, artifact["versionId"]));
-                    artifact["workitems"] = await getFullWorkItemDetails(workItemTrackingApi, await (buildApi.getBuildWorkItemsRefs(artifactTeamProjectId, artifact["versionId"])));
+                    artifact["commits"] = await (buildApi.getBuildChanges(artifactTeamProjectId, artifact["versionId"], "", 5000));
+                    artifact["workitems"] = await getFullWorkItemDetails(workItemTrackingApi, await (buildApi.getBuildWorkItemsRefs(artifactTeamProjectId, artifact["versionId"], 5000)));
                 } catch (err) {
                     agentApi.logWarn(`Cannot retried commit or work item information ${err}`);
                 }
