@@ -1,22 +1,25 @@
 # Sample Handlebar Templates and Custom Handlebars Extensions
 This folder contains sample Handlebar Templates and custom Handlebars extensions for my [Cross Platform Release Notes Azure DevOps Task](https://github.com/rfennell/AzurePipelines/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task)
 
-## What format are the sample?
+## What format are the samples?
 ### Templates
 Most of the samples are provided as .MD templates.
 
-> If you wish to output a different format alter the file extension and tag appropriately
+> If you wish to output a different format alter the file extension and tags appropriately
 
-These will provide basic reports outputted as markdown, showing the common features of the task
+They provide basic reports outputted as markdown, showing the common objects available in the task
 
 ### Custom Extensions
-The extensions are small block of Javascript that can be injected into the Handlebars processing to perform special function.
+The extensions are small blocks of Javascript that are injected into the Handlebars processor to perform special functions.
 
-They are injected using the `customHandlebarsExtensionCode` parameter.
+They can be injected either by: 
+- Injection as inline YAML content using the `customHandlebarsExtensionCode` parameter
+- Loaded from a file using the `customHandlebarsExtensionFile` parameter
 
-Each sample .JS file contains a single custom module, usually with a usage sample. If you wish to use multiple custom modules they can be combined into a single block e.g.
+> In this folder each sample .JS file contains a single custom module, usually with a usage sample. If you wish to use multiple custom modules they can be combined into a single block/file e.g.
 
 ```
+const handlebars = require("handlebars");
 module.exports = {
     count_workitems_by_type: function (array, typeName) {
         return array.filter(wi => wi.fields['System.WorkItemType'] === typeName).length;
@@ -27,7 +30,26 @@ module.exports = {
 };
 ```
 
-## What Sample Are Provided
+It is possible that your extension might require the loading of other JavaScript modules, in the above sample the `handlebars` module is needed. Any requested modules need to be loaded from the same folder as the custom Javascript is being run from. The Release Notes task does not automatically handle loading of these modules. So, the best option is to call `npm install` prior to the Release Noes task to make sure the required modules are present in the folder the custom extension is loaded from e.g:
+
+```
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    workingDir: '$(System.DefaultWorkingDirectory)'
+    customCommand: 'install handlebars'
+
+- task: XplatGenerateReleaseNotes@3
+  inputs:
+    outputfile: '$(Build.ArtifactStagingDirectory)/releasenotes.md'
+    templateLocation: 'File'
+    templatefile: '$(System.DefaultWorkingDirectory)/template.hbs'
+    customHandlebarsExtensionFile: 'custom.js'
+    customHandlebarsExtensionFolder: '$(System.DefaultWorkingDirectory)'
+```
+
+
+## What Samples Are Provided?
 
 ### Templates
 - [build-handlebars-template.md](build-handlebars-template.md) - a very simple template for build
