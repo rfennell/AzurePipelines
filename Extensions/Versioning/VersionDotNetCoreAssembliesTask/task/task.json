@@ -108,12 +108,12 @@
       "helpMarkDown": "The actual version number extracted and used from the build number.",
       "groupName":"output"
     }
-      
+
    ],
   "minimumAgentVersion": "1.95.1",
    "instanceNameFormat": "Version .NET Core Assemblies",
   "execution": {
-     "Node": {
+     "Node10": {
        "target": "ApplyVersionToAssemblies.js",
        "argumentFormat": ""
      }
