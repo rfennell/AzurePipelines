@@ -16,7 +16,7 @@
     "Minor": 0,
     "Patch": 0
   },
-  
+
    "inputs": [
       {
          "name": "filename",
@@ -64,7 +64,7 @@
   "minimumAgentVersion": "1.82.0",
   "instanceNameFormat": "XmlFileUpdateTask",
   "execution": {
-   "Node": {
+   "Node10": {
        "target": "FileUpdate.js",
        "argumentFormat": ""
      }

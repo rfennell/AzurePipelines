@@ -119,7 +119,7 @@
   "minimumAgentVersion": "1.82.0",
    "instanceNameFormat": "Version Android Manifest",
   "execution": {
-     "Node": {
+     "Node10": {
        "target": "ApplyVersionToManifest.js",
        "argumentFormat": ""
      }
