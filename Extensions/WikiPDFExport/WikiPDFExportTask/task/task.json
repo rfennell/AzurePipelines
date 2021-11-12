@@ -144,7 +144,7 @@
   ],
   "instanceNameFormat": "WIKI PDF Exporter",
   "execution": {
-    "Node10": {
+    "Node": {
       "target": "WikiPDFExportTask.js",
       "argumentFormat": ""
     }
