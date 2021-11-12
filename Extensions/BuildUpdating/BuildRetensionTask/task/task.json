@@ -75,7 +75,7 @@
    ],
   "instanceNameFormat": "Update Build Retension",
   "execution": {
-    "Node": {
+    "Node10": {
       "target": "$(currentDirectory)/BuildRetensionTask.js",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
