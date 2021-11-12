@@ -62,7 +62,7 @@
   ],
   "instanceNameFormat": "YAML Documentation Generator",
   "execution": {
-    "Node": {
+    "Node10": {
       "target": "Generate-YAMLDocumentation.js",
       "argumentFormat": ""
     }
