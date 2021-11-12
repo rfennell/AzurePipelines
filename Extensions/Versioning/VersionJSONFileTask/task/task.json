@@ -109,12 +109,12 @@
       "helpMarkDown": "The actual version number extracted and used from the build number.",
       "groupName":"output"
     }
-      
+
    ],
   "minimumAgentVersion": "1.82.0",
    "instanceNameFormat": "Version JSON File",
   "execution": {
-     "Node": {
+     "Node10": {
        "target": "ApplyVersionToJSONFile.js",
        "argumentFormat": ""
      }

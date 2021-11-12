@@ -37,7 +37,7 @@
   ],
   "instanceNameFormat": "Get Git Artifact PR Reason",
   "execution": {
-    "Node": {
+    "Node10": {
       "target": "ArtifactDescriptionTask.js",
       "argumentFormat": ""
     }
