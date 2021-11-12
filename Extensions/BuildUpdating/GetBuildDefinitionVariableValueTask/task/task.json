@@ -69,7 +69,7 @@
   ],
   "instanceNameFormat": "Get Build Definition Variable",
   "execution": {
-    "Node": {
+    "Node10": {
       "target": "$(currentDirectory)/GetBuildVariableTask.js",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
