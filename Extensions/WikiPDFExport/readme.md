@@ -25,7 +25,7 @@ steps:
     packageType: 'runtime'
     version: '6.0.x'
     includePreviewVersions: false
-- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@1
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
   displayName: 'Export Single File'
   inputs:
     cloneRepo: false

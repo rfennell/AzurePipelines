@@ -165,6 +165,12 @@ export async function GetExePath (
 
         logInfo(`Downloaded executable ${exeCmd}`);
 
+        if (os !== "Windows_NT") {
+            logInfo(`Set execute permission on executable ${exeCmd}`);
+            fs.chmodSync(exeCmd, "777");
+        }
+
+
         return `${exeCmd}`;
     }
 }
