@@ -170,7 +170,6 @@ export async function GetExePath (
             fs.chmodSync(exeCmd, "777");
         }
 
-
         return `${exeCmd}`;
     }
 }
