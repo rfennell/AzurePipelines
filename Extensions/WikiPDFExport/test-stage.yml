@@ -4,6 +4,12 @@ steps:
   fetchDepth: 0
   lfs: false
 
+- task: UseDotNet@2
+  displayName: 'Use .NET Core runtime'
+  inputs:
+    packageType: 'runtime'
+    version: '6.0.x'
+    includePreviewVersions: false
 - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@2
   displayName: 'Generate Release Notes based on Release Comparision API'
   inputs:
