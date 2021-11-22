@@ -25,7 +25,7 @@ async function DownloadGitHubArtifact(
     logError) {
 
     var downloadRelease = require("download-github-release");
-    logInfo(`Starting download of command line tool to ${folder}`);
+    logInfo(`Starting download ${artifactName} to ${folder}`);
     await downloadRelease(
         user,
         repo,
@@ -58,7 +58,7 @@ export async function ExportPDF(
 
         if (command.length > 0) {
             if (!fs.existsSync(`${command}`)) {
-                logError(`Cannot find EXE ${command}`);
+                logError(`Cannot find ${command}`);
                 return;
             }
         }
@@ -142,12 +142,11 @@ export async function GetExePath (
             return "";
         }
     } else {
-        logInfo(`Start Download for AzureDevOps.WikiPDFExport release`);
-
         var artifactName = "azuredevops-export-wiki";
         if (os === "Windows_NT") {
             artifactName = "azuredevops-export-wiki.exe";
         }
+
         await DownloadGitHubArtifact(
             "MaxMelcher",
             "AzureDevOps.WikiPDFExport",
@@ -163,6 +162,8 @@ export async function GetExePath (
         // It seems that even though we wait for the download the file is not available to run for a short period.
         // This is a nasty solution but appears to work
         await new Promise(resolve => setTimeout(resolve, 5000));
+
+        logInfo(`Downloaded executable ${exeCmd}`);
 
         return `${exeCmd}`;
     }
