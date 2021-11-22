@@ -48,13 +48,13 @@ console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
 console.log(`Variable: OverrideExePath [${overrideExePath}]`);
 console.log(`Variable: UsePreRelease [${usePreRelease}]`);
 
-var isWindows = tl.getVariable("AGENT.OS") === "Windows_NT";
+var os = tl.getVariable("AGENT.OS");
 
 GetExePath(
     overrideExePath,
     workingFolder,
     usePreRelease,
-    isWindows
+    os
 ).then((exePath) => {
     if (exePath.length > 0) {
         ExportRun(
@@ -70,8 +70,7 @@ GetExePath(
             password,
             injectExtraHeader,
             branch,
-            rootExportPath,
-            isWindows
+            rootExportPath
         );
     } else {
         logError(`Cannot find the 'azuredevops-export-wiki' tool`);

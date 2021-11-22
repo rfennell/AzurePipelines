@@ -29,7 +29,7 @@ steps:
   displayName: 'Export Single File'
   inputs:
     cloneRepo: false
-    usePreRelease: true
+    usePreRelease: false
     localpath: '$(System.DefaultWorkingDirectory)'
     singleFile: 'inline.md'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFile.pdf'

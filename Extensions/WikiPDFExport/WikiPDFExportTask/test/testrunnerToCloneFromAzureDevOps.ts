@@ -47,6 +47,5 @@ ExportRun(
     password,
     injectExtraHeader,
     branch,
-    rootExportPath,
-    isWindows
+    rootExportPath
 );
