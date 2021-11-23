@@ -68,7 +68,7 @@ steps:
     rootExportPath: '$(System.DefaultWorkingDirectory)/repopartial/folder'
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
   displayName: 'Export Azure DevOps WIKI without downloading tool'
-  condition: succeededOrFailed()
+  condition: and(succeededOrFailed(), eq(variables['AGENT.OS'], 'Windows_NT'))
   inputs:
     cloneRepo: true
     overrideExePath: '$(System.DefaultWorkingDirectory)/tools/azuredevops-export-wiki.exe'
