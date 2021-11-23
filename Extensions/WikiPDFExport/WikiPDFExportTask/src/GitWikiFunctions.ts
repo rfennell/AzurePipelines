@@ -10,7 +10,7 @@ import { BranchSummary } from "simple-git/typings/response";
 function rimrafPromise (localpath)  {
     return new Promise((resolve, reject) => {
         rimraf(localpath, () => {
-            resolve();
+            resolve(0);
         }, (error) => {
             reject(error);
         });

@@ -13,34 +13,31 @@ import {
     logWarning,
     getSystemAccessToken
     }  from "./agentSpecific";
-
-// Define a function to filter releases.
-function filterRelease(release) {
-    // Filter out prereleases.
-    return release.prerelease === false;
-}
-
-// Define a function to filter assets.
-function filterAsset(asset) {
-    // Select assets that contain the string .
-    return asset.name.indexOf("azuredevops-export-wiki.exe") >= 0;
-}
+import { filePathSupplied } from "azure-pipelines-task-lib";
 
 async function DownloadGitHubArtifact(
     user,
     repo,
     folder,
+    usePreRelease,
+    artifactName,
     logInfo,
     logError) {
 
     var downloadRelease = require("download-github-release");
-    logInfo(`Starting download of command line tool to ${folder}`);
+    logInfo(`Starting download ${artifactName} to ${folder}`);
     await downloadRelease(
         user,
         repo,
         folder,
-        filterRelease,
-        filterAsset,
+        function filterRelease(release) {
+            // Filter out prereleases.
+            return release.prerelease === usePreRelease;
+        },
+        function filterAsset(asset) {
+            // Select assets that contain the string .
+            return (asset.name === artifactName);
+        },
         false)
     .then(function() {
         logInfo("Download done");
@@ -61,7 +58,7 @@ export async function ExportPDF(
 
         if (command.length > 0) {
             if (!fs.existsSync(`${command}`)) {
-                logError(`Cannot find EXE ${command}`);
+                logError(`Cannot find ${command}`);
                 return;
             }
         }
@@ -133,7 +130,8 @@ export async function ExportPDF(
 export async function GetExePath (
     overrideExePath,
     workingFolder,
-    isWindows: boolean
+    usePreRelease,
+    os: string
 ) {
     if (overrideExePath &&  overrideExePath.length > 0) {
         if (fs.existsSync(overrideExePath)) {
@@ -144,19 +142,32 @@ export async function GetExePath (
             return "";
         }
     } else {
-        logInfo(`Start Download for AzureDevOps.WikiPDFExport release`);
-        await DownloadGitHubArtifact("MaxMelcher", "AzureDevOps.WikiPDFExport", workingFolder, logInfo, logError);
-        var exeCmd = `${workingFolder}\\azuredevops-export-wiki.exe`;
+        var artifactName = "azuredevops-export-wiki";
+        if (os === "Windows_NT") {
+            artifactName = "azuredevops-export-wiki.exe";
+        }
+
+        await DownloadGitHubArtifact(
+            "MaxMelcher",
+            "AzureDevOps.WikiPDFExport",
+            workingFolder,
+            usePreRelease,
+            artifactName,
+            logInfo,
+            logError);
+
+        var exeCmd = path.join(workingFolder, artifactName);
 
         // `Pause to avoid 'The process cannot access the file because it is being used by another process.' error`
         // It seems that even though we wait for the download the file is not available to run for a short period.
         // This is a nasty solution but appears to work
         await new Promise(resolve => setTimeout(resolve, 5000));
 
-        if (!isWindows) {
-            // swap the slashes
-            exeCmd = exeCmd.replace(/\\/g, "/");
-            fs.chmodSync(exeCmd, 700);
+        logInfo(`Downloaded executable ${exeCmd}`);
+
+        if (os !== "Windows_NT") {
+            logInfo(`Set execute permission on executable ${exeCmd}`);
+            fs.chmodSync(exeCmd, "777");
         }
 
         return `${exeCmd}`;
@@ -202,7 +213,7 @@ export async function ExportRun (
 
      if (singleFile && singleFile.length > 0) {
          console.log(`A filename '${singleFile}' in the folder '${rootExportPath}' has been requested so only processing that file `);
-         ExportPDF (exeCmd, rootExportPath, singleFile, outputFile, extraParams,  logInfo, logError);
+         ExportPDF (exeCmd, rootExportPath, singleFile, outputFile, extraParams, logInfo, logError);
      } else  {
          console.log(`Processing the contents of the folder '${rootExportPath}' `);
          ExportPDF (exeCmd, rootExportPath, "" , outputFile, extraParams, logInfo, logError);

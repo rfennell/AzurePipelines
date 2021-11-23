@@ -135,16 +135,25 @@
     {
       "name": "overrideExePath",
       "type": "string",
-      "label": "EXE tool path override",
+      "label": "Tool path override",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "An optional path to a previously download copy of the [AzureDevOps.WikiPDFExport tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport). If not set the task will download the current release of this tool e.g 'c:\\myfolder\\azuredevops-export-wiki.exe'",
+      "helpMarkDown": "An optional path to a previously download copy of the [AzureDevOps.WikiPDFExport tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport) EXE (Windows) or DLL (Linux/Windows). If not set the task will download the current release of this tool e.g 'c:\\myfolder\\azuredevops-export-wiki.exe'",
+      "groupName": "advanced"
+    },
+    {
+      "name": "usePreRelease",
+      "type": "boolean",
+      "label": "Use pre-release versions of the export tool",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If set to true pre-release version of the [AzureDevOps.WikiPDFExport tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport) tool will be used",
       "groupName": "advanced"
     }
   ],
   "instanceNameFormat": "WIKI PDF Exporter",
   "execution": {
-    "Node": {
+    "Node10": {
       "target": "WikiPDFExportTask.js",
       "argumentFormat": ""
     }

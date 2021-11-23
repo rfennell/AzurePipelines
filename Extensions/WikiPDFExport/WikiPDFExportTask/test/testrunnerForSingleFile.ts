@@ -24,6 +24,7 @@ const password = "";
 const repo = "";
 const branch = "";
 const exePath = "..\\testdata\\azuredevops-export-wiki.exe";
+const isWindows = true;
 
 ExportRun(
     exePath,

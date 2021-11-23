@@ -28,6 +28,7 @@ const extraParams = "";
 const useAgentToken = false;
 const cloneRepo = true;
 const exePath = "..\\testdata\\azuredevops-export-wiki.exe";
+const isWindows = true;
 
 ExportRun(
     exePath,
