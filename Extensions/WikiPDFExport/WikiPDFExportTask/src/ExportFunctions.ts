@@ -145,6 +145,8 @@ export async function GetExePath (
         var artifactName = "azuredevops-export-wiki";
         if (os === "Windows_NT") {
             artifactName = "azuredevops-export-wiki.exe";
+        } else if (os === "Darwin") {
+            artifactName = "azuredevops-export-wiki-osx";
         }
 
         await DownloadGitHubArtifact(

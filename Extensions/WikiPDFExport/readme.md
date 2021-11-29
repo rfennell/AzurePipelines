@@ -29,13 +29,13 @@ So if you still wish to use the V1 version of this task, you must either
 - Allow the task to get the .NET6 based version of the tool but install .NET6 on the agent prior to running this task (see below)
 
 ### V2.x.x
-This version provides cost platform support using the new .NET6 based[version 4.0.0 of AzureDevOps.WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/releases/tag/4.0.0), and hence supports Windows and Linux usage.
+This version provides cost platform support using the new .NET6 based[version 4.0.0 of AzureDevOps.WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/releases/tag/4.0.3), and hence supports Windows, Linux and Mac usage.
 
 > Note: Mac support is in theory possible, but AzureDevOps.WikiPDFExport has not been tested on this platform
 
 # Usage
 ## .NET 6
-The AzureDevOps.WikiPDFExport tool since 4.0.0 is .NET 6 based. Hence [.NET 6](https://dotnet.microsoft.com/download/dotnet/6.0) must be installed on the agent.
+The AzureDevOps.WikiPDFExport tool since 4.0.x is .NET 6 based. Hence [.NET 6](https://dotnet.microsoft.com/download/dotnet/6.0) must be installed on the agent.
 
 In many cases this runtime will be present on a build agent e.g if VS2022 is installed. If it is not present it can be installed as a step in a build pipeline using the [usedotnet task](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/dotnet-core-tool-installer?view=azure-devops) before this task is called.
 
