@@ -132,7 +132,6 @@ stages:
     - deployment: Private_Tests_Mac
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
-      condition: eq('Is', 'Not Supported Yet')
       pool:
         vmImage: 'macOS-latest'
       strategy:
