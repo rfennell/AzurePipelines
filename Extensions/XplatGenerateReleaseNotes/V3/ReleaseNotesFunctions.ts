@@ -1151,11 +1151,12 @@ export async function getLastSuccessfulBuildByStage(
                                 const record  = timeline.records[timelineIndex];
                                 if (record.type === "Stage") {
                                     if (record.name === stageName || record.identifier === stageName) {
-                                        agentApi.logInfo (`Found required stage ${record.name} in the ${record.state.toString()} state with the result ${record.result.toString()} state for build ${build.id}`);
+                                        agentApi.logInfo (`Found required stage ${record.name} in the state ${record.state.toString()} with the result ${record.result.toString()} state for build ${build.id}`);
+                                        // checking enum values against https://docs.microsoft.com/en-us/dotnet/api/microsoft.teamfoundation.distributedtask.webapi.taskresult?view=azure-devops-dotnet
                                         if ((record.state.toString() === "2" || record.state.toString() === "completed") && // completed
                                         (
                                             (considerPartiallySuccessfulReleases === false && (record.result.toString() === "0" || record.result.toString().toLowerCase() === "succeeded")) ||
-                                            (considerPartiallySuccessfulReleases === true && (record.result.toString() === "4" || record.result.toString().toLowerCase() === "partiallysucceeded" || record.result.toString() === "0" || record.result.toString() === "succeeded"))
+                                            (considerPartiallySuccessfulReleases === true && (record.result.toString() === "1" || record.result.toString().toLowerCase() === "succeededwithissues" || record.result.toString() === "0" || record.result.toString() === "succeeded"))
                                         )) {
                                             agentApi.logInfo (`Using the build ${build.id}`);
                                             return {
