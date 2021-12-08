@@ -1066,7 +1066,8 @@ export async function getLastSuccessfulBuildByStage(
     buildId: number,
     buildDefId: number,
     tags: string[],
-    overrideBuildReleaseId: string
+    overrideBuildReleaseId: string,
+    considerPartiallySuccessfulReleases: boolean
 )  {
     if (stageName.length === 0) {
         agentApi.logInfo ("No stage name provided, cannot find last successful build by stage");
@@ -1146,8 +1147,11 @@ export async function getLastSuccessfulBuildByStage(
                                 if (record.type === "Stage") {
                                     if ((record.name === stageName || record.identifier === stageName) &&
                                         (record.state.toString() === "2" || record.state.toString() === "completed") && // completed
-                                        (record.result.toString() === "0" || record.result.toString() === "succeeded")) { // succeeded
-                                            agentApi.logInfo (`Found required stage ${record.name} in the completed and successful state in build ${build.id}`);
+                                        (
+                                            (considerPartiallySuccessfulReleases === false && (record.result.toString() === "0" || record.result.toString().toLowerCase() === "succeeded")) ||
+                                            (considerPartiallySuccessfulReleases === true && (record.result.toString() === "4" || record.result.toString().toLowerCase() === "partiallysucceeded" || record.result.toString() === "0" || record.result.toString() === "succeeded"))
+                                        )) {
+                                        agentApi.logInfo (`Found required stage ${record.name} in the ${record.state.toString()} and ${record.result.toString()} state in build ${build.id}`);
                                         return {
                                             id: build.id,
                                             stage: record
@@ -1307,7 +1311,15 @@ export async function generateReleaseNotes(
                     }
 
                     agentApi.logInfo (`Getting items associated the builds since the last successful build to the stage '${stageName}'`);
-                    var successfulStageDetails = await getLastSuccessfulBuildByStage(buildApi, teamProject, stageName, buildId, currentBuild.definition.id, tagArray, overrideBuildReleaseId);
+                    var successfulStageDetails = await getLastSuccessfulBuildByStage(
+                        buildApi,
+                        teamProject,
+                        stageName,
+                        buildId,
+                        currentBuild.definition.id,
+                        tagArray,
+                        overrideBuildReleaseId,
+                        considerPartiallySuccessfulReleases);
                     lastGoodBuildId = successfulStageDetails.id;
 
                     if (lastGoodBuildId !== 0) {
