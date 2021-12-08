@@ -1155,7 +1155,7 @@ export async function getLastSuccessfulBuildByStage(
                                         if ((record.state.toString() === "2" || record.state.toString() === "completed") && // completed
                                         (
                                             (considerPartiallySuccessfulReleases === false && (record.result.toString() === "0" || record.result.toString().toLowerCase() === "succeeded")) ||
-                                            (considerPartiallySuccessfulReleases === true && (record.result.toString() === "4" || record.result.toString().toLowerCase() === "partiallysucceeded" || record.result.toString() === "0" || record.result.toString() === "succeeded"))
+                                            (considerPartiallySuccessfulReleases === true && (record.result.toString() === "1" || record.result.toString().toLowerCase() === "partiallysucceeded" || record.result.toString() === "0" || record.result.toString() === "succeeded"))
                                         )) {
                                             agentApi.logInfo (`Using the build ${build.id}`);
                                             return {
