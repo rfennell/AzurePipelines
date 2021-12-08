@@ -1104,6 +1104,11 @@ export async function getLastSuccessfulBuildByStage(
 
     if (builds.length > 1 ) {
         agentApi.logInfo(`Found '${builds.length}' matching builds to consider`);
+        if (considerPartiallySuccessfulReleases) {
+            agentApi.logInfo(`Matching 'successful' or 'partially successful' builds`);
+        } else {
+            agentApi.logInfo(`Matching 'successful' builds only `);
+        }
         // check of we are using an override
         if (overrideBuildReleaseId && overrideBuildReleaseId.length > 0) {
             agentApi.logInfo(`An override build number has been passed, will only consider this build`);
@@ -1145,17 +1150,19 @@ export async function getLastSuccessfulBuildByStage(
                             for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
                                 const record  = timeline.records[timelineIndex];
                                 if (record.type === "Stage") {
-                                    if ((record.name === stageName || record.identifier === stageName) &&
-                                        (record.state.toString() === "2" || record.state.toString() === "completed") && // completed
+                                    if (record.name === stageName || record.identifier === stageName) {
+                                        agentApi.logInfo (`Found required stage ${record.name} in the ${record.state.toString()} state with the result ${record.result.toString()} state for build ${build.id}`);
+                                        if ((record.state.toString() === "2" || record.state.toString() === "completed") && // completed
                                         (
                                             (considerPartiallySuccessfulReleases === false && (record.result.toString() === "0" || record.result.toString().toLowerCase() === "succeeded")) ||
                                             (considerPartiallySuccessfulReleases === true && (record.result.toString() === "4" || record.result.toString().toLowerCase() === "partiallysucceeded" || record.result.toString() === "0" || record.result.toString() === "succeeded"))
                                         )) {
-                                        agentApi.logInfo (`Found required stage ${record.name} in the ${record.state.toString()} and ${record.result.toString()} state in build ${build.id}`);
-                                        return {
-                                            id: build.id,
-                                            stage: record
-                                        };
+                                            agentApi.logInfo (`Using the build ${build.id}`);
+                                            return {
+                                                id: build.id,
+                                                stage: record
+                                            };
+                                        }
                                     }
                                 }
                             }
