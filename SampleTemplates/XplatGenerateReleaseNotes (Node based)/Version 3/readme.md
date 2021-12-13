@@ -12,21 +12,21 @@ They provide basic reports outputted as markdown, showing the common objects ava
 ### Custom Extensions
 The extensions are small blocks of Javascript that are injected into the Handlebars processor to perform special functions.
 
-They can be injected either by: 
+They can be injected either by:
 - Injection as inline YAML content using the `customHandlebarsExtensionCode` parameter
 - Loaded from a file using the `customHandlebarsExtensionFile` parameter
 
-> In this folder each sample .JS file contains a single custom module, usually with a usage sample. If you wish to use multiple custom modules they can be combined into a single block/file e.g.
+> In this folder each sample .JS file contains a single custom module, usually with a usage sample. If you wish to use multiple custom modules they can be combined into a single block/file using a `,` as a separator between functions e.g.
 
 ```
 const handlebars = require("handlebars");
 module.exports = {
     count_workitems_by_type: function (array, typeName) {
         return array.filter(wi => wi.fields['System.WorkItemType'] === typeName).length;
-    };
+    },
     replace_text: function (msg, match, replacement) {
         return msg.replace(match, replacement);
-    };
+    }
 };
 ```
 
