@@ -13,8 +13,8 @@ When run, the task will download the current release (or optionally a pre-releas
 ## How the AzureDevOps.WikiPDFExport tool is obtained
 There is a maximum size limit for Azure DevOps extension VSIX packages. Due to this limitation and the size of the AzureDevOps.WikiPDFExport tool, we cannot ship the executable within the VSIX. This problem is addressed in two ways
 
-- [Default] The task downloads the latest (or pre-release) version of the tool from [AzureDevOps.WikiPDFExport command line tool releases](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/releases)
-- You can load the tool from a location known to the agent e.g. have it already on the agent, or downloaded as a pipeline artifact
+- **[Default]** The task downloads the latest (or pre-release) version of the tool from releases in [AzureDevOps.WikiPDFExport command line tool's GitHub Repo](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/releases) <br>**Note:** This method does require that agent can communicate with the following Internet endpoints: __github.com__,__objects.githubusercontent.com__ and __storage.googleapis.com__ to download the latest version of the tool from GitHub. This is potentially an issue for self hosted agents behind corporate firewalls.
+- If you require a specific version of the tool, or cannot use the automatic download, you can load the tool from a fixed location known to the agent e.g. have it already on the agent, or downloaded as a [pipeline resource](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/resources?view=azure-devops&tabs=schema) such as a __repository__, or __package__. Or, you could also download the tool using your own script as shown in [the discussion #1170](https://github.com/rfennell/AzurePipelines/issues/1170#issuecomment-995698253) on this tasks GitHub repo, thus bypassing the need for this task as all the work is done on the script.
 
 ## Versions of this task
 There have been two major versions of this task
@@ -29,9 +29,7 @@ So if you still wish to use the V1 version of this task, you must either
 - Allow the task to get the .NET6 based version of the tool but install .NET6 on the agent prior to running this task (see below)
 
 ### V2.x.x
-This version provides cost platform support using the new .NET6 based[version 4.0.0 of AzureDevOps.WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/releases/tag/4.0.3), and hence supports Windows, Linux and Mac usage.
-
-> Note: Mac support is in theory possible, but AzureDevOps.WikiPDFExport has not been tested on this platform
+This version provides cost platform support using the new .NET6 based [version 4.0.0 of AzureDevOps.WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/releases/tag/4.0.3), and hence supports Windows, Linux and Mac usage.
 
 # Usage
 ## .NET 6
@@ -194,5 +192,5 @@ The most common problems are usually cured by checking the following
 - If there is any chance there is a proxy or corporate firewall between a private agent and the Azure DevOps instance enable the `Injectheader` option. This is most common when accessing Azure DevOps Server/TFS (see above).
 - If you are on a private agent and get errors in the form `Error: spawn git ENOENT` when trying to clone a repo, make sure `C:\agent\externals\git\cmd` is in the environment path on agent machine [See this issue for details](https://github.com/rfennell/AzurePipelines/issues/738).
 - If you see the error `Failure processing application bundle. Bundle header version compatibility check failed. A fatal error occured while processing application bundle`, you probably need to install NET6 on the agent (see above)
-
+- If you are using a self hosted agent and the task cannot download the command line tool, make use the agent is able to communicate with the following Internet endpoints: __github.com__,__objects.githubusercontent.com__ and __storage.googleapis.com__. If this is not possible due to corporate firewall rules, swap to using a locally stored copy of the command line tool (See Section: How the AzureDevOps.WikiPDFExport tool is obtained)
 
