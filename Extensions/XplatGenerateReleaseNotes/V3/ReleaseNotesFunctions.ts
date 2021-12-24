@@ -1152,7 +1152,7 @@ export async function getLastSuccessfulBuildByStage(
                                 if (record.type === "Stage") {
                                     if (record.name === stageName || record.identifier === stageName) {
                                         agentApi.logInfo (`Found required stage ${record.name} in the state ${record.state.toString()} with the result ${record.result?.toString()} state for build ${build.id}`);
-                                        // checking enum values against 
+                                        // checking enum values against
                                         // https://docs.microsoft.com/en-us/dotnet/api/microsoft.teamfoundation.distributedtask.webapi.timelinerecordstate?view=azure-devops-dotnet
                                         // https://docs.microsoft.com/en-us/dotnet/api/microsoft.teamfoundation.distributedtask.webapi.taskresult?view=azure-devops-dotnet
                                         if ((record.state.toString() === "2" || record.state.toString() === "completed") && // completed
