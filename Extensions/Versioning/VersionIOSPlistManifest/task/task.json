@@ -1,0 +1,127 @@
+{
+  "id": "e23ccfaa-0d23-4fb7-b9f1-215b3060c452",
+  "name": "VersionIOSPlistManifest",
+  "friendlyName": "Version iOS Plist Manifest",
+  "description": "Applies a version to an iOS Plist Manifest via the CFBundleShortVersionString and CFBundleVersion property based on the build number.",
+     "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Version-Assemblies-and-Packages-Tasks/)",
+ "category": "Build",
+  "visibility": [
+                "Build",
+                "Release"
+                ],
+  "author": "Black Marble",
+  "version": {
+    "Major": 1,
+    "Minor": 2,
+    "Patch": 0
+  },
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    },
+    {
+      "name": "output",
+      "displayName": "Output",
+      "isExpanded": false
+    }
+  ],
+   "inputs": [
+      {
+         "name": "Path",
+         "type": "string",
+         "label": "Source folder",
+         "defaultValue": "$(Build.SourcesDirectory)",
+         "required": true,
+         "helpMarkDown": "Source folder for manifest files, can be root as it will find all files recursively"
+      },
+      {
+         "name": "VersionNumber",
+         "type": "string",
+         "label": "Version Number",
+         "defaultValue": "$(Build.BuildNumber)",
+         "required": true,
+         "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000' format"
+      },
+      {
+        "name": "VersionNameFormat",
+        "type": "string",
+        "label": "Version Name Pattern",
+        "defaultValue": "{1}.{2}",
+        "required": true,
+        "helpMarkDown": "Format of version number to apply as Version Name. Assumes starting from the beginning of the version number."
+      },
+      {
+        "name": "InjectCFBundleShortVersionString",
+        "type": "boolean",
+        "label": "InjectCFBundleShortVersionString",
+        "defaultValue": "false",
+        "required": true,
+        "helpMarkDown": "If True use the CFBundleShortVersionString as it directly entered, do not generate it"
+      },
+      {
+        "name": "InjectCFBundleVersion",
+        "type": "boolean",
+        "label": "Inject CFBundleVersion",
+        "defaultValue": "false",
+        "required": true,
+        "helpMarkDown": "If True no regex processing will be done to the build number. The build number must format must match the requirements of the 'Version Name Pattern' and 'Version Code Pattern'",
+        "groupName":"advanced"
+      },
+      {
+        "name": "CFBundleVersionFormat",
+        "type": "string",
+        "label": "CFBundleVersion Format",
+        "defaultValue": "{1}.{2}",
+        "required": true,
+        "helpMarkDown": "This is the part(s) of the version number to use for the CFBundleVersion.",
+        "visibleRule": "InjectCFBundleVersion = false"
+      },
+      {
+        "name": "CFBundleShortVersionStringFormat",
+        "type": "string",
+        "label": "CFBundleShortVersionString Format",
+        "defaultValue": "{1}.{2}",
+        "required": true,
+        "helpMarkDown": "This is the part(s) of the version number to use for the CFBundleShortVersionString",
+        "visibleRule": "InjectCFBundleShortVersionString = false"
+      },
+      {
+        "name": "VersionRegex",
+        "type": "string",
+        "label": "Regex Filter to extract build number",
+        "defaultValue": "\\d+\\.\\d+\\.\\d+",
+        "required": true,
+        "helpMarkDown": "Regular expression filter to get build number from the build name.",
+        "groupName":"advanced",
+        "visibleRule": "Injectversion = false"
+      },
+      {
+        "name": "FilenamePattern",
+        "type": "string",
+        "label": "Filename Pattern",
+        "defaultValue": "AndroidManifest.xml",
+        "required": true,
+        "helpMarkDown": "The filename pattern to update.",
+        "groupName":"advanced"
+      },
+      {
+        "name": "OutputVersion",
+        "type": "string",
+        "label": "Version number used variable name",
+        "defaultValue": "OutputedVersion",
+        "required": true,
+        "helpMarkDown": "The actual version number extracted and used from the build number.",
+        "groupName":"output"
+      }
+   ],
+  "minimumAgentVersion": "1.82.0",
+   "instanceNameFormat": "Version iOS Plist Manifest",
+  "execution": {
+     "Node10": {
+       "target": "ApplyVersionToManifest.js",
+       "argumentFormat": ""
+     }
+  }
+}

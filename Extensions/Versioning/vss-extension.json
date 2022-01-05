@@ -8,7 +8,7 @@
   "CustomerQnASupport": {
     "enableqna":"true",
     "url": "https://github.com/rfennell/AzurePipelines/issues"
-  }, 
+  },
  "categories": [
     "Build and release"
   ],
@@ -98,6 +98,9 @@
     },
     {
       "path": "VersionAngularFileTask/task"
+    },
+    {
+      "path": "VersionIOSPlistManifest/task"
     }
   ],
   "contributions": [
@@ -219,6 +222,16 @@
       ],
       "properties": {
         "name": "VersionAngularFileTask/task"
+      }
+    },
+    {
+      "id": "Version-IOSPlistManifest-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "VersionIOSPlistManifest/task"
       }
     }
 
