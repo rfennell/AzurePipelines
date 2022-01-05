@@ -239,6 +239,15 @@ stages:
                   waitForQueuedBuildsToFinish: true
                   authenticationMethod: 'OAuth Token'
                   password: $(System.AccessToken)
+              - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
+                displayName: 'Trigger a new build of Validate-VersioningTask.Plist'
+                inputs:
+                  buildDefinition: 'Validate-VersioningTask.Plist'
+                  useSameBranch: false
+                  branchToUse: master
+                  waitForQueuedBuildsToFinish: true
+                  authenticationMethod: 'OAuth Token'
+                  password: $(System.AccessToken)
 
   - stage: Documentation
     dependsOn:

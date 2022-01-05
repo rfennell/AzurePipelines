@@ -4,7 +4,7 @@ parameters:
 - name: taskName
   type: string
 
-steps:  
+steps:
 - task: Npm@1
   inputs:
     command: 'install'
@@ -34,6 +34,7 @@ steps:
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results for ${{parameters.taskName}}'
+  condition: 'succeededOrFailed()'
   inputs:
     cwd: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
     testRunTitle: '${{parameters.taskName}}'
