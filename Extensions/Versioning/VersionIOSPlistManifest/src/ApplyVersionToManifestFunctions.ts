@@ -63,6 +63,7 @@ export function updateManifestFile (filename, CFBundleVersion, CFBundleShortVers
     fs.chmodSync(filename, "600");
     filecontent = filecontent.replace(/<key>CFBundleShortVersionString<\/key>\n.*<string>.*<\/string>/g, `<key>CFBundleShortVersionString</key>\n    <string>${CFBundleShortVersionString}</string>`);
     filecontent = filecontent.replace(/<key>CFBundleVersion<\/key>\n.*<string>.*<\/string>/g, `<key>CFBundleVersion</key>\n    <string>${CFBundleVersion}</string>`);
+    console.log(filecontent);
     fs.writeFileSync(filename, filecontent);
 }
 
