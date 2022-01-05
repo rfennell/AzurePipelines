@@ -36,7 +36,7 @@ if (!fs.existsSync(path)) {
 const buildVersion = extractVersion(injectversion, versionRegex, versionNumber);
 console.log (`Extracted Build Version: ${buildVersion}`);
 
-const jsonVersion = getSplitVersionParts(versionRegex, versionForJSONFileFormat, buildVersion);
+const jsonVersion = getSplitVersionParts(injectversion, versionRegex, versionForJSONFileFormat, buildVersion);
 console.log (`Angular Version Name will be: ${jsonVersion}`);
 
 // Apply the version to the assembly property files
