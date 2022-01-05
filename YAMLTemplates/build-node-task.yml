@@ -30,7 +30,7 @@ steps:
   inputs:
     command: 'custom'
     workingDir: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
-    customCommand: 'run test'
+    customCommand: 'run test-no-logger'
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results for ${{parameters.taskName}}'
