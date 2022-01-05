@@ -93,6 +93,11 @@ stages:
           extensionRoot: '$(ExtensionRoot)'
           taskName: 'VersionAndroidManifest'
 
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'VersionIOSPlistManifest'
+
       - task: TfxInstaller@3
         displayName: 'Install Tfx Tool'
         inputs:
