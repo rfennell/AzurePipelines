@@ -32,11 +32,14 @@ export function extractVersion(injectversion, versionRegex, versionNumber ) {
     return newVersion;
 }
 
-export function getSplitVersionParts (buildNumberFormat, outputFormat, version) {
-    const versionNumberSplitItems = version.split(extractDelimitersRegex(buildNumberFormat));
-    const versionNumberMatches = outputFormat.match(/\d/g);
-    const joinChar =  extractJoinChar(outputFormat);
-    const versionName = (versionNumberMatches.map((item) => versionNumberSplitItems[item - 1])).join(joinChar);
+export function getSplitVersionParts (injectversion, buildNumberFormat, outputFormat, version) {
+    var versionName = version;
+    if (injectversion === false) {
+        const versionNumberSplitItems = version.split(extractDelimitersRegex(buildNumberFormat));
+        const versionNumberMatches = outputFormat.match(/\d/g);
+        const joinChar =  extractJoinChar(outputFormat);
+        versionName = (versionNumberMatches.map((item) => versionNumberSplitItems[item - 1])).join(joinChar);
+        }
     return versionName;
 }
 
