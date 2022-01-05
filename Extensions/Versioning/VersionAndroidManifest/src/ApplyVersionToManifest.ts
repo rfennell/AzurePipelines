@@ -48,7 +48,7 @@ console.log (`Version Name will be: ${versionName}`);
 
 if (injectversioncode === false) {
     console.log(`Building the version code from the build number`);
-    versionCode = getSplitVersionParts(injectversion, versionRegex, versionCodeFormat, newVersion);
+    versionCode = getSplitVersionParts(injectversioncode, versionRegex, versionCodeFormat, newVersion);
 } else {
     console.log(`Using the injected version code`);
 }
