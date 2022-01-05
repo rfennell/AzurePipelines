@@ -43,12 +43,12 @@ console.log (`Found ${files.length} files to update.`);
 const newVersion = extractVersion(injectversion, versionRegex, versionNumber);
 console.log (`Extracted Version: ${newVersion}`);
 
-const versionName = getSplitVersionParts(versionRegex, versionNameFormat, newVersion);
+const versionName = getSplitVersionParts(injectversion, versionRegex, versionNameFormat, newVersion);
 console.log (`Version Name will be: ${versionName}`);
 
 if (injectversioncode === false) {
     console.log(`Building the version code from the build number`);
-    versionCode = getSplitVersionParts(versionRegex, versionCodeFormat, newVersion);
+    versionCode = getSplitVersionParts(injectversioncode, versionRegex, versionCodeFormat, newVersion);
 } else {
     console.log(`Using the injected version code`);
 }
