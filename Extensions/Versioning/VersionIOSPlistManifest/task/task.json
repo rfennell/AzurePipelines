@@ -67,7 +67,7 @@
         "defaultValue": "{1}.{2}",
         "required": true,
         "helpMarkDown": "This is the part(s) of the version number to use for the CFBundleVersion.",
-        "visibleRule": "InjectCFBundleVersion = false"
+        "visibleRule": "Injectversion = false"
       },
       {
         "name": "CFBundleShortVersionStringFormat",
@@ -76,7 +76,7 @@
         "defaultValue": "{1}.{2}",
         "required": true,
         "helpMarkDown": "This is the part(s) of the version number to use for the CFBundleShortVersionString",
-        "visibleRule": "InjectCFBundleShortVersionString = false"
+        "visibleRule": "Injectversion = false"
       },
       {
         "name": "VersionRegex",
