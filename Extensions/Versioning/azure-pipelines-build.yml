@@ -93,6 +93,11 @@ stages:
           extensionRoot: '$(ExtensionRoot)'
           taskName: 'VersionAndroidManifest'
 
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'VersionIOSPlistManifest'
+
       - task: TfxInstaller@3
         displayName: 'Install Tfx Tool'
         inputs:
@@ -229,6 +234,15 @@ stages:
                 displayName: 'Trigger a new build of Validate-VersioningTask.Android'
                 inputs:
                   buildDefinition: 'Validate-VersioningTask.Android'
+                  useSameBranch: false
+                  branchToUse: master
+                  waitForQueuedBuildsToFinish: true
+                  authenticationMethod: 'OAuth Token'
+                  password: $(System.AccessToken)
+              - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
+                displayName: 'Trigger a new build of Validate-VersioningTask.Plist'
+                inputs:
+                  buildDefinition: 'Validate-VersioningTask.Plist'
                   useSameBranch: false
                   branchToUse: master
                   waitForQueuedBuildsToFinish: true

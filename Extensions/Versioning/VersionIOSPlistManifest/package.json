@@ -1,0 +1,39 @@
+{
+  "name": "VersionAndroidManifest",
+  "description": "VersionAndroidManifest",
+  "scripts": {
+    "build": "npm run clean && npm run lint && npm run transpile ",
+    "package": "npm prune -production && npm run copy",
+    "copy": "ncp ./node_modules ./task/node_modules && ncp ./dist/src ./task",
+    "clean": "rimraf ./dist/src && rimraf ./dist/test && rimraf ./task/*.js && rimraf ./task/*.js.map && rimraf ./task/node_modules",
+    "transpile": "tsc -p ./",
+    "lint": "tslint -c tslint.json src/*.ts test/*.ts",
+    "test": "mocha -r ts-node/register ./test/*.ts --reporter mocha-junit-reporter --reporter-options mochaFile=./test-output/test-results.xml ",
+    "test-no-logger": "mocha -r ts-node/register ./test/*.ts "
+  },
+  "main": "VersionAndroidManifest.js",
+  "dependencies": {
+    "Buffer": "^0.0.0",
+    "del": "^3.0.0",
+    "fs": "^0.0.1-security",
+    "fs-copy-file-sync": "^1.1.1",
+    "ncp": "^2.0.0",
+    "request": "^2.88.0",
+    "vsts-task-lib": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^2.2.48",
+    "@types/node": "^7.10.2",
+    "chai": "^3.5.0",
+    "mocha": "^5.2.0",
+    "mocha-junit-reporter": "^1.18.0",
+    "ts-loader": "^2.0.3",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.11.0",
+    "typescript": "^4.2.3",
+    "typings": "^2.1.1"
+  },
+  "author": "Richard Fennell",
+  "license": "MIT"
+}

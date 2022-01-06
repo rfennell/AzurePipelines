@@ -14,6 +14,7 @@ A set of tasks based on the versioning sample script to version stamp assemblies
 * VersionJSONFile - Sets the version in a named field in a JSON file (tested in NPM package.json file)
 * VersionAngularFile - Sets the version in a named field in an enviroment.ts Angular file
 * VersionPowerShellModule - Sets the ModuleVersion property in any module psd1 files.
+* VersionIOSPlistManifest - Sets the CFBundleShortVersionString and CFBundleVersion properties in iOS Plist files.
 
 All these tasks take at least two parameters, which are both defaulted
 
@@ -48,7 +49,7 @@ The VSIX versioner also takes the following parameters
 
 The Android manifest versioner takes the following extra parameters:
 
-* [Advanced] Inject Version Code: If true then the provided version code will be used as opposed genrating from the build number will regex processing
+* [Advanced] Inject Version Code: If true then the provided version code will be used as opposed generating from the build number will regex processing
 * Version Code - A number between 1 and 2100000000 as required by the Google Play Store
 * Version Name Pattern - This is the pattern you'd like the publicly visible version name to take in. This should be in the format {1}.{2} or similar but will also work with 1.2.3 etc.
 * Version Code Pattern - This is the elements that you'd like to use to store the internal version number that Google uses for detecting if a version of the app is newer than an existing version, both in the play store and on the device. This will concatenate any specifies parts together into a single integer. It Accepts single values like {3} or multiple like {1}{2}{3}, delmiting with `{x}` is optional and should work with 123.
@@ -56,3 +57,10 @@ The Android manifest versioner takes the following extra parameters:
 See the blog post [Making sure when you use VSTS build numbers to version Android Packages they can be uploaded to the Google Play Store](https://blogs.blackmarble.co.uk/rfennell/2018/05/12/making-sure-when-you-use-vsts-build-numbers-to-version-android-packages-they-can-be-uploaded-to-the-google-play-store/) for more details on using this task
 
 The JSON and Angular versioners use the same form of format parameter as the android versioner for the version number to write to the file
+
+The Plist manifest version takes the following extra parameters:
+* [Advanced] Inject CFBundleShortVersionString: If true then the provided CFBundleShortVersionString will be used as opposed generating from the build number will regex processing
+* [Advanced] Inject CFBundleVersion: If true then the provided CFBundleVersion will be used as opposed generating from the build number will regex processing
+* CFBundleShortVersionString Pattern - This is the pattern you'd like the publicly visible version name to take in. This should be in the format {1}.{2} or similar but will also work with 1.2.3 etc.
+* CFBundleVersion Pattern - This is the pattern you'd like the publicly visible version name to take in. This should be in the format {1}.{2} or similar but will also work with 1.2.3 etc.
+* Version Code Pattern - This is the elements that you'd like to use to store the internal version number that Google uses for detecting if a version of the app is newer than an existing version, both in the play store and on the device. This will concatenate any specifies parts together into a single integer. It Accepts single values like {3} or multiple like {1}{2}{3}, delmiting with `{x}` is optional and should work with 123.
