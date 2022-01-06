@@ -92,7 +92,7 @@
         "name": "FilenamePattern",
         "type": "string",
         "label": "Filename Pattern",
-        "defaultValue": "*.plist",
+        "defaultValue": "info.plist",
         "required": true,
         "helpMarkDown": "The filename pattern to update.",
         "groupName":"advanced"
