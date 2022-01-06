@@ -63,18 +63,23 @@ export function updateManifestFile (filename, CFBundleVersion, CFBundleShortVers
     fs.chmodSync(filename, "600");
 
     var tags = ["CFBundleShortVersionString", "CFBundleVersion"];
+    var v = [CFBundleShortVersionString, CFBundleVersion];
 
-    var m = filecontent.match(/<key>CFBundleShortVersionString<\/key>\n.*<string>.*<\/string>/g);
+    for (var i = 0; i < tags.length; i++) {
+
+    var exp = new RegExp(`<key>${tags[i]}<\/key>[\r\n]*.*<string>.*<\/string>`, "g");
+    var m = filecontent.match(exp);
     if (m && m.length > 0) {
-       console.log(`Found ${m.length} matches`);
+       console.log(`Found ${m.length} matches for CFBundleShortVersionString`);
        console.log(m[0]);
-       filecontent = filecontent.replace(m[0], `<key>CFBundleShortVersionString</key>\n<string>${CFBundleShortVersionString}</string>`);
+       filecontent = filecontent.replace(m[0],  m[0].replace(/<string>.*<\/string>/gim, `<string>${v[i]}</string>`));
     } else {
         console.log(`No matches found`);
     }
+}
 
-    // filecontent = filecontent.replace(/<key>CFBundleShortVersionString<\/key>\n.*<string>.*<\/string>/g, `<key>CFBundleShortVersionString</key>\n    <string>${CFBundleShortVersionString}</string>`);
-    filecontent = filecontent.replace(/<key>CFBundleVersion<\/key>\n.*<string>.*<\/string>/g, `<key>CFBundleVersion</key>\n    <string>${CFBundleVersion}</string>`);
+    // filecontent = filecontent.replace(/<key>CFBundleShortVersionString<\/key>.*<string>.*<\/string>/gims, `<key>CFBundleShortVersionString</key>\n    <string>${CFBundleShortVersionString}</string>`);
+    // filecontent = filecontent.replace(/<key>CFBundleVersion<\/key>.*<string>.*<\/string>/gims, `<key>CFBundleVersion</key>\n    <string>${CFBundleVersion}</string>`);
     console.log(filecontent);
     fs.writeFileSync(filename, filecontent);
 }
