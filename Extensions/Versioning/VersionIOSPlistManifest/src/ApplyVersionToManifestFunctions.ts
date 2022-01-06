@@ -58,9 +58,12 @@ function extractDelimitersRegex(format) {
 }
 
 export function updateManifestFile (filename, CFBundleVersion, CFBundleShortVersionString) {
-    console.log(`Updating ${filename}`);
+    console.log(`Updating ${filename} with the following values: CFBundleVersion: ${CFBundleVersion}, CFBundleShortVersionString: ${CFBundleShortVersionString}`);
     var filecontent = fs.readFileSync(filename).toString();
     fs.chmodSync(filename, "600");
+    var m = filecontent.match(/<key>CFBundleShortVersionString<\/key>\n.*<string>.*<\/string>/g);
+    console.log(`Found ${m.length} matches`);
+    console.log(m[0]);
     filecontent = filecontent.replace(/<key>CFBundleShortVersionString<\/key>\n.*<string>.*<\/string>/g, `<key>CFBundleShortVersionString</key>\n    <string>${CFBundleShortVersionString}</string>`);
     filecontent = filecontent.replace(/<key>CFBundleVersion<\/key>\n.*<string>.*<\/string>/g, `<key>CFBundleVersion</key>\n    <string>${CFBundleVersion}</string>`);
     console.log(filecontent);
