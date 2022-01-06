@@ -42,7 +42,7 @@
          "label": "Version Number",
          "defaultValue": "$(Build.BuildNumber)",
          "required": true,
-         "helpMarkDown": "Version number to apply to files, can be extraced from the build name 'Build HelloWorld_00.00.00000' format"
+         "helpMarkDown": "Version number to apply to files, can be extracted from the build name 'Build HelloWorld_00.00.00000' format"
       },
       {
         "name": "VersionNameFormat",
@@ -53,21 +53,12 @@
         "helpMarkDown": "Format of version number to apply as Version Name. Assumes starting from the beginning of the version number."
       },
       {
-        "name": "InjectCFBundleShortVersionString",
+        "name": "Injectversion",
         "type": "boolean",
-        "label": "InjectCFBundleShortVersionString",
+        "label": "Inject Version",
         "defaultValue": "false",
         "required": true,
-        "helpMarkDown": "If True use the CFBundleShortVersionString as it directly entered, do not generate it"
-      },
-      {
-        "name": "InjectCFBundleVersion",
-        "type": "boolean",
-        "label": "Inject CFBundleVersion",
-        "defaultValue": "false",
-        "required": true,
-        "helpMarkDown": "If True no regex processing will be done to the build number. The build number must format must match the requirements of the 'Version Name Pattern' and 'Version Code Pattern'",
-        "groupName":"advanced"
+        "helpMarkDown": "If True use the injected version without formatting as directly entered for both CFBundleShortVersionString and CFBundleVersion"
       },
       {
         "name": "CFBundleVersionFormat",

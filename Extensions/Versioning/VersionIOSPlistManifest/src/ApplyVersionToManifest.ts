@@ -33,8 +33,6 @@ console.log (`CFBundleVersion Format: ${CFBundleVersionFormat}`);
 console.log (`CFBundleShortVersionString Format: ${CFBundleShortVersionStringFormat}`);
 console.log (`Injected versionNumber: ${versionNumber}`);
 console.log (`Inject Version: ${injectversion}`);
-console.log (`Inject CFBundleVersion: ${InjectCFBundleVersion}`);
-console.log (`Inject CFBundleShortVersionString: ${InjectCFBundleShortVersionString}`);
 
 console.log (`Output: Version Number Parameter Name: ${outputversion}`);
 
@@ -51,10 +49,10 @@ console.log (`Found ${files.length} files to update.`);
 const newVersion = extractVersion(injectversion, versionRegex, versionNumber);
 console.log (`Extracted Version from Build Number: ${newVersion}`);
 
-const CFBundleVersion = getSplitVersionParts(InjectCFBundleVersion, versionRegex, CFBundleVersionFormat, newVersion);
+const CFBundleVersion = getSplitVersionParts(injectversion, versionRegex, CFBundleVersionFormat, newVersion);
 console.log (`CFBundleVersion will be: ${CFBundleVersion}`);
 
-const CFBundleShortVersionString = getSplitVersionParts(InjectCFBundleShortVersionString, versionRegex, CFBundleShortVersionStringFormat, newVersion);
+const CFBundleShortVersionString = getSplitVersionParts(injectversion, versionRegex, CFBundleShortVersionStringFormat, newVersion);
 console.log (`CFBundleShortVersionString will be: ${CFBundleShortVersionString}`);
 
 if (files.length > 0) {
