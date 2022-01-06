@@ -47,13 +47,18 @@ describe ("Version number split tests", () => {
 
 describe("Test the file processing", () => {
     before(function() {
-      // make a copy we can overright with breaking test data
+      // make a copy we can overwrite with breaking test data
       copyFileSync("test/testdata/sample.xml.initial", "test/testdata/sample.xml");
     });
 
     it("should be able to update a version in a file", () => {
       var file = "test/testdata/sample.xml";
-      updateManifestFile(file, "3.4", "2.1");
+      updateManifestFile(
+        file,
+        {
+          "CFBundleVersion": 3.4,
+          "CFBundleShortVersionString": 2.1
+        });
 
       var editedfilecontent = fs.readFileSync(file);
       var expectedfilecontent = fs.readFileSync(`${file}.expected`);

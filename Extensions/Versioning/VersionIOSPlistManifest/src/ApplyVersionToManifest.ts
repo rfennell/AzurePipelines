@@ -60,7 +60,12 @@ console.log (`CFBundleShortVersionString will be: ${CFBundleShortVersionString}`
 if (files.length > 0) {
     console.log (`Will apply CFBundleVersion: ${CFBundleVersion} and CFBundleShortVersionString: ${CFBundleShortVersionString} to ${files.length} files.`);
     files.forEach(file => {
-        updateManifestFile(file, CFBundleVersion, CFBundleShortVersionString);
+        updateManifestFile(
+            file,
+            {
+                "CFBundleVersion": CFBundleVersion,
+                "CFBundleShortVersionString": CFBundleShortVersionString
+            });
     });
     if (outputversion && outputversion.length > 0) {
         console.log (`Set the output variable '${outputversion}' with the value ${newVersion}`);
