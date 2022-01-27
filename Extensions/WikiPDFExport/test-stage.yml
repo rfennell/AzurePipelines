@@ -1,3 +1,8 @@
+parameters:
+- name: localpath
+  type: string
+  default: $(Agent.TempDirectory) 
+
 steps:
 - checkout: VSTSBuildTaskValidation
   clean: false
@@ -39,6 +44,7 @@ steps:
     localpath: '$(System.DefaultWorkingDirectory)'
     singleFile: 'inline.md'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFile.pdf'
+    downloadPath: '${{parameters.localpath}}'
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
   displayName: 'Export Public GitHub WIKI'
   condition: succeededOrFailed()
@@ -48,6 +54,7 @@ steps:
     useAgentToken: false
     localpath: '$(System.DefaultWorkingDirectory)/GitHubRepo'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-publicGitHub.pdf'
+    downloadPath: '${{parameters.localpath}}'
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
   displayName: 'Export Azure DevOps WIKI'
   condition: succeededOrFailed()
@@ -56,6 +63,7 @@ steps:
     repo: 'https://dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
     useAgentToken: true
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-Azrepo.pdf'
+    downloadPath: '${{parameters.localpath}}'
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
   displayName: 'Export part of the Azure DevOps WIKI'
   condition: succeededOrFailed()
@@ -66,6 +74,7 @@ steps:
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-AzrepoFilter.pdf'
     localpath: '$(System.DefaultWorkingDirectory)/repopartial'
     rootExportPath: '$(System.DefaultWorkingDirectory)/repopartial/folder'
+    downloadPath: '${{parameters.localpath}}'
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
   displayName: 'Export Azure DevOps WIKI without downloading tool'
   condition: and(succeededOrFailed(), eq(variables['AGENT.OS'], 'Windows_NT'))
@@ -75,6 +84,7 @@ steps:
     repo: 'https://dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
     useAgentToken: true
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-Azrepo-nodownload.pdf'
+    downloadPath: '${{parameters.localpath}}'
 - task: PublishPipelineArtifact@0
   condition: succeededOrFailed()
   inputs:

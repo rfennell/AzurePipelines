@@ -134,11 +134,14 @@ stages:
       environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
       pool:
         vmImage: 'macOS-latest'
+        # name: default
       strategy:
         runOnce:
           deploy:
             steps:
             - template: test-stage.yml
+              parameters:
+                localpath: '$(System.DefaultWorkingDirectory)'
   - stage: Documentation
     dependsOn: Test
     pool:

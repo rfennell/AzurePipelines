@@ -65,6 +65,7 @@ steps:
 - ExtraParameters - Any optional extra as defined at [WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/) you wish to pass to the command line tool - noting that this task automatically manages the -p, -s, -c and -v parameters
 - usePreRelease - If set to true pre-release version of the [AzureDevOps.WikiPDFExport tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport) tool will be used
 - overrideExePath - An optional path to a previously download copy of the [AzureDevOps.WikiPDFExport tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport). If not set the task will download the current release of this tool
+- downloadPath - The path the tool will be downloaded to, default to the Azure DevOps pre-defined variable `Agent.TempDirectory`
 #### Git Clone Specific
 - CloneRepo - a boolean flag whether to clone the repo or not
 - Repo - The repo URL to update e.g in the form **https://dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki** (see the URL section below as to how to find this URL)
