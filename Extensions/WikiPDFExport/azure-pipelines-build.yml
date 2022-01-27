@@ -140,6 +140,8 @@ stages:
           deploy:
             steps:
             - template: test-stage.yml
+              parameters:
+                downloadPath: '(System.DefaultWorkingDirectory)'
   - stage: Documentation
     dependsOn: Test
     pool:
