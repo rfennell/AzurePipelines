@@ -139,7 +139,7 @@ The recommended approach is to use the build agents OAUTH Token for authenticati
    - For YAML based pipelines the OAUTH token should automatically be available
 1. Grant 'contribute' access on the target Azure DevOps WIKI Repo to user the build agent is scoped to run as 
    - Control of the scope the build agent runs as is [documented here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/access-tokens?view=azure-devops&tabs=yaml#job-authorization-scope).
-   - Make sure that the 'Project Collection > Setting > Pipeline > Setting > Limit job authorization scope to referenced Azure DevOps repositories' as not enabled. If set it can block access to the target repo. 
+   - Make sure that the 'Project Collection > Setting > Pipeline > Setting > Protect access to repositories in YAML pipelines' as not enabled. If set it can block access to the target repo. 
    - Usually this is the '_Project Name_ Build Service' user (assuming this is the account the pipeline is running. The alternative if the wider scope is used is the 'Project Collection Build Service' user
 1. Set the task's `UseAgentToken` parameter to true
 
