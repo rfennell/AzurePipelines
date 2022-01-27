@@ -47,6 +47,7 @@ console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
 console.log(`Variable: OverrideExePath [${overrideExePath}]`);
 console.log(`Variable: UsePreRelease [${usePreRelease}]`);
+console.log(`Variable: DownloadPath [${workingFolder}]`);
 
 var os = tl.getVariable("AGENT.OS");
 

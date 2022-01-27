@@ -141,7 +141,7 @@ stages:
             steps:
             - template: test-stage.yml
               parameters:
-                localpath: '(System.DefaultWorkingDirectory)'
+                localpath: '$(System.DefaultWorkingDirectory)'
   - stage: Documentation
     dependsOn: Test
     pool:
