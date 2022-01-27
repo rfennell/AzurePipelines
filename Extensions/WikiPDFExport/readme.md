@@ -144,14 +144,14 @@ The following are supported means to authenticate with different services
 ### Authentication using OAUTH to Azure DevOps Services hosted Repos
 The recommended approach is to use the build agents OAUTH Token for authentication. To do this
 
+1. Set the task's `UseAgentToken` parameter to true (if on Classic Build or Release, this defaults enabled for YAML)
 1. Allow the pipeline to access th OAUTH Token
    - For UI based pipelines this is [documented here](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands)
    - For YAML based pipelines the OAUTH token should automatically be available
 1. Grant 'contribute' access on the target Azure DevOps WIKI Repo to user the build agent is scoped to run as
    - Control of the scope the build agent runs as is [documented here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/access-tokens?view=azure-devops&tabs=yaml#job-authorization-scope).
-   - Make sure that the 'Project Collection > Setting > Pipeline > Setting > Limit job authorization scope to referenced Azure DevOps repositories' as not enabled. If set it can block access to the target repo.
    - Usually this is the '_Project Name_ Build Service' user (assuming this is the account the pipeline is running. The alternative if the wider scope is used is the 'Project Collection Build Service' user
-1. Set the task's `UseAgentToken` parameter to true
+1. Make sure that the 'Project Collection > Setting > Pipeline > Setting > Protect access to repositories in YAML pipelines' as not enabled. If set it can block access to the target repo.
 
 Once this is set the `user` and the `password` parameters are managed by the task.
 
