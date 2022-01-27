@@ -44,7 +44,7 @@ steps:
     localpath: '$(System.DefaultWorkingDirectory)'
     singleFile: 'inline.md'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFile.pdf'
-    downloadPath: '${{parameters.localpath'
+    downloadPath: '${{parameters.localpath}}'
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
   displayName: 'Export Public GitHub WIKI'
   condition: succeededOrFailed()
