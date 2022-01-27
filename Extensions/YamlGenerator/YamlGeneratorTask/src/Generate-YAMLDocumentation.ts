@@ -1,6 +1,6 @@
 ﻿import * as fs from "fs";
 import * as path from "path";
-import tl = require("vsts-task-lib/task");
+import tl = require("azure-pipelines-task-lib/task");
 import { log } from "util";
 
 function DumpField(field) {
