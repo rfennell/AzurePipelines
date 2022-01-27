@@ -133,7 +133,8 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
       pool:
-        vmImage: 'macOS-latest'
+        # vmImage: 'macOS-latest'
+        name: default
       strategy:
         runOnce:
           deploy:
