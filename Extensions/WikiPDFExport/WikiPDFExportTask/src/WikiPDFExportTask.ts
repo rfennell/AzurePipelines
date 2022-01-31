@@ -25,7 +25,7 @@ var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
 var cloneRepo = tl.getBoolInput("cloneRepo");
 var overrideExePath = tl.getInput("overrideExePath");
-var workingFolder = tl.getVariable("Agent.TempDirectory");
+var workingFolder = tl.getInput("downloadPath");
 var rootExportPath = tl.getInput("rootExportPath");
 var usePreRelease = tl.getBoolInput("usePreRelease");
 
@@ -47,6 +47,7 @@ console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
 console.log(`Variable: OverrideExePath [${overrideExePath}]`);
 console.log(`Variable: UsePreRelease [${usePreRelease}]`);
+console.log(`Variable: DownloadPath [${workingFolder}]`);
 
 var os = tl.getVariable("AGENT.OS");
 
