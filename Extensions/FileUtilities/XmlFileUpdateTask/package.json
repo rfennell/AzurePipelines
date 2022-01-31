@@ -15,6 +15,8 @@
     "azure-pipelines-task-lib": "^3.1.0",
     "buffer": "^6.0.3",
     "del": "^3.0.0",
+    "fs": "0.0.1-security",
+    "fs-copy-file-sync": "^1.0.1",
     "ncp": "^2.0.0",
     "request": "^2.88.2",
     "xmldom": "^0.5.0",
