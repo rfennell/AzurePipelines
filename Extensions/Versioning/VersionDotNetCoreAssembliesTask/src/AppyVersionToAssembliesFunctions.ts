@@ -1,6 +1,6 @@
 import fs = require("fs");
 import path = require("path");
-import tl = require("vsts-task-lib/task");
+import tl = require("azure-pipelines-task-lib/task");
 
 export function extractVersion(injectversion, versionRegex, versionNumber ) {
     var newVersion = versionNumber;

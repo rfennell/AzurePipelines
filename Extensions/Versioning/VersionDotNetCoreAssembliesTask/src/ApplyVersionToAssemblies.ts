@@ -5,7 +5,7 @@ import { findFiles,
          SplitSDKName
   } from "./AppyVersionToAssembliesFunctions";
 
-import tl = require("vsts-task-lib/task");
+import tl = require("azure-pipelines-task-lib/task");
 import fs = require("fs");
 
 var path = tl.getInput("Path");
