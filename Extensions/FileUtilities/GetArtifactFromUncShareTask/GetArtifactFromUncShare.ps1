@@ -34,7 +34,7 @@ function Get-WebClient
         [string]$password
     )
 
-    # [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $wc = New-Object System.Net.WebClient
     $wc.Headers["Content-Type"] = "application/json"
 

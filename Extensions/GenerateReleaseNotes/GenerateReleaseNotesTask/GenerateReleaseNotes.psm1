@@ -395,7 +395,7 @@ function Invoke-GetCommand {
     # When debugging locally, this variable can be set to use personal access token.
     $debugpat = $env:PAT
 
-    # [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $webclient = new-object System.Net.WebClient
     $webclient.Encoding = [System.Text.Encoding]::UTF8
 
