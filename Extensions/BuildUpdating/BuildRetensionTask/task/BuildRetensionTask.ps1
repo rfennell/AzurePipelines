@@ -84,7 +84,7 @@ function Get-WebClient
        $token
     )
 
-    # [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $webclient = new-object System.Net.WebClient
 
     if ([System.Convert]::ToBoolean($usedefaultcreds) -eq $true)
