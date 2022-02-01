@@ -1,5 +1,5 @@
 {
-  "name": "TaskWrapper",
+  "name": "BuildRetensionTaskWrapper",
   "description": "Task Wrapper To Load on non Windows OS",
   "scripts": {
     "build": "npm run clean && npm run lint && npm run transpile ",
