@@ -34,7 +34,7 @@ export function extractVersion(injectversion, versionRegex, versionNumber ) {
 
 export function SplitSDKName(sdkstring) {
     var array = [];
-    if (sdkstring !== null && sdkstring.length > 0) {
+    if (sdkstring !== undefined && sdkstring !== null && sdkstring.length > 0) {
         array = sdkstring.trim().split(",").map(item => item.trim());
     }
     return array;
