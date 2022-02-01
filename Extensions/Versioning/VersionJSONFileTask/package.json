@@ -1,5 +1,5 @@
 {
-  "name": "ApplyVersionToJSONFile",
+  "name": "VersionToJSONFile",
   "description": "ApplyVersionToJSONFile",
   "scripts": {
     "build": "npm run clean && npm run lint && npm run transpile ",
