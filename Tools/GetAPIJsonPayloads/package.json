@@ -9,13 +9,12 @@
   "description": "ExportJson",
   "main": "GenerateReleaseNotes.js",
   "dependencies": {
-    "@types/node": "^7.0.70",
+    "@types/node": "^17.0.13",
     "@types/q": "^1.5.1",
     "@types/xmldom": "^0.1.29",
+    "azure-devops-node-api": "^10.2.1",
     "fs": "^0.0.1-security",
-    "tsd": "^0.6.5",
-    "vso-node-api": "^6.5.0",
-    "vsts-task-lib": "^2.6.1"
+    "tsd": "^0.19.1"
   },
   "devDependencies": {
     "@types/chai": "^4.0.4",
@@ -23,8 +22,7 @@
     "ts-loader": "^2.0.3",
     "ts-node": "^3.3.0",
     "tslint": "^5.2.0",
-    "typescript": "^2.6.1",
-    "typings": "^2.1.1"
+    "typescript": "^2.6.1"
   },
   "author": "Richard Fennell",
   "license": "MIT"

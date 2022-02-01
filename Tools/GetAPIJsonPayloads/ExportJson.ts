@@ -1,12 +1,11 @@
-import * as webApi from "vso-node-api/WebApi";
-import { IReleaseApi } from "vso-node-api/ReleaseApi";
-import * as vstsInterfaces from "vso-node-api/interfaces/common/VsoBaseInterfaces";
+import * as webApi from "azure-devops-node-api/WebApi";
+import { IReleaseApi } from "azure-devops-node-api/ReleaseApi";
 
 async function run(): Promise<void>  {
     console.log ("Start Export");
 
     var tpcUri = "https://dev.azure.com/richardfennell/";
-    // assuming I am autneticated I don't need to provide a PAT
+    // assuming I am authenticated I don't need to provide a PAT
     var pat = "";
     var teamProject = "GitHub";
     var releaseId = 1285;
