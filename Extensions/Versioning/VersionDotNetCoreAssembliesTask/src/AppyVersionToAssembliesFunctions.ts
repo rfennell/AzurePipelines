@@ -1,6 +1,6 @@
 import fs = require("fs");
 import path = require("path");
-import tl = require("vsts-task-lib/task");
+import tl = require("azure-pipelines-task-lib/task");
 
 export function extractVersion(injectversion, versionRegex, versionNumber ) {
     var newVersion = versionNumber;
@@ -34,7 +34,7 @@ export function extractVersion(injectversion, versionRegex, versionNumber ) {
 
 export function SplitSDKName(sdkstring) {
     var array = [];
-    if (sdkstring !== null && sdkstring.length > 0) {
+    if (sdkstring !== undefined && sdkstring !== null && sdkstring.length > 0) {
         array = sdkstring.trim().split(",").map(item => item.trim());
     }
     return array;
