@@ -1,5 +1,5 @@
 {
-  "name": "FileUtilities",
+  "name": "XMLFileUpdate",
   "scripts": {
     "build": "npm run clean && npm run lint && npm run transpile ",
     "package": "npm prune -production && npm run copy",
