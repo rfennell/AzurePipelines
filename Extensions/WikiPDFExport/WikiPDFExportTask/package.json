@@ -1,6 +1,6 @@
 {
-  "name": "GitWIkiUpdater",
-  "description": "GitWIkiUpdater",
+  "name": "WIkiPDFExport",
+  "description": "WIkiPDFExport",
   "scripts": {
     "build": "npm run clean && npm run lint && npm run transpile ",
     "package": "npm prune -production && npm run copy",
