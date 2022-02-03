@@ -1,7 +1,7 @@
 import fs = require("fs");
 import path = require("path");
 import xpath = require("xpath");
-import xmldom = require("xmldom");
+import xmldom = require("@xmldom/xmldom");
 
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, "\\$&");

@@ -6,7 +6,13 @@ import { findFiles,
 import fs = require("fs") ;
 const copyFileSync = require("fs-copy-file-sync");
 const del = require("del");
-import { expect } from "chai";
+
+const chai    = require("chai");
+const expect  = require("chai").expect;
+const chaiXml = require("chai-xml");
+// loads the plugin
+chai.use(chaiXml);
+
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import "mocha";
 
@@ -32,11 +38,15 @@ describe("ProcessFiles function - with recursion", () => {
       loggingFunction,
       loggingFunction);
 
-    let updatedDoc = fs.readFileSync("test/testdata/writeable.xml").toString();
-    expect(updatedDoc.toString()).to.equal(expected.toString());
+    let updatedDoc = fs.readFileSync("test/testdata/writeable.xml").toString().replace(/\n/gm, "\r\n");
+    expect(updatedDoc.length).to.equal(expected.length);
+    expect(updatedDoc).xml.to.be.valid();
+    expect(updatedDoc).xml.to.equal(expected);
 
-    updatedDoc = fs.readFileSync("test/testdata/folder1/writeable.xml").toString();
-    expect(updatedDoc.toString()).to.equal(expected.toString());
+    updatedDoc = fs.readFileSync("test/testdata/folder1/writeable.xml").toString().replace(/\n/gm, "\r\n");
+    expect(updatedDoc.length).to.equal(expected.length);
+    expect(updatedDoc).xml.to.be.valid();
+    expect(updatedDoc).xml.to.equal(expected);
 
   });
   after(function() {
