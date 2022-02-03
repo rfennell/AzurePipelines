@@ -52,7 +52,6 @@ describe("ProcessFiles function - no recursion", () => {
     expect(updatedDoc.length).to.equal(sourceDoc.length);
     expect(updatedDoc).xml.to.equal(sourceDoc);
 
-
   });
   after(function() {
     // remove the file if created

@@ -39,7 +39,7 @@ describe("ProcessFile function", () => {
 
     it("should update inner text on a node with namespace", () => {
       let rawContent = fs.readFileSync("test/testdata/3.xml").toString();
-      let expected = fs.readFileSync("test/testdata/3.updated").toString().replace(/\r\n/gm, "\n");;
+      let expected = fs.readFileSync("test/testdata/3.updated").toString().replace(/\r\n/gm, "\n");
       let updatedDoc = processFile(
         "/*[local-name()='Project']/*[local-name()='ItemGroup']/*[local-name()='SqlCmdVariable'][@*[local-name()='Include' and .='Version']]/*[local-name()='Value']",
         "In memory test file",
