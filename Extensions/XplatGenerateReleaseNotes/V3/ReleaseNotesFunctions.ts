@@ -1225,7 +1225,8 @@ export async function generateReleaseNotes(
     considerPartiallySuccessfulReleases: boolean,
     sortCS: boolean,
     checkForManuallyLinkedWI: boolean,
-    wiqlWhereClause: string
+    wiqlWhereClause: string,
+    getPRDetails: boolean
     ): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
@@ -1894,34 +1895,40 @@ export async function generateReleaseNotes(
                 prProjectFilter = teamProject;
             }
 
-            try {
-                var allPullRequests: GitPullRequest[] = await getPullRequests(gitApi, prProjectFilter);
-                if (allPullRequests && (allPullRequests.length > 0)) {
-                    agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps PRs in the repo`);
-                    globalCommits.forEach(commit => {
-                        if (commit.type === "TfsGit") {
-                            agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
+            if (getPRDetails) {
+                try {
+                    agentApi.logInfo(`Getting associated PRs`);
 
-                            allPullRequests.forEach(pr => {
-                                if (pr.lastMergeCommit) {
-                                    if (pr.lastMergeCommit.commitId === commit.id) {
-                                        agentApi.logInfo(`- PR ${pr.pullRequestId} matches the commit ${commit.id}`);
-                                        globalPullRequests.push(<EnrichedGitPullRequest>pr);
+                    var allPullRequests: GitPullRequest[] = await getPullRequests(gitApi, prProjectFilter);
+                    if (allPullRequests && (allPullRequests.length > 0)) {
+                        agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps PRs in the repo`);
+                        globalCommits.forEach(commit => {
+                            if (commit.type === "TfsGit") {
+                                agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
+
+                                allPullRequests.forEach(pr => {
+                                    if (pr.lastMergeCommit) {
+                                        if (pr.lastMergeCommit.commitId === commit.id) {
+                                            agentApi.logInfo(`- PR ${pr.pullRequestId} matches the commit ${commit.id}`);
+                                            globalPullRequests.push(<EnrichedGitPullRequest>pr);
+                                        }
+                                    } else {
+                                        agentApi.logInfo(`- PR ${pr.pullRequestId} does not have a lastMergeCommit`);
                                     }
-                                } else {
-                                    agentApi.logInfo(`- PR ${pr.pullRequestId} does not have a lastMergeCommit`);
-                                }
-                            });
+                                });
 
-                        } else {
-                            agentApi.logDebug(`Cannot check for associated PR as the commit ${commit.id} is not in an Azure DevOps repo`);
-                        }
-                    });
-                } else {
-                    agentApi.logDebug(`No completed Azure DevOps PRs found`);
+                            } else {
+                                agentApi.logDebug(`Cannot check for associated PR as the commit ${commit.id} is not in an Azure DevOps repo`);
+                            }
+                        });
+                    } else {
+                        agentApi.logDebug(`No completed Azure DevOps PRs found`);
+                    }
+                } catch (error) {
+                    agentApi.logWarn(`Could not get details of any PR an error was seen: ${error}`);
                 }
-            } catch (error) {
-                agentApi.logWarn(`Could not get details of any PR an error was seen: ${error}`);
+            } else {
+                agentApi.logInfo(`Skipping getting associated PRs`);
             }
 
             // remove duplicates
