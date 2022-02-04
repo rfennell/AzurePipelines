@@ -1,7 +1,4 @@
-import { findFiles,
-         processFile,
-         processFiles
-} from "../src/FileUpdateFunctions";
+import { processFiles } from "../src/FileUpdateFunctions";
 
 import fs = require("fs") ;
 const copyFileSync = require("fs-copy-file-sync");
@@ -40,7 +37,7 @@ describe("ProcessFiles function - no recursion", () => {
       loggingFunction);
 
     // updates the root
-    let updatedDoc = fs.readFileSync(documentFilter).toString().replace(/\n/gm, "\r\n");
+    let updatedDoc = fs.readFileSync(documentFilter).toString();
     let expected = fs.readFileSync("test/testdata/1a.updated").toString();
     expect(updatedDoc.length).to.equal(expected.length);
     expect(updatedDoc).xml.to.be.valid();
