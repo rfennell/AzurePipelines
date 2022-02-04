@@ -1,7 +1,7 @@
 import fs = require("fs");
 import path = require("path");
 import xpath = require("xpath");
-import xmldom = require("xmldom");
+import xmldom = require("@xmldom/xmldom");
 
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, "\\$&");
@@ -23,8 +23,14 @@ export function processFiles (filename: string, recurse: string, xpathQuery: str
 
   files.forEach(file => {
       let rawContent = fs.readFileSync(file).toString();
-      let document = processFile(xpathQuery, file, rawContent, value, attribute, logInfo);
-      fs.writeFileSync(file, document.toString());
+      const includesCrLf = rawContent.includes("\r\n");
+      let document = processXMLString(xpathQuery, file, rawContent, value, attribute, logInfo);
+      if (includesCrLf) {
+        // fix the line endings
+        fs.writeFileSync(file, document.toString().replace(/\n/gm, "\r\n"));
+      } else {
+        fs.writeFileSync(file, document.toString());
+      }
   });
 }
 
@@ -54,7 +60,7 @@ export function findFiles (dir, filenamePattern, recurse, filelist): any {
   return filelist;
 }
 
-export function processFile(xpathQuery, file, rawContent, value, attribute, logFunction) {
+export function processXMLString(xpathQuery, file, rawContent, value, attribute, logFunction) {
   const dom = xmldom.DOMParser;
 
   let document = new dom().parseFromString(rawContent);
