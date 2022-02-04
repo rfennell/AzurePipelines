@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <configSections>
+  </configSections>
+  <appSettings>
+    <add key="Version" value="3.0.0.0"/>
+    <add key="Enabled">false</add>
+  </appSettings>
+</configuration>

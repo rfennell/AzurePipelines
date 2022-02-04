@@ -1,7 +1,4 @@
-import { findFiles,
-         processFile,
-         processFiles
-} from "../src/FileUpdateFunctions";
+import { findFiles } from "../src/FileUpdateFunctions";
 
 import fs = require("fs") ;
 const copyFileSync = require("fs-copy-file-sync");
@@ -16,16 +13,16 @@ function loggingFunction (msg: string) {
 }
 
 describe("FindFiles function", () => {
-  it("should find 4 matching files when using resursion and valid name", () => {
+  it("should find 5 matching files when using resursion and valid name", () => {
     let fileList ;
     fileList = findFiles("test/testdata", "*.xml", true, fileList) ;
-    expect(Object.keys(fileList).length).to.equal(4);
+    expect(Object.keys(fileList).length).to.equal(5);
   });
 
-  it("should find 3 matching files when not using resursion and valid name", () => {
+  it("should find 5 matching files when not using resursion and valid name", () => {
     let fileList ;
     fileList = findFiles("test/testdata", "*.xml", false, fileList) ;
-    expect(Object.keys(fileList).length).to.equal(3);
+    expect(Object.keys(fileList).length).to.equal(4);
   });
 
   it("should find no match with valid path and valid name", () => {
