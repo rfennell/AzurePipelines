@@ -107,6 +107,14 @@ A basic [Handlebars](https://handlebarsjs.com/) template is as follows. What is 
 {{/with}}
 {{/if}}
 {{/forEach}}
+   - **Tested By**
+{{#forEach this.relations}}
+{{#if (contains this.attributes.name 'Tested By')}}
+{{#with (lookup_a_work_item ../../testedByWorkItems  this.url)}}
+      - {{this.id}} - {{lookup this.fields 'System.Title'}}
+{{/with}}
+{{/if}}
+{{/forEach}}
 {{/forEach}}
 
 # Global list of CS ({{commits.length}})
@@ -165,6 +173,7 @@ The are a wide range of objects available to get data from within templates. Som
 |**manualTestConfigurations** | the array of manual test configurations |
 | **relatedWorkItems** | the array of all work item associated with the release plus their direct parents or children and/or all parents depending on task parameters |
 | **queryWorkItems** | the array of WI returned by by the WIQL, if a `wiqlWhereClause` is defined. Note that this array is completely independent of all other WI arrays.
+| **testedByWorkItems** | the array of all Test Case work items associated by a `Tested By` relation to a WI directly associated with the release |
 
 ### Release objects (only available in a Classic UI based Releases)
 | Object | Description |
@@ -206,7 +215,7 @@ In addition to the [Handlebars Helpers](https://github.com/helpers/handlebars-he
 {{json buildDetails}}
 ```
 
-- `lookup_a_work_item` this looks up a work item in the global array of work items based on a work item relations URL.
+- `lookup_a_work_item` this looks up a work item in the global array of work items based on a work item relations URL. Can be used for `parent`, `child` or `testd by` relations
 
 > Watch out for the number `../` required, it depends on how deep you `foreach` nesting is.
 
@@ -370,7 +379,8 @@ The task takes the following parameters
 | customHandlebarsExtensionFile | The filename to save the customHandlebarsExtensionCode into if set. If there is no text in the  customHandlebarsExtensionCode parameter the an attempt will be made to load any custom extensions from from this file. This allows custom extensions to loaded like any other source file under source control. |
 | wiqlWhereClause | An optional where clause to get a get a list of work items using a WIQL Query e.g. `[System.TeamProject] = 'Project Name' and [System.WorkItemType] = 'Product Backlog Item'`. The results of this query are availble in the template in the `queryWorkItems` array. Note that this list of WI is independent of all other WI arrays. |
 | outputVariableName | Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable. Note that if generating multiple document then this output variable is set to the value of the first document generated|
-
+| getPRDetails | If true all PRs in the project, or organisation, will be scanned for associations. There is an option to disable this feature as this scan is slow and not always required (Default true) |
+| getTestedBy | If true any Test Case WIs linked to associated WIs by a `Tested By` relation will be added to the `testedByWorkItems` array (Default true) |
 # Output location
 
 When using this task within a build then it is sensible to [publish the release notes files as a build artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/publish-build-artifacts?view=azure-devops).

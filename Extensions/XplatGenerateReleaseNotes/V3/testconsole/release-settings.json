@@ -38,6 +38,8 @@
     "checkForManuallyLinkedWI": "false",
 
     "wiqlWhereClause": "",
+    "getPRDetails": "true",
+    "getTestedBy": "true",
 
     "maxRetries": "3",
     "pauseTime": "5000",
