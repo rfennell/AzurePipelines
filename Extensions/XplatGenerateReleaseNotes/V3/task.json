@@ -357,6 +357,26 @@
       "helpMarkDown": "A where clause to get a get a list of work items using a WIQL Query e.g. `[System.TeamProject] = 'Project Name' and [System.WorkItemType] = 'Product Backlog Item'`. Note you cannot use the all the @ parameter such as `@project`, `@currentIteration` or `@Me`, but `@Today` works.",
       "groupName":"advanced"
     }
+    ,
+    {
+      "name": "getPRDetails",
+      "type": "boolean",
+      "label": "Find associated PRs",
+      "defaultValue": "true",
+      "required": false,
+      "helpMarkDown": "If true all PRs in the project, or organisation, will be scanned for associations. There is an option to disable this feature as this scan is slow and not always required (Default true)",
+      "groupName":"advanced"
+    }
+    ,
+    {
+      "name": "getTestedBy",
+      "type": "boolean",
+      "label": "Find Tests associated to WI",
+      "defaultValue": "true",
+      "required": false,
+      "helpMarkDown": "If true any Test Case WIs linked to associated WIs by a 'Tested By' relation will be added to the 'testedByWorkItems' array (Default true)",
+      "groupName":"advanced"
+    }
 
 
 
