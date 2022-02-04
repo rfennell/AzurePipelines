@@ -79,6 +79,7 @@ async function run(): Promise<number>  {
                     var checkForManuallyLinkedWI = getBoolean(settings.checkForManuallyLinkedWI);
                     var wiqlWhereClause = settings.wiqlWhereClause;
                     var getPRDetails = getBoolean(settings.getPRDetails);
+                    var getTestedBy = getBoolean(settings.getTestedBy);
 
                     var returnCode = await util.generateReleaseNotes(
                         pat,
@@ -122,7 +123,8 @@ async function run(): Promise<number>  {
                         sortCS,
                         checkForManuallyLinkedWI,
                         wiqlWhereClause,
-                        getPRDetails);
+                        getPRDetails,
+                        getTestedBy);
                 } else {
                     console.log(`Cannot fine settings file ${filename}`);
                 }

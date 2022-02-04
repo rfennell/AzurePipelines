@@ -367,6 +367,16 @@
       "helpMarkDown": "If true all PRs in the project, or organisation, will be scanned for associations. There is an option to disable this feature as this scan is slow and not always required (Default true)",
       "groupName":"advanced"
     }
+    ,
+    {
+      "name": "getTestedBy",
+      "type": "boolean",
+      "label": "Find Tests associated to WI",
+      "defaultValue": "true",
+      "required": false,
+      "helpMarkDown": "If true any Test Case WIs linked to associated WIs by a 'Tested By' relation will be added to the 'testedByWorkItems' array (Default true)",
+      "groupName":"advanced"
+    }
 
 
 

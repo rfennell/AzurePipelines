@@ -799,6 +799,34 @@ export async function getAllDirectRelatedWorkitems (
 
 }
 
+export async function getAllDirectRelatedTestCases (
+    workItemTrackingApi: IWorkItemTrackingApi,
+    workItems: WorkItem[]
+) {
+    var testedBy = [];
+    for (let wiIndex = 0; wiIndex < workItems.length; wiIndex++) {
+        var wi  = workItems[wiIndex];
+
+        agentApi.logInfo(`Looking for Tests of WI [${wi.id}]`);
+        for (let relIndex = 0; relIndex <  wi.relations.length; relIndex++) {
+            var relation  =  wi.relations[relIndex];
+            if (relation.attributes.name === "Tested By") {
+                var urlParts = relation.url.split("/");
+                var id = parseInt(urlParts[urlParts.length - 1]);
+                if (!testedBy.find(element => element.id === id)) {
+                    agentApi.logInfo(`Add Test ${relation.attributes.name} WI ${id}`);
+                    testedBy.push(await (workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null)));
+                } else {
+                    agentApi.logInfo(`Skipping Test ${id} as already in the relations list`);
+                }
+            }
+        }
+    }
+
+    return testedBy;
+
+}
+
 export async function getAllParentWorkitems (
     workItemTrackingApi: IWorkItemTrackingApi,
     relatedWorkItems: WorkItem[]
@@ -885,7 +913,8 @@ export function processTemplate(
     globalManualTestConfigurations: [],
     stopOnError: boolean,
     globalConsumedArtifacts: any[],
-    queryWorkItems: WorkItem[]
+    queryWorkItems: WorkItem[],
+    testedByWorkItems: WorkItem[]
     ): string {
 
     var output = "";
@@ -900,6 +929,7 @@ export function processTemplate(
         agentApi.logDebug(`  Manual TestConfigurations: ${globalManualTestConfigurations.length}`);
         agentApi.logDebug(`  Release Tests: ${releaseTests.length}`);
         agentApi.logDebug(`  Related WI: ${relatedWorkItems.length}`);
+        agentApi.logDebug(`  Related Tests: ${testedByWorkItems.length}`);
         agentApi.logDebug(`  Indirect PR: ${inDirectlyAssociatedPullRequests.length}`);
         agentApi.logDebug(`  Consumed Artifacts: ${globalConsumedArtifacts.length}`);
         agentApi.logDebug(`  Query WI: ${queryWorkItems.length}`);
@@ -1013,7 +1043,8 @@ export function processTemplate(
                 "manualTestConfigurations": globalManualTestConfigurations,
                 "consumedArtifacts": globalConsumedArtifacts,
                 "currentStage": currentStage,
-                "queryWorkItems": queryWorkItems
+                "queryWorkItems": queryWorkItems,
+                "testedByWorkItems": testedByWorkItems
             });
             agentApi.logInfo( "Completed processing template");
 
@@ -1226,7 +1257,8 @@ export async function generateReleaseNotes(
     sortCS: boolean,
     checkForManuallyLinkedWI: boolean,
     wiqlWhereClause: string,
-    getPRDetails: boolean
+    getPRDetails: boolean,
+    getTestedBy: boolean
     ): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
@@ -1271,6 +1303,7 @@ export async function generateReleaseNotes(
             var globalTests: TestCaseResult[] = [];
             var releaseTests: TestCaseResult[] = [];
             var relatedWorkItems: WorkItem[] = [];
+            var testedByWorkItems: WorkItem[] = [];
             var fullWorkItems: WorkItem[] = [];
             var queryWorkItems: WorkItem[] = [];
             var globalManualTests: EnrichedTestRun[] = [];
@@ -1820,6 +1853,11 @@ export async function generateReleaseNotes(
                 relatedWorkItems = await getAllDirectRelatedWorkitems(workItemTrackingApi, fullWorkItems);
             }
 
+            if (getTestedBy) {
+                agentApi.logInfo("Getting tests linked to WorkItems");
+                testedByWorkItems = await getAllDirectRelatedTestCases(workItemTrackingApi, fullWorkItems);
+            }
+
             if (getAllParents) {
                 agentApi.logInfo("Getting all parents of known WorkItems");
                 relatedWorkItems = await getAllParentWorkitems(workItemTrackingApi, relatedWorkItems);
@@ -1977,6 +2015,7 @@ export async function generateReleaseNotes(
             agentApi.logInfo(`Total Manual Test Configurations: [${globalManualTestConfigurations.length}]`);
             agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
             agentApi.logInfo(`Total Indirect Pull Requests: [${inDirectlyAssociatedPullRequests.length}]`);
+            agentApi.logInfo(`Total Associated Test WI: [${testedByWorkItems.length}]`);
             agentApi.logInfo(`Total Consumed Artifacts: [${globalConsumedArtifacts.length}]`);
             agentApi.logInfo(`Total WIQL Workitems: [${queryWorkItems.length}]`);
 
@@ -2001,7 +2040,8 @@ export async function generateReleaseNotes(
                     manualTests: globalManualTests,
                     manualTestConfigurations: globalManualTestConfigurations,
                     consumedArtifacts: globalConsumedArtifacts,
-                    queryWorkItems: queryWorkItems
+                    queryWorkItems: queryWorkItems,
+                    testedByWorkItems: testedByWorkItems
                 });
 
             agentApi.logInfo(`Generating the release notes, the are ${templateFiles.length} template(s) to process`);
@@ -2030,7 +2070,8 @@ export async function generateReleaseNotes(
                         globalManualTestConfigurations,
                         stopOnError,
                         globalConsumedArtifacts,
-                        queryWorkItems);
+                        queryWorkItems,
+                        testedByWorkItems);
 
                     writeFile(outputFiles[i], outputString, replaceFile, appendToFile);
 
