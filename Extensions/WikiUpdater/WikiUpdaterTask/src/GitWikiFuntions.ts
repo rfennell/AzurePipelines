@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as rimraf from "rimraf";
 import * as path from "path";
 import * as process from "process";
-import { logWarning } from "./agentSpecific";
+import { logDebug, logWarning } from "./agentSpecific";
 import { SSL_OP_CIPHER_SERVER_PREFERENCE, SSL_OP_LEGACY_SERVER_CONNECT } from "constants";
 
 // A wrapper to make sure that directory delete is handled in sync
@@ -258,6 +258,8 @@ export async function UpdateGitWikiFile(
 
             await git.add(orderFile);
         }
+
+        logDebug(`Committing the changes with the message: ${message}`);
 
         var summary = await git.commit(message);
         if (summary.commit.length > 0) {
