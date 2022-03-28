@@ -190,6 +190,7 @@ stages:
                   message: 'Append from Release - $(Release.ReleaseName)'
                 gitname: builduser
                 gitemail: 'build@demo'
+                message: 'Update from Release - $(Release.ReleaseName)'
                 user: rfennell
                 password: '$(githubPAT)'
                 localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
