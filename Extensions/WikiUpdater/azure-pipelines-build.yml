@@ -1,6 +1,6 @@
 name: $(Major).$(Minor).$(rev:r)  # build numbering format
 
-trigger: 
+trigger:
   branches:
     include: [ main ] # branch names which will trigger a build
   paths:
@@ -24,7 +24,7 @@ variables:
   #  major
   #  minor
   - group:  'WIKIUpdater Extension'
-    # this group includes the following variables  
+    # this group includes the following variables
     #  ExtensionRoot - working folder
     #  PublisherID  - Marketplace publisher
     #  ExtensionID - Marketplace extension id
@@ -39,7 +39,7 @@ stages:
   - stage: Build
     jobs:
     - job: Build
-      pool: 
+      pool:
         vmImage: '$(vmImage)'
         demands: npm
       steps:
@@ -49,7 +49,7 @@ stages:
         inputs:
           rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
           targetFiles: '**\\task.json'
-      
+
       # for each Node based task we must transpile it
       - template: ..\..\YAMLTemplates\build-node-task.yml
         parameters:
@@ -107,12 +107,12 @@ stages:
             # we don't need to DownloadPipelineArtifact as this is done automatically
             - template: ..\..\YAMLTemplates\publish-extension.yml
               parameters:
-                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
-                 extensionTag: '$(privateExtentionsTag)' 
-                 extensionVisibility: private    
+                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
+                 extensionTag: '$(privateExtentionsTag)'
+                 extensionVisibility: private
 
   - stage: Test
-    dependsOn: Private 
+    dependsOn: Private
     jobs:
     - deployment: Private_Test_Single_File
       timeoutInMinutes: 0
@@ -130,19 +130,19 @@ stages:
                 outputVariableName: OutputText
                 templateLocation: InLine
                 inlinetemplate: |
-                  # Release notes 
-                  **Build Number**  : ${buildDetails.buildNumber} 
-                  **Build started** : ${buildDetails.startTime}  
-                  **Source Branch** : ${buildDetails.sourceBranch}  
-                  
-                  ### Associated work items  
-                  @@WILOOP@@  
-                  * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}  
-                  @@WILOOP@@  
-                    
+                  # Release notes
+                  **Build Number**  : ${buildDetails.buildNumber}
+                  **Build started** : ${buildDetails.startTime}
+                  **Source Branch** : ${buildDetails.sourceBranch}
+
+                  ### Associated work items
+                  @@WILOOP@@
+                  * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}
+                  @@WILOOP@@
+
                   ### Associated commits
-                  @@CSLOOP@@  
-                  * **ID ${csdetail.commitId} ** ${csdetail.comment}    
+                  @@CSLOOP@@
+                  * **ID ${csdetail.commitId} ** ${csdetail.comment}
                   @@CSLOOP@@
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater - GitHub'
@@ -167,6 +167,7 @@ stages:
                 repo: github.com/rfennell/demorepo.wiki
                 filename: PageFromWikiUpdater.md
                 replaceFile: false
+                message: 'Update from Release - $(Release.ReleaseName)'
                 contents: |
                   ---
                   This is more test that has been added to the end of the file
@@ -189,14 +190,16 @@ stages:
                   message: 'Append from Release - $(Release.ReleaseName)'
                 gitname: builduser
                 gitemail: 'build@demo'
+                message: 'Update from Release - $(Release.ReleaseName)'
                 user: rfennell
                 password: '$(githubPAT)'
-                localpath: '$(System.DefaultWorkingDirectory)\githubrepo'   
+                localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater - GitHub folder'
               inputs:
                 repo: github.com/rfennell/demorepo.wiki
                 filename: TestFolder/PageFromWikiUpdater.md
+                message: 'Update from Release - $(Release.ReleaseName)'
                 contents: |
                   Header
                   ---
@@ -223,6 +226,7 @@ stages:
                   message: 'Update from Release - $(Release.ReleaseName)'
                 gitname: builduser
                 gitemail: 'build@demo'
+                message: 'Update from Release - $(Release.ReleaseName)'
                 user: rfennell
                 password: '$(githubPAT)'
                 localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
@@ -312,7 +316,7 @@ stages:
                 gitemail: 'build@demo'
                 useAgentToken: true
                 localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagent'
-  
+
     - deployment: Private_Test_Multi_File
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIUpdater)'
@@ -324,7 +328,7 @@ stages:
           deploy:
             steps:
 
-            - checkout: VSTSBuildTaskValidation  
+            - checkout: VSTSBuildTaskValidation
               clean: false
               fetchDepth: 0
               lfs: false
@@ -356,7 +360,7 @@ stages:
                 localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagentfolder'
 
   - stage: Documentation
-    dependsOn: Test 
+    dependsOn: Test
     pool:
       vmImage: '$(vmImage)'
     variables:
@@ -375,7 +379,7 @@ stages:
         vmImage: '$(vmImage)'
       strategy:
         runOnce:
-          deploy:   
+          deploy:
             steps:
               - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
                 parameters:
@@ -403,18 +407,17 @@ stages:
               # we don't need to DownloadPipelineArtifact as this is done automatically
               - template: ..\..\YAMLTemplates\publish-extension.yml
                 parameters:
-                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
-                   extensionTag: '' 
-                   extensionVisibility: public    
+                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
+                   extensionTag: ''
+                   extensionVisibility: public
 
     - job: Post_Publish
-      dependsOn: Public_Deployment 
+      dependsOn: Public_Deployment
       pool:
         vmImage: '$(vmImage)'
       steps:
-      
+
         - template: ..\..\YAMLTemplates\post-publish.yml
           parameters:
-              buildNumber: $(Build.BuildNumber)  
-              extensionName: $(Build.DefinitionName)      
-      
+              buildNumber: $(Build.BuildNumber)
+              extensionName: $(Build.DefinitionName)
