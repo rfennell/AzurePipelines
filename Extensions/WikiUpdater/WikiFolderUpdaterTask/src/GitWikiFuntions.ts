@@ -4,7 +4,6 @@ import * as rimraf from "rimraf";
 import * as path from "path";
 import * as process from "process";
 import { logWarning } from "./agentSpecific";
-import { BranchSummary } from "simple-git/typings/response";
 import * as glob from "glob";
 
 // A wrapper to make sure that directory delete is handled in sync
