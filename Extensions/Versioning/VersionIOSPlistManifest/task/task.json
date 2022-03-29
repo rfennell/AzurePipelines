@@ -93,8 +93,7 @@
         "label": "Filename Pattern",
         "defaultValue": "info.plist",
         "required": true,
-        "helpMarkDown": "The filename pattern to update.",
-
+        "helpMarkDown": "The filename pattern to update."
       },
       {
         "name": "OutputVersion",
