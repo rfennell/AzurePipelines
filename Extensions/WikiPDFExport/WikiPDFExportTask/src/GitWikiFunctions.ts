@@ -134,7 +134,7 @@ export async function CloneWikiRepo(
         }
         logInfo(`Cleaned ${localpath}`);
 
-        await git.silent(true).clone(remote, localpath, extraHeaders);
+        await git.clone(remote, localpath, extraHeaders);
         logInfo(`Cloned ${repo} to ${localpath}`);
 
         await git.cwd(localpath);
