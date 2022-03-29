@@ -1,4 +1,4 @@
-import * as simplegit from "simple-git/promise";
+import simpleGit, { SimpleGit, CleanOptions } from "simple-git";
 import * as fs from "fs";
 import * as rimraf from "rimraf";
 import * as path from "path";
@@ -102,7 +102,7 @@ export async function CloneWikiRepo(
     logError,
     injectExtraHeader,
     branch) {
-    const git = simplegit();
+    const git = simpleGit();
 
     let remote = "";
     let logremote = ""; // used to make sure we hide the password in logs
