@@ -85,7 +85,6 @@
         "defaultValue": "\\d+\\.\\d+\\.\\d+",
         "required": true,
         "helpMarkDown": "Regular expression filter to get build number from the build name.",
-        "groupName":"advanced",
         "visibleRule": "Injectversion = false"
       },
       {
@@ -95,7 +94,7 @@
         "defaultValue": "info.plist",
         "required": true,
         "helpMarkDown": "The filename pattern to update.",
-        "groupName":"advanced"
+
       },
       {
         "name": "OutputVersion",
