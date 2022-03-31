@@ -64,7 +64,7 @@ function Get-Toolpath {
                         }
                     }
                 } else {
-                    Write-Verbose "VS$version is not installled"
+                    Write-Verbose "VS$version is not installled in '$basePath\$version'"
                 }
             }
         }
