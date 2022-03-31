@@ -49,7 +49,8 @@ function Get-Toolpath {
 
                 if (Test-Path("$basePath\$version")) {
                     Write-Verbose "Found a VS$version SKU in '$basePath\$version'"
-                    $paths = Get-ChildItem -path "$basePath\$version" -Filter "Microsoft.SqlServer.Dac.Extensions.dll" -Recurse | % { $_.FullName } | sort-object -Descending
+                    $paths = Get-ChildItem -path "$basePath\$version" -Filter "Microsoft.SqlServer.Dac.Extensions.dll" -Recurse -ErrorAction SilentlyContinue | % { $_.FullName } | sort-object -Descending
+                    Write-Verbose "Found $($paths.Count) SDK(s)"
                     foreach ($path in $paths) {
                         Write-Verbose "Considering '$path'"
                         if ([string]::IsNullOrEmpty($SDKVersion.Trim())) {
@@ -62,6 +63,8 @@ function Get-Toolpath {
                             }
                         }
                     }
+                } else {
+                    Write-Verbose "VS$version is not installled"
                 }
             }
         }
