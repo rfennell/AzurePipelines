@@ -40,7 +40,9 @@ The WIX versioner also takes the following Advanced options
 The DACPAC versioner also takes the following Advanced option
 
 * The task can now be run pre-build similar to the other versioning tasks and will set the DacVersion property in the SqlProj file to the required version number.
-* ToolPath: The path to the folder containing the files Microsoft.SqlServer.Dac.dll and Microsoft.SqlServer.Dac.Extensions.dll. This should be used if these files are not in the default location either C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120 or C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120"
+* ToolPath: The path to the folder containing the files Microsoft.SqlServer.Dac.dll and Microsoft.SqlServer.Dac.Extensions.dll. This should be used if these files are not in the default location and hence cannot be found by the task. This value takes precedence over the automated means of finding the DLL
+* VSVersion: A filter for the Visual Studio version to scan for the SQL DAC SDK e.g 2017, 2015, 2022. if not set will scan for all versions and the newest used. (Defaults to 2017 for backwards compatibility)
+* SDKVersion: A filter for the SQL DAC SDK e.g 130, 150. if not set will scan for all versions and the newest used. (Defaults to 130 for backwards compatibility)
 
 The VSIX versioner also takes the following parameters
 

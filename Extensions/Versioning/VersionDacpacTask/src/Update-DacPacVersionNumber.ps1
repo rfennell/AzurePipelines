@@ -25,99 +25,101 @@
 param (
 )
 
-function Get-Toolpath
-{
+function Get-Toolpath {
     param(
-        $ToolPath
+        $ToolPath,
+        $VSVersionFilter = "",
+        $SDKVersion = ""
     )
 
-    if ([string]::IsNullOrEmpty($ToolPath.Trim()))
-    {
-       Write-Verbose 'No user provided ToolPath, so searching default locations' -verbose
-       # for VS2017 we don't know the SKU name so we loop
-       $vs2017base = "C:\Program Files (x86)\Microsoft Visual Studio\2017"
-       if (Test-Path($vs2017base))
-       {
-            Write-Verbose 'Found a VS2017 SKU'
-            ForEach ($folder in Get-ChildItem -Path $vs2017base)
-            {
-                    $TestPath = "$vs2017base\$folder\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130"
-                    Write-Verbose "Checking $TestPath"
-                    if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
-                    {
-                    Write-Verbose 'Found VS2017 SQL2016 (130) assemblies' -verbose
-                    return $TestPath
-                    }
-            }
-       }
-       # for older versions we check each path
-        $TestPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130'
-        if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
-        {
-           Write-Verbose 'Found VS2015 SQL2016 (130) assemblies' -verbose
-           return $TestPath
+    if ([string]::IsNullOrEmpty($ToolPath.Trim())) {
+        Write-Verbose 'No user provided ToolPath, so searching default locations' -verbose
+
+        $basePaths = "C:\Program Files\Microsoft Visual Studio", "C:\Program Files (x86)\Microsoft Visual Studio"
+        if ([string]::IsNullOrEmpty($VSVersionFilter.Trim())) {
+            $VSVersions = "2022", "2019", "2017"
+        } else {
+            $VSVersions = $VSVersionFilter
         }
-        else
-        {
+
+        foreach ($basePath in $basePaths) {
+            foreach ($version in $VSVersions) {
+                # we don't know the SKU name so we loop
+                # Write-Verbose "Checking in '$basePath\$version'"
+
+                if (Test-Path("$basePath\$version")) {
+                    Write-Verbose "Found a VS$version SKU in '$basePath\$version'"
+                    $paths = Get-ChildItem -path "$basePath\$version" -Filter "Microsoft.SqlServer.Dac.Extensions.dll" -Recurse | % { $_.FullName } | sort-object -Descending
+                    foreach ($path in $paths) {
+                        Write-Verbose "Considering '$path'"
+                        if ([string]::IsNullOrEmpty($SDKVersion.Trim())) {
+                            Write-host "Found the newest SDK in '$(Split-Path -Path $path)'"
+                            return Split-Path -Path $path
+                        } else {
+                            if ($path.contains($SDKVersion)) {
+                                Write-host "Found a matching SDK version 'SDKVersion' in '$(Split-Path -Path $path)'"
+                                return Split-Path -Path $path
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        # for older versions we check each path
+        $TestPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130'
+        if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll")) {
+            Write-Verbose 'Found VS2015 SQL2016 (130) assemblies' -verbose
+            return $TestPath
+        }
+        else {
             $TestPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
-            if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
-            {
+            if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll")) {
                 Write-Verbose 'Found VS2015 SQL2014 (120) assemblies' -verbose
                 return $TestPath
             }
-            else
-            {
+            else {
                 Write-Verbose 'Cound not find SQL2014 assemblies' -verbose
                 $TestPath = 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
-                if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
-                {
+                if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll")) {
                     Write-Verbose 'Found VS2013 SQL2012 (120) assemblies' -verbose
                     return $TestPath
                 }
-                else
-                {
+                else {
                     Write-error "Cannot find DLLs in expected VS2013, VS2015 or VS2017 default locations"
                 }
             }
         }
         $TestPath = 'C:\Program Files\Microsoft SQL Server\140\DAC\bin'
-        if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
-        {
+        if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll")) {
             Write-Verbose 'Found SQL2017 (140) assemblies' -verbose
             return $TestPath
         }
-        else
-        {
+        else {
             $TestPath = 'C:\Program Files\Microsoft SQL Server\130\DAC\bin'
-            if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
-            {
+            if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll")) {
                 Write-Verbose 'Found SQL2016 (130) assemblies' -verbose
                 return $TestPath
             }
-            else
-            {
+            else {
                 $TestPath = 'C:\Program Files\Microsoft SQL Server\120\DAC\bin'
-                if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll"))
-                {
+                if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll")) {
                     Write-Verbose 'Found SQL2014 (120) assemblies' -verbose
                     return $TestPath
                 }
-                else
-                {
+                else {
                     Write-error "Cannot find DLLs in expected SQL Server locations"
                 }
             }
         }
-    } else
-    {
+    }
+    else {
         Write-Verbose "Looking for tools in user provided [$ToolPath]" -verbose
-        if (Test-Path "$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll")
-        {
-             Write-Verbose 'Found assemblies in user provide location' -verbose
+        if (Test-Path "$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll") {
+            Write-Verbose 'Found assemblies in user provide location' -verbose
         }
-        else
-        {
-             Write-error 'Cannot find assemblies in user provide location' -verbose
+        else {
+            Write-error 'Cannot find assemblies in user provide location' -verbose
         }
     }
 
@@ -125,8 +127,7 @@ function Get-Toolpath
 
 }
 
-function Update-DacpacVerion
-{
+function Update-DacpacVerion {
     param(
         [parameter(Mandatory)]
         [String]$Path,
@@ -141,16 +142,12 @@ function Update-DacpacVerion
     #Specifying the Error Preference within the function scope to help catch errors
     $ErrorActionPreference = 'Stop'
 
-    $ToolPath = Get-Toolpath -ToolPath $ToolPath
-
     # Add SQL methods from Dlls, using Test-Path to determine which version to import based on VS version
-    try
-    {
+    try {
         Add-Type -Path "$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll"
         Add-Type -Path "$ToolPath\Microsoft.SqlServer.Dac.dll"
     }
-    catch
-    {
+    catch {
         Write-Error 'Failed to load DLL, check all SDKs and SSDT are installed correctly in the Visual Studio folders.'
         Exit -1
     }
@@ -158,7 +155,7 @@ function Update-DacpacVerion
     #Loads the DacPac ready for updating
     $StorageType = [Microsoft.SqlServer.Dac.DacSchemaModelStorageType]::File
     $AccessType = [System.IO.FileAccess]::ReadWrite
-    $DacPacObject = [Microsoft.SqlServer.Dac.DacPackage]::Load($Path,$StorageType,$AccessType)
+    $DacPacObject = [Microsoft.SqlServer.Dac.DacPackage]::Load($Path, $StorageType, $AccessType)
 
     #Sets up various load options for updating dacpac
     $LoadOptions = New-Object Microsoft.SqlServer.Dac.Model.ModelLoadOptions($null)
@@ -172,22 +169,19 @@ function Update-DacpacVerion
     $DacpacOptions.Name = $DacPacObject.Name
     $DacpacOptions.Version = $VersionNumber
 
-    Try
-    {
+    Try {
         Write-Verbose "Attempting to update $($DacPacObject.Name) with version number $VersionNumber" -Verbose
         #Updates the DacPack with specified details
-        [Microsoft.SqlServer.Dac.DacPackageExtensions]::UpdateModel($DacPacObject,$TSQLModel,$DacpacOptions)
+        [Microsoft.SqlServer.Dac.DacPackageExtensions]::UpdateModel($DacPacObject, $TSQLModel, $DacpacOptions)
         Write-Verbose "Succeeded in updating $($DacPacObject.Name) with version number $VersionNumber" -Verbose
     }
-    catch
-    {
+    catch {
         Write-Warning "Failed to update DacPac $($DacPacObject.Name), due to error:"
         Write-Warning "$($error[0])"
     }
 }
 
-function Update-SqlProjVersion
-{
+function Update-SqlProjVersion {
     param (
         [string]$Path,
 
@@ -199,7 +193,7 @@ function Update-SqlProjVersion
     $SqlProj = Get-Content -Path $Path -Raw
 
     if ($SqlProj -match '<DacVersion>') {
-        $SqlProj = $SqlProj -Replace "<DacVersion>$RegexPattern<\/DacVersion>","<DacVersion>$VersionNumber</DacVersion>"
+        $SqlProj = $SqlProj -Replace "<DacVersion>$RegexPattern<\/DacVersion>", "<DacVersion>$VersionNumber</DacVersion>"
     }
     else {
         $SqlProj = $SqlProj -replace "<Name>", "<DacVersion>$VersionNumber</DacVersion><Name>"
@@ -214,29 +208,29 @@ $ToolPath = Get-VstsInput -Name "ToolPath"
 $InjectVersion = Get-VstsInput -Name "InjectVersion"
 $VersionRegex = Get-VstsInput -Name "VersionRegex"
 $outputversion = Get-VstsInput -Name "outputversion"
+$VSVersion = Get-VstsInput -Name "VSVersion"
+$SDKVersion = Get-VstsInput -Name "SDKVersion"
 
 
 # check if we are in test mode i.e.
-If ($VersionNumber -eq "" -and $path -eq "") {Exit}
+If ($VersionNumber -eq "" -and $path -eq "") { Exit }
 
 # Get and validate the version data
 if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
     Write-Verbose "Using the version number directly"
     $NewVersion = $VersionNumber
-} else {
+}
+else {
     Write-Verbose "Extracting version number from build number"
 
-    $VersionData = [regex]::matches($VersionNumber,$VersionRegex)
-    switch($VersionData.Count)
-    {
-    0
-        {
+    $VersionData = [regex]::matches($VersionNumber, $VersionRegex)
+    switch ($VersionData.Count) {
+        0 {
             Write-Error "Could not find version number data in $VersionNumber."
             exit 1
         }
-    1 {}
-    default
-        {
+        1 {}
+        default {
             Write-Warning "Found more than instance of version data in $VersionNumber."
             Write-Warning "Will assume first instance is version."
         }
@@ -246,13 +240,15 @@ if ([System.Convert]::ToBoolean($InjectVersion) -eq $true) {
 Write-Verbose "Version: $NewVersion"
 
 
-$DacPacFiles = Get-ChildItem -Path $Path -Include *.dacpac -Exclude master.dacpac,msdb.dacpac -Recurse
+$ToolPath = Get-Toolpath -ToolPath $ToolPath -VSVersion $VSVersion -SDKVersion $SDKVersion
+
+
+$DacPacFiles = Get-ChildItem -Path $Path -Include *.dacpac -Exclude master.dacpac, msdb.dacpac -Recurse
 
 if ($DacPacFiles.Count -gt 0) {
     Write-Verbose "Found $($DacPacFiles.Count) dacpacs. Beginning to apply updated version number $NewVersion." -Verbose
 
-    Foreach ($DacPac in $DacPacFiles)
-    {
+    Foreach ($DacPac in $DacPacFiles) {
         Update-DacpacVerion -Path $DacPac.FullName -VersionNumber ([System.Version]::Parse($NewVersion)) -ToolPath $ToolPath
     }
 }

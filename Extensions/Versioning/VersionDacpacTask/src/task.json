@@ -50,7 +50,7 @@
          "defaultValue": "",
          "required": false,
          "groupName":"advanced",
-         "helpMarkDown": "The path to the folder containing the files Microsoft.SqlServer.Dac.dll and Microsoft.SqlServer.Dac.Extensions.dll if not in default location"
+         "helpMarkDown": "The path to the folder containing the files Microsoft.SqlServer.Dac.dll and Microsoft.SqlServer.Dac.Extensions.dll. This path will be used in precedence to paths found using the automatic scan path"
       },
       {
         "name": "InjectVersion",
@@ -70,6 +70,23 @@
       "helpMarkDown": "Regular expression filter build number from name.",
       "groupName":"advanced",
       "visibleRule": "InjectVersion = false"
+    },
+    {
+      "name": "VSVersion",
+      "type": "string",
+      "label": "Visual Studio Version",
+      "defaultValue": "2017",
+      "required": false,
+      "helpMarkDown": "A filter for the Visual Studio version to scan for the SQL DAC SDK e.g 2017, 2015, 2022. if not set will scan for all versions and the newest used. (Defaults to 2017 for backwards compatibility)",
+      "groupName":"advanced"
+    }, {
+      "name": "SDKVersion",
+      "type": "string",
+      "label": "DAC SDK Version",
+      "defaultValue": "130",
+      "required": false,
+      "helpMarkDown": "A filter for the SQL DAC SDK e.g 130, 150. if not set will scan for all versions and the newest used. (Defaults to 130 for backwards compatibility)",
+      "groupName":"advanced"
     },
       {
       "name": "OutputVersion",
