@@ -33,15 +33,18 @@ function Get-Toolpath {
     )
 
     if ([string]::IsNullOrEmpty($ToolPath.Trim())) {
-        Write-Verbose 'No user provided ToolPath, so searching default locations' -verbose
+        Write-Host 'No user provided ToolPath, so searching default locations' -verbose
 
+        # Modern File Locations
         $basePaths = "C:\Program Files\Microsoft Visual Studio", "C:\Program Files (x86)\Microsoft Visual Studio"
         if ([string]::IsNullOrEmpty($VSVersionFilter.Trim())) {
             $VSVersions = "2022", "2019", "2017"
-        } else {
+        }
+        else {
             $VSVersions = $VSVersionFilter
         }
 
+        Write-Host "Scan standard Visual Studio locations (2017 and later)"
         foreach ($basePath in $basePaths) {
             foreach ($version in $VSVersions) {
                 # we don't know the SKU name so we loop
@@ -56,73 +59,60 @@ function Get-Toolpath {
                         if ([string]::IsNullOrEmpty($SDKVersion.Trim())) {
                             Write-host "Found the newest SDK in '$(Split-Path -Path $path)'"
                             return Split-Path -Path $path
-                        } else {
+                        }
+                        else {
                             if ($path.contains($SDKVersion)) {
                                 Write-host "Found a matching SDK version 'SDKVersion' in '$(Split-Path -Path $path)'"
                                 return Split-Path -Path $path
                             }
                         }
                     }
-                } else {
+                }
+                else {
                     Write-Verbose "VS$version is not installled in '$basePath\$version'"
                 }
             }
         }
 
-        # for older versions we check each path
-        $TestPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130'
-        if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll")) {
-            Write-Verbose 'Found VS2015 SQL2016 (130) assemblies' -verbose
-            return $TestPath
-        }
-        else {
-            $TestPath = 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
-            if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll")) {
-                Write-Verbose 'Found VS2015 SQL2014 (120) assemblies' -verbose
-                return $TestPath
+        # for older versions we check each
+        $basePaths = "C:\Program Files (x86)\Microsoft Visual Studio 14.0", "C:\Program Files (x86)\Microsoft Visual Studio 12.0", "C:\Program Files\Microsoft SQL Server"
+
+        Write-Host "Scan legacy locations"
+        foreach ($basePath in $basePaths) {
+            # we don't know the SKU name so we loop
+            #Write-Verbose "Checking in '$basePath'" -Verbose
+
+            if (Test-Path("$basePath")) {
+                $paths = Get-ChildItem -path "$basePath" -Filter "Microsoft.SqlServer.Dac.Extensions.dll" -Recurse -ErrorAction SilentlyContinue | % { $_.FullName } | sort-object -Descending
+                Write-Verbose "Found $($paths.Count) SDK(s)"
+                foreach ($path in $paths) {
+                    Write-Verbose "Considering '$path'"
+                    if ([string]::IsNullOrEmpty($SDKVersion.Trim())) {
+                        Write-host "Found the newest SDK in '$(Split-Path -Path $path)'"
+                        return Split-Path -Path $path
+                    }
+                    else {
+                        if ($path.contains($SDKVersion)) {
+                            Write-host "Found a matching SDK version 'SDKVersion' in '$(Split-Path -Path $path)'"
+                            return Split-Path -Path $path
+                        }
+                    }
+                }
             }
             else {
-                Write-Verbose 'Cound not find SQL2014 assemblies' -verbose
-                $TestPath = 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120'
-                if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll")) {
-                    Write-Verbose 'Found VS2013 SQL2012 (120) assemblies' -verbose
-                    return $TestPath
-                }
-                else {
-                    Write-error "Cannot find DLLs in expected VS2013, VS2015 or VS2017 default locations"
-                }
+                Write-Verbose "'$basePath' is not installed"
             }
         }
-        $TestPath = 'C:\Program Files\Microsoft SQL Server\140\DAC\bin'
-        if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll")) {
-            Write-Verbose 'Found SQL2017 (140) assemblies' -verbose
-            return $TestPath
-        }
-        else {
-            $TestPath = 'C:\Program Files\Microsoft SQL Server\130\DAC\bin'
-            if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll")) {
-                Write-Verbose 'Found SQL2016 (130) assemblies' -verbose
-                return $TestPath
-            }
-            else {
-                $TestPath = 'C:\Program Files\Microsoft SQL Server\120\DAC\bin'
-                if (Test-Path ("$TestPath\Microsoft.SqlServer.Dac.Extensions.dll")) {
-                    Write-Verbose 'Found SQL2014 (120) assemblies' -verbose
-                    return $TestPath
-                }
-                else {
-                    Write-error "Cannot find DLLs in expected SQL Server locations"
-                }
-            }
-        }
+
+        Write-error 'Cannot find assemblies in any standard locations' -verbose
     }
     else {
         Write-Verbose "Looking for tools in user provided [$ToolPath]" -verbose
         if (Test-Path "$ToolPath\Microsoft.SqlServer.Dac.Extensions.dll") {
-            Write-Verbose 'Found assemblies in user provide location' -verbose
+            Write-Verbose 'Found assemblies in user provided location' -verbose
         }
         else {
-            Write-error 'Cannot find assemblies in user provide location' -verbose
+            Write-error 'Cannot find assemblies in user provided location' -verbose
         }
     }
 

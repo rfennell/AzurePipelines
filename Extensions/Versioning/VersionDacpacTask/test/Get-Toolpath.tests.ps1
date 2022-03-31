@@ -34,49 +34,86 @@ Describe "Legacy version discovery" {
         import-module "$PSScriptRoot\..\src\Update-DacPacVersionNumber.ps1"
     }
 
-    It "Find VS2013 SQL2012 120 ToolPath" {
-
+    It "Find SQL Server ToolPath" {
         Mock Test-Path { return $false } -ParameterFilter {
-            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll"
-        }
-        Mock Test-Path { return $false } -ParameterFilter {
-            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130\Microsoft.SqlServer.Dac.Extensions.dll"
-        }
-        Mock Test-Path { return $true } -ParameterFilter {
-            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll"
+            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 14.0"
         }
 
-        $path = Get-Toolpath -ToolPath ""
-        $path | Should -Be "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120"
-    }
-
-
-    It "Find VS2015 SQL2012 120 ToolPath" {
         Mock Test-Path { return $false } -ParameterFilter {
-            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130\Microsoft.SqlServer.Dac.Extensions.dll"
+            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 12.0"
         }
 
         Mock Test-Path { return $true } -ParameterFilter {
-            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll"
+            $Path -eq "C:\Program Files\Microsoft SQL Server"
         }
+
+        Mock Get-ChildItem {
+            [PSCustomObject]@{FullName = "C:\Program Files\Microsoft SQL Server\120\DAC\bin\Microsoft.SqlServer.Dac.Extensions.dll" }
+        } -ParameterFilter {
+            $Path -eq "C:\Program Files\Microsoft SQL Server"
+        }
+
         # Load the script under test
         import-module "$PSScriptRoot\..\src\Update-DacPacVersionNumber.ps1"
 
         $path = Get-Toolpath -ToolPath ""
-        $path | Should -Be "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120"
+        $path | Should -Be "C:\Program Files\Microsoft SQL Server\120\DAC\bin"
     }
 
 
     It "Find VS2015 SQL2012 130 ToolPath" {
-
-
         Mock Test-Path { return $true } -ParameterFilter {
-            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130\Microsoft.SqlServer.Dac.Extensions.dll"
+            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 14.0"
         }
+
+        Mock Test-Path { return $false } -ParameterFilter {
+            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 12.0"
+        }
+
+        Mock Test-Path { return $false } -ParameterFilter {
+            $Path -eq "C:\Program Files\Microsoft SQL Server"
+        }
+
+        Mock Get-ChildItem {
+            [PSCustomObject]@{FullName = "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll" }
+            [PSCustomObject]@{FullName = "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130\Microsoft.SqlServer.Dac.Extensions.dll" }
+        } -ParameterFilter {
+            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 14.0"
+        }
+
         # Load the script under test
         import-module "$PSScriptRoot\..\src\Update-DacPacVersionNumber.ps1"
+
         $path = Get-Toolpath -ToolPath ""
         $path | Should -Be "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130"
+    }
+
+
+    It "Find VS2015 SQL2012 130 ToolPath" {
+        Mock Test-Path { return $false } -ParameterFilter {
+            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 14.0"
+        }
+
+        Mock Test-Path { return $true } -ParameterFilter {
+            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 12.0"
+        }
+
+        Mock Test-Path { return $false } -ParameterFilter {
+            $Path -eq "C:\Program Files\Microsoft SQL Server"
+        }
+
+        Mock Get-ChildItem {
+            [PSCustomObject]@{FullName = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\120\Microsoft.SqlServer.Dac.Extensions.dll" }
+            [PSCustomObject]@{FullName = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130\Microsoft.SqlServer.Dac.Extensions.dll" }
+        } -ParameterFilter {
+            $Path -eq "C:\Program Files (x86)\Microsoft Visual Studio 12.0"
+        }
+
+        # Load the script under test
+        import-module "$PSScriptRoot\..\src\Update-DacPacVersionNumber.ps1"
+
+        $path = Get-Toolpath -ToolPath ""
+        $path | Should -Be "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\130"
     }
 }
 
