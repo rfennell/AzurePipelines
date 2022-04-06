@@ -1875,11 +1875,14 @@ export async function generateReleaseNotes(
                     undefined,
                     5000);
                     // need to get the result into the same format as used to enrich other WI arrays
-                    var wiRefArray: ResourceRef[] = queryResponse.workItems.map(wi => ({id: wi.id.toString(), url: undefined})) as ResourceRef[];
-                    // enrich the items
-                    queryWorkItems = await getFullWorkItemDetails(workItemTrackingApi, wiRefArray);
-
-                    agentApi.logInfo(`Found ${queryWorkItems.length} WI using WIQL`);
+                    if (queryResponse && queryResponse.workItems) {
+                        var wiRefArray: ResourceRef[] = queryResponse.workItems.map(wi => ({id: wi.id.toString(), url: undefined})) as ResourceRef[];
+                        // enrich the items
+                        queryWorkItems = await getFullWorkItemDetails(workItemTrackingApi, wiRefArray);
+                        agentApi.logInfo(`Found ${queryWorkItems.length} WI using WIQL`);
+                    } else {
+                        agentApi.logInfo(`Found no WI using WIQL`);
+                    }
 
                } catch (ex) {
                    reject(ex);
