@@ -47,6 +47,7 @@ async function run(): Promise<number>  {
             var wiqlWhereClause = tl.getInput("wiqlWhereClause");
             var getPRDetails = tl.getBoolInput("getPRDetails");
             var getTestedBy = tl.getBoolInput("getTestedBy");
+            var wiqlFromTarget = tl.getInput("wiqlFromTarget");
 
             var maxRetries = parseInt(tl.getInput("maxRetries"));
 
@@ -93,7 +94,8 @@ async function run(): Promise<number>  {
                 checkForManuallyLinkedWI,
                 wiqlWhereClause,
                 getPRDetails,
-                getTestedBy
+                getTestedBy,
+                wiqlFromTarget
                 );
 
         } catch (err) {
