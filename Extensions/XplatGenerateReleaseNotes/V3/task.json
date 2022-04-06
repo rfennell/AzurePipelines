@@ -365,7 +365,7 @@
       "required": true,
       "helpMarkDown": "The FROM target for the WIQL Query.  e.g. `SELECT [System.Id] FROM workitems WHERE ...`",
       "groupName": "advanced",
-      "properties": {
+      "options": {
           "WorkItems ": "WorkItems",
           "WorkItemLinks": "WorkItemLinks"
       }
