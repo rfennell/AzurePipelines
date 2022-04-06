@@ -82,6 +82,7 @@ async function run(): Promise<number> {
           var wiqlWhereClause = settings.wiqlWhereClause;
           var getPRDetails = getBoolean(settings.getPRDetails);
           var getTestedBy = getBoolean(settings.getTestedBy);
+          var wiqlFromTarget = settings.wiqlFromTarget;
 
           if (payloadFile && payloadFile.length > 0 && fs.existsSync(payloadFile)) {
             console.log(`Running the tester against a local payload JSON file`);
@@ -112,7 +113,7 @@ async function run(): Promise<number> {
                 false,
                 payload.globalConsumedArtifacts ? payload.globalConsumedArtifacts : [],
                 payload.queryWorkItems ? payload.queryWorkItems : [],
-                payload.testedByWorkItems ? payload.testedByWorkItems : [] );
+                payload.testedByWorkItems ? payload.testedByWorkItems : []);
               util.writeFile(outputFile, outputString, replaceFile, appendToFile);
 
             } else {
@@ -165,7 +166,8 @@ async function run(): Promise<number> {
               checkForManuallyLinkedWI,
               wiqlWhereClause,
               getPRDetails,
-              getTestedBy);
+              getTestedBy,
+              wiqlFromTarget);
           }
 
         } else {

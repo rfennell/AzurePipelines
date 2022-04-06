@@ -1258,7 +1258,8 @@ export async function generateReleaseNotes(
     checkForManuallyLinkedWI: boolean,
     wiqlWhereClause: string,
     getPRDetails: boolean,
-    getTestedBy: boolean
+    getTestedBy: boolean,
+    wiqlFromTarget: string
     ): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
@@ -1863,10 +1864,10 @@ export async function generateReleaseNotes(
                 relatedWorkItems = await getAllParentWorkitems(workItemTrackingApi, relatedWorkItems);
             }
 
-            if (wiqlWhereClause && wiqlWhereClause.length > 0) {
-               var wiqlQuery = `SELECT [System.Id] FROM workitems WHERE ${wiqlWhereClause} ORDER BY [System.ID] DESC`;
-               agentApi.logInfo(`Getting WorkItems using WIQL`);
-               agentApi.logDebug(`SELECT [System.Id] FROM workitems WHERE ${wiqlWhereClause} ORDER BY [System.ID] DESC`);
+            if (wiqlWhereClause && wiqlFromTarget && wiqlWhereClause.length > 0 && wiqlFromTarget.length > 0) {
+               var wiqlQuery = `SELECT [System.Id] FROM ${wiqlFromTarget} WHERE ${wiqlWhereClause} ORDER BY [System.ID] DESC`;
+               agentApi.logInfo(`Getting Work Items using WIQL query`);
+               agentApi.logDebug(wiqlQuery);
                try {
                 var queryResponse = await workItemTrackingApi.queryByWiql(
                     { query: wiqlQuery},
@@ -1874,11 +1875,14 @@ export async function generateReleaseNotes(
                     undefined,
                     5000);
                     // need to get the result into the same format as used to enrich other WI arrays
-                    var wiRefArray: ResourceRef[] = queryResponse.workItems.map(wi => ({id: wi.id.toString(), url: undefined})) as ResourceRef[];
-                    // enrich the items
-                    queryWorkItems = await getFullWorkItemDetails(workItemTrackingApi, wiRefArray);
-
-                    agentApi.logInfo(`Found ${queryWorkItems.length} WI using WIQL`);
+                    if (queryResponse && queryResponse.workItems) {
+                        var wiRefArray: ResourceRef[] = queryResponse.workItems.map(wi => ({id: wi.id.toString(), url: undefined})) as ResourceRef[];
+                        // enrich the items
+                        queryWorkItems = await getFullWorkItemDetails(workItemTrackingApi, wiRefArray);
+                        agentApi.logInfo(`Found ${queryWorkItems.length} WI using WIQL`);
+                    } else {
+                        agentApi.logInfo(`Found no WI using WIQL`);
+                    }
 
                } catch (ex) {
                    reject(ex);
