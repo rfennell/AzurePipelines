@@ -356,8 +356,20 @@
       "required": false,
       "helpMarkDown": "A where clause to get a get a list of work items using a WIQL Query e.g. `[System.TeamProject] = 'Project Name' and [System.WorkItemType] = 'Product Backlog Item'`. Note you cannot use the all the @ parameter such as `@project`, `@currentIteration` or `@Me`, but `@Today` works.",
       "groupName":"advanced"
-    }
-    ,
+    },
+    {
+      "name": "wiqlFromTarget",
+      "type": "pickList",
+      "label": "WIQL From Target",
+      "defaultValue": "WorkItems",
+      "required": true,
+      "helpMarkDown": "The FROM target for the WIQL Query.  e.g. `SELECT [System.Id] FROM workitems WHERE ...`",
+      "groupName": "advanced",
+      "options": {
+          "WorkItems ": "WorkItems",
+          "WorkItemLinks": "WorkItemLinks"
+      }
+    },
     {
       "name": "getPRDetails",
       "type": "boolean",
