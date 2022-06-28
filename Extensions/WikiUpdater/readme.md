@@ -8,7 +8,7 @@ This can be used with both Azure DevOps and GitHub hosted WIKIs.
 
 __Note:__ When working with Azure DevOps WIKIs, this task has the optional feature that it can update the WIKIs `.order` file. The `.order` file is used to [set the order of the Wiki pages ](https://docs.microsoft.com/en-us/azure/devops/project/wiki/wiki-file-structure?view=azure-devops#order-file) - See [#1009](https://github.com/rfennell/AzurePipelines/issues/1009) for more details.
 
-## Update a WIKI with a set of pages defined by a wildcard 
+## Update a WIKI with a set of pages defined by a wildcard
 
 The WIKI Updater task that allows a set of files to be specified, using a wildcard, that will be committed to the Git repo. None that this task does not provided the option to rename the files as they are unloaded, or append to existing files.
 
@@ -61,18 +61,20 @@ Both tasks can be used in a build or a release
 - insertLinefeed - If set to true, when appending or prepending content to a page file a newline is inserted between the old and new content (See [#988](https://github.com/rfennell/AzurePipelines/issues/988)). Default is false
 - updateOrderFile - See [#1009](https://github.com/rfennell/AzurePipelines/issues/1009) - If set to true, an new line for the uploaded file will be appending, or prepending, in the Azure DevOps WIKI .order file in the root of the repo. If the file does not exist it will be created. Default is false
 - prependEntryToOrderFile - See [#1009](https://github.com/rfennell/AzurePipelines/issues/1009) -If `updateOrderFile` is set to true, this parameter will control whether the new entry is appended (when this is set to false) or prepending (when this is set to true). Default is false i.e append mode
+- orderFilePath - See [#1302](https://github.com/rfennell/AzurePipelines/issues/1302) The path to the folder containing the .order file to update. If empty the .order file in the root of the WIKI will be used.
+
 
 _For more authentication parameters see 'Authentication' section below_
 
 ## URL required to clone a WIKI repo
 
-Prior to version 1.14.x the URL has to be edited into a special format i.e. trimmed of any content before the host name. With 1.14.x this is no longer required. There is now logic in the task to trim the url if needed. 
+Prior to version 1.14.x the URL has to be edited into a special format i.e. trimmed of any content before the host name. With 1.14.x this is no longer required. There is now logic in the task to trim the url if needed.
 
 So now both the old trimmed format url
 
 `dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki`
 
-or a full URL 
+or a full URL
 
 `https://richardfennell@dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki`
 
@@ -80,10 +82,10 @@ are both acceptable forms for the `repo` parameter
 
 ### Azure DevOps Services & Azure DevOps Server (TFS) WIKIs
 
-The URL to clone a Azure DevOps WIKIs is not obvious. 
+The URL to clone a Azure DevOps WIKIs is not obvious.
 
 ```
-IT IS NOT THE URL SHOWN IN THE BROWSER WHEN YOU VIEW THE WIKI e.g: 
+IT IS NOT THE URL SHOWN IN THE BROWSER WHEN YOU VIEW THE WIKI e.g:
 
 https://dev.azure.com/richardfennell/Git%20project/_wiki/wikis/Git-project.wiki/1/Home
 
@@ -135,15 +137,15 @@ The following are supported means to authenticate with different services
 The recommended approach is to use the build agents OAUTH Token for authentication. To do this
 
 1. Allow the pipeline to access th OAUTH Token
-   - For UI based pipelines this is [documented here](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) 
+   - For UI based pipelines this is [documented here](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands)
    - For YAML based pipelines the OAUTH token should automatically be available
-1. Grant 'contribute' access on the target Azure DevOps WIKI Repo to user the build agent is scoped to run as 
+1. Grant 'contribute' access on the target Azure DevOps WIKI Repo to user the build agent is scoped to run as
    - Control of the scope the build agent runs as is [documented here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/access-tokens?view=azure-devops&tabs=yaml#job-authorization-scope).
-   - Make sure that the 'Project Collection > Setting > Pipeline > Setting > Protect access to repositories in YAML pipelines' as not enabled. If set it can block access to the target repo. 
+   - Make sure that the 'Project Collection > Setting > Pipeline > Setting > Protect access to repositories in YAML pipelines' as not enabled. If set it can block access to the target repo.
    - Usually this is the '_Project Name_ Build Service' user (assuming this is the account the pipeline is running. The alternative if the wider scope is used is the 'Project Collection Build Service' user
 1. Set the task's `UseAgentToken` parameter to true
 
-Once this is set the `user` and the `password` parameters are managed by the task. 
+Once this is set the `user` and the `password` parameters are managed by the task.
 
 ### Authentication using Personal Access Tokens to Azure DevOps Services hosted Repos
 If you do not wish to use OAUTH then authentication can be done using Personal Access Tokens. To do this
@@ -156,12 +158,12 @@ For this usecase for Azure DevOps Services then the `user` parameter is your org
 ### Authentication using OAUTH to On premises Azure DevOps Server & TFS hosted Repos
 The recommended approach is to use for all on premises Azure DevOps Servers & TFS. To do this
 
-1. Allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands) 
-1. Grant _contribute_ access on the target Azure DevOps WIKI to the _Project Collection Build Service_ user (assuming this is the account the pipeline is running as). 
+1. Allow the pipeline to access the [OAUTH Token](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands)
+1. Grant _contribute_ access on the target Azure DevOps WIKI to the _Project Collection Build Service_ user (assuming this is the account the pipeline is running as).
 1. Set the task's `UseAgentToken` parameter to true
 1. Set the task's `InjectExtraHeader` parameter to true
 
-Once this is set the `user` and the `password` parameters are managed by the task. 
+Once this is set the `user` and the `password` parameters are managed by the task.
 
 ### Authentication using Personal Access Tokens to GitHub hosted Repos
 The supported means to authenticate to a GitHub repo is using a Personal Access Token
@@ -178,7 +180,7 @@ The most common problems are usually cured by checking the following
 - If you are using a private build agent and getting an error try swapping to a Microsoft hosted agent. Remember a build or release can make use of a mixture of agent phases.
 - If intending to use the OAUTH build user credentials make sure that the agent phase is allowing access to the OAUTH Token (especially important for UI based build as this is not the default. Unlike in YAML where it is)
 - If trying to use OAUTH and still having permission problems try swapping to a PAT for a user you know has rights to edit the WIKI.
-- If using OAUTH make sure that the 'Project Collection > Setting > Pipeline > Setting > Limit job authorization scope to referenced Azure DevOps repositories' as not enabled. If set it can block access to the target repo. 
+- If using OAUTH make sure that the 'Project Collection > Setting > Pipeline > Setting > Limit job authorization scope to referenced Azure DevOps repositories' as not enabled. If set it can block access to the target repo.
 - If there is any chance there is a proxy or corporate firewall between a private agent and the Azure DevOps instance enable the `Injectheader` option. This is most common when accessing Azure DevOps Server/TFS (see above).
 - If you are on a private agent and get errors in the form `Error: spawn git ENOENT` when trying to clone a repo, make sure `C:\agent\externals\git\cmd` is in the environment path on agent machine [See this issue for details](https://github.com/rfennell/AzurePipelines/issues/738).
 

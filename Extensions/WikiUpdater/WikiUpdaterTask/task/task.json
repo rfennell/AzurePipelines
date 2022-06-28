@@ -244,6 +244,16 @@
     }
     ,
     {
+      "name": "orderFilePath",
+      "type": "string",
+      "label": "The path to .order file",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The path to the folder containing the .order file to update. If empty the .order file in the root of the WIKI will be used.",
+      "groupName": "advanced"
+    }
+    ,
+    {
       "name": "prependEntryToOrderFile",
       "type": "boolean",
       "label": "Prepend .order file entry",
