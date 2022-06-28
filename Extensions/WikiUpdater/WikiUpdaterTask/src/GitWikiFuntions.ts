@@ -227,8 +227,8 @@ export async function UpdateGitWikiFile(
         if (updateOrderFile) {
 
             var orderFile = `${localpath}/.order`;
-            if (orderFilePath.length > 0 ) {
-                orderFile = `${orderFilePath}/.order`;
+            if (orderFilePath && orderFilePath.length > 0 ) {
+                orderFile = `${localpath}/${orderFilePath}/.order`;
             }
 
             logInfo(`Using the file - ${orderFile}`);

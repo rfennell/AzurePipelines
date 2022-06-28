@@ -232,7 +232,7 @@ stages:
                 localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
                 fixSpaces: true
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
-              displayName: 'Git based WIKI Updater - Azure DevOps with Creds'
+              displayName: 'Git based WIKI Updater - Azure DevOps with Creds update .order file'
               inputs:
                 repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
                 filename: TestPageWithCreds-$(build.buildid).md
@@ -249,6 +249,25 @@ stages:
                 password: '$(AzureDevOpsPAT)'
                 localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
                 updateOrderFile: true
+            - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+              displayName: 'Git based WIKI Updater - Azure DevOps with Creds update TestFolder/.order file'
+              inputs:
+                repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+                filename: TestFolder/TestPageWithCreds-$(build.buildid).md
+                contents: |
+                  Header
+                  ---
+                  $(OutputText)
+                  ---
+                  Footer
+                message: 'Update from Release - $(Release.ReleaseName) with Creds'
+                gitname: builduser
+                gitemail: 'build@demo'
+                user: richardfennell
+                password: '$(AzureDevOpsPAT)'
+                localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
+                updateOrderFile: true
+                orderFilePath: "TestFolder"
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater - Azure DevOps in branch'
               inputs:
