@@ -38,5 +38,4 @@ const updateOrderFile = true;
 const prependEntryToOrderFile = false;
 const orderFilePath = "";
 
-
 UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch, retries, trimLeadingSpecialChar, fixLineFeeds, fixSpaces, insertLinefeed, updateOrderFile, prependEntryToOrderFile, orderFilePath);
