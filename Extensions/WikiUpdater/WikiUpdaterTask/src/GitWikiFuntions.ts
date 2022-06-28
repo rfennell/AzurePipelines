@@ -118,7 +118,8 @@ export async function UpdateGitWikiFile(
     fixSpaces,
     insertLinefeed,
     updateOrderFile,
-    prependEntryToOrderFile) {
+    prependEntryToOrderFile,
+    orderFilePath) {
     const git = simpleGit();
 
     let remote = "";
@@ -224,7 +225,14 @@ export async function UpdateGitWikiFile(
         logInfo(`Added ${filename} to repo ${localpath}`);
 
         if (updateOrderFile) {
+
             var orderFile = `${localpath}/.order`;
+            if (orderFilePath.length > 0 ) {
+                orderFile = `${orderFilePath}/.order`;
+            }
+
+            logInfo(`Using the file - ${orderFile}`);
+
             // we need the name without the extension
             var entry = filename.replace(/.md/i, "");
 
