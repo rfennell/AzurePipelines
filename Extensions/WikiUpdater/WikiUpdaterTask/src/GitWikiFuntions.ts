@@ -249,8 +249,11 @@ export async function UpdateGitWikiFile(
                     // as we are pre-pending we alway need a line feed
                     fs.writeFileSync(orderFile, `${entry}\r\n`);
                     fs.appendFileSync(orderFile, oldContent);
+                    logInfo(`Preppending entry to the .order file`);
+                } else {
+                    fs.writeFileSync(orderFile, `${entry}`);
+                    logInfo(`Creating .order file as it does not exist`);
                 }
-                logInfo(`Preppending entry to the .order file`);
             } else {
                 // appending the entry
                 if (fs.existsSync(orderFile)) {
