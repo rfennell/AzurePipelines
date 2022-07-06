@@ -233,8 +233,8 @@ export async function UpdateGitWikiFile(
 
             logInfo(`Using the file - ${orderFile}`);
 
-            // we need the name without the extension
-            var entry = filename.replace(/.md/i, "");
+            // we need the name without the extension and the folder path
+            var entry = path.basename(filename.replace(/.md/i, ""));
 
             if (fs.existsSync(orderFile)) {
                 logInfo(`Updating the existing .order file`);
