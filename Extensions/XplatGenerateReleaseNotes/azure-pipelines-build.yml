@@ -115,57 +115,69 @@ stages:
 
   - stage: Private
     jobs:
-    - job: Private_Deployment
+    - deployment: Private_Deployment
       timeoutInMinutes: 0
-      #environment: 'Azure DevOps Marketplace (Private)'
+      environment: 'Azure DevOps Marketplace (Private)'
       pool:
         vmImage: '$(vmImage)'
-      steps:
-      # we don't need to DownloadPipelineArtifact as this is done automatically
-      - template: ..\..\YAMLTemplates\publish-extension.yml
-        parameters:
-            vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
-            extensionTag: '$(privateExtentionsTag)'
-            extensionVisibility: private
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            # we don't need to DownloadPipelineArtifact as this is done automatically
+            - template: ..\..\YAMLTemplates\publish-extension.yml
+              parameters:
+                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
+                 extensionTag: '$(privateExtentionsTag)'
+                 extensionVisibility: private
 
   - stage: Test_Windows
     dependsOn: Private
     jobs:
-    - job: Private_Test
+    - deployment: Private_Test
       timeoutInMinutes: 0
-      # environment: 'Azure DevOps Marketplace (XplatGenerateReleaseNotes)'
+      environment: 'Azure DevOps Marketplace (XplatGenerateReleaseNotes)'
       pool:
         vmImage: '$(vmImage)'
-      steps:
-      - template: .\pipeline-test-steps.yml
-        parameters:
-          platform: windows
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: .\pipeline-test-steps.yml
+              parameters:
+                platform: windows
 
   - stage: Test_Linux
     dependsOn: Private
     jobs:
-    - job: Private_Test
+    - deployment: Private_Test
       timeoutInMinutes: 0
-      # environment: 'Azure DevOps Marketplace (XplatGenerateReleaseNotes)'
+      environment: 'Azure DevOps Marketplace (XplatGenerateReleaseNotes)'
       pool:
         vmImage: 'ubuntu-18.04'
-      steps:
-      - template: .\pipeline-test-steps.yml
-        parameters:
-          platform: linux
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: .\pipeline-test-steps.yml
+              parameters:
+                platform: linux
 
   - stage: Test_Mac
     dependsOn: Private
     jobs:
-    - job: Private_Test
+    - deployment: Private_Test
       timeoutInMinutes: 0
-      # environment: 'Azure DevOps Marketplace (XplatGenerateReleaseNotes)'
+      environment: 'Azure DevOps Marketplace (XplatGenerateReleaseNotes)'
       pool:
         vmImage: 'macOS-10.15'
-      steps:
-      - template: .\pipeline-test-steps.yml
-        parameters:
-          platform: mac
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: .\pipeline-test-steps.yml
+              parameters:
+                platform: mac
 
   - stage: Test_Manual
     dependsOn:
@@ -173,13 +185,16 @@ stages:
     - Test_Mac
     - Test_Linux
     jobs:
-    - job: Private_Test
+    - deployment: Private_Test
       timeoutInMinutes: 0
-      # environment: 'Azure DevOps Marketplace (XplatGenerateReleaseNotes Manual)'
+      environment: 'Azure DevOps Marketplace (XplatGenerateReleaseNotes Manual)'
       pool:
         vmImage: '$(vmImage)'
-      steps:
-      - bash: "echo 'Should have run manual test to check various edge cased'"
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - bash: "echo 'Should have run manual test to check various edge cased'"
 
   - stage: Documentation
     dependsOn:
@@ -193,37 +208,44 @@ stages:
     #   user - used to authenticate to repo
     #   repo - url of repo (without HTTPS://)
     jobs:
-    - job: Documentation
+    - deployment: Documentation
       timeoutInMinutes: 0
-      # environment: 'Azure DevOps Marketplace (Documentation)'
+      environment: 'Azure DevOps Marketplace (Documentation)'
       pool:
         vmImage: '$(vmImage)'
-      steps:
-        - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
-          parameters:
-            workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
-            wikiFilename: '$(wikiFilename)'
-            repo: '$(repo)'
-            gitname: '$(GitName)'
-            gitemail: '$(GitEmail)'
-            UserName: '$(UserName)'
-            GitHubPat: '$(GitHubPat)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
+                parameters:
+                  workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
+                  wikiFilename: '$(wikiFilename)'
+                  repo: '$(repo)'
+                  gitname: '$(GitName)'
+                  gitemail: '$(GitEmail)'
+                  UserName: '$(UserName)'
+                  GitHubPat: '$(GitHubPat)'
 
   - stage: Public
     dependsOn: Documentation
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     jobs:
-    - job: Public_Deployment
+    - deployment: Public_Deployment
       timeoutInMinutes: 0
-      # environment: 'Azure DevOps Marketplace (Public)'
+      environment: 'Azure DevOps Marketplace (Public)'
       pool:
         vmImage: '$(vmImage)'
-      steps:
-        # we don't need to DownloadPipelineArtifact as this is done automatically
-        - template: ..\..\YAMLTemplates\publish-extension.yml
-          parameters:
-              vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
-              extensionTag: ''
-              extensionVisibility: public
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              # we don't need to DownloadPipelineArtifact as this is done automatically
+              - template: ..\..\YAMLTemplates\publish-extension.yml
+                parameters:
+                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'
+                   extensionTag: ''
+                   extensionVisibility: public
 
     - job: Post_Publish
       dependsOn: Public_Deployment
