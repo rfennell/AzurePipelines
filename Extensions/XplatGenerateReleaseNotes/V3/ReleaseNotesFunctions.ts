@@ -1174,7 +1174,8 @@ export async function getLastSuccessfulBuildByStage(
                 agentApi.logInfo(`Ignoring ${build.id} (${build.buildNumber}) since not yet reached the current build`);
             } else {
                 if (tags.length === 0 ||
-                    (tags.length > 0 && build.tags.sort().join(",") === tags.sort().join(","))) {
+                    (tags.length > 0 && build.tags.sort().join(",") === tags.sort().join(",")) ||
+                    (tags.find(t => t === "*") && tags.length > 0 && tags.filter((t) => t === "*" || build.tags.find((bt) => bt === t)).length === tags.length)) {
                         agentApi.logInfo("Considering build");
                         let timeline = await (buildApi.getBuildTimeline(teamProject, build.id));
                         if (timeline && timeline.records) {
