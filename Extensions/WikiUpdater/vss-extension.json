@@ -1,33 +1,33 @@
 {
- "manifestVersion": 1,
- "id": "BM-VSTS-WikiUpdater-Tasks",
- "version": "1.0.0",
- "name": "WIKI Updater Tasks",
- "publisher": "richardfennellBM",
+  "manifestVersion": 1,
+  "id": "BM-VSTS-WikiUpdater-Tasks",
+  "version": "1.1.0",
+  "name": "WIKI Updater Tasks",
+  "publisher": "richardfennellBM",
   "description": "Set of tasks update Git based WIKIs.",
   "CustomerQnASupport": {
-    "enableqna":"true",
+    "enableqna": "true",
     "url": "https://github.com/rfennell/AzurePipelines/issues"
-  }, 
+  },
   "categories": [
     "Azure Pipelines"
   ],
   "targets": [
-         {
-             "id": "Microsoft.VisualStudio.Services"
-         }
-     ],
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
   "tags": [
     "WIKI"
-  ],   
+  ],
   "branding": {
-        "color": "#f97923",
-        "theme": "dark"
+    "color": "#f97923",
+    "theme": "dark"
   },
   "icons": {
-      "default": "images/logo.png"
+    "default": "images/logo.png"
   },
-   "links": {
+  "links": {
     "getstarted": {
       "uri": "https://github.com/rfennell/AzurePipelines/wiki/WIKI-Updater-Tasks"
     },

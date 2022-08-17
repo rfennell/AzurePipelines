@@ -7,7 +7,7 @@ import { logDebug, logWarning } from "./agentSpecific";
 import { SSL_OP_CIPHER_SERVER_PREFERENCE, SSL_OP_LEGACY_SERVER_CONNECT } from "constants";
 
 // A wrapper to make sure that directory delete is handled in sync
-function rimrafPromise (localpath)  {
+function rimrafPromise(localpath) {
     return new Promise((resolve, reject) => {
         rimraf(localpath, () => {
             resolve();
@@ -23,28 +23,28 @@ function mkDirByPathSync(targetDir, { isRelativeToScript = false } = {}) {
     const baseDir = isRelativeToScript ? __dirname : ".";
 
     return targetDir.split(sep).reduce((parentDir, childDir) => {
-      const curDir = path.resolve(baseDir, parentDir, childDir);
-      try {
-        fs.mkdirSync(curDir);
-      } catch (err) {
-        if (err.code === "EEXIST") { // curDir already exists!
-          return curDir;
+        const curDir = path.resolve(baseDir, parentDir, childDir);
+        try {
+            fs.mkdirSync(curDir);
+        } catch (err) {
+            if (err.code === "EEXIST") { // curDir already exists!
+                return curDir;
+            }
+
+            // To avoid `EISDIR` error on Mac and `EACCES`-->`ENOENT` and `EPERM` on Windows.
+            if (err.code === "ENOENT") { // Throw the original parentDir error on curDir `ENOENT` failure.
+                throw new Error(`EACCES: permission denied, mkdir '${parentDir}'`);
+            }
+
+            const caughtErr = ["EACCES", "EPERM", "EISDIR"].indexOf(err.code) > -1;
+            if (!caughtErr || caughtErr && curDir === path.resolve(targetDir)) {
+                throw err; // Throw if it's just the last created dir.
+            }
         }
 
-        // To avoid `EISDIR` error on Mac and `EACCES`-->`ENOENT` and `EPERM` on Windows.
-        if (err.code === "ENOENT") { // Throw the original parentDir error on curDir `ENOENT` failure.
-          throw new Error(`EACCES: permission denied, mkdir '${parentDir}'`);
-        }
-
-        const caughtErr = ["EACCES", "EPERM", "EISDIR"].indexOf(err.code) > -1;
-        if (!caughtErr || caughtErr && curDir === path.resolve(targetDir)) {
-          throw err; // Throw if it's just the last created dir.
-        }
-      }
-
-      return curDir;
+        return curDir;
     }, initDir);
-  }
+}
 
 export function GetWorkingFolder(localpath, filename, logInfo): any {
     var pathParts = path.parse(filename);
@@ -72,7 +72,7 @@ export function GetProtocol(url: string, logInfo): string {
     var protocol = "https";
     logInfo(`The provided repo URL is ${url}`);
     if (url.indexOf("://") !== -1) {
-        protocol = url.substr(0, url.indexOf("//") - 1 );
+        protocol = url.substr(0, url.indexOf("//") - 1);
     }
     logInfo(`The protocol is ${protocol}`);
     return protocol;
@@ -111,6 +111,7 @@ export async function UpdateGitWikiFile(
     tagRepo,
     tag,
     injectExtraHeader,
+    sslBackend,
     branch,
     maxRetries,
     trimLeadingSpecialChar,
@@ -130,7 +131,11 @@ export async function UpdateGitWikiFile(
         remote = `${protocol}://${repo}`;
         logremote = remote;
         extraHeaders = [`-c http.extraheader=AUTHORIZATION: bearer ${password}`];
-        logInfo (`Injecting the authentication via the clone command using paramter -c http.extraheader='AUTHORIZATION: bearer ***'`);
+        if (sslBackend) {
+            extraHeaders.push(`-c http.sslbackend="${sslBackend}"`);
+            logInfo(`Injecting http.sslbackend configuration using parameter -c http.sslbackend="${sslBackend}"`);
+        }
+        logInfo(`Injecting the authentication via the clone command using paramter -c http.extraheader='AUTHORIZATION: bearer ***'`);
     } else {
         if (password === null) {
             remote = `${protocol}://${repo}`;
@@ -162,13 +167,13 @@ export async function UpdateGitWikiFile(
 
         // issue 969 - remove spaces
         if (fixSpaces) {
-           var name = GetWorkingFile(filename, logInfo);
-           if (name.includes(" ")) {
+            var name = GetWorkingFile(filename, logInfo);
+            if (name.includes(" ")) {
                 logInfo(`The target filename contains spaces which are not valid in WIKIs filename '${name}'`);
                 // we only update the filename portion, not the path. Need to use regex else only first instance changed
                 filename = filename.replace(name, name.replace(/\s/g, "-"));
                 logInfo(`Update filename '${filename}'`);
-           }
+            }
         }
 
         // move to the working folder
@@ -192,8 +197,8 @@ export async function UpdateGitWikiFile(
                 logInfo(`Created the '${workingFile}' in '${workingPath}' - fixing line-endings`);
                 fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
             } else {
-              logInfo(`Created the '${workingFile}' in '${workingPath}' - without fixing line-endings`);
-              fs.writeFileSync(workingFile, contents );
+                logInfo(`Created the '${workingFile}' in '${workingPath}' - without fixing line-endings`);
+                fs.writeFileSync(workingFile, contents);
             }
         } else {
             if (appendToFile) {
@@ -227,7 +232,7 @@ export async function UpdateGitWikiFile(
         if (updateOrderFile) {
 
             var orderFile = `${localpath}/.order`;
-            if (orderFilePath && orderFilePath.length > 0 ) {
+            if (orderFilePath && orderFilePath.length > 0) {
                 orderFile = `${localpath}/${orderFilePath}/.order`;
             }
 
@@ -324,7 +329,7 @@ function FixedFormatOfNewContent(contents: string, trimLeadingSpecialChar: boole
     var fixedContents: string = contents.replace(/`n/g, "\r\n");
     // fix for #826 where special characters get added between the files being appended
     // 65279 is the Unicode Character 'ZERO WIDTH NO-BREAK SPACE'
-    if (trimLeadingSpecialChar && fixedContents.charCodeAt(0) ===  65279) {
+    if (trimLeadingSpecialChar && fixedContents.charCodeAt(0) === 65279) {
         fixedContents = fixedContents.substr(1);
     }
     return fixedContents;
@@ -332,6 +337,6 @@ function FixedFormatOfNewContent(contents: string, trimLeadingSpecialChar: boole
 
 function sleep(ms) {
     return new Promise((resolve) => {
-      setTimeout(resolve, ms);
+        setTimeout(resolve, ms);
     });
 }
