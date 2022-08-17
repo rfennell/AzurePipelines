@@ -129,6 +129,7 @@ export async function UpdateGitWikiFolder(
         extraHeaders = [`-c http.extraheader=AUTHORIZATION: bearer ${password}`];
         if(sslBackend) {
             extraHeaders.push(`-c http.sslbackend="${sslBackend}"`)
+            logInfo (`Injecting http.sslbackend configuration using parameter -c http.sslbackend="${sslBackend}"`);
         }
         logInfo (`Injecting the authentication via the clone command using paramter -c http.extraheader='AUTHORIZATION: bearer ***'`);
     } else {
