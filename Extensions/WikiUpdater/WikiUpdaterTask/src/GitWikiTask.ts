@@ -31,6 +31,7 @@ var tagRepo = tl.getBoolInput("tagRepo");
 var tag = tl.getInput("tag");
 var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
+var sslBackend = tl.getInput("sslBackend");
 var retriesInput = tl.getInput("retries");
 var trimLeadingSpecialChar = tl.getBoolInput("trimLeadingSpecialChar");
 var fixLineFeeds = tl.getBoolInput("fixLineFeeds");
@@ -67,6 +68,7 @@ console.log(`Variable: Tag Repo [${tagRepo}]`);
 console.log(`Variable: Tag [${tag}]`);
 console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
+console.log(`Variable: SslBackend [${sslBackend}]`);
 console.log(`Variable: Retries [${retries}]`);
 console.log(`Variable: trimLeadingSpecialChar [${trimLeadingSpecialChar}]`);
 console.log(`Variable: fixLineFeeds [${fixLineFeeds}]`);
@@ -122,6 +124,7 @@ if (haveData) {
         tagRepo,
         tag,
         injectExtraHeader,
+        sslBackend,
         branch,
         retries,
         trimLeadingSpecialChar,
