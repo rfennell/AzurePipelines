@@ -114,6 +114,7 @@ export async function UpdateGitWikiFolder(
     tagRepo,
     tag,
     injectExtraHeader,
+    sslBackend,
     branch,
     maxRetries) {
     const git = simpleGit();
@@ -126,6 +127,9 @@ export async function UpdateGitWikiFolder(
         remote = `${protocol}://${repo}`;
         logremote = remote;
         extraHeaders = [`-c http.extraheader=AUTHORIZATION: bearer ${password}`];
+        if(sslBackend) {
+            extraHeaders.push(`-c http.sslbackend="${sslBackend}"`)
+        }
         logInfo (`Injecting the authentication via the clone command using paramter -c http.extraheader='AUTHORIZATION: bearer ***'`);
     } else {
         if (password === null) {

@@ -53,6 +53,7 @@ Both tasks can be used in a build or a release
 - Username - The username to authenticate with the repo (see Authentication below)
 - Password - The password or PAT to authenticate with the repo (see Authentication below) _Recommended that this is stored as secret variable_
 - InjectExtraHeader -  If set to true, credentials are passed as a header value. If false, the default, they are passed in the URL. This option was added to address the issue [#613](https://github.com/rfennell/AzurePipelines/issues/613) which found that this means of authentication is required when working with an on-prem TFS/Azure DevOps Server
+- SslBackend -  Set the http.sslbackend option (InjectExtraHeader must be set true)
 - Retries - The number of times to retry if a push fails. After a failed push a pull is run prior to the next attempt, default of 5
 
 #### Advanced (Single File Task)
