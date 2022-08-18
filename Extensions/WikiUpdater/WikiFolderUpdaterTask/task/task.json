@@ -179,9 +179,9 @@
       "name": "sslBackend",
       "type": "string",
       "label": "Set http.sslbackend option",
-      "defaultValue": "False",
+      "defaultValue": "",
       "required": false,
-      "helpMarkDown": "Set the http.sslbackend option (InjectExtraHeader must be set true)",
+      "helpMarkDown": "Set the http.sslbackend header option (InjectExtraHeader must be set true)",
       "groupName": "advanced"
     },
     {
