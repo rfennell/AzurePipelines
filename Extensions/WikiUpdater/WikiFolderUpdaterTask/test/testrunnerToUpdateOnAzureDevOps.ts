@@ -28,8 +28,9 @@ const appendFile = true;
 const tagRepo = false;
 const tag = "";
 const injectExtraHeaders = false;
+const sslBackend = null;
 const branch = "";
 const protocol = "https";
 const retries = "5";
 
-UpdateGitWikiFolder(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message,  sourceFolder, filter, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch, retries);
+UpdateGitWikiFolder(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message,  sourceFolder, filter, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, sslBackend, branch, retries);

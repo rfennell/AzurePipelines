@@ -176,6 +176,15 @@
       "groupName": "advanced"
     },
     {
+      "name": "sslBackend",
+      "type": "string",
+      "label": "Set http.sslbackend option",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Set the http.sslbackend header option (InjectExtraHeader must be set true)",
+      "groupName": "advanced"
+    },
+    {
       "name": "retries",
       "type": "string",
       "label": "Retries",
