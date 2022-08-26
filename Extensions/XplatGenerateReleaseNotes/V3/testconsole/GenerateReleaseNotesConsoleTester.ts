@@ -57,12 +57,14 @@ async function run(): Promise<number> {
           var stopOnRedeploy = settings.stopOnRedeploy;
           var sortWi = getBoolean(settings.SortWi);
           var sortCS = getBoolean(settings.SortCS);
+          var customHandlebarsExtensionCodeAsFile = settings.customHandlebarsExtensionCodeAsFile;
           var customHandlebarsExtensionCode = settings.customHandlebarsExtensionCode;
           var customHandlebarsExtensionFile = settings.customHandlebarsExtensionFile;
           var customHandlebarsExtensionFolder = settings.customHandlebarsExtensionFolder;
           var buildId = settings.buildId;
           var releaseId = settings.releaseId;
           var releaseDefinitionId = settings.releaseDefinitionId;
+          var overrideActiveBuildReleaseId = settings.overrideActiveBuildReleaseId;
           var overrideStageName = settings.overrideStageName;
           var environmentName = settings.environmentName;
           var Fix349 = settings.Fix349;  // this has to be string not a bool
@@ -97,6 +99,7 @@ async function run(): Promise<number> {
                 payload.buildDetails,
                 payload.releaseDetails,
                 payload.compareReleaseDetails,
+                customHandlebarsExtensionCodeAsFile,
                 customHandlebarsExtensionCode,
                 customHandlebarsExtensionFile,
                 customHandlebarsExtensionFolder,
@@ -130,6 +133,7 @@ async function run(): Promise<number> {
               buildId,
               releaseId,
               releaseDefinitionId,
+              overrideActiveBuildReleaseId,
               overrideStageName,
               environmentName,
               Fix349,
@@ -145,6 +149,7 @@ async function run(): Promise<number> {
               getParentsAndChildren,
               searchCrossProjectForPRs,
               stopOnRedeploy,
+              customHandlebarsExtensionCodeAsFile,
               customHandlebarsExtensionCode,
               customHandlebarsExtensionFile,
               customHandlebarsExtensionFolder,

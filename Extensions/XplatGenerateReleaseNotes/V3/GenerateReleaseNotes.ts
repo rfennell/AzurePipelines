@@ -22,10 +22,12 @@ async function run(): Promise<number>  {
             var appendToFile = tl.getBoolInput("appendToFile");
             var getParentsAndChildren = tl.getBoolInput("getParentsAndChildren");
             var searchCrossProjectForPRs = tl.getBoolInput("searchCrossProjectForPRs");
+            var overrideActiveBuildReleaseId = tl.getInput("overrideActiveBuildReleaseId");
             var overrideStageName = tl.getInput("overrideStageName");
             var stopOnRedeploy = tl.getBoolInput("stopOnRedeploy");
             var sortWi = tl.getBoolInput("SortWi");
             var sortCS = tl.getBoolInput("SortCS");
+            var customHandlebarsExtensionCodeAsFile = tl.getInput("customHandlebarsExtensionCodeAsFile");
             var customHandlebarsExtensionCode = tl.getInput("customHandlebarsExtensionCode");
             var customHandlebarsExtensionFile = tl.getInput("customHandlebarsExtensionFile");
             var customHandlebarsExtensionFolder = tl.getInput("customHandlebarsExtensionFolder");
@@ -58,6 +60,7 @@ async function run(): Promise<number>  {
                 parseInt(tl.getVariable("Build.BuildId")),
                 parseInt(tl.getVariable("Release.ReleaseId")),
                 parseInt(tl.getVariable("Release.DefinitionId")),
+                overrideActiveBuildReleaseId,
                 overrideStageName,
                 tl.getVariable("Release_EnvironmentName"),
                 tl.getVariable("ReleaseNotes.Fix349"),
@@ -73,6 +76,7 @@ async function run(): Promise<number>  {
                 getParentsAndChildren,
                 searchCrossProjectForPRs,
                 stopOnRedeploy,
+                customHandlebarsExtensionCodeAsFile,
                 customHandlebarsExtensionCode,
                 customHandlebarsExtensionFile,
                 customHandlebarsExtensionFolder,

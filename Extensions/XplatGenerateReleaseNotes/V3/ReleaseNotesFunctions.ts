@@ -898,6 +898,7 @@ export function processTemplate(
     buildDetails: Build,
     releaseDetails: Release,
     compareReleaseDetails: Release,
+    customHandlebarsExtensionCodeAsFile: string,
     customHandlebarsExtensionCode: string,
     customHandlebarsExtensionFile: string,
     customHandlebarsExtensionFolder: string,
@@ -1000,6 +1001,19 @@ export function processTemplate(
             }
         }
 
+        // consume extension code as if it was coming from a file.
+        // This is done to address the situation where helpers want to leverage some of the modules like
+        //   handlebars but dont want to actually manage the versioning, therefore the code of the handlebars helper
+        //   is simply the content of the file instead of including the file iteself risking the module referencing
+        if (customHandlebarsExtensionCodeAsFile && customHandlebarsExtensionCodeAsFile.length > 0) {
+            if (!path.isAbsolute(customHandlebarsExtensionCodeAsFile)) {
+                agentApi.logDebug(`An absolute path has not been provided for the customHandlebarsExtensionCodeAsFile, pre-pending the current working directory`);
+                customHandlebarsExtensionCodeAsFile = path.join(__dirname, customHandlebarsExtensionCodeAsFile);
+            }
+            agentApi.logDebug(`Setting customHandlebarsExtensionCode to the content of ${customHandlebarsExtensionCodeAsFile}`);
+            customHandlebarsExtensionCode = fs.readFileSync(customHandlebarsExtensionCodeAsFile).toString().trim();
+        }
+
         var filePath = path.join(customHandlebarsExtensionFolder, customHandlebarsExtensionFile);
 
         if (typeof customHandlebarsExtensionCode !== undefined && customHandlebarsExtensionCode && customHandlebarsExtensionCode.length > 0) {
@@ -1008,7 +1022,7 @@ export function processTemplate(
         }
 
         agentApi.logDebug(`Attempting to load custom handlebars extension from ${filePath}}`);
-        if (fs.existsSync(filePath)) {
+        if (fs.existsSync(filePath) ) {
             var customModule = fs.readFileSync(filePath);
             if (customModule.toString().trim().length > 0) {
                 var tools = require(filePath);
@@ -1223,6 +1237,7 @@ export async function generateReleaseNotes(
     buildId: number,
     releaseId: number,
     releaseDefinitionId: number,
+    overrideActiveBuildReleaseId: string,
     overrideStageName: string,
     environmentName: string,
     activateFix: string,
@@ -1238,6 +1253,7 @@ export async function generateReleaseNotes(
     getParentsAndChildren: boolean,
     searchCrossProjectForPRs: boolean,
     stopOnRedeploy: boolean,
+    customHandlebarsExtensionCodeAsFile: string,
     customHandlebarsExtensionCode: string,
     customHandlebarsExtensionFile: string,
     customHandlebarsExtensionFolder: string,
@@ -1324,6 +1340,18 @@ export async function generateReleaseNotes(
             try {
 
             if ((releaseId === undefined) || !releaseId) {
+
+                // Overriding the active build id if applicable
+                if (overrideActiveBuildReleaseId) {
+                    if (isNaN(parseInt(overrideActiveBuildReleaseId, 10))) {
+                        agentApi.logError(`The override active build ID '${overrideActiveBuildReleaseId}' is not a number `);
+                        resolve(-1);
+                        return;
+                    }
+                    agentApi.logInfo (`Using the override for the active build of ID '${overrideActiveBuildReleaseId}'`);
+                    buildId = parseInt(overrideActiveBuildReleaseId);
+                }
+
                 agentApi.logInfo("Getting the current build details");
                 currentBuild = await buildApi.getBuild(teamProject, buildId);
 
@@ -1585,6 +1613,18 @@ export async function generateReleaseNotes(
                     globalManualTestConfigurations);
 
             } else {
+
+                // Overriding the active release id if applicable
+                if (overrideActiveBuildReleaseId) {
+                    if (isNaN(parseInt(overrideActiveBuildReleaseId, 10))) {
+                        agentApi.logError(`The override active release ID '${overrideActiveBuildReleaseId}' is not a number `);
+                        resolve(-1);
+                        return;
+                    }
+                    agentApi.logInfo (`Using the override for the active release of ID '${overrideActiveBuildReleaseId}'`);
+                    releaseId = parseInt(overrideActiveBuildReleaseId);
+                }
+
                 environmentName = (overrideStageName || environmentName).toLowerCase();
 
                 agentApi.logInfo("Getting the current release details");
@@ -2060,6 +2100,7 @@ export async function generateReleaseNotes(
                         currentBuild,
                         currentRelease,
                         mostRecentSuccessfulDeploymentRelease,
+                        customHandlebarsExtensionCodeAsFile,
                         customHandlebarsExtensionCode,
                         customHandlebarsExtensionFile,
                         customHandlebarsExtensionFolder,
