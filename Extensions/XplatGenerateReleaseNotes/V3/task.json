@@ -222,7 +222,7 @@
     },
     {
      "name": "customHandlebarsExtensionCodeAsFile",
-     "type": "multiLine",
+     "type": "string",
      "label": "Custom Handlebars Extension Code (As File)",
      "defaultValue": "",
      "required": false,
