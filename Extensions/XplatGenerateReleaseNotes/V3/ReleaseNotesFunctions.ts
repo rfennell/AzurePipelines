@@ -513,10 +513,10 @@ export function getCredentialHandler(pat: string, accessToken: string): IRequest
         // no pat passed so we need the system token
         agentApi.logDebug("Getting System.AccessToken");
 
-        if (!accessToken || accessToken.length === 0){
+        if (!accessToken || accessToken.length === 0) {
             accessToken = agentApi.getSystemAccessToken();
         }
-        
+
         let credHandler: IRequestHandler;
         if (!accessToken || accessToken.length === 0) {
             throw "Unable to locate access token that will allow access to Azure DevOps API.";
