@@ -20,12 +20,13 @@ async function run(): Promise<number> {
         showUsage = true;
       }
 
-      if (!pat || pat.length === 0) {
-        showUsage = true;
-      }
+      // Removed since the proper behavior is if PAT is not provided to use pipeline token if you run the console tester in pipeline
+      // if (!pat || pat.length === 0) {
+      //   showUsage = true;
+      // }
 
       if (showUsage) {
-        console.error("USAGE: node GenerateReleaseNotesConsoleTester.js --filename settings.json --pat <Azure-DevOps-PAT> --githubpat <Optional GitHub-PAT> --bitbucketuser <Optional Bitbucket User> --bitbucketsecret <Optional Bitbucket App Secret> --payloadFile <Optional JSON Payload File>");
+        console.error("USAGE: node GenerateReleaseNotesConsoleTester.js --filename settings.json [--pat <Azure-DevOps-PAT>] --githubpat <Optional GitHub-PAT> --bitbucketuser <Optional Bitbucket User> --bitbucketsecret <Optional Bitbucket App Secret> --payloadFile <Optional JSON Payload File>");
       } else {
         console.log(`Command Line Arguments:`);
         console.log(`  --filename: ${filename}`);
