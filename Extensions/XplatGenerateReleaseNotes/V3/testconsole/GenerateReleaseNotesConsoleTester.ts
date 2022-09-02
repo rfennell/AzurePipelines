@@ -9,6 +9,7 @@ async function run(): Promise<number> {
       console.log("Starting Tag XplatGenerateReleaseNotes Local Tester");
       var argv = require("minimist")(process.argv.slice(2));
       var filename = argv["filename"];
+      var oath = argv["oath"];
       var pat = argv["pat"];
       var gitHubPat = argv["githubpat"];
       var bitbucketUser = argv["bitbucketuser"];
@@ -26,10 +27,11 @@ async function run(): Promise<number> {
       // }
 
       if (showUsage) {
-        console.error("USAGE: node GenerateReleaseNotesConsoleTester.js --filename settings.json [--pat <Azure-DevOps-PAT>] --githubpat <Optional GitHub-PAT> --bitbucketuser <Optional Bitbucket User> --bitbucketsecret <Optional Bitbucket App Secret> --payloadFile <Optional JSON Payload File>");
+        console.error("USAGE: node GenerateReleaseNotesConsoleTester.js --filename settings.json [--pat <Azure-DevOps-PAT>] [--oath <Azure-DevOps-Oath-Token>] --githubpat <Optional GitHub-PAT> --bitbucketuser <Optional Bitbucket User> --bitbucketsecret <Optional Bitbucket App Secret> --payloadFile <Optional JSON Payload File>");
       } else {
         console.log(`Command Line Arguments:`);
         console.log(`  --filename: ${filename}`);
+        console.log(`  --oath: ${obfuscatePasswordForLog(oath)}`);
         console.log(`  --pat: ${obfuscatePasswordForLog(pat)}`);
         console.log(`  --githubpat: ${obfuscatePasswordForLog(gitHubPat)} (Optional)`);
         console.log(`  --bitbucketuser: ${obfuscatePasswordForLog(bitbucketUser)} (Optional)`);
@@ -128,6 +130,7 @@ async function run(): Promise<number> {
             console.log(`Running the tester against the Azure DevOps API`);
 
             var returnCode = await util.generateReleaseNotes(
+              oath,
               pat,
               tpcUri,
               teamProject,

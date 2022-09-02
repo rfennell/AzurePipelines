@@ -54,6 +54,7 @@ async function run(): Promise<number>  {
             var maxRetries = parseInt(tl.getInput("maxRetries"));
 
             var returnCode = await util.generateReleaseNotes(
+                "",
                 overridePat,
                 tpcUri,
                 teamProject,

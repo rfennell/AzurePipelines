@@ -508,11 +508,15 @@ export async function enrichChangesWithFileDetails(
 }
 
 // Gets the credential handler.  Supports both PAT and OAuth tokens
-export function getCredentialHandler(pat: string): IRequestHandler {
-    if (!pat || pat.length === 0) {
+export function getCredentialHandler(pat: string, accessToken: string): IRequestHandler {
+    if ( !(!accessToken || accessToken.length === 0) || (!pat || pat.length === 0)) {
         // no pat passed so we need the system token
         agentApi.logDebug("Getting System.AccessToken");
-        var accessToken = agentApi.getSystemAccessToken();
+
+        if (!accessToken || accessToken.length === 0){
+            accessToken = agentApi.getSystemAccessToken();
+        }
+        
         let credHandler: IRequestHandler;
         if (!accessToken || accessToken.length === 0) {
             throw "Unable to locate access token that will allow access to Azure DevOps API.";
@@ -1231,6 +1235,7 @@ export async function getLastSuccessfulBuildByStage(
 }
 
 export async function generateReleaseNotes(
+    oath: string,
     pat: string,
     tpcUri: string,
     teamProject: string,
@@ -1299,7 +1304,7 @@ export async function generateReleaseNotes(
             }
 
             agentApi.logInfo(`Creating Azure DevOps API connections for ${tpcUri} with 'allowRetries' set to '${maxRetries > 0}' and 'maxRetries' count to '${maxRetries}'`);
-            const credentialHandler = getCredentialHandler(pat);
+            const credentialHandler = getCredentialHandler(pat, oath);
             const options = {
                 allowRetries: maxRetries > 0 ,
                 maxRetries: maxRetries,
