@@ -220,6 +220,15 @@
       "helpMarkDown": "Append to end of file in the output file if not replacing file",
       "visibleRule":"replaceFile = False"
     },
+    {
+     "name": "customHandlebarsExtensionCodeAsFile",
+     "type": "string",
+     "label": "Custom Handlebars Extension Code (As File)",
+     "defaultValue": "",
+     "required": false,
+     "helpMarkDown": "A file with custom Handlebars extension written as a JavaScript module e.g. module.exports = {foo() {return 'Returns foo';}};",
+     "groupName":"handlebars"
+    },
      {
       "name": "customHandlebarsExtensionCode",
       "type": "multiLine",
@@ -281,6 +290,15 @@
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "It is possible to inject a Personal Access Token to use in place of the Build Agent OAUTH token. This option will only be used in very rare situations usually after a support issue has been raised",
+      "groupName":"advanced"
+    },
+    {
+      "name": "overrideActiveBuildReleaseId",
+      "type": "string",
+      "label": "Override Active Build/ Release ID",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "For releases or multi-stage YAML this parameter provides a means to set the ID of the 'active running release' to compare against. If the specified release/build is not found then the task will exit with an error. Default is empty/not set disabling this override behaviour",
       "groupName":"advanced"
     },
     {

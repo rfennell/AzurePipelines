@@ -9,6 +9,7 @@ async function run(): Promise<number> {
       console.log("Starting Tag XplatGenerateReleaseNotes Local Tester");
       var argv = require("minimist")(process.argv.slice(2));
       var filename = argv["filename"];
+      var oath = argv["oath"];
       var pat = argv["pat"];
       var gitHubPat = argv["githubpat"];
       var bitbucketUser = argv["bitbucketuser"];
@@ -20,15 +21,17 @@ async function run(): Promise<number> {
         showUsage = true;
       }
 
-      if (!pat || pat.length === 0) {
-        showUsage = true;
-      }
+      // Removed since the proper behavior is if PAT is not provided to use pipeline token if you run the console tester in pipeline
+      // if (!pat || pat.length === 0) {
+      //   showUsage = true;
+      // }
 
       if (showUsage) {
-        console.error("USAGE: node GenerateReleaseNotesConsoleTester.js --filename settings.json --pat <Azure-DevOps-PAT> --githubpat <Optional GitHub-PAT> --bitbucketuser <Optional Bitbucket User> --bitbucketsecret <Optional Bitbucket App Secret> --payloadFile <Optional JSON Payload File>");
+        console.error("USAGE: node GenerateReleaseNotesConsoleTester.js --filename settings.json [--pat <Azure-DevOps-PAT>] [--oath <Azure-DevOps-Oath-Token>] --githubpat <Optional GitHub-PAT> --bitbucketuser <Optional Bitbucket User> --bitbucketsecret <Optional Bitbucket App Secret> --payloadFile <Optional JSON Payload File>");
       } else {
         console.log(`Command Line Arguments:`);
         console.log(`  --filename: ${filename}`);
+        console.log(`  --oath: ${obfuscatePasswordForLog(oath)}`);
         console.log(`  --pat: ${obfuscatePasswordForLog(pat)}`);
         console.log(`  --githubpat: ${obfuscatePasswordForLog(gitHubPat)} (Optional)`);
         console.log(`  --bitbucketuser: ${obfuscatePasswordForLog(bitbucketUser)} (Optional)`);
@@ -57,12 +60,14 @@ async function run(): Promise<number> {
           var stopOnRedeploy = settings.stopOnRedeploy;
           var sortWi = getBoolean(settings.SortWi);
           var sortCS = getBoolean(settings.SortCS);
+          var customHandlebarsExtensionCodeAsFile = settings.customHandlebarsExtensionCodeAsFile;
           var customHandlebarsExtensionCode = settings.customHandlebarsExtensionCode;
           var customHandlebarsExtensionFile = settings.customHandlebarsExtensionFile;
           var customHandlebarsExtensionFolder = settings.customHandlebarsExtensionFolder;
           var buildId = settings.buildId;
           var releaseId = settings.releaseId;
           var releaseDefinitionId = settings.releaseDefinitionId;
+          var overrideActiveBuildReleaseId = settings.overrideActiveBuildReleaseId;
           var overrideStageName = settings.overrideStageName;
           var environmentName = settings.environmentName;
           var Fix349 = settings.Fix349;  // this has to be string not a bool
@@ -97,6 +102,7 @@ async function run(): Promise<number> {
                 payload.buildDetails,
                 payload.releaseDetails,
                 payload.compareReleaseDetails,
+                customHandlebarsExtensionCodeAsFile,
                 customHandlebarsExtensionCode,
                 customHandlebarsExtensionFile,
                 customHandlebarsExtensionFolder,
@@ -124,12 +130,14 @@ async function run(): Promise<number> {
             console.log(`Running the tester against the Azure DevOps API`);
 
             var returnCode = await util.generateReleaseNotes(
+              oath,
               pat,
               tpcUri,
               teamProject,
               buildId,
               releaseId,
               releaseDefinitionId,
+              overrideActiveBuildReleaseId,
               overrideStageName,
               environmentName,
               Fix349,
@@ -145,6 +153,7 @@ async function run(): Promise<number> {
               getParentsAndChildren,
               searchCrossProjectForPRs,
               stopOnRedeploy,
+              customHandlebarsExtensionCodeAsFile,
               customHandlebarsExtensionCode,
               customHandlebarsExtensionFile,
               customHandlebarsExtensionFolder,
