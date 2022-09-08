@@ -1445,7 +1445,8 @@ export async function generateReleaseNotes(
 
                                 // need to find the matching artifact in the past release
                                 const lastGoodBuildArtifact = lastGoodBuildArtifacts.find(artifactInLastGoodBuild => (artifactInLastGoodBuild as any).alias === (currentBuildArtifact as any).alias);
-
+                                var artifactWorkItems;
+                                var artifactRelatedWorkItems;
                                 if (lastGoodBuildArtifact) {
                                     agentApi.logInfo(`Getting changes for the '${(currentBuildArtifact as any).artifactCategory}' artifact '${(currentBuildArtifact as any).alias}' between ${(lastGoodBuildArtifact as any).versionId} and ${(currentBuildArtifact as any).versionId}`);
 
@@ -1458,8 +1459,16 @@ export async function generateReleaseNotes(
                                             (lastGoodBuildArtifact as any).definitionId,
                                             (lastGoodBuildArtifact as any).versionId,
                                             (currentBuildArtifact as any).versionId));
-                                     }
+                                    }
 
+                                    artifactWorkItems = await getFullWorkItemDetails(workItemTrackingApi, wi);
+                                    if (getAllParents) {
+                                        agentApi.logInfo("Getting all parents of artifact WorkItems");
+                                        artifactRelatedWorkItems = await getAllParentWorkitems(workItemTrackingApi, artifactWorkItems);
+                                    }
+                                    else {
+                                        artifactRelatedWorkItems = [];
+                                    }
                                     globalConsumedArtifacts.push({
                                         "artifactCategory": (currentBuildArtifact as any).artifactCategory,
                                         "artifactType": (currentBuildArtifact as any).artifactType,
@@ -1473,10 +1482,22 @@ export async function generateReleaseNotes(
                                             tfvcApi,
                                             await buildApi.getChangesBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId),
                                             gitHubPat),
-                                        "workitems": await getFullWorkItemDetails(workItemTrackingApi, wi)
+                                        "workitems": artifactWorkItems,
+                                        "relatedWorkItems": artifactRelatedWorkItems,
                                     });
                                 } else {
                                     agentApi.logInfo(`Cannot find a matching '${(currentBuildArtifact as any).artifactCategory}' artifact for '${(currentBuildArtifact as any).alias}' in the build ${lastGoodBuildId}, so just getting directly associated commits and wi wit the build`);
+                                    artifactWorkItems = await getFullWorkItemDetails(
+                                        workItemTrackingApi,
+                                        await (buildApi.getBuildWorkItemsRefs((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId, 5000)));
+                                    if (getAllParents) {
+                                        agentApi.logInfo("Getting all parents of artifact WorkItems");
+                                        artifactRelatedWorkItems = await getAllParentWorkitems(workItemTrackingApi, artifactWorkItems);
+                                    }
+                                    else {
+                                        artifactRelatedWorkItems = [];
+                                    }
+
                                     globalConsumedArtifacts.push({
                                         "artifactCategory": (currentBuildArtifact as any).artifactCategory,
                                         "artifactType": (currentBuildArtifact as any).artifactType,
@@ -1490,9 +1511,8 @@ export async function generateReleaseNotes(
                                             tfvcApi,
                                             await (buildApi.getBuildChanges((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId, "", 5000)),
                                             gitHubPat),
-                                        "workitems": await getFullWorkItemDetails(
-                                            workItemTrackingApi,
-                                            await (buildApi.getBuildWorkItemsRefs((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId, 5000)))
+                                        "workitems": artifactWorkItems,
+                                        "relatedWorkItems": artifactRelatedWorkItems,
                                     });
 
                                 }
@@ -1506,7 +1526,8 @@ export async function generateReleaseNotes(
                                         "projectId": (currentBuildArtifact as any).properties.projectId
                                     },
                                     "commits": [],
-                                    "workitems": []
+                                    "workitems": [],
+                                    "relatedWorkItems": []
                                 });
                             }
 
