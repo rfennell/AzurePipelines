@@ -254,7 +254,7 @@ stages:
               displayName: 'Git based WIKI Updater - Azure DevOps with Creds update TestFolder/.order file'
               inputs:
                 repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
-                filename: TestFolder/TestPageWithCreds-$(build.buildid).md
+                filename: TestFolder/TestPageWithCreds-prepend.md
                 contents: |
                   Header
                   ---
