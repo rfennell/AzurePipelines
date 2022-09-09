@@ -271,7 +271,16 @@
       "helpMarkDown": "If updateOrderFile is set to true, this parameter control whether the new entry is appended (when this is set to false) or prepending (when this is set to true)",
       "groupName": "advanced"
     }
-
+    ,
+    {
+      "name": "injecttoc",
+      "type": "boolean",
+      "label": "Inject TOC",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true will replace the existing [[_TOC_]] entry in an updated and pre-pended WIKI page with a new one at the top of the revised file (Default: False)",
+      "groupName": "advanced"
+    }
 
 
   ],

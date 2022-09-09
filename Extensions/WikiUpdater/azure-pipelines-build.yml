@@ -184,6 +184,7 @@ stages:
                 filename: PageFromWikiUpdater.md
                 replaceFile: false
                 appendToFile: false
+                injecttoc: true
                 contents: |
                   ---
                   This is more test that has been added to the end of the file
