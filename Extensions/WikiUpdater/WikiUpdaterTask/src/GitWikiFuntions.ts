@@ -120,7 +120,8 @@ export async function UpdateGitWikiFile(
     insertLinefeed,
     updateOrderFile,
     prependEntryToOrderFile,
-    orderFilePath) {
+    orderFilePath,
+    injecttoc) {
     const git = simpleGit();
 
     let remote = "";
@@ -215,7 +216,14 @@ export async function UpdateGitWikiFile(
                 if (fs.existsSync(workingFile)) {
                     oldContent = fs.readFileSync(workingFile, "utf8");
                 }
-                fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+                if (injecttoc) {
+                    logInfo(`Replacing old [[_TOC_]] with a new one at the top of the pre-pended content`);
+                    oldContent.replace("[[_TOC_]]\r\n", "");  // we can use the simple form as there is only one instance
+                    fs.writeFileSync(workingFile, "[[_TOC_]]\r\n");
+                }
+
+                fs.appendFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+
                 if (insertLinefeed) {
                     // fix for #988 trailing new lines are trimmed from inline content
                     logInfo(`Injecting linefeed between existing and new content`);
