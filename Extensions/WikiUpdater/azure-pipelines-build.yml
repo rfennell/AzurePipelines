@@ -184,6 +184,7 @@ stages:
                 filename: PageFromWikiUpdater.md
                 replaceFile: false
                 appendToFile: false
+                injecttoc: true
                 contents: |
                   ---
                   This is more test that has been added to the end of the file
@@ -253,20 +254,23 @@ stages:
               displayName: 'Git based WIKI Updater - Azure DevOps with Creds update TestFolder/.order file'
               inputs:
                 repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
-                filename: TestFolder/TestPageWithCreds-$(build.buildid).md
+                filename: TestFolder/TestPageWithCreds-prepend.md
                 contents: |
                   Header
                   ---
                   $(OutputText)
                   ---
                   Footer
-                message: 'Update from Release - $(Release.ReleaseName) with Creds'
+                message: 'Update from Release - $(Release.ReleaseName) with Creds (prepend)'
                 gitname: builduser
                 gitemail: 'build@demo'
                 user: richardfennell
                 password: '$(AzureDevOpsPAT)'
                 localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
                 updateOrderFile: true
+                replacefile: false
+                appendToFile: false
+                injecttoc: true
                 orderFilePath: "TestFolder"
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater - Azure DevOps in branch'
