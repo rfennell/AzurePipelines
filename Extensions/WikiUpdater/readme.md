@@ -63,6 +63,7 @@ Both tasks can be used in a build or a release
 - updateOrderFile - See [#1009](https://github.com/rfennell/AzurePipelines/issues/1009) - If set to true, an new line for the uploaded file will be appending, or prepending, in the Azure DevOps WIKI .order file in the root of the repo. If the file does not exist it will be created. Default is false
 - prependEntryToOrderFile - See [#1009](https://github.com/rfennell/AzurePipelines/issues/1009) -If `updateOrderFile` is set to true, this parameter will control whether the new entry is appended (when this is set to false) or prepending (when this is set to true). Default is false i.e append mode
 - orderFilePath - See [#1302](https://github.com/rfennell/AzurePipelines/issues/1302) The path to the folder containing the .order file to update. If empty the .order file in the root of the WIKI will be used.
+- injecttoc - See [#1336](https://github.com/rfennell/AzurePipelines/issues/1336) If true will replace the existing [[_TOC_]] entry in an updated and pre-pended WIKI page with a new one at the top of the revised file (Default: False)
 
 
 _For more authentication parameters see 'Authentication' section below_
