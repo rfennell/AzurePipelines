@@ -261,13 +261,15 @@ stages:
                   $(OutputText)
                   ---
                   Footer
-                message: 'Update from Release - $(Release.ReleaseName) with Creds'
+                message: 'Update from Release - $(Release.ReleaseName) with Creds (prepend)'
                 gitname: builduser
                 gitemail: 'build@demo'
                 user: richardfennell
                 password: '$(AzureDevOpsPAT)'
                 localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
                 updateOrderFile: true
+                appendToFile: false
+                injecttoc: true
                 orderFilePath: "TestFolder"
             - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
               displayName: 'Git based WIKI Updater - Azure DevOps in branch'

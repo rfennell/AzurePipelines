@@ -218,14 +218,8 @@ export async function UpdateGitWikiFile(
                 }
                 if (injecttoc) {
                     logInfo(`Replacing old [[_TOC_]] with a new one at the top of the pre-pended content`);
-                    oldContent.replace("[[_TOC_]]", "");  // we can use the simple form as there is only one instance
-                    fs.writeFileSync(workingFile, "[[_TOC_]]");
-
-                    if (insertLinefeed) {
-                        // fix for #988 trailing new lines are trimmed from inline content
-                        logInfo(`Injecting linefeed between [[_TOC_]] and new content`);
-                        fs.appendFileSync(workingFile, "\r\n");
-                    }
+                    oldContent.replace("[[_TOC_]]\r\n", "");  // we can use the simple form as there is only one instance
+                    fs.writeFileSync(workingFile, "[[_TOC_]]\r\n");
                 }
 
                 fs.appendFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
