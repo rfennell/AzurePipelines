@@ -24,9 +24,10 @@ export class UnifiedArtifactDetails {
     build: Build;
     commits: Change[];
     workitems: WorkItem[];
+    relatedworkitems: WorkItem[];
     tests: TestCaseResult[];
     manualtests: EnrichedTestRun[];
-    constructor ( build: Build, commits: Change[], workitems: WorkItem[], tests: TestCaseResult[], manualtests: EnrichedTestRun[]) {
+    constructor ( build: Build, commits: Change[], workitems: WorkItem[], tests: TestCaseResult[], manualtests: EnrichedTestRun[], relatedworkitems: WorkItem[]) {
         this.build = build;
         if (commits) {
             this.commits = commits;
@@ -35,6 +36,11 @@ export class UnifiedArtifactDetails {
         }
         if (workitems) {
             this.workitems = workitems;
+        } else {
+            this.workitems = [];
+        }
+        if (relatedworkitems) {
+            this.relatedworkitems = relatedworkitems;
         } else {
             this.workitems = [];
         }
@@ -1345,7 +1351,7 @@ export async function generateReleaseNotes(
             try {
 
             if ((releaseId === undefined) || !releaseId) {
-
+                // A Classic Build or YAML Pipeline
                 // Overriding the active build id if applicable
                 if (overrideActiveBuildReleaseId) {
                     if (isNaN(parseInt(overrideActiveBuildReleaseId, 10))) {
@@ -1639,7 +1645,7 @@ export async function generateReleaseNotes(
                     globalManualTestConfigurations);
 
             } else {
-
+                // A Classic Release
                 // Overriding the active release id if applicable
                 if (overrideActiveBuildReleaseId) {
                     if (isNaN(parseInt(overrideActiveBuildReleaseId, 10))) {
@@ -1864,7 +1870,13 @@ export async function generateReleaseNotes(
                                         // we need to enrich the WI before we associate with the build
                                         let fullBuildWorkItems = await getFullWorkItemDetails(workItemTrackingApi, workitems);
 
-                                        globalBuilds.push(new UnifiedArtifactDetails(artifact, commits, fullBuildWorkItems, tests, manualtests));
+                                        var fullRelatedBuildItems = [];
+                                        if (getAllParents) {
+                                            agentApi.logInfo("Getting all parents of build WorkItems");
+                                            fullRelatedBuildItems = await getAllParentWorkitems(workItemTrackingApi, fullBuildWorkItems);
+                                        }
+
+                                        globalBuilds.push(new UnifiedArtifactDetails(artifact, commits, fullBuildWorkItems, tests, manualtests, fullRelatedBuildItems));
 
                                     }
                                 }
