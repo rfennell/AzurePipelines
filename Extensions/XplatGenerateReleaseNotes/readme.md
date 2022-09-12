@@ -171,7 +171,7 @@ The are a wide range of objects available to get data from within templates. Som
 |**tests** | the array of unique automated tests associated with any of the builds linked to the release or the release itself  |
 |**manualtests** | the array of manual Test Plan runs associated with any of the builds linked to the release |
 |**manualTestConfigurations** | the array of manual test configurations |
-| **relatedWorkItems** | the array of all work item associated with the release plus their direct parents or children and/or all parents depending on task parameters |
+| **relatedWorkItems** | the array of all work item associated with the release plus their direct parents or children (if `getParentsAndChildren` is set to `true`) and/or all parents depending on task parameters (if `getAllParents` is set to `true`) |  
 | **queryWorkItems** | the array of WI returned by by the WIQL, if a `wiqlWhereClause` is defined. Note that this array is completely independent of all other WI arrays.
 | **testedByWorkItems** | the array of all Test Case work items associated by a `Tested By` relation to a WI directly associated with the release |
 
@@ -181,7 +181,7 @@ The are a wide range of objects available to get data from within templates. Som
 | **releaseDetails** | the release details of the release that the task was triggered for.|
 | **compareReleaseDetails** | the the previous successful release that comparisons are being made against |
 | **releaseTests** | the list of test associated with the release e.g. integration tests |
-| **builds** | the array of the build artifacts that CS and WI are associated with. The associated WI, CS etc. in ths object are also will the main objects above, this is a filtered lits by build. Note that this is a object with multiple child properties. <br> - **build**  - the build details <br> -- **commits**  - the commits associated with this build <br> -- **workitems**  - the work items associated with the build<br> -- **tests**  - the work items associated with the build <br> -- **manualtests**  - the manual test runs associated with the build
+| **builds** | the array of the build artifacts that CS and WI are associated with. The associated WI, CS etc. in ths object are also will the main objects above, this is a filtered lits by build. Note that this is a object with multiple child properties. <br> - **build**  - the build details <br> -- **commits**  - the commits associated with this build <br> -- **workitems**  - the work items associated with the build<br> -- **tests**  - the work items associated with the build <br> -- **manualtests**  - the manual test runs associated with the build <br> -- **relatedWorkItems**  - the array direct parents or children (if `getParentsAndChildren` is set to `true`) and/or all parents (if `getAllParents` is set to `true`)
 
 ### Build objects (available for Classic UI based builds and any YAML based pipelines)
 | Object | Description |
@@ -189,7 +189,7 @@ The are a wide range of objects available to get data from within templates. Som
 | **buildDetails** | - if running in a build, the build details of the build that the task is running in. <br>- if running in a release it is the build that triggered the release.
 | **compareBuildDetails** | the previous successful build that comparisons are being made against, only available if `checkstage=true`
 | **currentStage** | if `checkstage=true` is enable this object is set to the details of the stage in the current build that is being used for the stage check
-| **consumedArtifacts** | the artifacts consumed by the pipeline, enriched with details of commits and workitems if available. If `checkStage=true` is set then this list should include all changes between the version of the artifact in the current and last successful run of the containing stage
+| **consumedArtifacts** | the artifacts consumed by the pipeline enriched with details where possible, the acutal objects depend on the artifact type <br> -- **artifactCategory** <br> -- **artifactType** <br> -- **properties** <br> -- **versionName** <br> -- **commits** - the commits associated with the artifact <br> -- **workitems** the workitems associated with the artifacts <br> -- **relatedworkitems** if  `getParentsAndChildren` is set to `true` and/or `getAllParents` is set to `true`. <br>If `checkStage=true` is set then this list should include all changes between the version of the artifact in the current and last successful run of the containing stage
 
 > **Note:** To dump all possible values via the template using the custom Handlebars extension `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion. There are also options to dump these raw values to the build console log or to a file. (See below)
 

@@ -24,9 +24,10 @@ export class UnifiedArtifactDetails {
     build: Build;
     commits: Change[];
     workitems: WorkItem[];
+    relatedworkitems: WorkItem[];
     tests: TestCaseResult[];
     manualtests: EnrichedTestRun[];
-    constructor ( build: Build, commits: Change[], workitems: WorkItem[], tests: TestCaseResult[], manualtests: EnrichedTestRun[]) {
+    constructor ( build: Build, commits: Change[], workitems: WorkItem[], tests: TestCaseResult[], manualtests: EnrichedTestRun[], relatedworkitems: WorkItem[]) {
         this.build = build;
         if (commits) {
             this.commits = commits;
@@ -35,6 +36,11 @@ export class UnifiedArtifactDetails {
         }
         if (workitems) {
             this.workitems = workitems;
+        } else {
+            this.workitems = [];
+        }
+        if (relatedworkitems) {
+            this.relatedworkitems = relatedworkitems;
         } else {
             this.workitems = [];
         }
@@ -1345,7 +1351,7 @@ export async function generateReleaseNotes(
             try {
 
             if ((releaseId === undefined) || !releaseId) {
-
+                // A Classic Build or YAML Pipeline
                 // Overriding the active build id if applicable
                 if (overrideActiveBuildReleaseId) {
                     if (isNaN(parseInt(overrideActiveBuildReleaseId, 10))) {
@@ -1445,7 +1451,8 @@ export async function generateReleaseNotes(
 
                                 // need to find the matching artifact in the past release
                                 const lastGoodBuildArtifact = lastGoodBuildArtifacts.find(artifactInLastGoodBuild => (artifactInLastGoodBuild as any).alias === (currentBuildArtifact as any).alias);
-
+                                var artifactWorkItems;
+                                var artifactRelatedWorkItems;
                                 if (lastGoodBuildArtifact) {
                                     agentApi.logInfo(`Getting changes for the '${(currentBuildArtifact as any).artifactCategory}' artifact '${(currentBuildArtifact as any).alias}' between ${(lastGoodBuildArtifact as any).versionId} and ${(currentBuildArtifact as any).versionId}`);
 
@@ -1458,8 +1465,16 @@ export async function generateReleaseNotes(
                                             (lastGoodBuildArtifact as any).definitionId,
                                             (lastGoodBuildArtifact as any).versionId,
                                             (currentBuildArtifact as any).versionId));
-                                     }
+                                    }
 
+                                    artifactWorkItems = await getFullWorkItemDetails(workItemTrackingApi, wi);
+                                    if (getAllParents) {
+                                        agentApi.logInfo("Getting all parents of artifact WorkItems");
+                                        artifactRelatedWorkItems = await getAllParentWorkitems(workItemTrackingApi, artifactWorkItems);
+                                    }
+                                    else {
+                                        artifactRelatedWorkItems = [];
+                                    }
                                     globalConsumedArtifacts.push({
                                         "artifactCategory": (currentBuildArtifact as any).artifactCategory,
                                         "artifactType": (currentBuildArtifact as any).artifactType,
@@ -1473,10 +1488,22 @@ export async function generateReleaseNotes(
                                             tfvcApi,
                                             await buildApi.getChangesBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId),
                                             gitHubPat),
-                                        "workitems": await getFullWorkItemDetails(workItemTrackingApi, wi)
+                                        "workitems": artifactWorkItems,
+                                        "relatedWorkItems": artifactRelatedWorkItems,
                                     });
                                 } else {
                                     agentApi.logInfo(`Cannot find a matching '${(currentBuildArtifact as any).artifactCategory}' artifact for '${(currentBuildArtifact as any).alias}' in the build ${lastGoodBuildId}, so just getting directly associated commits and wi wit the build`);
+                                    artifactWorkItems = await getFullWorkItemDetails(
+                                        workItemTrackingApi,
+                                        await (buildApi.getBuildWorkItemsRefs((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId, 5000)));
+                                    if (getAllParents) {
+                                        agentApi.logInfo("Getting all parents of artifact WorkItems");
+                                        artifactRelatedWorkItems = await getAllParentWorkitems(workItemTrackingApi, artifactWorkItems);
+                                    }
+                                    else {
+                                        artifactRelatedWorkItems = [];
+                                    }
+
                                     globalConsumedArtifacts.push({
                                         "artifactCategory": (currentBuildArtifact as any).artifactCategory,
                                         "artifactType": (currentBuildArtifact as any).artifactType,
@@ -1490,9 +1517,8 @@ export async function generateReleaseNotes(
                                             tfvcApi,
                                             await (buildApi.getBuildChanges((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId, "", 5000)),
                                             gitHubPat),
-                                        "workitems": await getFullWorkItemDetails(
-                                            workItemTrackingApi,
-                                            await (buildApi.getBuildWorkItemsRefs((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId, 5000)))
+                                        "workitems": artifactWorkItems,
+                                        "relatedWorkItems": artifactRelatedWorkItems,
                                     });
 
                                 }
@@ -1506,7 +1532,8 @@ export async function generateReleaseNotes(
                                         "projectId": (currentBuildArtifact as any).properties.projectId
                                     },
                                     "commits": [],
-                                    "workitems": []
+                                    "workitems": [],
+                                    "relatedWorkItems": []
                                 });
                             }
 
@@ -1583,7 +1610,8 @@ export async function generateReleaseNotes(
                         globalConsumedArtifacts = await enrichConsumedArtifacts(
                             globalConsumedArtifacts,
                             buildApi,
-                            workItemTrackingApi);
+                            workItemTrackingApi,
+                            getAllParents);
 
                     }
                 } else {
@@ -1601,7 +1629,8 @@ export async function generateReleaseNotes(
                     globalConsumedArtifacts = await enrichConsumedArtifacts(
                         globalConsumedArtifacts,
                         buildApi,
-                        workItemTrackingApi);
+                        workItemTrackingApi,
+                        getAllParents);
 
                 }
                 agentApi.logInfo("Get the file details associated with the commits");
@@ -1618,7 +1647,7 @@ export async function generateReleaseNotes(
                     globalManualTestConfigurations);
 
             } else {
-
+                // A Classic Release
                 // Overriding the active release id if applicable
                 if (overrideActiveBuildReleaseId) {
                     if (isNaN(parseInt(overrideActiveBuildReleaseId, 10))) {
@@ -1843,7 +1872,13 @@ export async function generateReleaseNotes(
                                         // we need to enrich the WI before we associate with the build
                                         let fullBuildWorkItems = await getFullWorkItemDetails(workItemTrackingApi, workitems);
 
-                                        globalBuilds.push(new UnifiedArtifactDetails(artifact, commits, fullBuildWorkItems, tests, manualtests));
+                                        var fullRelatedBuildItems = [];
+                                        if (getAllParents) {
+                                            agentApi.logInfo("Getting all parents of build WorkItems");
+                                            fullRelatedBuildItems = await getAllParentWorkitems(workItemTrackingApi, fullBuildWorkItems);
+                                        }
+
+                                        globalBuilds.push(new UnifiedArtifactDetails(artifact, commits, fullBuildWorkItems, tests, manualtests, fullRelatedBuildItems));
 
                                     }
                                 }
@@ -2178,7 +2213,8 @@ function removeDuplicates(array: any[]): any[] {
 async function enrichConsumedArtifacts(
     consumedArtifacts,
     buildApi,
-    workItemTrackingApi): Promise<[]> {
+    workItemTrackingApi,
+    getAllParents): Promise<[]> {
     return new Promise<[]>(async (resolve, reject) => {
     try {
         for (let index = 0; index < consumedArtifacts.length; index++) {
@@ -2189,6 +2225,15 @@ async function enrichConsumedArtifacts(
                     var artifactTeamProjectId = artifact["properties"]["projectId"];
                     artifact["commits"] = await (buildApi.getBuildChanges(artifactTeamProjectId, artifact["versionId"], "", 5000));
                     artifact["workitems"] = await getFullWorkItemDetails(workItemTrackingApi, await (buildApi.getBuildWorkItemsRefs(artifactTeamProjectId, artifact["versionId"], 5000)));
+
+                    if (getAllParents) {
+                        agentApi.logInfo("Getting all parents of artifact WorkItems");
+                        artifact["relatedworkitems"]  = await getAllParentWorkitems(workItemTrackingApi, artifact["workitems"]);
+                    }
+                    else {
+                        artifact["relatedworkitems"] = [];
+                    }
+
                 } catch (err) {
                     agentApi.logWarn(`Cannot retried commit or work item information ${err}`);
                 }
