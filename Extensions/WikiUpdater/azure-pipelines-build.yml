@@ -43,7 +43,7 @@ stages:
         vmImage: '$(vmImage)'
         demands: npm
       steps:
-      - script: "Dummy Build"
+      - script: 'echo "Dummy Build"'
 
 
   - stage: Public
