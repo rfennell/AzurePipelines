@@ -1610,7 +1610,8 @@ export async function generateReleaseNotes(
                         globalConsumedArtifacts = await enrichConsumedArtifacts(
                             globalConsumedArtifacts,
                             buildApi,
-                            workItemTrackingApi);
+                            workItemTrackingApi,
+                            getAllParents);
 
                     }
                 } else {
@@ -1628,7 +1629,8 @@ export async function generateReleaseNotes(
                     globalConsumedArtifacts = await enrichConsumedArtifacts(
                         globalConsumedArtifacts,
                         buildApi,
-                        workItemTrackingApi);
+                        workItemTrackingApi,
+                        getAllParents);
 
                 }
                 agentApi.logInfo("Get the file details associated with the commits");
@@ -2211,7 +2213,8 @@ function removeDuplicates(array: any[]): any[] {
 async function enrichConsumedArtifacts(
     consumedArtifacts,
     buildApi,
-    workItemTrackingApi): Promise<[]> {
+    workItemTrackingApi,
+    getAllParents): Promise<[]> {
     return new Promise<[]>(async (resolve, reject) => {
     try {
         for (let index = 0; index < consumedArtifacts.length; index++) {
@@ -2222,6 +2225,15 @@ async function enrichConsumedArtifacts(
                     var artifactTeamProjectId = artifact["properties"]["projectId"];
                     artifact["commits"] = await (buildApi.getBuildChanges(artifactTeamProjectId, artifact["versionId"], "", 5000));
                     artifact["workitems"] = await getFullWorkItemDetails(workItemTrackingApi, await (buildApi.getBuildWorkItemsRefs(artifactTeamProjectId, artifact["versionId"], 5000)));
+
+                    if (getAllParents) {
+                        agentApi.logInfo("Getting all parents of artifact WorkItems");
+                        artifact["relatedworkitems"]  = await getAllParentWorkitems(workItemTrackingApi, artifact["workitems"]);
+                    }
+                    else {
+                        artifact["relatedworkitems"] = [];
+                    }
+
                 } catch (err) {
                     agentApi.logWarn(`Cannot retried commit or work item information ${err}`);
                 }
