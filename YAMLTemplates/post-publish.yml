@@ -17,5 +17,5 @@ steps:
     # Message: 'I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText)'
     # Message: 'I have just released Version 1.41.5 of my Azure DevOps Pipeline WikiUpdaterExtension http://bit.ly/VSTS-RF Add the ability to inject a [[_TOC_]] when pre-pending WIKI content (#1337)'
     # Message: '12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'
-    Message: 'I have just released Version 1.41.5 of my Azure DevOps Pipeline WikiUpdaterExtension http://bit.ly/VSTS-RF Add the ability to inject a TOC when pre-pending WIKI content (#1337)'
+    Message: 'I have just released Version 3.86.9 of my Azure DevOps Pipeline XplatGenerateReleaseNotes http://bit.ly/VSTS-RF Adding Active Build/ReleaseID & Custom Handlebars Code "As a File" (#1325)'
     
