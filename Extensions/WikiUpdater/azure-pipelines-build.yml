@@ -49,7 +49,6 @@ stages:
   - stage: Public
     jobs:
     - job: Post_Publish
-      dependsOn: Public_Deployment
       pool:
         vmImage: '$(vmImage)'
       steps:
