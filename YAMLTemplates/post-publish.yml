@@ -14,5 +14,5 @@ steps:
   displayName: 'Send Tweet about new release'
   inputs:
     TwitterEndPoint: 'Twitter Richard'
-    Message: 'I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText) '
+    Message: 'I have just released Version 1.41.5 of my Azure DevOps Pipeline WikiUpdaterExtension http://bit.ly/VSTS-RF Add the ability to inject a [[_TOC_]] when pre-pending WIKI content (#1337)'
 
