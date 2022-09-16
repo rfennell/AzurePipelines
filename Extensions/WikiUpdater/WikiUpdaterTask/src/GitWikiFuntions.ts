@@ -205,7 +205,7 @@ export async function UpdateGitWikiFile(
             if (appendToFile) {
                 if (insertLinefeed) {
                     // fix for #988 trailing new lines are trimmed from inline content
-                    logInfo(`Injecting linefeed between existing and new content`);
+                    logDebug(`Injecting linefeed between existing and new content`);
                     fs.appendFileSync(workingFile, "\r\n");
                 }
                 // fix for #826 where special characters get added between the files being appended
@@ -217,18 +217,22 @@ export async function UpdateGitWikiFile(
                     oldContent = fs.readFileSync(workingFile, "utf8");
                 }
                 if (injecttoc) {
-                    logInfo(`Replacing old [[_TOC_]] with a new one at the top of the pre-pended content`);
+                    logDebug(`Replacing old [[_TOC_]] with a new one at the top of the pre-pended content`);
                     oldContent.replace("[[_TOC_]]\r\n", "");  // we can use the simple form as there is only one instance
                     fs.writeFileSync(workingFile, "[[_TOC_]]\r\n");
+                    logDebug(`Appending new content after [[_TOC_]]`);
+                    fs.appendFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+                } else {
+                    logDebug(`Writing new content`);
+                    fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
                 }
-
-                fs.appendFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
 
                 if (insertLinefeed) {
                     // fix for #988 trailing new lines are trimmed from inline content
-                    logInfo(`Injecting linefeed between existing and new content`);
+                    logDebug(`Injecting linefeed between existing and new content`);
                     fs.appendFileSync(workingFile, "\r\n");
                 }
+                logDebug(`Appending old content`);
                 fs.appendFileSync(workingFile, FixedFormatOfNewContent(oldContent, trimLeadingSpecialChar));
                 logInfo(`Prepending to the ${workingFile} in ${workingPath}`);
             }
