@@ -1956,9 +1956,17 @@ export async function generateReleaseNotes(
                     undefined,
                     5000);
                     // need to get the result into the same format as used to enrich other WI arrays
-                    if (queryResponse && queryResponse.workItems) {
-                        var wiRefArray: ResourceRef[] = queryResponse.workItems.map(wi => ({id: wi.id.toString(), url: undefined})) as ResourceRef[];
-                        // enrich the items
+                    if (queryResponse){
+                        var wiRefArray: ResourceRef[];
+                        if(wiqlFromTarget === "WorkItems" && queryResponse.workItems) {
+                            wiRefArray = queryResponse.workItems.map(wi => ({id: wi.id.toString(), url: undefined})) as ResourceRef[];
+                        }
+                        else if(wiqlFromTarget === "WorkItemLinks" && queryResponse.workItemRelations)
+                        {
+                             wiRefArray = queryResponse.workItemRelations.map(wi => ({id: wi.target?.id.toString(), url: undefined})) as ResourceRef[];
+                             removeDuplicates(wiRefArray);
+                        }
+                         // enrich the items
                         queryWorkItems = await getFullWorkItemDetails(workItemTrackingApi, wiRefArray);
                         agentApi.logInfo(`Found ${queryWorkItems.length} WI using WIQL`);
                     } else {
