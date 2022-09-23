@@ -1956,13 +1956,12 @@ export async function generateReleaseNotes(
                     undefined,
                     5000);
                     // need to get the result into the same format as used to enrich other WI arrays
-                    if (queryResponse){
+                    if (queryResponse) {
                         var wiRefArray: ResourceRef[];
-                        if(wiqlFromTarget === "WorkItems" && queryResponse.workItems) {
+                        if (wiqlFromTarget === "WorkItems" && queryResponse.workItems) {
                             wiRefArray = queryResponse.workItems.map(wi => ({id: wi.id.toString(), url: undefined})) as ResourceRef[];
                         }
-                        else if(wiqlFromTarget === "WorkItemLinks" && queryResponse.workItemRelations)
-                        {
+                        else if (wiqlFromTarget === "WorkItemLinks" && queryResponse.workItemRelations) {
                              wiRefArray = queryResponse.workItemRelations.map(wi => ({id: wi.target?.id.toString(), url: undefined})) as ResourceRef[];
                              removeDuplicates(wiRefArray);
                         }
