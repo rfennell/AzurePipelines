@@ -218,8 +218,8 @@ export async function UpdateGitWikiFile(
                 }
                 if (injecttoc) {
                     logDebug(`Replacing old [[_TOC_]] with a new one at the top of the pre-pended content`);
-                    oldContent.replace("[[_TOC_]]\r\n", "");  // we can use the simple form as there is only one instance
-                    fs.writeFileSync(workingFile, "[[_TOC_]]\r\n");
+                    oldContent = oldContent.replace("[[_TOC_]]", "");  // we the single existing TOC ignoring the line feeds following
+                    fs.writeFileSync(workingFile, "[[_TOC_]]\r\n\r\n"); // we add a 2nd feed, as blank line is required after the TOC
                     logDebug(`Appending new content after [[_TOC_]]`);
                     fs.appendFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
                 } else {
