@@ -1124,7 +1124,7 @@ export async function getLastSuccessfulBuildByStage(
     overrideBuildReleaseId: string,
     considerPartiallySuccessfulReleases: boolean
 )  {
-    if (stageName.length === 0) {
+    if (!stageName || stageName.length === 0) {
         agentApi.logInfo ("No stage name provided, cannot find last successful build by stage");
         return {
             id: 0,
