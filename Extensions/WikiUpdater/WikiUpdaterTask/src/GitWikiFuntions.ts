@@ -218,7 +218,7 @@ export async function UpdateGitWikiFile(
                 }
                 if (injecttoc) {
                     logDebug(`Replacing old [[_TOC_]] with a new one at the top of the pre-pended content`);
-                    oldContent.replace("[[_TOC_]]\r\n", "");  // we can use the simple form as there is only one instance
+                    oldContent.replace(/\[\[_TOC_\]\](?:\\[rn])+/g, "");  // swap to a regex form to check the various forms of line feed we might see
                     fs.writeFileSync(workingFile, "[[_TOC_]]\r\n");
                     logDebug(`Appending new content after [[_TOC_]]`);
                     fs.appendFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
