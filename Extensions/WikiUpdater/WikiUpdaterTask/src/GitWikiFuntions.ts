@@ -263,10 +263,14 @@ export async function UpdateGitWikiFile(
                 // prepending the entry
                 if (fs.existsSync(orderFile)) {
                     oldContent = fs.readFileSync(orderFile, "utf8");
-                    // as we are pre-pending we alway need a line feed
-                    fs.writeFileSync(orderFile, `${entry}\r\n`);
-                    fs.appendFileSync(orderFile, oldContent);
-                    logInfo(`Preppending entry to the .order file`);
+                    if (oldContent.includes(entry)) {
+                        logInfo(`The entry '${entry}' already exists in the .order file`);
+                    } else {
+                        // as we are pre-pending we alway need a line feed
+                        fs.writeFileSync(orderFile, `${entry}\r\n`);
+                        fs.appendFileSync(orderFile, oldContent);
+                        logInfo(`Preppending entry '${entry}' to the .order file`);
+                    }
                 } else {
                     fs.writeFileSync(orderFile, `${entry}`);
                     logInfo(`Creating .order file as it does not exist`);
@@ -280,8 +284,12 @@ export async function UpdateGitWikiFile(
                         fs.appendFileSync(orderFile, "\r\n");
                     }
                 }
-                fs.appendFileSync(orderFile, entry);
-                logInfo(`Appending entry to the .order file`);
+                if (oldContent.includes(entry)) {
+                    logInfo(`The entry '${entry}' already exists in the .order file`);
+                } else {
+                    fs.appendFileSync(orderFile, entry);
+                    logInfo(`Appending entry '${entry}' to the .order file`);
+                }
             }
 
             await git.add(orderFile);
