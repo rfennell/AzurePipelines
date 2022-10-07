@@ -254,45 +254,46 @@ export async function UpdateGitWikiFile(
             var entry = path.basename(filename.replace(/.md/i, ""));
 
             if (fs.existsSync(orderFile)) {
-                logInfo(`Updating the existing .order file`);
+                logInfo(`Attempting to updating the existing .order file`);
+                oldContent = fs.readFileSync(orderFile, "utf8");
             } else {
-                logInfo(`Creating a new .order file`);
+                logInfo(`Attempting to create a new .order file`);
+                oldContent = "";
             }
 
-            if (prependEntryToOrderFile) {
-                // prepending the entry
-                if (fs.existsSync(orderFile)) {
-                    oldContent = fs.readFileSync(orderFile, "utf8");
-                    if (oldContent.includes(entry)) {
-                        logInfo(`The entry '${entry}' already exists in the .order file`);
-                    } else {
+            // we edit the order file if the new entry is not already in the file
+            if (oldContent.includes(entry)) {
+                logInfo(`The entry '${entry}' already exists in the .order file, skipping update`);
+            } else {
+                if (prependEntryToOrderFile) {
+                    // prepending the entry
+                    if (fs.existsSync(orderFile)) {
+                        oldContent = fs.readFileSync(orderFile, "utf8");
                         // as we are pre-pending we alway need a line feed
                         fs.writeFileSync(orderFile, `${entry}\r\n`);
                         fs.appendFileSync(orderFile, oldContent);
-                        logInfo(`Preppending entry '${entry}' to the .order file`);
+                        logInfo(`Preppending entry to the .order file`);
+                    } else {
+                        fs.writeFileSync(orderFile, `${entry}`);
+                        logInfo(`Creating .order file as it does not exist`);
                     }
                 } else {
-                    fs.writeFileSync(orderFile, `${entry}`);
-                    logInfo(`Creating .order file as it does not exist`);
-                }
-            } else {
-                // appending the entry
-                if (fs.existsSync(orderFile)) {
-                    // check the content to make sure we have the required line feed
-                    oldContent = fs.readFileSync(orderFile, "utf8");
-                    if (!oldContent.endsWith("\r\n")) {
-                        fs.appendFileSync(orderFile, "\r\n");
+                    // appending the entry
+                    if (fs.existsSync(orderFile)) {
+                        // check the content to make sure we have the required line feed
+                        oldContent = fs.readFileSync(orderFile, "utf8");
+                        if (!oldContent.endsWith("\r\n")) {
+                            fs.appendFileSync(orderFile, "\r\n");
+                        }
                     }
-                }
-                if (oldContent.includes(entry)) {
-                    logInfo(`The entry '${entry}' already exists in the .order file`);
-                } else {
                     fs.appendFileSync(orderFile, entry);
-                    logInfo(`Appending entry '${entry}' to the .order file`);
+                    logInfo(`Appending entry to the .order file`);
                 }
-            }
 
-            await git.add(orderFile);
+                await git.add(orderFile);
+                logInfo(`Added .order file to repo ${localpath}`);
+
+            }
         }
 
         logDebug(`Committing the changes with the message: ${message}`);
