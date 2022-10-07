@@ -99,6 +99,18 @@
       "helpMarkDown": "Adds the version field if no version field is found, and no other field name specified e.g. <version>1.1.1.1</version>.",
       "groupName":"advanced"
     },
+    {
+      "name": "versionFields",
+      "type": "string",
+      "label": "Default version fields to update",
+      "defaultValue": "Version, VersionPrefix, AssemblyVersion",
+      "required": false,
+      "helpMarkDown": "Default version fields to update if no specific field is specified. Defaults to Version, VersionPrefix, AssemblyVersion.",
+      "groupName":"advanced"
+    },
+
+ 
+    
       {
       "name": "OutputVersion",
       "type": "string",
