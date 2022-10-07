@@ -4,7 +4,8 @@ import "mocha";
 
 import { findFiles,
   ProcessFile,
-  extractVersion
+  extractVersion,
+  SplitArrayOfNames
 } from "../src/AppyVersionToAssembliesFunctions";
 
 import fs = require("fs");
@@ -20,7 +21,8 @@ describe("Test the basic file processing", () => {
 
     it("should be able to update a AssemblyVersion in a file", () => {
       var file = "test/testdata/core.csproj";
-      ProcessFile(file, "AssemblyVersion", "9.9.9.9");
+      var fieldArray = SplitArrayOfNames("Version, VersionPrefix, AssemblyVersion");
+      ProcessFile(file, "AssemblyVersion", "9.9.9.9", fieldArray);
 
       var editedfilecontent = fs.readFileSync(file);
       var expectedfilecontent = fs.readFileSync(`${file}.expected`);
@@ -30,7 +32,8 @@ describe("Test the basic file processing", () => {
 
     it("should be able to update a AssemblyVersion in a UTF8 file", () => {
       var file = "test/testdata/coreUTF8.csproj";
-      ProcessFile(file, "AssemblyVersion", "9.9.9.9");
+      var fieldArray = SplitArrayOfNames("Version, VersionPrefix, AssemblyVersion");
+      ProcessFile(file, "AssemblyVersion", "9.9.9.9", fieldArray);
 
       var editedfilecontent = fs.readFileSync(file);
       var expectedfilecontent = fs.readFileSync(`${file}.expected`);
@@ -53,7 +56,8 @@ describe("Test the basic file processing", () => {
 
     it("should be able to add a AssemblyVersion in a file", () => {
       var file = "test/testdata/core.csproj";
-      ProcessFile(file, "AssemblyVersion", "9.9.9.9");
+      var fieldArray = SplitArrayOfNames("Version, VersionPrefix, AssemblyVersion");
+      ProcessFile(file, "AssemblyVersion", "9.9.9.9", fieldArray);
 
       var editedfilecontent = fs.readFileSync(file);
       var expectedfilecontent = fs.readFileSync(`test/testdata/coremissing.csproj.expected`);
@@ -76,7 +80,8 @@ describe("Test the basic file processing", () => {
 
     it("should be able to update all version fields in a file", () => {
       var file = "test/testdata/core.csproj";
-      ProcessFile(file, "", "9.9.9.9");
+      var fieldArray = SplitArrayOfNames("Version, VersionPrefix, AssemblyVersion");
+      ProcessFile(file, "", "9.9.9.9", fieldArray);
 
       var editedfilecontent = fs.readFileSync(file);
       var expectedfilecontent = fs.readFileSync(`test/testdata/coremultiple.csproj.expected`);
@@ -99,7 +104,8 @@ describe("Test the basic file processing", () => {
 
     it("should be able to add a detail version field in a file", () => {
       var file = "test/testdata/core.csproj";
-      ProcessFile(file, "", "9.9.9.9", true);
+      var fieldArray = SplitArrayOfNames("Version, VersionPrefix, AssemblyVersion");
+      ProcessFile(file, "", "9.9.9.9", fieldArray, true);
 
       var editedfilecontent = fs.readFileSync(file);
       var expectedfilecontent = fs.readFileSync(`test/testdata/coremissingaddversion.csproj.expected`);
@@ -136,7 +142,8 @@ describe("Test the 483 file processing", () => {
 
   it("should be able to add a detail version field in a file", () => {
     var file = "test/testdata/core.csproj";
-    ProcessFile(file, "Version", "9.9.9.9", true);
+    var fieldArray = SplitArrayOfNames("Version, VersionPrefix, AssemblyVersion");
+    ProcessFile(file, "Version", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
     var expectedfilecontent = fs.readFileSync(`test/testdata/core483.csproj.expected`);
@@ -159,7 +166,8 @@ describe("Test the 494 file processing for singe field", () => {
 
   it("should be able to edit AssemblyVersion field in a file", () => {
     var file = "test/testdata/core.csproj";
-    ProcessFile(file, "AssemblyVersion", "9.9.9.9", true);
+    var fieldArray = SplitArrayOfNames("Version, VersionPrefix, AssemblyVersion");
+    ProcessFile(file, "AssemblyVersion", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
     var expectedfilecontent = fs.readFileSync(`test/testdata/core494.csproj.expected`);
@@ -182,7 +190,8 @@ describe("Test the 494 file processing for all fields", () => {
 
   it("should be able to edit all version field in a file", () => {
     var file = "test/testdata/core.csproj";
-    ProcessFile(file, "", "9.9.9.9", true);
+    var fieldArray = SplitArrayOfNames("Version, VersionPrefix, AssemblyVersion");
+    ProcessFile(file, "", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
     var expectedfilecontent = fs.readFileSync(`test/testdata/core494.csproj.expected`);
@@ -205,7 +214,8 @@ describe("Test the 549 add missing propertygroup", () => {
 
   it("should be able to edit all version field in a file", () => {
     var file = "test/testdata/core.csproj";
-    ProcessFile(file, "", "9.9.9.9", true);
+    var fieldArray = SplitArrayOfNames("Version, VersionPrefix, AssemblyVersion");
+    ProcessFile(file, "", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
     var expectedfilecontent = fs.readFileSync(`test/testdata/core549.csproj.expected`);
@@ -228,7 +238,8 @@ describe("Test the 551 add missing propertygroup", () => {
 
   it("should be able to edit all version field in a file", () => {
     var file = "test/testdata/core.csproj";
-    ProcessFile(file, "", "9.9.9.9", true);
+    var fieldArray = SplitArrayOfNames("Version, VersionPrefix, AssemblyVersion");
+    ProcessFile(file, "", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
     var expectedfilecontent = fs.readFileSync(`test/testdata/core551.csproj.expected`);
@@ -251,7 +262,8 @@ describe("Test the 346 directory.build.props", () => {
 
   it("should be able to edit all version field in a file", () => {
     var file = "test/testdata/directory.build.props";
-    ProcessFile(file, "", "9.9.9.9", true);
+    var fieldArray = SplitArrayOfNames("Version, VersionPrefix, AssemblyVersion");
+    ProcessFile(file, "", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
     var expectedfilecontent = fs.readFileSync(`test/testdata/directory.build.props.expected`);
@@ -274,7 +286,8 @@ describe("Test the 589 add missing propertygroup", () => {
 
   it("should be able to edit all version field in a file", () => {
     var file = "test/testdata/core.csproj";
-    ProcessFile(file, "", "9.9.9.9", true);
+    var fieldArray = SplitArrayOfNames("Version, VersionPrefix, AssemblyVersion");
+    ProcessFile(file, "", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
     var expectedfilecontent = fs.readFileSync(`test/testdata/core589.csproj.expected`);
@@ -297,7 +310,8 @@ describe("Test the 589 add missing propertygroup", () => {
 
   it("should be able to edit version field in a file", () => {
     var file = "test/testdata/core.csproj";
-    ProcessFile(file, "Version", "9.9.9.9", true);
+    var fieldArray = SplitArrayOfNames("Version, VersionPrefix, AssemblyVersion");
+    ProcessFile(file, "Version", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
     var expectedfilecontent = fs.readFileSync(`test/testdata/core589.csproj.expected`);

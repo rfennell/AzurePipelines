@@ -2,7 +2,7 @@ import { findFiles,
          ProcessFile,
          stringToBoolean,
          extractVersion,
-         SplitSDKName
+         SplitArrayOfNames
   } from "./AppyVersionToAssembliesFunctions";
 
 import tl = require("azure-pipelines-task-lib/task");
@@ -17,6 +17,7 @@ var filenamePattern = tl.getInput("FilenamePattern");
 var addDefault = tl.getInput("AddDefault");
 var injectversion = tl.getBoolInput("Injectversion");
 var sdknames = tl.getInput("SDKNames");
+var versionFields = tl.getInput("versionFields");
 
 console.log (`Source Directory:  ${path}`);
 console.log (`Filename Pattern: ${filenamePattern}`);
@@ -27,6 +28,7 @@ console.log (`Add default field (all if empty): ${addDefault}`);
 console.log (`Output: Version Number Parameter Name: ${outputversion}`);
 console.log (`Inject Version: ${injectversion}`);
 console.log (`SDK names: ${sdknames}`);
+console.log (`Version Fields Names: ${versionFields}`);
 
 // Make sure path to source code directory is available
 if (!fs.existsSync(path)) {
@@ -39,7 +41,8 @@ var newVersion = extractVersion(injectversion, versionRegex, versionNumber);
 console.log (`Extracted Version: ${newVersion}`);
 
 // Apply the version to the assembly property files
-var sdkArray = SplitSDKName(sdknames);
+var sdkArray = SplitArrayOfNames(sdknames);
+var fieldArray = SplitArrayOfNames(versionFields);
 var files = findFiles(`${path}`, filenamePattern, files, sdkArray);
 
 if (files.length > 0) {
@@ -47,7 +50,7 @@ if (files.length > 0) {
     console.log (`Will apply ${newVersion} to ${files.length} files.`);
 
     files.forEach(file => {
-        ProcessFile(file, field, newVersion, stringToBoolean(addDefault));
+        ProcessFile(file, field, newVersion, fieldArray, stringToBoolean(addDefault));
     });
 
     if (outputversion && outputversion.length > 0) {

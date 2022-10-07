@@ -32,10 +32,10 @@ export function extractVersion(injectversion, versionRegex, versionNumber ) {
     return newVersion;
 }
 
-export function SplitSDKName(sdkstring) {
+export function SplitArrayOfNames(names) {
     var array = [];
-    if (sdkstring !== undefined && sdkstring !== null && sdkstring.length > 0) {
-        array = sdkstring.trim().split(",").map(item => item.trim());
+    if (names !== undefined && names !== null && names.length > 0) {
+        array = names.trim().split(",").map(item => item.trim());
     }
     return array;
 }
@@ -156,7 +156,7 @@ function UpdateSingleField(file, field, newVersion) {
     }
 }
 
-export function ProcessFile(file, field, newVersion, addDefault = false) {
+export function ProcessFile(file, field, newVersion, versionFields: string[], addDefault = false) {
     var isVersionApplied: any = false;
     // Check that the field to update is present
     if (field && field.length > 0) {
@@ -170,7 +170,6 @@ export function ProcessFile(file, field, newVersion, addDefault = false) {
 
         // set some defaults
         var propertyGroupText = "<PropertyGroup></PropertyGroup>";
-        let versionFields = ["Version", "VersionPrefix", "AssemblyVersion"];
 
         // We only need to consider the following fields in the main PropertyGroup block
         console.log (`Getting just the PropertyGroup that contains the version fields`);

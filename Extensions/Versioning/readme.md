@@ -32,6 +32,7 @@ The .NET Core versioner also takes the following Advanced option
 
 * [Advanced] FilenamePattern: The filename pattern to update. Default to .csproj or can be directory.build.props
 * [Advanced] SDKNames: A comma separated list of SDK namespaces to use to match .csproj file. Ignored if filename pattern is directory.build.props
+* [Advanced] versionFields: Default version fields to update if no specific field is specified. Defaults to Version, VersionPrefix, AssemblyVersion
 
 The WIX versioner also takes the following Advanced options
 
