@@ -10,14 +10,6 @@ steps:
     command: 'install'
     workingDir: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
 
-- task: SnykSecurityScan@0
-  inputs:
-    serviceConnectionEndpoint: 'Snyk (Apr2020)'
-    testType: 'app'
-    monitorOnBuild: true
-    failOnIssues: true
-    testDirectory: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
-
 - task: Npm@1
   displayName: 'npm run build for ${{parameters.taskName}}'
   inputs:
