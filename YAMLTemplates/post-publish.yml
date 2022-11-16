@@ -5,6 +5,14 @@ parameters:
   type: string
 
 steps:  
+
+- task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
+  displayName: 'Update Build Variable'
+  inputs:
+    variable: Minor
+    mode: Autoincrement
+    usedefaultcreds: false
+
 - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
   displayName: 'Get Git Artifact PR Reason'
   inputs:
@@ -15,10 +23,3 @@ steps:
   inputs:
     TwitterEndPoint: 'Twitter Richard'
     Message: 'I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText) '
-
-- task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
-  displayName: 'Update Build Variable'
-  inputs:
-    variable: Minor
-    mode: Autoincrement
-    usedefaultcreds: false
