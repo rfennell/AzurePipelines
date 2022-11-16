@@ -66,14 +66,6 @@ stages:
           verbose: true
           customCommand: install
 
-      - task: SnykSecurityScan@0
-        inputs:
-          serviceConnectionEndpoint: 'Snyk (Apr2020)'
-          testType: 'app'
-          monitorOnBuild: true
-          failOnIssues: true
-          testDirectory: '$(Build.SourcesDirectory)\$(ExtensionRoot)'
-
       - task: Npm@1
         displayName: 'npm package'
         inputs:

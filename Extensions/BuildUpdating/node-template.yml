@@ -11,14 +11,6 @@ steps:
     inputs:
       cwd: '${{parameters.taskPath}}'
 
-  - task: jessehouwing.vsts-snyk.vsts-snyk.Snyk@2
-    displayName: 'Scan for vulnerable package dependencies in ${{parameters.taskName}}'
-    inputs:
-      cwd: '${{parameters.taskPath}}\'
-      file: package.json
-      monitor: true
-      endpoint: 'Snky (Github RFennell)'
-
   - task: Npm@0
     displayName: 'npm run build ${{parameters.taskName}}'
     inputs:
