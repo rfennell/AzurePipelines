@@ -75,7 +75,7 @@
       "name": "sourceFolder",
       "type": "string",
       "label": "Source Folder",
-      "defaultValue": "${build.sourcesdirectory)",
+      "defaultValue": "$(build.sourcesdirectory)",
       "required": true,
       "helpMarkDown": "The source folder to copy from $(build.sourcesdirectory) "
     },

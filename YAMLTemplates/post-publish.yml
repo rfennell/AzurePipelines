@@ -28,4 +28,4 @@ steps:
 - powershell: |
     Write-Host "Posting to Mastodon"
     Invoke-WebRequest -Uri https://techhub.social/api/v1/statuses -Method POST -Headers @{Authorization='Bearer ${{parameters.mastodonkey}}'}  -Body @{status='I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText)'}
-  displayName: 'PowerShell Script'
+  displayName: 'Posting to Mastodon about new release'

@@ -203,7 +203,7 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (Versioning)'
       pool:
-        vmImage: 'ubuntu-18.04'
+        vmImage: 'ubuntu-latest'
       strategy:
         runOnce:
           deploy:
@@ -225,7 +225,7 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (Versioning)'
       pool:
-        vmImage: 'macOS-10.15'
+        vmImage: 'macOS-latest'
       strategy:
         runOnce:
           deploy:
