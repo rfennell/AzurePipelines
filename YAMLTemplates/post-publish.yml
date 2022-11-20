@@ -3,8 +3,17 @@ parameters:
   type: string
 - name: extensionName
   type: string
-
+- name: mastodonkey
+  type: string
+  
 steps:  
+- task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
+  displayName: 'Update Build Variable'
+  inputs:
+    variable: Minor
+    mode: Autoincrement
+    usedefaultcreds: false
+
 - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
   displayName: 'Get Git Artifact PR Reason'
   inputs:
@@ -16,9 +25,7 @@ steps:
     TwitterEndPoint: 'Twitter Richard'
     Message: 'I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText) '
 
-- task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
-  displayName: 'Update Build Variable'
-  inputs:
-    variable: Minor
-    mode: Autoincrement
-    usedefaultcreds: false
+- powershell: |
+    Write-Host "Posting to Mastodon"
+    Invoke-WebRequest -Uri https://techhub.social/api/v1/statuses -Method POST -Headers @{Authorization='Bearer ${{parameters.mastodonkey}}'}  -Body @{status='I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText)'}
+  displayName: 'PowerShell Script'
