@@ -3,9 +3,10 @@ parameters:
   type: string
 - name: extensionName
   type: string
-
+- name: mastodonkey
+  type: string
+  
 steps:  
-
 - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
   displayName: 'Update Build Variable'
   inputs:
@@ -23,3 +24,8 @@ steps:
   inputs:
     TwitterEndPoint: 'Twitter Richard'
     Message: 'I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText) '
+
+- powershell: |
+    Write-Host "Posting to Mastodon"
+    Invoke-WebRequest -Uri https://techhub.social/api/v1/statuses -Method POST -Headers @{Authorization='Bearer ${{parameters.mastodonkey}}'}  -Body @{status='I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText)'}
+  displayName: 'Posting to Mastodon about new release'
