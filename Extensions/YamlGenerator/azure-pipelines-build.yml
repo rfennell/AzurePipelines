@@ -151,26 +151,14 @@ stages:
                    extensionVisibility: public    
 
     - job: Post_Publish
-      dependsOn: Public_Deployment 
+      dependsOn: Public_Deployment
+      variables:
+      - group: mastodon
       pool:
         vmImage: '$(vmImage)'
       steps:
-      
-      - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
-        displayName: 'Get Git Artifact PR Reason'
-        inputs:
-          OutputText: 'OutputedText'
-      
-      - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Twitter.Xpirit-Vsts-Release-Twitter.Twitter@1
-        displayName: 'Send Tweet about new release'
-        inputs:
-          TwitterEndPoint: 'Twitter Richard'
-          Message: 'I have just released Version $(Build.BuildNumber) of my Azure DevOps Pipeline $(Build.DefinitionName) http://bit.ly/VSTS-RF $(OutputedText) '
-  
-      - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
-        displayName: 'Update Build Variable'
-        inputs:
-          variable: Minor
-          mode: Autoincrement
-          usedefaultcreds: false
-                
+        - template: ..\..\YAMLTemplates\post-publish.yml
+          parameters:
+              buildNumber: $(Build.BuildNumber)
+              extensionName: $(Build.DefinitionName)
+              mastodonkey: $(mastodonkey)
