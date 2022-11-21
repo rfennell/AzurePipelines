@@ -13,7 +13,7 @@
     "@types/q": "^1.5.4",
     "@types/xmldom": "^0.1.30",
     "azure-devops-node-api": "^10.2.1",
-    "azure-pipelines-task-lib": "^3.1.10",
+    "azure-pipelines-task-lib": "^3.3.1",
     "fs": "^0.0.1-security",
     "handlebars": "^4.7.7",
     "handlebars-helpers": "^0.9.8",
@@ -28,7 +28,7 @@
     "@types/node": "^17.0.13",
     "chai": "^4.3.4",
     "del": "^6.0.0",
-    "mocha": "^9.2.0",
+    "mocha": "^9.2.2",
     "mocha-junit-reporter": "^2.0.0",
     "tslint": "^5.20.1",
     "typescript": "^3.5.3"
