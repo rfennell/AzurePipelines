@@ -3,7 +3,9 @@ parameters:
   type: string
 - name: extensionName
   type: string
-- name: mastodonkey
+- name: mastodonUrl
+  type: string
+- name: mastodonKey
   type: string
   
 steps:  
@@ -27,5 +29,5 @@ steps:
 
 - powershell: |
     Write-Host "Posting to Mastodon"
-    Invoke-WebRequest -Uri https://techhub.social/api/v1/statuses -Method POST -Headers @{Authorization='Bearer ${{parameters.mastodonkey}}'}  -Body @{status='I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText)'}
+    Invoke-WebRequest -Uri ${{parameters.mastodonUrl}}/api/v1/statuses -Method POST -Headers @{Authorization='Bearer ${{parameters.mastodonKey}}'}  -Body @{status='I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText)'}
   displayName: 'Posting to Mastodon about new release'
