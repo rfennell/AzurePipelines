@@ -445,4 +445,5 @@ stages:
           parameters:
               buildNumber: $(Build.BuildNumber)
               extensionName: $(Build.DefinitionName)
-              mastodonkey: $(mastodonkey)
+              mastodonUrl: $(mastodonurl)
+mastodonKey: $(mastodonkey)
