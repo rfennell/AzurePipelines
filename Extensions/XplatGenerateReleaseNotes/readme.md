@@ -2,6 +2,7 @@
 > * V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs. This version is not longer shipped in the extension, but can be download from [GitHub](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9)
 > * V2 was a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the Node Azure DevOps SDK, with minor but breaking changes in the template format and that oAuth needed to be  enabled on the agent running the tasks. At 2.27.x [KennethScott](https://github.com/KennethScott) added support for [Handlbars](https://handlebarsjs.com/) templates.
 > * V3 removed support for the legacy template model, only handlebars templates supported as this is a far more flexible solution and allow much easier enhancement of this task.
+> * V4 swapped to support the Node 16 task runner 
 
 # Overview of the Cross Platform Release Notes Generator (Version 3)
 This task generates a release notes file based on a user defined [Handlbars](https://handlebarsjs.com/) template. It can be using inside any Azure DevOps [Classic Build, Classic Release](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-the-classic-interface) or [Multistage YAML Pipeline](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-yaml-syntax).
