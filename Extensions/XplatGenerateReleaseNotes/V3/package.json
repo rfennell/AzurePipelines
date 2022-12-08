@@ -13,7 +13,7 @@
     "@types/q": "^1.5.4",
     "@types/xmldom": "^0.1.30",
     "azure-devops-node-api": "^10.2.1",
-    "azure-pipelines-task-lib": "^3.3.1",
+    "azure-pipelines-task-lib": "^4.1.0",
     "fs": "^0.0.1-security",
     "handlebars": "^4.7.7",
     "handlebars-helpers": "^0.9.8",

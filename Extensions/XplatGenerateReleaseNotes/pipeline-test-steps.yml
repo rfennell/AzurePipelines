@@ -5,7 +5,7 @@ steps:
 
   - checkout: self  # get the repo as we have templates
 
-  - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@3
+  - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@4
     displayName: 'Generate Release Notes based on Release Comparison API V2'
     inputs:
       outputfile: '$(System.DefaultWorkingDirectory)\inline.md'
@@ -125,7 +125,7 @@ steps:
       useAgentToken: true
       user: richardfennell
 
-  - task: XplatGenerateReleaseNotes@3
+  - task: XplatGenerateReleaseNotes@4
     inputs:
       outputfile: '$(System.DefaultWorkingDirectory)\releasenotes.md'
       outputVariableName: 'outputvar'
@@ -185,7 +185,7 @@ steps:
       useAgentToken: true
       user: richardfennell
 
-  - task: XplatGenerateReleaseNotes@3
+  - task: XplatGenerateReleaseNotes@4
     displayName: 'Release notes with multiple templates'
     inputs:
       templatefile: '$(System.DefaultWorkingDirectory)/Extensions/XplatGenerateReleaseNotes/V3/testconsole/build-handlebars-template.md,$(System.DefaultWorkingDirectory)/Extensions/XplatGenerateReleaseNotes/V3/testconsole/build-handlebars-template.md'
