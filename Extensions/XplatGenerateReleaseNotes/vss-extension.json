@@ -55,8 +55,7 @@
   },
   "files": [
     {
-      "path": "_build/dist",
-      "packagePath": "/task"
+      "path": "XplatGenerateReleaseNotesTask/task"
     }
   ],
   "contributions": [

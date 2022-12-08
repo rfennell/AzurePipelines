@@ -41,40 +41,13 @@ stages:
           rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
           targetFiles: '**\\task.json'
 
-      - task: PowerShell@1
-        displayName: 'PowerShell Script - Set V3 Task Version'
-        inputs:
-          scriptType: inlineScript
-          arguments: '-Version $(Build.BuildNumber) -Path "$(Build.SourcesDirectory)\$(ExtensionRoot)\V3\task.json"'
-          inlineScript: |
-            param ($version, $path)
-            $parts = $version.split('.')
-            $file = Get-ChildItem $path
-            $taskJson = ConvertFrom-Json (Get-Content $file -Raw)
-            $taskJson.Version.Major = $parts[0]
-            $taskJson.Version.Minor = $parts[1]
-            $taskJson.Version.Patch = $parts[2]
-            $output = $taskjson | ConvertTo-JSON -Depth 100
-            $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($False)
-            [System.IO.File]::WriteAllText($file, $output, $Utf8NoBomEncoding)
+      # for each Node based task we must transpile it
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'XplatGenerateReleaseNotesTask'
 
-      - task: Npm@1
-        displayName: 'npm install'
-        inputs:
-          command: custom
-          workingDir: '$(Build.SourcesDirectory)\$(ExtensionRoot)'
-          verbose: true
-          customCommand: install
-
-      - task: Npm@1
-        displayName: 'npm package'
-        inputs:
-          command: custom
-          workingDir: '$(Build.SourcesDirectory)\$(ExtensionRoot)'
-          verbose: false
-          customCommand: 'run package'
-
-      - task: TfxInstaller@3
+      - task: TfxInstaller@4
         displayName: 'Install Tfx Tool'
         inputs:
           version: 'v0.8.x'

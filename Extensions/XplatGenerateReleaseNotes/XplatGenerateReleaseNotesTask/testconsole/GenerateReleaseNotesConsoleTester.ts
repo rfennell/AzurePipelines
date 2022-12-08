@@ -1,4 +1,4 @@
-import * as util from "../ReleaseNotesFunctions";
+import * as util from "../src/ReleaseNotesFunctions";
 import fs = require("fs");
 import { exit } from "process";
 
