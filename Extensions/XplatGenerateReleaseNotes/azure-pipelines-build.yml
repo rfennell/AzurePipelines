@@ -79,7 +79,7 @@ stages:
         inputs:
           version: 'v0.8.x'
 
-      - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@3
+      - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@4
         displayName: 'Package and Publish Extension as a PROD Package '
         inputs:
           rootFolder: '$(ExtensionRoot)'
