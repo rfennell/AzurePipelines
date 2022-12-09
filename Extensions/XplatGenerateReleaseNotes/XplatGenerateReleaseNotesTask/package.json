@@ -1,10 +1,11 @@
 {
   "name": "XPlatGenerateReleaseNotesTask",
   "scripts": {
-    "build": "npm run clean && npm run lint && npm run transpile ",
+    "build": "npm run clean && npm run lint && npm run transpile && npm run copytestconsole",
     "lint": "tslint -c tslint.json src/*.ts test/*.ts testconsole/*.ts",
     "package": "npm prune -production && npm run copy",
     "copy": "ncp ./node_modules ./task/node_modules && ncp ./dist/src ./task",
+    "copytestconsole": "ncp ./dist/src ./testconsole",
     "clean": "rimraf ./dist/src && rimraf ./dist/test && rimraf ./task/*.js && rimraf ./task/*.js.map && rimraf ./task/node_modules",
     "transpile": "tsc -p ./",
     "test": "mocha -r ts-node/register ./test/*.test.ts --reporter mocha-junit-reporter --reporter-options mochaFile=./test-output/test-results.xml ",
@@ -35,7 +36,8 @@
     "mocha": "^9.2.2",
     "mocha-junit-reporter": "^2.0.0",
     "tslint": "^5.20.1",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "ts-node": "^3.3.0"
   },
   "author": "Richard Fennell",
   "license": "MIT"

@@ -1,4 +1,4 @@
-import * as util from "../src/ReleaseNotesFunctions";
+import * as util from "./ReleaseNotesFunctions";
 import fs = require("fs");
 import { exit } from "process";
 
@@ -6,7 +6,7 @@ async function run(): Promise<number> {
   var promise = new Promise<number>(async (resolve, reject) => {
 
     try {
-      console.log("Starting Tag XplatGenerateReleaseNotes Local Tester");
+      console.log("Starting XplatGenerateReleaseNotes Local Tester");
       var argv = require("minimist")(process.argv.slice(2));
       var filename = argv["filename"];
       var oath = argv["oath"];
@@ -27,7 +27,7 @@ async function run(): Promise<number> {
       // }
 
       if (showUsage) {
-        console.error("USAGE: node GenerateReleaseNotesConsoleTester.js --filename settings.json [--pat <Azure-DevOps-PAT>] [--oath <Azure-DevOps-Oath-Token>] --githubpat <Optional GitHub-PAT> --bitbucketuser <Optional Bitbucket User> --bitbucketsecret <Optional Bitbucket App Secret> --payloadFile <Optional JSON Payload File>");
+        console.error("USAGE: node .\\GenerateReleaseNotesConsoleTester.js --filename settings.json [--pat <Azure-DevOps-PAT>] [--oath <Azure-DevOps-Oath-Token>] --githubpat <Optional GitHub-PAT> --bitbucketuser <Optional Bitbucket User> --bitbucketsecret <Optional Bitbucket App Secret> --payloadFile <Optional JSON Payload File>");
       } else {
         console.log(`Command Line Arguments:`);
         console.log(`  --filename: ${filename}`);

@@ -2,7 +2,14 @@ import tl = require("azure-pipelines-task-lib/task");
 require("azure-devops-node-api");
 import * as vstsInterfaces from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 
-var taskJson = require("./task.json");
+// check two paths depending on whether local tester or in pipeline
+import * as fs from "fs";
+var taskJson;
+if (fs.existsSync("../../task/task.json")) {
+    taskJson = require("../../task/task.json");
+} else {
+    taskJson = require("../task/task.json");
+}
 const area: string = "XplatGenerateReleaseNotes";
 
 export interface IAgentSpecificApi {
