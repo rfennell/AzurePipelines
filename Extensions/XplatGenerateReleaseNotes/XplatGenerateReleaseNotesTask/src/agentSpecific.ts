@@ -5,7 +5,8 @@ import * as vstsInterfaces from "azure-devops-node-api/interfaces/common/VsoBase
 // check two paths depending on whether local tester or in pipeline
 import * as fs from "fs";
 var taskJson;
-if (fs.existsSync("./task.json")) {
+
+if (fs.existsSync(__dirname + "/task.json")) {
     taskJson = require("./task.json");
 } else {
     taskJson = require("../task/task.json");
