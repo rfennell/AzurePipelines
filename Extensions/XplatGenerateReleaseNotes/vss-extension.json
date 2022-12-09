@@ -55,7 +55,7 @@
   },
   "files": [
     {
-      "path": "XplatGenerateReleaseNotesTask/task"
+      "path": "XplatGenerateReleaseNotesTask"
     }
   ],
   "contributions": [
