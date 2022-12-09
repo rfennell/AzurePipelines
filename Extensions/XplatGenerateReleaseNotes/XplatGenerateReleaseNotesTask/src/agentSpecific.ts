@@ -8,7 +8,7 @@ var taskJson;
 if (fs.existsSync("../../task/task.json")) {
     taskJson = require("../../task/task.json");
 } else {
-    taskJson = require("../task/task.json");
+    taskJson = require("task.json");
 }
 const area: string = "XplatGenerateReleaseNotes";
 
