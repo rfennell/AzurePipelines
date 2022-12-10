@@ -188,7 +188,7 @@ steps:
   - task: XplatGenerateReleaseNotes@4
     displayName: 'Release notes with multiple templates'
     inputs:
-      templatefile: '$(System.DefaultWorkingDirectory)/Extensions/XplatGenerateReleaseNotes/V3/testconsole/build-handlebars-template.md,$(System.DefaultWorkingDirectory)/Extensions/XplatGenerateReleaseNotes/V3/testconsole/build-handlebars-template.md'
+      templatefile: '$(System.DefaultWorkingDirectory)/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask/testconsole/build-handlebars-template.md,$(System.DefaultWorkingDirectory)/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask/testconsole/build-handlebars-template.md'
       outputfile: '$(System.DefaultWorkingDirectory)/relasenotes1.md, $(System.DefaultWorkingDirectory)/releasenotes2.md'
       outputVariableName: 'outputvar'
       templateLocation: 'File'
