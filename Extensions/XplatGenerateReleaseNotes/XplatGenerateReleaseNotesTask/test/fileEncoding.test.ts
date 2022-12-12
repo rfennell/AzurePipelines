@@ -1,9 +1,6 @@
 import { expect } from "chai";
-import fs  = require("fs");
-// if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
-import "mocha";
-import { fstat } from "fs";
-const del = require("del");
+import * as fs from "fs";
+import * as fse from "fs-extra";
 
 describe("Encoding fpr #661", () => {
   var filename = "encodingtest.md";
@@ -16,7 +13,7 @@ describe("Encoding fpr #661", () => {
 
   after(function() {
     // remove the file if created
-    del.sync(filename);
+    fse.removeSync(filename);
   });
 
 });

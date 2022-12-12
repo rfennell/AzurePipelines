@@ -1,0 +1,44 @@
+{
+  "name": "XPlatGenerateReleaseNotesTask",
+  "scripts": {
+    "build": "npm run clean && npm run lint && npm run transpile && npm run copytestconsole",
+    "lint": "tslint -c tslint.json src/*.ts test/*.ts testconsole/*.ts",
+    "package": "npm prune -production && npm run copy",
+    "copy": "ncp ./node_modules ./task/node_modules && ncp ./dist/src ./task",
+    "copytestconsole": "ncp ./dist/src ./testconsole",
+    "clean": "rimraf ./dist/src && rimraf ./dist/test && rimraf ./task/*.js && rimraf ./task/*.js.map && rimraf ./task/node_modules",
+    "transpile": "tsc -p ./",
+    "test": "npm run transpile && mocha  ./dist/test/*.test.ts --reporter mocha-junit-reporter --reporter-options mochaFile=./test-output/test-results.xml ",
+    "test-no-logger": "npm run transpile && mocha ./dist/test/*.test.js "
+  },
+  "description": "XPlatGenerateReleaseNotesTask",
+  "main": "GenerateReleaseNotes.js",
+  "dependencies": {
+    "@types/q": "^1.5.5",
+    "@types/xmldom": "^0.1.31",
+    "azure-devops-node-api": "^11.2.0",
+    "azure-pipelines-task-lib": "^4.1.0",
+    "fs": "^0.0.1-security",
+    "handlebars": "^4.7.7",
+    "handlebars-helpers": "^0.10.0",
+    "minimist": "^1.2.7",
+    "ncp": "^2.0.0",
+    "request": "^2.88.2",
+    "typed-rest-client": "^1.8.9"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.4",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.11.12",
+    "chai": "^4.3.7",
+    "fs-extra": "^11.1.0",
+    "mocha": "^10.1.0",
+    "mocha-junit-reporter": "^2.2.0",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "tslint": "^5.20.1",
+    "typescript": "^4.9.4"
+  },
+  "author": "Richard Fennell",
+  "license": "MIT"
+}

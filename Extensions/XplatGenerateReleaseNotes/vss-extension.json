@@ -55,8 +55,7 @@
   },
   "files": [
     {
-      "path": "_build/dist",
-      "packagePath": "/task"
+      "path": "XplatGenerateReleaseNotesTask"
     }
   ],
   "contributions": [
@@ -67,7 +66,7 @@
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "task"
+        "name": "XplatGenerateReleaseNotesTask"
       }
     }
   ]

@@ -16,7 +16,7 @@
     "Minor": 0,
     "Patch": 0
   },
-  "minimumAgentVersion": "1.82.0",
+  "minimumAgentVersion": "2.144.0",
   "groups": [
     {
       "name": "advanced",
@@ -414,8 +414,12 @@
   "instanceNameFormat": "Generate Release Notes based on Release Comparison API",
   "execution": {
     "Node10": {
-            "target": "GenerateReleaseNotes.js",
-            "argumentFormat": ""
-     }
+      "target": "GenerateReleaseNotes.js",
+      "argumentFormat": ""
+     },
+    "Node16": {
+      "target": "GenerateReleaseNotes.js",
+      "argumentFormat": ""
+  }
   }
 }

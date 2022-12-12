@@ -12,7 +12,7 @@ steps:
   inputs:
     version: 'v0.8.x'
 
-- task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@3
+- task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@4
   displayName: 'Publish Extension'
   inputs:
     connectedServiceName: 'Azure DevOps Marketplace (Work MSA)'

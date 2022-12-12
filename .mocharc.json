@@ -3,5 +3,9 @@
   "extension": ["ts"],
   "spec": "extensions/**/test/*.ts",
   "ignore": "**/node_module/**",
-  "require": "ts-node/register"
+  "Comment": "following lines are commented out as getting problems with ts-node/register and Chai, swapped to pre transpiling",
+  "require1": "ts-node/register",
+  "loader1": "ts-node/esm"
+
+  
 }
