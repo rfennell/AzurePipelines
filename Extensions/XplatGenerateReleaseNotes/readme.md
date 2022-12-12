@@ -40,7 +40,7 @@ Possible sets of parameters depending on your usage are summarized below
 
 # The Template
 
-There are [sample Handlebar templates in the project code repo](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%203) that just produce basic releases notes for both Git and TFVC based releases. Most samples are for Markdown file generation, but it is possible to generate any other format such as HTML by altering the static entries in the templates.
+There are [sample Handlebar templates in the project code repo](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)) that just produce basic releases notes for both Git and TFVC based releases. Most samples are for Markdown file generation, but it is possible to generate any other format such as HTML by altering the static entries in the templates.
 
 > **Note** With V3.68.x it is possible to pass more than one template into the task. Thus allowing multiple documents to be generated from a single copy of the task. To do this provide a comma separated list of files in both the `templatefile` and `outputfile` parameters.
 
@@ -154,7 +154,7 @@ A basic [Handlebars](https://handlebarsjs.com/) template is as follows. What is 
 
 > **IMPORTANT** Handlebars based templates have different objects available to the legacy template used in V2 of this extension. This is a breaking change, so watch out if migrating.
 
-> **IMPORTANT** You can find more sample templates and extensions [here](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes)
+> **IMPORTANT** You can find more sample templates and extensions [here](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based))
 
 
 ## Objects Available in Templates
@@ -331,7 +331,7 @@ Either way it can be consumed in a template as shown below
 We can call our custom extension {{foo}}
 ```
 
-As custom modules allows any JavaScript logic to be injected for bespoke needs they can be the solution to your own bespoke filtering and sorting needs. You can find sample of custom modules and how to sructure your custom modules [in the Handlebars section of the sample templates section of this repo](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes)
+As custom modules allows any JavaScript logic to be injected for bespoke needs they can be the solution to your own bespoke filtering and sorting needs. You can find sample of custom modules and how to sructure your custom modules [in the Handlebars section of the sample templates section of this repo](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based))
 
 # Task Parameters
 
