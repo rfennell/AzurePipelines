@@ -7,7 +7,7 @@ However, running this tool is not as simple was you might expect so **please rea
 1. Clone the repo contain this code.
 1. Change to the folder
 
-   `<repo root>Extensions\XplatGenerateReleaseNotes\V3\testconsole`
+   `<repo root>Extensions\XplatGenerateReleaseNotes\XplatGenerateReleaseNotesTasks\testconsole`
 1. Build the tool using NPM (this does assume [Node](https://nodejs.org/en/download/_) is already installed)
    ```
    npm install
@@ -16,15 +16,25 @@ However, running this tool is not as simple was you might expect so **please rea
 
 ## Running the Tool
 
+Run the tool using the command from the `testconsole` folder. The usage message will be shown
+
+```
+node .\GenerateReleaseNotesConsoleTester.js
+
+Starting XplatGenerateReleaseNotes Local Tester
+USAGE: node .\GenerateReleaseNotesConsoleTester.js --filename settings.json [--pat <Azure-DevOps-PAT>] [--oath <Azure-DevOps-Oath-Token>] --githubpat <Optional GitHub-PAT> --bitbucketuser <Optional Bitbucket User> --bitbucketsecret <Optional Bitbucket App Secret> --payloadFile <Optional JSON Payload File>
+Tool exited
+```
+
 ### Task Parameters
-The task takes many parameters and reads runtime environment variables. These all have to be passing into the local tester.
+The Azure DevOps Pipeline Task takes many parameters and reads runtime environment variables. These all have to be passing into the local tester.
 
 Given the number, and the fact that most probably won't need to be altered, they are all provided in a settings JSON file as opposed to command line parameters. Samples JSON files are provided for a [build](build-settings.json) (for Classic Build and all YAML Pipelines) and a [release](release-settings.json) (Classic Release).
 
 **Note:** You will have to update the settings JSON file you are using with values appropriate to your Azure DevOps organisation.
 
 The values in the JSON file related to two categories
-- Environment variables set by Azure DevOps. These should be obtained from the build/release log of the run you are going to repeat. You might need to run the build/release with the variable `syste,debug=true` to see the detailed logging.
+- Environment variables set by Azure DevOps. These should be obtained from the build/release log of the run you are going to repeat. You might need to run the build/release with the variable `system.debug=true` to see the detailed logging.
 - Task parameters you would set in the build/release pipeline. For details on all the parameters avaliable in the JSON file see the project WIKI [task documentation](https://github.com/rfennell/AzurePipelines/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task)
 
 ### Command Line Parameters
