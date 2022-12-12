@@ -8,7 +8,7 @@
     "copytestconsole": "ncp ./dist/src ./testconsole",
     "clean": "rimraf ./dist/src && rimraf ./dist/test && rimraf ./task/*.js && rimraf ./task/*.js.map && rimraf ./task/node_modules",
     "transpile": "tsc -p ./",
-    "test": "npm run transpile && mocha  ./dist/test/*.test.ts --reporter mocha-junit-reporter --reporter-options mochaFile=./test-output/test-results.xml ",
+    "test": "npm run transpile && mocha  ./dist/test/*.test.js --reporter mocha-junit-reporter --reporter-options mochaFile=./test-output/test-results.xml ",
     "test-no-logger": "npm run transpile && mocha ./dist/test/*.test.js "
   },
   "description": "XPlatGenerateReleaseNotesTask",
