@@ -1,9 +1,10 @@
-> **IMPORTANT** - There have been three major versions of this extension each with breaking changes, this is because
+> **IMPORTANT** - There have been a number of major versions of this extension each with breaking changes, this is because
 > * V1 which used the preview APIs and is required if using TFS 2018 as this only has older APIs. This version is not longer shipped in the extension, but can be download from [GitHub](https://github.com/rfennell/AzurePipelines/releases/tag/XPlat-2.6.9)
 > * V2 was a complete rewrite by [@gregpakes](https://github.com/gregpakes) using the Node Azure DevOps SDK, with minor but breaking changes in the template format and that oAuth needed to be  enabled on the agent running the tasks. At 2.27.x [KennethScott](https://github.com/KennethScott) added support for [Handlbars](https://handlebarsjs.com/) templates.
 > * V3 removed support for the legacy template model, only handlebars templates supported as this is a far more flexible solution and allow much easier enhancement of this task.
+> * V4 swapped to support the Node 16 task runner, but no functional or templating changes from V3
 
-# Overview of the Cross Platform Release Notes Generator (Version 3)
+# Overview of the Cross Platform Release Notes Generator (Version 3 and later)
 This task generates a release notes file based on a user defined [Handlbars](https://handlebarsjs.com/) template. It can be using inside any Azure DevOps [Classic Build, Classic Release](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-the-classic-interface) or [Multistage YAML Pipeline](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-yaml-syntax).
 
 The data source for the generated Release Notes is the Azure DevOps REST API's comparison calls that are also used by the Azure DevOps UI to show the associated Work items and commit/changesets between two builds/releases. Hence this task should generate the same list of work items and commits/changesets as the Azure DevOps UI, though it attempts to enrich this core data with extra information where possible.
@@ -15,7 +16,7 @@ Full documentation can be found in the project [WIKI](https://github.com/rfennel
 - [The page containing the automatically generated full YAML usage](https://github.com/rfennell/AzurePipelines/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task-YAML)
 
 # Local Testing (outside Azure Pipelines) of the Task & Templates
-To speed the development of this tool and it's templates a [tool](https://github.com/rfennell/AzurePipelines/tree/master/Extensions/XplatGenerateReleaseNotes/V3/testconsole/readme.md) is provided in this repo to allow local testing. This allows the task to be run against a build/release in a repeatable controllable manner. This makes for much easier debugging of the task code and Handlebar based templates. The usage is
+To speed the development of this tool and it's templates a [tool](https://github.com/rfennell/AzurePipelines/tree/main/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask/testconsole/readme.md) is provided in this repo to allow local testing. This allows the task to be run against a build/release in a repeatable controllable manner. This makes for much easier debugging of the task code and Handlebar based templates. The usage is
 
 1. Create a settings files, this includes all the parameter your would set for the task and one injected by the Azure Pipeline Agent
 2. Run the command (as a minimum) to run the task is `node GenerateReleaseNotesConsoleTester.js --filename build-settings.json --pat <Azure-DevOps-PAT>`
@@ -39,7 +40,7 @@ Possible sets of parameters depending on your usage are summarized below
 
 # The Template
 
-There are [sample Handlebar templates in the project code repo](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%203) that just produce basic releases notes for both Git and TFVC based releases. Most samples are for Markdown file generation, but it is possible to generate any other format such as HTML by altering the static entries in the templates.
+There are [sample Handlebar templates in the project code repo](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)) that just produce basic releases notes for both Git and TFVC based releases. Most samples are for Markdown file generation, but it is possible to generate any other format such as HTML by altering the static entries in the templates.
 
 > **Note** With V3.68.x it is possible to pass more than one template into the task. Thus allowing multiple documents to be generated from a single copy of the task. To do this provide a comma separated list of files in both the `templatefile` and `outputfile` parameters.
 
@@ -153,8 +154,7 @@ A basic [Handlebars](https://handlebarsjs.com/) template is as follows. What is 
 
 > **IMPORTANT** Handlebars based templates have different objects available to the legacy template used in V2 of this extension. This is a breaking change, so watch out if migrating.
 
-> **IMPORTANT** You can find more sample V3 templates and extensions [here](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%203)
-
+> **IMPORTANT** You can find more sample templates and extensions [here](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based))
 
 
 ## Objects Available in Templates
@@ -331,7 +331,7 @@ Either way it can be consumed in a template as shown below
 We can call our custom extension {{foo}}
 ```
 
-As custom modules allows any JavaScript logic to be injected for bespoke needs they can be the solution to your own bespoke filtering and sorting needs. You can find sample of custom modules and how to sructure your custom modules [in the Handlebars section of the sample templates section of this repo](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based)/Version%203)
+As custom modules allows any JavaScript logic to be injected for bespoke needs they can be the solution to your own bespoke filtering and sorting needs. You can find sample of custom modules and how to sructure your custom modules [in the Handlebars section of the sample templates section of this repo](https://github.com/rfennell/AzurePipelines/tree/main/SampleTemplates/XplatGenerateReleaseNotes%20(Node%20based))
 
 # Task Parameters
 
@@ -394,7 +394,7 @@ However, within a release there are no such artifacts location. Hence, it is rec
 
 ## Local Debugging and Template Generation
 
-Look at using the [loca console testing tool](https://github.com/rfennell/AzurePipelines/tree/master/Extensions/XplatGenerateReleaseNotes/V3/testconsole/readme.md) to repeatedly test your templates against a specific pipeline.
+Look at using the [local console testing tool](https://github.com/rfennell/AzurePipelines/tree/main/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask/testconsole/readme.md) to repeatedly test your templates against a specific pipeline.
 
 This is useful when developing your own templates, or if you have an issue you can added extra logging or potential fixes and test them prior to deploying the task.
 
