@@ -40,6 +40,11 @@
     "Node10": {
       "target": "ArtifactDescriptionTask.js",
       "argumentFormat": ""
+    },
+    "Node16": {
+      "target": "ArtifactDescriptionTask.js",
+      "argumentFormat": ""
     }
+
   }
 }
