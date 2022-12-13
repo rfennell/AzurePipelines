@@ -163,7 +163,7 @@ export async function GetExePath (
         // `Pause to avoid 'The process cannot access the file because it is being used by another process.' error`
         // It seems that even though we wait for the download the file is not available to run for a short period.
         // This is a nasty solution but appears to work
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise(resolve => setTimeout(resolve, 10000));
 
         logInfo(`Downloaded executable ${exeCmd}`);
 
