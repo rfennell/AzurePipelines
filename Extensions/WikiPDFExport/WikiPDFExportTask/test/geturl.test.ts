@@ -4,7 +4,6 @@ import "mocha";
 import { GetTrimmedUrl, GetProtocol } from "../src/GitWikiFunctions";
 import { logInfo } from "../src/agentSpecific";
 
-
 describe("Test stripping leading characters from url", () => {
   it("should be able to handle correct url", () => {
     var actual = GetTrimmedUrl("servername/collection/project/_git/wikiname", logInfo);
