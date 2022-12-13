@@ -10,7 +10,7 @@ import { SSL_OP_CIPHER_SERVER_PREFERENCE, SSL_OP_LEGACY_SERVER_CONNECT } from "c
 function rimrafPromise(localpath) {
     return new Promise((resolve, reject) => {
         rimraf(localpath, () => {
-            resolve();
+            resolve(0);
         }, (error) => {
             reject(error);
         });
