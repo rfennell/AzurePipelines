@@ -15,7 +15,7 @@ parameters:
   type: string
 
 steps:  
-- task: richardfennellBM.BM-VSTS-YAMLGenerator-DEV.YamlGeneratorTask.GenerateYAMLTask@1
+- task: richardfennellBM.BM-VSTS-YAMLGenerator-DEV.YamlGeneratorTask.GenerateYAMLTask@2
   displayName: 'YAML Documentation Generator'
   inputs:
     inDir: '${{parameters.workingDirectory}}'     
