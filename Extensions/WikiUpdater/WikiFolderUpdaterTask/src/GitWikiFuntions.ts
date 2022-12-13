@@ -10,7 +10,7 @@ import * as glob from "glob";
 function rimrafPromise(localpath) {
     return new Promise((resolve, reject) => {
         rimraf(localpath, () => {
-            resolve();
+            resolve(0);
         }, (error) => {
             reject(error);
         });
