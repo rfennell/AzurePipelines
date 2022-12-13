@@ -108,7 +108,7 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@1
+            - task: richardfennellBM.BM-VSTS-ArtifactDescription-Tasks-DEV.ArtifactDescriptionTask.ArtifactDescriptionTask@2
               displayName: 'Get Git Artifact PR Reason'
               inputs:
                 OutputText: 'OutputedText' 
