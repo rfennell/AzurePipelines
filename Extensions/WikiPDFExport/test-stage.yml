@@ -15,7 +15,7 @@ steps:
     packageType: 'runtime'
     version: '6.0.x'
     includePreviewVersions: false
-- task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@4
+- task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@2
   displayName: 'Generate Release Notes based on Release Comparision API'
   inputs:
     outputfile: '$(System.DefaultWorkingDirectory)/inline.md'
@@ -36,7 +36,7 @@ steps:
       @@CSLOOP@@
       * **ID ${csdetail.commitId} ** ${csdetail.comment}
       @@CSLOOP@@
-- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
   displayName: 'Export Single File'
   inputs:
     cloneRepo: false
@@ -45,7 +45,7 @@ steps:
     singleFile: 'inline.md'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFile.pdf'
     downloadPath: '${{parameters.localpath}}'
-- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
   displayName: 'Export Public GitHub WIKI'
   condition: succeededOrFailed()
   inputs:
@@ -55,7 +55,7 @@ steps:
     localpath: '$(System.DefaultWorkingDirectory)/GitHubRepo'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-publicGitHub.pdf'
     downloadPath: '${{parameters.localpath}}'
-- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
   displayName: 'Export Azure DevOps WIKI'
   condition: succeededOrFailed()
   inputs:
@@ -64,7 +64,7 @@ steps:
     useAgentToken: true
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-Azrepo.pdf'
     downloadPath: '${{parameters.localpath}}'
-- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
   displayName: 'Export part of the Azure DevOps WIKI'
   condition: succeededOrFailed()
   inputs:
@@ -75,7 +75,7 @@ steps:
     localpath: '$(System.DefaultWorkingDirectory)/repopartial'
     rootExportPath: '$(System.DefaultWorkingDirectory)/repopartial/folder'
     downloadPath: '${{parameters.localpath}}'
-- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
   displayName: 'Export Azure DevOps WIKI without downloading tool'
   condition: and(succeededOrFailed(), eq(variables['AGENT.OS'], 'Windows_NT'))
   inputs:
