@@ -16,7 +16,7 @@
     "Patch": 0
   },
   "demands": [],
-  "minimumAgentVersion": "1.82.0",
+  "minimumAgentVersion": "2.144.0",
   "groups": [
     {
         "name": "advanced",
@@ -63,6 +63,10 @@
   "instanceNameFormat": "YAML Documentation Generator",
   "execution": {
     "Node10": {
+      "target": "Generate-YAMLDocumentation.js",
+      "argumentFormat": ""
+    },
+    "Node16": {
       "target": "Generate-YAMLDocumentation.js",
       "argumentFormat": ""
     }
