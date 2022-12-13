@@ -3,7 +3,7 @@
 Gets assembly reference information.
 
 .DESCRIPTION
-Not supported for use during task exection. This function is only intended to help developers resolve the minimal set of DLLs that need to be bundled when consuming the VSTS REST SDK or TFS Extended Client SDK. The interface and output may change between patch releases of the VSTS Task SDK.
+Not supported for use during task execution. This function is only intended to help developers resolve the minimal set of DLLs that need to be bundled when consuming the VSTS REST SDK or TFS Extended Client SDK. The interface and output may change between patch releases of the VSTS Task SDK.
 
 Only a subset of the referenced assemblies may actually be required, depending on the functionality used by your task. It is best to bundle only the DLLs required for your scenario.
 
@@ -24,7 +24,7 @@ function Get-AssemblyReference {
         [string]$LiteralPath)
 
     $ErrorActionPreference = 'Stop'
-    Write-Warning "Not supported for use during task exection. This function is only intended to help developers resolve the minimal set of DLLs that need to be bundled when consuming the VSTS REST SDK or TFS Extended Client SDK. The interface and output may change between patch releases of the VSTS Task SDK."
+    Write-Warning "Not supported for use during task execution. This function is only intended to help developers resolve the minimal set of DLLs that need to be bundled when consuming the VSTS REST SDK or TFS Extended Client SDK. The interface and output may change between patch releases of the VSTS Task SDK."
     Write-Output ''
     Write-Warning "Only a subset of the referenced assemblies may actually be required, depending on the functionality used by your task. It is best to bundle only the DLLs required for your scenario."
     $directory = [System.IO.Path]::GetDirectoryName($LiteralPath)
@@ -178,7 +178,7 @@ If not specified, defaults to the directory of the entry script for the task.
 URI to use when initializing the service. If not specified, defaults to System.TeamFoundationCollectionUri.
 
 .PARAMETER TfsClientCredentials
-Credentials to use when intializing the service. If not specified, the default uses the agent job token to construct the credentials object. The identity associated with the token depends on the scope selected in the build/release definition (either the project collection build/release service identity, or the project build/release service identity).
+Credentials to use when initializing the service. If not specified, the default uses the agent job token to construct the credentials object. The identity associated with the token depends on the scope selected in the build/release definition (either the project collection build/release service identity, or the project build/release service identity).
 
 .EXAMPLE
 $versionControlServer = Get-VstsTfsService -TypeName Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer
@@ -322,10 +322,16 @@ If not specified, defaults to the directory of the entry script for the task.
 # URI to use when initializing the HTTP client. If not specified, defaults to System.TeamFoundationCollectionUri.
 
 # .PARAMETER VssCredentials
-# Credentials to use when intializing the HTTP client. If not specified, the default uses the agent job token to construct the credentials object. The identity associated with the token depends on the scope selected in the build/release definition (either the project collection build/release service identity, or the project build/release service identity).
+# Credentials to use when initializing the HTTP client. If not specified, the default uses the agent job token to construct the credentials object. The identity associated with the token depends on the scope selected in the build/release definition (either the project collection build/release service identity, or the project build/release service identity).
 
 # .PARAMETER WebProxy
-# WebProxy to use when intializing the HTTP client. If not specified, the default uses the proxy configuration agent current has.
+# WebProxy to use when initializing the HTTP client. If not specified, the default uses the proxy configuration agent current has.
+
+# .PARAMETER ClientCert
+# ClientCert to use when initializing the HTTP client. If not specified, the default uses the client certificate agent current has.
+
+# .PARAMETER IgnoreSslError
+# Skip SSL server certificate validation on all requests made by this HTTP client. If not specified, the default is to validate SSL server certificate.
 
 .EXAMPLE
 $projectHttpClient = Get-VstsVssHttpClient -TypeName Microsoft.TeamFoundation.Core.WebApi.ProjectHttpClient
@@ -343,7 +349,11 @@ function Get-VssHttpClient {
 
         $VssCredentials,
         
-        $WebProxy = (Get-WebProxy))
+        $WebProxy = (Get-WebProxy),
+        
+        $ClientCert = (Get-ClientCertificate),
+        
+        [switch]$IgnoreSslError)
 
     Trace-EnteringInvocation -InvocationInfo $MyInvocation
     $originalErrorActionPreference = $ErrorActionPreference
@@ -369,10 +379,35 @@ function Get-VssHttpClient {
         # Update proxy setting for vss http client
         [Microsoft.VisualStudio.Services.Common.VssHttpMessageHandler]::DefaultWebProxy = $WebProxy
         
+        # Update client certificate setting for vss http client
+        $null = Get-OMType -TypeName 'Microsoft.VisualStudio.Services.Common.VssHttpRequestSettings' -OMKind 'WebApi' -OMDirectory $OMDirectory -Require
+        $null = Get-OMType -TypeName 'Microsoft.VisualStudio.Services.WebApi.VssClientHttpRequestSettings' -OMKind 'WebApi' -OMDirectory $OMDirectory -Require
+        [Microsoft.VisualStudio.Services.Common.VssHttpRequestSettings]$Settings = [Microsoft.VisualStudio.Services.WebApi.VssClientHttpRequestSettings]::Default.Clone()
+
+        if ($ClientCert) {
+            $null = Get-OMType -TypeName 'Microsoft.VisualStudio.Services.WebApi.VssClientCertificateManager' -OMKind 'WebApi' -OMDirectory $OMDirectory -Require
+            $null = [Microsoft.VisualStudio.Services.WebApi.VssClientCertificateManager]::Instance.ClientCertificates.Add($ClientCert)
+            
+            $Settings.ClientCertificateManager = [Microsoft.VisualStudio.Services.WebApi.VssClientCertificateManager]::Instance
+        }        
+
+        # Skip SSL server certificate validation
+        [bool]$SkipCertValidation = (Get-TaskVariable -Name Agent.SkipCertValidation -AsBool) -or $IgnoreSslError
+        if ($SkipCertValidation) {
+            if ($Settings.GetType().GetProperty('ServerCertificateValidationCallback')) {
+                Write-Verbose "Ignore any SSL server certificate validation errors.";
+                $Settings.ServerCertificateValidationCallback = [VstsTaskSdk.VstsHttpHandlerSettings]::UnsafeSkipServerCertificateValidation
+            }
+            else {
+                # OMDirectory has older version of Microsoft.VisualStudio.Services.Common.dll
+                Write-Verbose "The version of 'Microsoft.VisualStudio.Services.Common.dll' does not support skip SSL server certificate validation."
+            }
+        }
+
         # Try to construct the HTTP client.
         Write-Verbose "Constructing HTTP client."
         try {
-            return New-Object $TypeName($Uri, $VssCredentials)
+            return New-Object $TypeName($Uri, $VssCredentials, $Settings)
         } catch {
             # Rethrow if the exception is not due to Newtonsoft.Json DLL not found.
             if ($_.Exception.InnerException -isnot [System.IO.FileNotFoundException] -or
@@ -399,7 +434,7 @@ function Get-VssHttpClient {
             # dependency on the 6.0.0.0 Newtonsoft.Json DLL, while other parts reference
             # the 8.0.0.0 Newtonsoft.Json DLL.
             Write-Verbose "Adding assembly resolver."
-            $onAssemblyResolve = [System.ResolveEventHandler]{
+            $onAssemblyResolve = [System.ResolveEventHandler] {
                 param($sender, $e)
 
                 if ($e.Name -like 'Newtonsoft.Json, *') {
@@ -414,7 +449,7 @@ function Get-VssHttpClient {
             try {
                 # Try again to construct the HTTP client.
                 Write-Verbose "Trying again to construct the HTTP client."
-                return New-Object $TypeName($Uri, $VssCredentials)
+                return New-Object $TypeName($Uri, $VssCredentials, $Settings)
             } finally {
                 # Unregister the assembly resolver.
                 Write-Verbose "Removing assemlby resolver."
@@ -447,8 +482,7 @@ function Get-WebProxy {
     param()
 
     Trace-EnteringInvocation -InvocationInfo $MyInvocation
-    try
-    {
+    try {
         # Min agent version that supports proxy
         Assert-Agent -Minimum '2.105.7'
 
@@ -459,6 +493,38 @@ function Get-WebProxy {
         [string[]]$ProxyBypassList = ConvertFrom-Json -InputObject $ProxyBypassListJson
         
         return New-Object -TypeName VstsTaskSdk.VstsWebProxy -ArgumentList @($proxyUrl, $proxyUserName, $proxyPassword, $proxyBypassList)
+    }
+    finally {
+        Trace-LeavingInvocation -InvocationInfo $MyInvocation
+    }
+}
+
+<#
+.SYNOPSIS
+Gets a client certificate for current connected TFS instance
+
+.DESCRIPTION
+Gets an instance of a X509Certificate2 that is the client certificate Build/Release agent used.
+
+.EXAMPLE
+$x509cert = Get-ClientCertificate
+WebRequestHandler.ClientCertificates.Add(x509cert)
+#>
+function Get-ClientCertificate {
+    [CmdletBinding()]
+    param()
+
+    Trace-EnteringInvocation -InvocationInfo $MyInvocation
+    try {
+        # Min agent version that supports client certificate
+        Assert-Agent -Minimum '2.122.0'
+
+        [string]$clientCert = Get-TaskVariable -Name Agent.ClientCertArchive
+        [string]$clientCertPassword = Get-TaskVariable -Name Agent.ClientCertPassword
+        
+        if ($clientCert -and (Test-Path -LiteralPath $clientCert -PathType Leaf)) {
+            return New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList @($clientCert, $clientCertPassword)
+        }        
     }
     finally {
         Trace-LeavingInvocation -InvocationInfo $MyInvocation

@@ -38,6 +38,8 @@ Export-ModuleMember -Function @(
         'Select-Match'
         # Input functions.
         'Get-Endpoint'
+        'Get-SecureFileTicket'
+        'Get-SecureFileName'
         'Get-Input'
         'Get-TaskVariable'
         'Get-TaskVariableInfo'
@@ -52,6 +54,8 @@ Export-ModuleMember -Function @(
         'Write-AddBuildTag'
         'Write-AssociateArtifact'
         'Write-LogDetail'
+        'Write-PrependPath'
+        'Write-SetEndpoint'
         'Write-SetProgress'
         'Write-SetResult'
         'Write-SetSecret'
@@ -61,8 +65,11 @@ Export-ModuleMember -Function @(
         'Write-TaskVerbose'
         'Write-TaskWarning'
         'Write-UpdateBuildNumber'
+        'Write-UpdateReleaseName'
         'Write-UploadArtifact'
         'Write-UploadBuildLog'
+        'Write-UploadFile'
+        'Write-UploadSummary'
         # Out functions.
         'Out-Default'
         # Server OM functions.
@@ -81,6 +88,8 @@ Export-ModuleMember -Function @(
         'Trace-Path'
         # Proxy functions
         'Get-WebProxy'
+        # Client cert functions
+        'Get-ClientCertificate'
     )
 
 # Override Out-Default globally.
