@@ -16,7 +16,7 @@
     "Patch": 0
   },
   "demands": [],
-  "minimumAgentVersion": "1.82.0",
+  "minimumAgentVersion": "2.144.0",
   "groups": [
     {
       "name": "output",
@@ -40,6 +40,11 @@
     "Node10": {
       "target": "ArtifactDescriptionTask.js",
       "argumentFormat": ""
+    },
+    "Node16": {
+      "target": "ArtifactDescriptionTask.js",
+      "argumentFormat": ""
     }
+
   }
 }
