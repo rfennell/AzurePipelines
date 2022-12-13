@@ -3,9 +3,6 @@ import { expect } from "chai";
 import "mocha";
 import { GetTrimmedUrl, GetProtocol } from "../src/GitWikiFunctions";
 import { logInfo } from "../src/agentSpecific";
-import { existsSync, fstat } from "fs";
-import { pathToFileURL } from "url";
-const del = require("del");
 
 describe("Test stripping leading characters from url", () => {
   it("should be able to handle correct url", () => {

@@ -2,7 +2,7 @@ import { expect } from "chai";
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import "mocha";
 import { GetExePath } from "../src/ExportFunctions";
-const del = require("del");
+import * as fse from "fs-extra";
 
 describe("Get Exe Path ", () => {
   it("should be able download the pre release", async () => {
@@ -32,8 +32,8 @@ describe("Get Exe Path ", () => {
 
   after(() => {
     // tidy up as the exe is too big
-    del(".\\testdata\\azuredevops-export-wiki.exe");
-    del(".\\testdata\\azuredevops-export-wiki");
+    fse.removeSync(".\\testdata\\azuredevops-export-wiki.exe");
+    fse.removeSync(".\\testdata\\azuredevops-export-wiki");
   });
 
 });

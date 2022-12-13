@@ -15,28 +15,32 @@ steps:
     packageType: 'runtime'
     version: '6.0.x'
     includePreviewVersions: false
-- task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@2
+- task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@4
   displayName: 'Generate Release Notes based on Release Comparision API'
   inputs:
     outputfile: '$(System.DefaultWorkingDirectory)/inline.md'
     outputVariableName: OutputText
     templateLocation: InLine
     inlinetemplate: |
-      # Release notes
-      **Build Number**  : ${buildDetails.buildNumber}
-      **Build started** : ${buildDetails.startTime}
-      **Source Branch** : ${buildDetails.sourceBranch}
+      **Build Number**: {{buildDetails.id}}
+      **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}}
 
-      ### Associated work items
-      @@WILOOP@@
-      * ** ${widetail.fields['System.WorkItemType']} ${widetail.id} ** Assigned by: ${widetail.fields['System.AssignedTo']}  ${widetail.fields['System.Title']}
-      @@WILOOP@@
+      # Global list of WI ({{workItems.length}})
+      {{#forEach workItems}}
+      {{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
+      *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+        - **WIT** {{lookup this.fields 'System.WorkItemType'}}
+        - **Tags** {{lookup this.fields 'System.Tags'}}
+      {{/forEach}}
 
-      ### Associated commits
-      @@CSLOOP@@
-      * **ID ${csdetail.commitId} ** ${csdetail.comment}
-      @@CSLOOP@@
-- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
+      # Global list of CS ({{commits.length}})
+      {{#forEach commits}}
+      {{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
+      * ** ID{{this.id}}**
+        -  **Message:** {{this.message}}
+        -  **Commited by:** {{this.author.displayName}}
+      {{/forEach}}
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
   displayName: 'Export Single File'
   inputs:
     cloneRepo: false
@@ -45,7 +49,7 @@ steps:
     singleFile: 'inline.md'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFile.pdf'
     downloadPath: '${{parameters.localpath}}'
-- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
   displayName: 'Export Public GitHub WIKI'
   condition: succeededOrFailed()
   inputs:
@@ -55,7 +59,7 @@ steps:
     localpath: '$(System.DefaultWorkingDirectory)/GitHubRepo'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-publicGitHub.pdf'
     downloadPath: '${{parameters.localpath}}'
-- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
   displayName: 'Export Azure DevOps WIKI'
   condition: succeededOrFailed()
   inputs:
@@ -64,7 +68,7 @@ steps:
     useAgentToken: true
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-Azrepo.pdf'
     downloadPath: '${{parameters.localpath}}'
-- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
   displayName: 'Export part of the Azure DevOps WIKI'
   condition: succeededOrFailed()
   inputs:
@@ -75,7 +79,7 @@ steps:
     localpath: '$(System.DefaultWorkingDirectory)/repopartial'
     rootExportPath: '$(System.DefaultWorkingDirectory)/repopartial/folder'
     downloadPath: '${{parameters.localpath}}'
-- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@2
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
   displayName: 'Export Azure DevOps WIKI without downloading tool'
   condition: and(succeededOrFailed(), eq(variables['AGENT.OS'], 'Windows_NT'))
   inputs:

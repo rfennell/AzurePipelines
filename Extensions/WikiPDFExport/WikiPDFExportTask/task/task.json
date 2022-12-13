@@ -16,7 +16,7 @@
     "Patch": 0
   },
   "demands": [],
-  "minimumAgentVersion": "1.82.0",
+  "minimumAgentVersion": "2.144.0",
   "groups": [
     {
       "name": "authentication",
@@ -163,6 +163,10 @@
   "instanceNameFormat": "WIKI PDF Exporter",
   "execution": {
     "Node10": {
+      "target": "WikiPDFExportTask.js",
+      "argumentFormat": ""
+    },
+    "Node16": {
       "target": "WikiPDFExportTask.js",
       "argumentFormat": ""
     }
