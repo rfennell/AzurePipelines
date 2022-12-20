@@ -129,7 +129,7 @@ stages:
           deploy:
             steps:
             - checkout: VSTSBuildTaskValidation
-            - task: richardfennellBM.BM-VSTS-FileCopier-Tasks-DEV.XmlFileUpdateTask.XmlFileUpdateTask@3
+            - task: richardfennellBM.BM-VSTS-FileCopier-Tasks-DEV.XmlFileUpdateTask.XmlFileUpdateTask@4
               displayName: 'XmlFileUpdateTask - Update node value recurse '
               inputs:
                 filename: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/testdata/*.xml'
@@ -168,7 +168,7 @@ stages:
           deploy:
             steps:
             - checkout: VSTSBuildTaskValidation
-            - task: richardfennellBM.BM-VSTS-FileCopier-Tasks-DEV.XmlFileUpdateTask.XmlFileUpdateTask@3
+            - task: richardfennellBM.BM-VSTS-FileCopier-Tasks-DEV.XmlFileUpdateTask.XmlFileUpdateTask@4
               displayName: 'XmlFileUpdateTask - Update node value recurse '
               inputs:
                 filename: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/testdata/*.xml'
@@ -206,7 +206,7 @@ stages:
           deploy:
             steps:
             - checkout: VSTSBuildTaskValidation
-            - task: richardfennellBM.BM-VSTS-FileCopier-Tasks-DEV.XmlFileUpdateTask.XmlFileUpdateTask@3
+            - task: richardfennellBM.BM-VSTS-FileCopier-Tasks-DEV.XmlFileUpdateTask.XmlFileUpdateTask@4
               displayName: 'XmlFileUpdateTask - Update node value recurse '
               inputs:
                 filename: '$(System.DefaultWorkingDirectory)/XMLFileUpdateValidation/testdata/*.xml'
