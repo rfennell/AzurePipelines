@@ -61,12 +61,16 @@
       "helpMarkDown": "If true will search for files recursivally, default is true."
     }
    ],
-  "minimumAgentVersion": "1.82.0",
+  "minimumAgentVersion": "2.144.0",
   "instanceNameFormat": "XmlFileUpdateTask",
   "execution": {
    "Node10": {
        "target": "FileUpdate.js",
        "argumentFormat": ""
-     }
+     },
+     "Node16": {
+      "target": "FileUpdate.js",
+      "argumentFormat": ""
+    }
   }
 }
