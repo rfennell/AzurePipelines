@@ -159,14 +159,21 @@ function GetFilePrefix(filePrefix, extensionId) {
 }
 
 export async function generateYaml(inDir, outDir, filePrefix) {
+    logInfo("aa");
 
     // Make sure the folder exists
     mkDirByPathSync(outDir);
+    logInfo("aa");
 
     // Get the extension details
+
+    logInfo(path.join(inDir, "vss-extension.json"));
+
     const extension = JSON.parse(fs.readFileSync(path.join(inDir, "vss-extension.json"), "utf8"));
 
     filePrefix = GetFilePrefix(filePrefix, extension.id);
+
+    logInfo("aa");
 
     // Delete the target file
     const fileName = filePath(outDir, filePrefix);
@@ -174,6 +181,7 @@ export async function generateYaml(inDir, outDir, filePrefix) {
         logInfo(`Deleting old output file '${fileName}`);
         fs.unlinkSync(fileName);
     }
+    logInfo("aa");
 
     // Write the header
     logInfo(`Creating output file '${fileName} for extension '${extension.name}'`);
