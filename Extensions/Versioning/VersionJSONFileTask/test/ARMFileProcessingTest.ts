@@ -7,9 +7,10 @@ import { findFiles,
   getSplitVersionParts
 } from "../src/AppyVersionToJSONFileFunctions";
 
-import fs = require("fs");
-const copyFileSync = require("fs-copy-file-sync");
-const del = require("del");
+import * as fs from "fs";
+import * as fse from "fs-extra";
+import * as  copyFileSync from "fs-copy-file-sync";
+
 
 describe("Test the update ARM file processing", () => {
     before(function() {
@@ -29,7 +30,7 @@ describe("Test the update ARM file processing", () => {
 
     after(function() {
       // remove the file if created
-      del.sync("test/testdata/*.json");
+      fse.removeSync("test/testdata/*.json");
     });
   }
 );
@@ -52,7 +53,7 @@ describe("Test the add tag ARM file processing", () => {
 
   after(function() {
     // remove the file if created
-    del.sync("test/testdata/*.json");
+    fse.removeSync("test/testdata/*.json");
   });
 }
 );

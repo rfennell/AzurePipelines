@@ -7,10 +7,6 @@ import { findFiles,
   getSplitVersionParts
 } from "../src/AppyVersionToJSONFileFunctions";
 
-import fs = require("fs");
-const copyFileSync = require("fs-copy-file-sync");
-const del = require("del");
-
 describe ("Find files tests", () => {
 
   it ("should be able to find 6 files with recursion", () => {
