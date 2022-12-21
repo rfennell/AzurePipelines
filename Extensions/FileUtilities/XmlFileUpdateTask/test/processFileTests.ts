@@ -3,10 +3,7 @@ import { findFiles,
          processFiles
 } from "../src/FileUpdateFunctions";
 
-import fs = require("fs") ;
-const copyFileSync = require("fs-copy-file-sync");
-const del = require("del");
-
+import * as fs from "fs" ;
 const chai    = require("chai");
 const expect  = require("chai").expect;
 const chaiXml = require("chai-xml");
