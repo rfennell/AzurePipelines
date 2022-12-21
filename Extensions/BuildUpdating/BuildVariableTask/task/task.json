@@ -15,7 +15,7 @@
     "Minor": 0,
     "Patch": 0
   },
-  "minimumAgentVersion": "1.82.0",
+  "minimumAgentVersion": "2.144.0",
   "groups": [
     {
       "name": "advanced",
@@ -100,6 +100,12 @@
       "target": "$(currentDirectory)/BuildVariableTask.js",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
+    },
+    "Node16": {
+      "target": "$(currentDirectory)/BuildVariableTask.js",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
     }
+
   }
 }
