@@ -11,7 +11,6 @@ import * as fs from "fs";
 import * as fse from "fs-extra";
 import * as  copyFileSync from "fs-copy-file-sync";
 
-
 describe("Test the update ARM file processing", () => {
     before(function() {
       // make a copy we can overright with breaking test data
