@@ -8,9 +8,9 @@ import { findFiles,
   extractVersion
 } from "../src/AppyVersionToAngularFileFunctions";
 
-import fs = require("fs");
-const copyFileSync = require("fs-copy-file-sync");
-const del = require("del");
+import * as fs from "fs";
+import * as fse from "fs-extra";
+import * as  copyFileSync from "fs-copy-file-sync";
 
 describe ("Version number split tests", () => {
 
@@ -49,7 +49,7 @@ describe("Test the update file processing", () => {
 
     after(function() {
       // remove the file if created
-      del.sync("test/testdata/environment.ts");
+      fse.removeSync("test/testdata/environment.ts");
     });
   }
 );
@@ -72,7 +72,7 @@ describe("Test the add tag file processing", () => {
 
   after(function() {
     // remove the file if created
-    del.sync("test/testdata/environment.ts");
+    fse.removeSync("test/testdata/environment.ts");
   });
 }
 );
@@ -109,7 +109,7 @@ describe("Test for Issue 615 double quotes", () => {
 
   after(function() {
     // remove the file if created
-    del.sync("test/testdata/environment.ts");
+    fse.removeSync("test/testdata/environment.ts");
   });
 }
 );

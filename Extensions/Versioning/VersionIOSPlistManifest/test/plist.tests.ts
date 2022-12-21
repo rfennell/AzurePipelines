@@ -9,9 +9,9 @@ import {
     extractVersion
 } from "../src/ApplyVersionToManifestFunctions";
 
-import fs = require("fs");
+import * as fs from "fs";
+import * as fse from "fs-extra";
 const copyFileSync = require("fs-copy-file-sync");
-const del = require("del");
 
 describe ("Find files tests", () => {
 
@@ -68,7 +68,7 @@ describe("Test the file processing", () => {
 
     after(function() {
       // remove the file if created
-      del.sync("test/testdata/sample.xml");
+      fse.removeSync("test/testdata/sample.xml");
     });
 
   });

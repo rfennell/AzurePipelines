@@ -101,12 +101,16 @@
     }
 
    ],
-  "minimumAgentVersion": "1.82.0",
+  "minimumAgentVersion": "2.144.0",
    "instanceNameFormat": "Version Angular Environment.TS File",
   "execution": {
      "Node10": {
        "target": "ApplyVersionToAngularFile.js",
        "argumentFormat": ""
-     }
+     },
+     "Node16": {
+      "target": "ApplyVersionToAngularFile.js",
+      "argumentFormat": ""
+    }
   }
 }

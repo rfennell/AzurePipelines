@@ -8,9 +8,9 @@ import { findFiles,
   SplitArrayOfNames
 } from "../src/AppyVersionToAssembliesFunctions";
 
-import fs = require("fs");
-const copyFileSync = require("fs-copy-file-sync");
-const del = require("del");
+import * as fs from "fs";
+import * as fse from "fs-extra";
+import * as  copyFileSync from "fs-copy-file-sync";
 
 describe("Test the basic file processing", () => {
     before(function() {
@@ -43,7 +43,7 @@ describe("Test the basic file processing", () => {
 
     after(function() {
       // remove the file if created
-      del.sync("test/testdata/*.csproj");
+      fse.removeSync("test/testdata/*.csproj");
     });
 
   });
@@ -67,7 +67,7 @@ describe("Test the basic file processing", () => {
 
     after(function() {
       // remove the file if created
-      del.sync("test/testdata/*.csproj");
+      fse.removeSync("test/testdata/*.csproj");
     });
 
   });
@@ -91,7 +91,7 @@ describe("Test the basic file processing", () => {
 
     after(function() {
       // remove the file if created
-      del.sync("test/testdata/*.csproj");
+      fse.removeSync("test/testdata/*.csproj");
     });
 
   });
@@ -115,7 +115,7 @@ describe("Test the basic file processing", () => {
 
     after(function() {
       // remove the file if created
-      del.sync("test/testdata/*.csproj");
+      fse.removeSync("test/testdata/*.csproj");
     });
 
   });
@@ -153,7 +153,7 @@ describe("Test the 483 file processing", () => {
 
   after(function() {
     // remove the file if created
-    del.sync("test/testdata/*.csproj");
+    fse.removeSync("test/testdata/*.csproj");
   });
 
 });
@@ -177,7 +177,7 @@ describe("Test the 494 file processing for singe field", () => {
 
   after(function() {
     // remove the file if created
-    del.sync("test/testdata/*.csproj");
+    fse.removeSync("test/testdata/*.csproj");
   });
 
 });
@@ -201,7 +201,7 @@ describe("Test the 494 file processing for all fields", () => {
 
   after(function() {
     // remove the file if created
-    del.sync("test/testdata/*.csproj");
+    fse.removeSync("test/testdata/*.csproj");
   });
 
 });
@@ -225,7 +225,7 @@ describe("Test the 549 add missing propertygroup", () => {
 
   after(function() {
     // remove the file if created
-    del.sync("test/testdata/*.csproj");
+    fse.removeSync("test/testdata/*.csproj");
   });
 
 });
@@ -249,7 +249,7 @@ describe("Test the 551 add missing propertygroup", () => {
 
   after(function() {
     // remove the file if created
-    del.sync("test/testdata/*.csproj");
+    fse.removeSync("test/testdata/*.csproj");
   });
 
 });
@@ -273,7 +273,7 @@ describe("Test the 346 directory.build.props", () => {
 
   after(function() {
     // remove the file if created
-    del.sync("test/testdata/directory.build.props");
+    fse.removeSync("test/testdata/directory.build.props");
   });
 
 });
@@ -297,7 +297,7 @@ describe("Test the 589 add missing propertygroup", () => {
 
   after(function() {
     // remove the file if created
-    del.sync("test/testdata/*.csproj");
+    fse.removeSync("test/testdata/*.csproj");
   });
 
 });
@@ -321,7 +321,7 @@ describe("Test the 589 add missing propertygroup", () => {
 
   after(function() {
     // remove the file if created
-    del.sync("test/testdata/*.csproj");
+    fse.removeSync("test/testdata/*.csproj");
   });
 
 });
