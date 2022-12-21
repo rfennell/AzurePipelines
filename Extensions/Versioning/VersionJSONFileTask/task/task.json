@@ -111,12 +111,16 @@
     }
 
    ],
-  "minimumAgentVersion": "1.82.0",
+  "minimumAgentVersion": "2.144.0",
    "instanceNameFormat": "Version JSON File",
   "execution": {
      "Node10": {
        "target": "ApplyVersionToJSONFile.js",
        "argumentFormat": ""
-     }
+     },
+     "Node16": {
+      "target": "ApplyVersionToJSONFile.js",
+      "argumentFormat": ""
+    }
   }
 }

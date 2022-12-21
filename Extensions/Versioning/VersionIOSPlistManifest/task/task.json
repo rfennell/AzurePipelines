@@ -105,12 +105,17 @@
         "groupName":"output"
       }
    ],
-  "minimumAgentVersion": "1.82.0",
+  "minimumAgentVersion": "2.144.0",
    "instanceNameFormat": "Version iOS Plist Manifest",
   "execution": {
      "Node10": {
        "target": "ApplyVersionToManifest.js",
        "argumentFormat": ""
-     }
+     },
+     "Node16": {
+      "target": "ApplyVersionToManifest.js",
+      "argumentFormat": ""
+    }
+
   }
 }

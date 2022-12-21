@@ -9,9 +9,9 @@ import {
     extractVersion
 } from "../src/ApplyVersionToManifestFunctions";
 
-import fs = require("fs");
-const copyFileSync = require("fs-copy-file-sync");
-const del = require("del");
+import * as fs from "fs";
+import * as fse from "fs-extra";
+import * as  copyFileSync from "fs-copy-file-sync";
 
 describe ("Find files tests", () => {
 
@@ -63,7 +63,7 @@ describe("Test the file processing", () => {
 
     after(function() {
       // remove the file if created
-      del.sync("test/testdata/sample.xml");
+      fse.removeSync("test/testdata/sample.xml");
     });
 
   });
@@ -86,7 +86,7 @@ describe("Test the file processing", () => {
 
     after(function() {
       // remove the file if created
-      del.sync("test/testdata/sample.xml");
+      fse.removeSync("test/testdata/sample.xml");
     });
 
   });
@@ -109,7 +109,7 @@ describe("Test the file processing", () => {
 
     after(function() {
       // remove the file if created
-      del.sync("test/testdata/sample.xml");
+      fse.removeSync("test/testdata/sample.xml");
     });
 
   });
@@ -132,7 +132,7 @@ describe("Test the file processing", () => {
 
     after(function() {
       // remove the file if created
-      del.sync("test/testdata/sample.xml");
+      fse.removeSync("test/testdata/sample.xml");
     });
   });
 

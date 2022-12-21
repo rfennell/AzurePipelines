@@ -122,12 +122,16 @@
     }
 
    ],
-  "minimumAgentVersion": "1.95.1",
+  "minimumAgentVersion": "2.144.0",
    "instanceNameFormat": "Version .NET Core Assemblies",
   "execution": {
      "Node10": {
        "target": "ApplyVersionToAssemblies.js",
        "argumentFormat": ""
-     }
+     },
+     "Node16": {
+      "target": "ApplyVersionToAssemblies.js",
+      "argumentFormat": ""
+    }
   }
 }
