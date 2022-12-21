@@ -107,6 +107,10 @@
      "Node10": {
        "target": "ApplyVersionToAngularFile.js",
        "argumentFormat": ""
-     }
+     },
+     "Node16": {
+      "target": "ApplyVersionToAngularFile.js",
+      "argumentFormat": ""
+    }
   }
 }
