@@ -19,7 +19,7 @@
   "devDependencies": {
     "@types/chai": "^4.0.4",
     "@types/mocha": "^2.2.44",
-    "ts-loader": "^2.0.3",
+    "ts-loader": "^9.4.2",
     "ts-node": "^3.3.0",
     "tslint": "^5.2.0",
     "typescript": "^2.6.1"
