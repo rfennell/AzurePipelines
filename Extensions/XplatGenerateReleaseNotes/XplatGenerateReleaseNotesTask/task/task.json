@@ -384,7 +384,7 @@
       "helpMarkDown": "The FROM target for the WIQL Query.  e.g. `SELECT [System.Id] FROM workitems WHERE ...`",
       "groupName": "advanced",
       "options": {
-          "WorkItems ": "WorkItems",
+          "WorkItems": "WorkItems",
           "WorkItemLinks": "WorkItemLinks"
       }
     },
