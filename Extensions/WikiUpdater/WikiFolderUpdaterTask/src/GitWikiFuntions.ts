@@ -174,6 +174,9 @@ export async function UpdateGitWikiFolder(
         await git.pull();
         logInfo(`Pull in case of post clone updates from other users`);
 
+        // make sure the slashes are in the correct format
+        sourceFolder = sourceFolder.replace(/\\/g, "/");
+
         // get the list of file
         logInfo(`Checking for files using the filter ${sourceFolder}/${filter}`);
         var files = glob.sync(`${sourceFolder}/${filter}`);
