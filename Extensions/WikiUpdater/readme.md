@@ -141,10 +141,27 @@ The recommended approach is to use the build agents OAUTH Token for authenticati
 1. Allow the pipeline to access th OAUTH Token
    - For UI based pipelines this is [documented here](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=vsts&tabs=yaml#enable-scripts-to-run-git-commands)
    - For YAML based pipelines the OAUTH token should automatically be available
-1. Grant 'contribute' access on the target Azure DevOps WIKI Repo to user the build agent is scoped to run as
-   - Control of the scope the build agent runs as is [documented here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/access-tokens?view=azure-devops&tabs=yaml#job-authorization-scope).
-   - Make sure that the 'Project Collection > Setting > Pipeline > Setting > Protect access to repositories in YAML pipelines' as not enabled. If set it can block access to the target repo.
-   - Usually this is the '_Project Name_ Build Service' user (assuming this is the account the pipeline is running. The alternative if the wider scope is used is the 'Project Collection Build Service' user
+1. Grant 'contribute' access on the target Azure DevOps WIKI Repo to user the build agent is scoped to run as. You control of the scope the build agent runs as is [documented here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/access-tokens?view=azure-devops&tabs=yaml#job-authorization-scope). Usually this is the '_Project Name_ Build Service' user (assuming this is the account the pipeline is running. The alternative if the wider scope is used is the 'Project Collection Build Service' user
+1. So the YAML pipeline can access repos either:
+   - Make sure that the 'Project Collection > Setting > Pipeline > Setting > Protect access to repositories in YAML pipelines' as not enabled. This setting effects all repos.
+   - [More secure] Leave the 'Project Collection > Setting > Pipeline > Setting > Protect access to repositories in YAML pipelines' as enabled, but add the target WIKI repo as a repository resource in your pipeline e.g:
+
+   ```yaml
+   resources:
+     repositories:
+      - repository: WikiRepo #this can be any name you like, just a local name for repo
+        type: git
+        name: <Project name>/<Project Name>.wiki
+   ```
+   By declaring the WIKI repo as repository resource, the scope of the job access token is set to include the WIKI repo and thus access permission is granted for that specific YAML pipeline
+
+   > **Note:** If you use this technique, you still have to use WIKI Updater task to clone the WIKI repo as per this documentation i.e: setting it to clone the WIKI repo to it's own private working folder. 
+   >
+   > Adding the repo as a resource is not done to perform the clone operation, but to grant access to the repo to the current pipeline. The WIKI repo declared as a resource is never actual cloned onto the build agent as the command `checkout: WikiRepo` is never issued
+   >
+   > for a further discussion on this see [the issue #8450](https://github.com/rfennell/AzurePipelines/issues/8450)
+
+
 1. Set the task's `UseAgentToken` parameter to true
 
 Once this is set the `user` and the `password` parameters are managed by the task.
