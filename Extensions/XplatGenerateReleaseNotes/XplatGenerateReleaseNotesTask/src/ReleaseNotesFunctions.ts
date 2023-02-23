@@ -78,7 +78,7 @@ import { TestApi } from "azure-devops-node-api/TestApi";
 import { timeout, async } from "q";
 import { ResultDetails, TestCaseResult, TestResolutionState, TestRun } from "azure-devops-node-api/interfaces/TestInterfaces";
 import { IWorkItemTrackingApi } from "azure-devops-node-api/WorkItemTrackingApi";
-import { WorkItemExpand, WorkItem, ArtifactUriQuery, Wiql } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
+import { WorkItemExpand, WorkItem, ArtifactUriQuery, Wiql, QueryExpand } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import { ITfvcApi } from "azure-devops-node-api/TfvcApi";
 import * as issue349 from "./Issue349Workaround";
 import { ITestApi } from "azure-devops-node-api/TestApi";
@@ -1287,7 +1287,8 @@ export async function generateReleaseNotes(
     wiqlWhereClause: string,
     getPRDetails: boolean,
     getTestedBy: boolean,
-    wiqlFromTarget: string
+    wiqlFromTarget: string,
+    wiqlSharedQueryName: string,
     ): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
 
@@ -1945,8 +1946,10 @@ export async function generateReleaseNotes(
                 relatedWorkItems = await getAllParentWorkitems(workItemTrackingApi, relatedWorkItems);
             }
 
-            if (wiqlWhereClause && wiqlFromTarget && wiqlWhereClause.length > 0 && wiqlFromTarget.length > 0) {
-               var wiqlQuery = `SELECT [System.Id] FROM ${wiqlFromTarget} WHERE ${wiqlWhereClause} ORDER BY [System.ID] DESC`;
+            agentApi.logInfo(`Checking for user defined WIQL query`);
+            var wiqlQuery = await getWiqlQuery(workItemTrackingApi, teamProject, wiqlWhereClause, wiqlFromTarget, wiqlSharedQueryName);
+
+            if (wiqlQuery &&  wiqlQuery.length ) {
                agentApi.logInfo(`Getting Work Items using WIQL query`);
                agentApi.logDebug(wiqlQuery);
                try {
@@ -1958,10 +1961,10 @@ export async function generateReleaseNotes(
                     // need to get the result into the same format as used to enrich other WI arrays
                     if (queryResponse) {
                         var wiRefArray: ResourceRef[];
-                        if (wiqlFromTarget === "WorkItems" && queryResponse.workItems) {
+                        if (wiqlQuery.toLowerCase().includes("from workitems") && queryResponse.workItems) {
                             wiRefArray = queryResponse.workItems.map(wi => ({id: wi.id.toString(), url: undefined})) as ResourceRef[];
                         }
-                        else if (wiqlFromTarget === "WorkItemLinks" && queryResponse.workItemRelations) {
+                        else if (wiqlQuery.toLowerCase().includes("from workitemlinks") && queryResponse.workItemRelations) {
                              wiRefArray = queryResponse.workItemRelations.map(wi => ({id: wi.target?.id.toString(), url: undefined})) as ResourceRef[];
                              removeDuplicates(wiRefArray);
                         }
@@ -2283,6 +2286,30 @@ async function addMissingManuallyLinkedWI(buildApi: IBuildApi, TeamProjectId: an
         reject (err);
     }
 });
+}
+
+async function getWiqlQuery(workItemTrackingApi: IWorkItemTrackingApi, teamProject: string , wiqlWhereClause: string, wiqlFromTarget: string, wiqlSharedQueryName: string): Promise<string> {
+    return new Promise<string>(async (resolve, reject) => {
+        try {
+            if (wiqlSharedQueryName && wiqlSharedQueryName.length > 0) {
+                agentApi.logInfo(`Getting Work Items using user defined WIQL query '/Shared Queries/${wiqlSharedQueryName}'`);
+                var response = await workItemTrackingApi.getQuery(teamProject, `/Shared Queries/${wiqlSharedQueryName}`, QueryExpand.All);
+                resolve(response.wiql.replace(`@project`, `'${teamProject}'`)); // we can't handle the @project name in the query, so replace it
+            } else {
+                if (wiqlWhereClause && wiqlFromTarget && wiqlWhereClause.length > 0 && wiqlFromTarget.length > 0) {
+                    var wiqlQuery = `SELECT [System.Id] FROM ${wiqlFromTarget} WHERE ${wiqlWhereClause} ORDER BY [System.ID] DESC`;
+                    agentApi.logInfo(`Getting Work Items using WIQL query parameters`);
+                    resolve(wiqlQuery);
+                } else {
+                    agentApi.logInfo(`No WIQL query parameters defined`);
+                    resolve("");
+                }
+            }
+        } catch (err) {
+            agentApi.logWarn(`Cannot find user defined WIQL query '/Shared Queries/${wiqlSharedQueryName}'`);
+            resolve("");
+        }
+    });
 }
 
 async function addGitHubLinkedWI(workItemTrackingApi: IWorkItemTrackingApi, globalCommits: Change[]): Promise<ResourceRef[]> {
