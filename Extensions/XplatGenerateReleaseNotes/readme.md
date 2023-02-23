@@ -22,6 +22,7 @@ To speed the development of this tool and it's templates a [tool](https://github
 2. Run the command (as a minimum) to run the task is `node GenerateReleaseNotesConsoleTester.js --filename build-settings.json --pat <Azure-DevOps-PAT>`
 
 # Usage Patterns
+## Use Cases
 > The a video on usage of this task is discussed in this [DDD Community Conference Session](https://www.youtube.com/watch?v=xaV3dFoQdV8&t=331s)
 
 There are various ways that the task can be used. A common pattern is to use the task multiple times in a CI/CD pipeline.
@@ -37,6 +38,17 @@ Possible sets of parameters depending on your usage are summarized below
 | Generate notes since the last successful release.  <br>Option 1. Place the task in a stage that is only run when you wish to generate release notes. Usually this will be guarded by branch based filters or manual approvals.  |  Requires `checkstages=true` parameter | Run inside the release. Supported and you can override the stage name used for comparison using the `overrideStageName` parameter
 | Generate notes since the last successful release.  <br>Option 2. Set the task to look back for the last successful build that has a given tag |  Requires `checkstages=true` and the `tags` parameters| Not supported
 | Generate notes since the last successful release.  <br>Option 3. Override the build that the task uses for comparison with a fixed value |  Requires `checkstages=true` and the `overrideBuildReleaseId` parameters | Run inside the release. Requires the `overrideBuildReleaseId` parameter
+
+## Where do WI and Changesets come from?
+At it's core this task uses the Azure DevOps REST API to get the list of work items and commits/changesets either directly associated with a build, or between two builds/releases (see above). 
+
+However, there are also other means to supplement these lists by setting the following parameters
+
+- To get parent and child work items of those directly associated with the build/release set `getAllParents` and `getParentsAndChildren ` parameters
+- To get manually linked work items set the `checkForManuallyLinkedWI` parameter
+- To match commits to Azure DevOps PR cross project within the organisation set the `searchCrossProjectForPRs` parameter
+- To use a WIQL query to get additional work items set the `wiqlWhereClause` and `wiqlFromTarget` parameters or the `wiqlSharedQueryName` parameter
+
 
 # The Template
 
@@ -172,7 +184,7 @@ The are a wide range of objects available to get data from within templates. Som
 |**manualtests** | the array of manual Test Plan runs associated with any of the builds linked to the release |
 |**manualTestConfigurations** | the array of manual test configurations |
 | **relatedWorkItems** | the array of all work item associated with the release plus their direct parents or children (if `getParentsAndChildren` is set to `true`) and/or all parents depending on task parameters (if `getAllParents` is set to `true`) |  
-| **queryWorkItems** | the array of WI returned by by the WIQL, if a `wiqlWhereClause` is defined. Note that this array is completely independent of all other WI arrays.
+| **queryWorkItems** | the array of WI returned by by the WIQL, if a `wiqlSharedQueryName` or `wiqlSharedQueryName` and `wiqlWhereClause` are defined. Note that this array is completely independent of all other WI arrays.
 | **testedByWorkItems** | the array of all Test Case work items associated by a `Tested By` relation to a WI directly associated with the release |
 
 ### Release objects (only available in a Classic UI based Releases)
@@ -305,7 +317,7 @@ Either as inline javaScript
 > Note: Inline JavaScript can be entered in the YAML as a single line or a multi-line parameter as follows using the `|` operator
 
 ```
-- task: XplatGenerateReleaseNotes@3
+- task: XplatGenerateReleaseNotes@4
    inputs:
       outputfile: '$(Build.ArtifactStagingDirectory)\releasenotes.md'
       # all the other parameters required
@@ -318,7 +330,7 @@ Either as inline javaScript
 Or the custom extension can be passed as file
 
 ```
-- task: XplatGenerateReleaseNotes@3
+- task: XplatGenerateReleaseNotes@4
    inputs:
       outputfile: '$(Build.ArtifactStagingDirectory)\releasenotes.md'
       # all the other parameters required
@@ -357,7 +369,6 @@ The task takes the following parameters
 | sortCS |If true will sort commits/changesets by date, if false then it will leave them in the API default order |
 | sortWi |If true will sort work items by type, if false then it will leave the work items in default order |
 | showOnlyPrimary | If this is set only WI and CS associated with primary artifact are listed, default is false so all artifacts scanned. |
-| wiqlWhereClause | A where clause to get a get a list of work items using a WIQL Query e.g. `[System.TeamProject] = 'Project Name' and [System.WorkItemType] = 'Product Backlog Item'`. Note you cannot use the all the @ parameter such as `@project`, `@currentIteration` or `@Me`, but `@Today` works. To aid in the creation of  your WIQL Where clauses the [WIQL Editor](https://marketplace.visualstudio.com/items?itemName=ottostreifel.wiql-editor) extension is highly recommended |
 | checkForManuallyLinkedWI | By default WI associated manually with a build/release will not appear in release notes. If this parameter is true they will be added. |
 | searchCrossProjectForPRs |If true will try to match commits to Azure DevOps PR cross project within the organisation, if false only searches the Team Project.|
 | GitHubPAT. | (Optional) This [GitHub PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) is only required to expand commit messages stored in a private GitHub repos. This PAT is not required for commit in Azure DevOps public or private repos or public GitHub repos|
@@ -379,7 +390,8 @@ The task takes the following parameters
 | customHandlebarsExtensionCode | A string containing custom Handlebars extension written as a JavaScript module e.g. <br> `module.exports = {foo: function () {return 'Returns foo';}};`. <br>Note: If any text is set in this parameter it overwrites any contents of the customHandlebarsExtensionFile parameter |
 | customHandlebarsExtensionFolder | The folder to look for, or create, the customHandlebarsExtensionFile in. If not set defaults to the task's current directory |
 | customHandlebarsExtensionFile | The filename to save the customHandlebarsExtensionCode into if set. If there is no text in the  customHandlebarsExtensionCode parameter the an attempt will be made to load any custom extensions from from this file. This allows custom extensions to loaded like any other source file under source control. |
-| wiqlWhereClause | An optional where clause to get a get a list of work items using a WIQL Query e.g. `[System.TeamProject] = 'Project Name' and [System.WorkItemType] = 'Product Backlog Item'`. The results of this query are available in the template in the `queryWorkItems` array. Note that this list of WI is independent of all other WI arrays. |
+| wiqlSharedQueryName | The name (can include sub folder path) of a Shared Work Item Query in the `Shared Queries` folder that will be used to retrieve work items e.g. `Query1` or `My Folder/Query1`. <br>Notes: This parameter if defined will be used in preference to the other WIQL parameters. <br>The query must be saved as a 'Shared Query'. <br>As with the other WIQL parameters, you cannot use the all the @ parameter such as `@project`, `@currentIteration` or `@Me`, but `@Today` works, and the query must return the Work Item ID `[System.Id]` as a column |
+| wiqlWhereClause | A where clause to get a get a list of work items using a WIQL Query e.g. `[System.TeamProject] = 'Project Name' and [System.WorkItemType] = 'Product Backlog Item'`. Note you cannot use the all the @ parameter such as `@project`, `@currentIteration` or `@Me`, but `@Today` works. To aid in the creation of  your WIQL Where clauses the [WIQL Editor](https://marketplace.visualstudio.com/items?itemName=ottostreifel.wiql-editor) extension is highly recommended |
 | wiqlFromTarget | The FROM target for the WIQL Query.  e.g. `SELECT [System.Id] FROM workitems WHERE ...` (Default is WorkItems) |
 | outputVariableName | Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable. Note that if generating multiple document then this output variable is set to the value of the first document generated|
 | getPRDetails | If true all PRs in the project, or organisation, will be scanned for associations. There is an option to disable this feature as this scan is slow and not always required (Default true) |

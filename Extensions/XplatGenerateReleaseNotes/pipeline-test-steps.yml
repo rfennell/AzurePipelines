@@ -6,7 +6,7 @@ steps:
   - checkout: self  # get the repo as we have templates
 
   - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@4
-    displayName: 'Generate Release Notes based on Release Comparison API V2'
+    displayName: 'Generate Release Notes (wiqlWhereClause)'
     inputs:
       outputfile: '$(System.DefaultWorkingDirectory)\inline.md'
       outputVariableName: OutputText
@@ -112,6 +112,7 @@ steps:
               -  **File filename (GitHub):** {{this.filename}}
         {{/forEach}}
         {{/forEach}}
+
   - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
     displayName: 'Git based WIKI Updater'
     inputs:
@@ -119,6 +120,127 @@ steps:
       filename: 'xPlatReleaseNotes/build-${{parameters.platform}}-handlebars.md'
       dataIsFile: true
       sourceFile: '$(System.DefaultWorkingDirectory)\inline.md'
+      message: 'Update from Build'
+      gitname: builduser
+      gitemail: 'build@demo'
+      useAgentToken: true
+      user: richardfennell
+
+  - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@4
+    displayName: 'Generate Release Notes (wiqlSharedQueryName)'
+    inputs:
+      outputfile: '$(System.DefaultWorkingDirectory)\inline1.md'
+      outputVariableName: OutputText
+      wiqlSharedQueryName: 'Query1'
+      templateLocation: InLine
+      inlinetemplate: |
+        # Notes for build
+        **Build Number**: {{buildDetails.id}}
+        **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}}
+
+        # Associated Pull Requests ({{pullRequests.length}})
+        {{#forEach pullRequests}}
+        {{#if isFirst}}### Associated Pull Requests (only shown if  PR) {{/if}}
+        *  **PR {{this.id}}**  {{this.title}}
+        {{/forEach}}
+
+        ## Global list of ConsumedArtifacts ({{consumedArtifacts.length}})
+        {{#forEach consumedArtifacts}}
+        * {{json this}}
+        {{/forEach}}
+
+        # Builds with associated WI/CS ({{builds.length}})
+        {{#forEach builds}}
+        {{#if isFirst}}## Builds {{/if}}
+        ##  Build {{this.build.buildNumber}}
+        {{#forEach this.commits}}
+        {{#if isFirst}}### Commits {{/if}}
+        - CS {{this.id}}
+        {{/forEach}}
+
+        # Global list of WI with PRs, parents and children
+        {{#forEach this.workItems}}
+        {{#if isFirst}}### WorkItems {{/if}}
+        *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+          - **WIT** {{lookup this.fields 'System.WorkItemType'}}
+          - **Tags** {{lookup this.fields 'System.Tags'}}
+          - **Assigned** {{#with (lookup this.fields 'System.AssignedTo')}} {{displayName}} {{/with}}
+          - **Description** {{{lookup this.fields 'System.Description'}}}
+          - **PRs**
+        {{#forEach this.relations}}
+        {{#if (contains this.attributes.name 'Pull Request')}}
+        {{#with (lookup_a_pullrequest ../../pullRequests  this.url)}}
+              - {{this.pullRequestId}} - {{this.title}}
+        {{/with}}
+        {{/if}}
+        {{/forEach}}
+          - **Parents**
+        {{#forEach this.relations}}
+        {{#if (contains this.attributes.name 'Parent')}}
+        {{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
+              - {{this.id}} - {{lookup this.fields 'System.Title'}}
+              {{#forEach this.relations}}
+              {{#if (contains this.attributes.name 'Parent')}}
+              {{#with (lookup_a_work_item ../../../../relatedWorkItems  this.url)}}
+                - {{this.id}} - {{lookup this.fields 'System.Title'}}
+              {{/with}}
+              {{/if}}
+              {{/forEach}}
+        {{/with}}
+        {{/if}}
+        {{/forEach}}
+          - **Children**
+        {{#forEach this.relations}}
+        {{#if (contains this.attributes.name 'Child')}}
+        {{#with (lookup_a_work_item ../../relatedWorkItems  this.url)}}
+              - {{this.id}} - {{lookup this.fields 'System.Title'}}
+        {{/with}}
+        {{/if}}
+        {{/forEach}}
+          - **Tested By**
+        {{#forEach this.relations}}
+        {{#if (contains this.attributes.name 'Tested By')}}
+        {{#with (lookup_a_work_item ../../testedByWorkItems  this.url)}}
+              - {{this.id}} - {{lookup this.fields 'System.Title'}}
+        {{/with}}
+        {{/if}}
+        {{/forEach}}
+        {{/forEach}}
+
+        {{/forEach}}
+
+        # Global list of WI ({{workItems.length}})
+        {{#forEach workItems}}
+        {{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
+        *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+          - **WIT** {{lookup this.fields 'System.WorkItemType'}}
+          - **Tags** {{lookup this.fields 'System.Tags'}}
+        {{/forEach}}
+
+        # WIQL list of WI ({{queryWorkItems.length}})
+        {{#forEach queryWorkItems}}
+        *  **{{this.id}}** {{lookup this.fields 'System.Title'}}
+        {{/forEach}}
+
+        {{#forEach commits}}
+        {{#if isFirst}}### Associated commits{{/if}}
+        * ** ID{{this.id}}**
+          -  **Message:** {{this.message}}
+          -  **Commited by:** {{this.author.displayName}}
+          -  **FileCount:** {{this.changes.length}}
+        {{#forEach this.changes}}
+              -  **File path (TFVC or TfsGit):** {{this.item.path}}
+              -  **File filename (GitHub):** {{this.filename}}
+        {{/forEach}}
+        {{/forEach}}
+  
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+    displayName: 'Git based WIKI Updater'
+    inputs:
+      repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
+      filename: 'xPlatReleaseNotes/build-${{parameters.platform}}-handlebars1.md'
+      dataIsFile: true
+      sourceFile: '$(System.DefaultWorkingDirectory)\inline1.md'
       message: 'Update from Build'
       gitname: builduser
       gitemail: 'build@demo'
