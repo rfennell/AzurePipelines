@@ -389,6 +389,15 @@
       }
     },
     {
+      "name": "wiqlSharedQueryName",
+      "type": "string",
+      "label": "Shared WIQL Query",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The name (can include sub folder path) of a Shared Work Item Query in the `Shared Queries` folder that will be used to retrieve work items e.g. `Query1` or `MyFolder/Query1`. Notes: This parameter if defined will be used in preference to the other WIQL parameters. The query must be saved as 'shared query'. As with the other WIQL parameters, you cannot use the all the @ parameter such as `@project`, `@currentIteration` or `@Me`, but `@Today` works, and the query must return the Work Item ID as a column",
+      "groupName":"advanced"
+    },
+    {
       "name": "getPRDetails",
       "type": "boolean",
       "label": "Find associated PRs",

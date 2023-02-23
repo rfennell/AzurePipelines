@@ -88,6 +88,7 @@ async function run(): Promise<number> {
           var getPRDetails = getBoolean(settings.getPRDetails);
           var getTestedBy = getBoolean(settings.getTestedBy);
           var wiqlFromTarget = settings.wiqlFromTarget;
+          var wiqlSharedQueryName = settings.wiqlSharedQueryName;
 
           if (payloadFile && payloadFile.length > 0 && fs.existsSync(payloadFile)) {
             console.log(`Running the tester against a local payload JSON file`);
@@ -176,7 +177,8 @@ async function run(): Promise<number> {
               wiqlWhereClause,
               getPRDetails,
               getTestedBy,
-              wiqlFromTarget);
+              wiqlFromTarget,
+              wiqlSharedQueryName);
           }
 
         } else {

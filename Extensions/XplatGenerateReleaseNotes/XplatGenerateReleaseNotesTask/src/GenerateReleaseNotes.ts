@@ -50,6 +50,7 @@ async function run(): Promise<number>  {
             var getPRDetails = tl.getBoolInput("getPRDetails");
             var getTestedBy = tl.getBoolInput("getTestedBy");
             var wiqlFromTarget = tl.getInput("wiqlFromTarget");
+            var wiqlSharedQueryName = tl.getInput("wiqlSharedQueryName");
 
             var maxRetries = parseInt(tl.getInput("maxRetries"));
 
@@ -100,7 +101,8 @@ async function run(): Promise<number>  {
                 wiqlWhereClause,
                 getPRDetails,
                 getTestedBy,
-                wiqlFromTarget
+                wiqlFromTarget,
+                wiqlSharedQueryName
                 );
 
         } catch (err) {
