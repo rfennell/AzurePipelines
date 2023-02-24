@@ -184,7 +184,7 @@ The are a wide range of objects available to get data from within templates. Som
 |**manualtests** | the array of manual Test Plan runs associated with any of the builds linked to the release |
 |**manualTestConfigurations** | the array of manual test configurations |
 | **relatedWorkItems** | the array of all work item associated with the release plus their direct parents or children (if `getParentsAndChildren` is set to `true`) and/or all parents depending on task parameters (if `getAllParents` is set to `true`) |  
-| **queryWorkItems** | the array of WI returned by by the WIQL, if a `wiqlSharedQueryName` or `wiqlSharedQueryName` and `wiqlWhereClause` are defined. Note that this array is completely independent of all other WI arrays.
+| **queryWorkItems** | the array of WI returned by by the WIQL, if a `wiqlSharedQueryName` or `wiqlFromTarget` and `wiqlWhereClause` are defined. Note that this array is completely independent of all other WI arrays.
 | **testedByWorkItems** | the array of all Test Case work items associated by a `Tested By` relation to a WI directly associated with the release |
 
 ### Release objects (only available in a Classic UI based Releases)
