@@ -5,7 +5,7 @@
 
  This PowerShell based extension was designed to run only on Windows based Agents and within Classic Builds. This was because these were the only options when it was originally created. Over time is was enhanced, using my own business logic, to work out associated work items and changesets/commits and to work within Classic Releases.
 
-The use of PowerShell for the extension, and especially my own proprietary templating system, made adding new cross platform features difficult. Hence I decided to build the much enhanced [Node based Release Notes Generator](ttps://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task) extension.
+The use of PowerShell for the extension, and especially my own proprietary templating system, made adding new cross platform features difficult. Hence I decided to build the much enhanced [Node based Release Notes Generator](https://github.com/rfennell/vNextBuild/wiki/GenerateReleaseNotes---Node-based-Cross-Platform-Task) extension.
 
  - Being Node based it can run on any agent platform
  - Use Handlebars based templates
