@@ -162,6 +162,13 @@ A basic [Handlebars](https://handlebarsjs.com/) template is as follows. What is 
  |{{this.artifactCategory}} | {{this.artifactType}} | {{#if versionName}}{{versionName}}{{/if}} | {{truncate versionId 7}} | {{#if this.commits}} {{this.commits.length}} {{/if}} | {{#if this.workitems}} {{this.workitems.length}} {{/if}} |
 {{/forEach}}
 
+## Artifacts published by build ({{publishedArtifacts.length}})
+| Name| Type |
+|-|-|-|
+{{#forEach publishedArtifacts}}
+ |{{this.name}} | {{this.resource.type}} | 
+{{/forEach}}
+
 ```
 
 > **IMPORTANT** Handlebars based templates have different objects available to the legacy template used in V2 of this extension. This is a breaking change, so watch out if migrating.
@@ -202,6 +209,7 @@ The are a wide range of objects available to get data from within templates. Som
 | **compareBuildDetails** | the previous successful build that comparisons are being made against, only available if `checkstage=true`
 | **currentStage** | if `checkstage=true` is enable this object is set to the details of the stage in the current build that is being used for the stage check
 | **consumedArtifacts** | the artifacts consumed by the pipeline enriched with details where possible, the acutal objects depend on the artifact type <br> -- **artifactCategory** <br> -- **artifactType** <br> -- **properties** <br> -- **versionName** <br> -- **commits** - the commits associated with the artifact <br> -- **workitems** the workitems associated with the artifacts <br> -- **relatedworkitems** if  `getParentsAndChildren` is set to `true` and/or `getAllParents` is set to `true`. <br>If `checkStage=true` is set then this list should include all changes between the version of the artifact in the current and last successful run of the containing stage
+| **publishedArtifacts** | the artifacts published by the pipeline
 
 > **Note:** To dump all possible values via the template using the custom Handlebars extension `{{json propertyToDump}}` this runs a custom Handlebars extension to do the expansion. There are also options to dump these raw values to the build console log or to a file. (See below)
 

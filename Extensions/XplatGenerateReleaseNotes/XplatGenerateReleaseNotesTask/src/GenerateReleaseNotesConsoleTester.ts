@@ -120,7 +120,8 @@ async function run(): Promise<number> {
                 false,
                 payload.globalConsumedArtifacts ? payload.globalConsumedArtifacts : [],
                 payload.queryWorkItems ? payload.queryWorkItems : [],
-                payload.testedByWorkItems ? payload.testedByWorkItems : []);
+                payload.testedByWorkItems ? payload.testedByWorkItems : [],
+                payload.publishedArtifacts ? payload.publishedArtifacts : []);
               util.writeFile(outputFile, outputString, replaceFile, appendToFile);
 
             } else {
