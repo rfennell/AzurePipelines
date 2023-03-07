@@ -69,7 +69,7 @@ import { IReleaseApi } from "azure-devops-node-api/ReleaseApi";
 import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 import * as webApi from "azure-devops-node-api/WebApi";
 import fs  = require("fs");
-import { Build, Change, Timeline, TimelineRecord } from "azure-devops-node-api/interfaces/BuildInterfaces";
+import { Build, Change, Timeline, TimelineRecord, BuildArtifact } from "azure-devops-node-api/interfaces/BuildInterfaces";
 import { IGitApi, GitApi } from "azure-devops-node-api/GitApi";
 import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfaces";
 import { GitCommit, GitPullRequest, GitPullRequestQueryType, GitPullRequestSearchCriteria, PullRequestStatus } from "azure-devops-node-api/interfaces/GitInterfaces";
@@ -925,7 +925,8 @@ export function processTemplate(
     stopOnError: boolean,
     globalConsumedArtifacts: any[],
     queryWorkItems: WorkItem[],
-    testedByWorkItems: WorkItem[]
+    testedByWorkItems: WorkItem[],
+    publishedArtifacts: BuildArtifact[]
     ): string {
 
     var output = "";
@@ -943,6 +944,7 @@ export function processTemplate(
         agentApi.logDebug(`  Related Tests: ${testedByWorkItems.length}`);
         agentApi.logDebug(`  Indirect PR: ${inDirectlyAssociatedPullRequests.length}`);
         agentApi.logDebug(`  Consumed Artifacts: ${globalConsumedArtifacts.length}`);
+        agentApi.logDebug(`  Published Artifacts: ${publishedArtifacts.length}`);
         agentApi.logDebug(`  Query WI: ${queryWorkItems.length}`);
 
         // it is a handlebar template
@@ -1068,7 +1070,8 @@ export function processTemplate(
                 "consumedArtifacts": globalConsumedArtifacts,
                 "currentStage": currentStage,
                 "queryWorkItems": queryWorkItems,
-                "testedByWorkItems": testedByWorkItems
+                "testedByWorkItems": testedByWorkItems,
+                "publishedArtifacts": publishedArtifacts
             });
             agentApi.logInfo( "Completed processing template");
 
@@ -1348,6 +1351,7 @@ export async function generateReleaseNotes(
             var currentBuild: Build;
             var currentStage: TimelineRecord;
             var hasBeenTimeout = false;
+            var publishedArtifacts: BuildArtifact[];
 
             try {
 
@@ -1372,6 +1376,9 @@ export async function generateReleaseNotes(
                     reject (-1);
                     return;
                 }
+
+                agentApi.logInfo("Getting artifacts published by the current build");
+                publishedArtifacts = await buildApi.getArtifacts(teamProject, buildId );
 
                 if (checkStage) {
                     var stageName = tl.getVariable("System.StageName");
@@ -2111,6 +2118,7 @@ export async function generateReleaseNotes(
             agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
             agentApi.logInfo(`Total Indirect Pull Requests: [${inDirectlyAssociatedPullRequests.length}]`);
             agentApi.logInfo(`Total Associated Test WI: [${testedByWorkItems.length}]`);
+            agentApi.logInfo(`Total Published Artifacts: [${publishedArtifacts.length}]`);
             agentApi.logInfo(`Total Consumed Artifacts: [${globalConsumedArtifacts.length}]`);
             agentApi.logInfo(`Total WIQL Workitems: [${queryWorkItems.length}]`);
 
@@ -2136,7 +2144,8 @@ export async function generateReleaseNotes(
                     manualTestConfigurations: globalManualTestConfigurations,
                     consumedArtifacts: globalConsumedArtifacts,
                     queryWorkItems: queryWorkItems,
-                    testedByWorkItems: testedByWorkItems
+                    testedByWorkItems: testedByWorkItems,
+                    publishedArtifacts: publishedArtifacts
                 });
 
             agentApi.logInfo(`Generating the release notes, the are ${templateFiles.length} template(s) to process`);
@@ -2167,7 +2176,8 @@ export async function generateReleaseNotes(
                         stopOnError,
                         globalConsumedArtifacts,
                         queryWorkItems,
-                        testedByWorkItems);
+                        testedByWorkItems,
+                        publishedArtifacts);
 
                     writeFile(outputFiles[i], outputString, replaceFile, appendToFile);
 
