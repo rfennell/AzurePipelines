@@ -1351,7 +1351,7 @@ export async function generateReleaseNotes(
             var currentBuild: Build;
             var currentStage: TimelineRecord;
             var hasBeenTimeout = false;
-            var publishedArtifacts: BuildArtifact[];
+            var publishedArtifacts: BuildArtifact[] = [];
 
             try {
 
