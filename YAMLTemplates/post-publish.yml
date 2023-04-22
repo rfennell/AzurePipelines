@@ -7,7 +7,9 @@ parameters:
   type: string
 - name: mastodonKey
   type: string
-  
+- name: twitterUrl
+  type: string 
+
 steps:  
 - task: richardfennellBM.BM-VSTS-BuildUpdating-Tasks-DEV.BuildVariableTask-Task.BuildVariableTask@1
   displayName: 'Update Build Variable'
@@ -21,11 +23,14 @@ steps:
   inputs:
     OutputText: 'OutputedText'
 
-- task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Twitter.Xpirit-Vsts-Release-Twitter.Twitter@1
+- pwsh: |
+   # Write your PowerShell commands here.
+   
+   $uri = "${{parameters.twitterUrl}}" 
+   $body = '{ "Tweet": "I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText) "}'
+   
+   Invoke-WebRequest -Uri $uri -Method POST -Body $body -Headers $headers -ContentType "application/json"
   displayName: 'Send Tweet about new release'
-  inputs:
-    TwitterEndPoint: 'Twitter Richard'
-    Message: 'I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText) '
 
 - powershell: |
     Write-Host "Posting to Mastodon"
