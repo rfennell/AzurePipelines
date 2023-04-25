@@ -3,11 +3,7 @@ parameters:
   type: string
 - name: extensionName
   type: string
-- name: mastodonUrl
-  type: string
-- name: mastodonKey
-  type: string
-- name: twitterUrl
+- name: socialmediaLogicAppURL
   type: string 
 
 steps:  
@@ -24,15 +20,12 @@ steps:
     OutputText: 'OutputedText'
 
 - pwsh: |
-   # Write your PowerShell commands here.
-   
-   $uri = "${{parameters.twitterUrl}}" 
-   $body = '{ "Tweet": "I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText) "}'
+   $msg = "I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText) "
+
+   write-host "Posting message: $msg"
+   $uri = "${{parameters.socialmediaLogicAppURL}}" 
+   $body = "{ `"Message`": `"$msg`"}"
    
    Invoke-WebRequest -Uri $uri -Method POST -Body $body -Headers $headers -ContentType "application/json"
-  displayName: 'Send Tweet about new release'
+  displayName: 'Create social media posts about new release'
 
-- powershell: |
-    Write-Host "Posting to Mastodon"
-    Invoke-WebRequest -Uri ${{parameters.mastodonUrl}}/api/v1/statuses -Method POST -Headers @{Authorization='Bearer ${{parameters.mastodonKey}}'}  -Body @{status='I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText)'}
-  displayName: 'Posting to Mastodon about new release'
