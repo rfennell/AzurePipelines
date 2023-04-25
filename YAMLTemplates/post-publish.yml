@@ -24,7 +24,7 @@ steps:
 
    write-host "$msg"
    $uri = "${{parameters.socialmediaLogicAppURL}}" 
-   $body = '{ "Message": $msg}'
+   $body = '{ "Message": "$msg"}'
    
    Invoke-WebRequest -Uri $uri -Method POST -Body $body -Headers $headers -ContentType "application/json"
   displayName: 'Create social media posts about new release'
