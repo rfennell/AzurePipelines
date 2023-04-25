@@ -1,0 +1,22 @@
+name: $(Major).$(Minor).$(rev:r)  # build numbering format
+
+trigger: none
+
+#variables:
+  # declared in the pipeline UI
+  #  major
+  #  minor
+stages:
+  - stage: Public
+    jobs:
+    - job: Post_Publish
+      variables:
+      - group: socialMedia
+      pool:
+        vmImage: windows-latest
+      steps:
+        - template: .\post-publish.yml
+          parameters:
+              buildNumber: $(Build.BuildNumber)
+              extensionName: $(Build.DefinitionName)
+              socialmediaLogicAppURL: $(socialmediaLogicAppURL)
