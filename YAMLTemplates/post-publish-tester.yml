@@ -1,0 +1,17 @@
+name: $(Major).$(Minor).$(rev:r)  # build numbering format
+
+trigger: none
+stages:
+  - stage: Public
+    jobs:
+    - job: Post_Publish
+      variables:
+      - group: socialMedia
+      pool:
+        vmImage: window-latest
+      steps:
+        - template: .\post-publish.yml
+          parameters:
+              buildNumber: $(Build.BuildNumber)
+              extensionName: TesterName
+              socialmediaLogicAppURL: $(socialmediaLogicAppURL)
