@@ -3,8 +3,9 @@ name: $(Major).$(Minor).$(rev:r)  # build numbering format
 trigger: none
 
 variables:
-  major : 1
-  minor : 0
+  # declared in the pipeline UI
+  #  major
+  #  minor
 stages:
   - stage: Public
     jobs:
@@ -17,5 +18,5 @@ stages:
         - template: .\post-publish.yml
           parameters:
               buildNumber: $(Build.BuildNumber)
-              extensionName: TesterName
+              extensionName: $(Build.DefinitionName)
               socialmediaLogicAppURL: $(socialmediaLogicAppURL)
