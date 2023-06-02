@@ -1,8 +1,8 @@
 {
   "id": "4578fa22-6039-4d83-90e0-3e12f68d6b26",
   "name": "VersionDotNetCoreAssemblies",
-  "friendlyName": "Version .NET Core Assemblies",
-  "description": "Applies a version to a .NET Core assembly via the .csproj files based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
+  "friendlyName": "Version .NET Assemblies (Core/5/6 and later)",
+  "description": "Applies a version to a .NET Assemblies (Core/5/6 and later) via the .csproj files based on the build number. Based on Microsoft sample from https://msdn.microsoft.com/Library/vs/alm/Build/overview",
      "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Version-Assemblies-and-Packages-Tasks/)",
  "category": "Build",
   "visibility": [
@@ -123,7 +123,7 @@
 
    ],
   "minimumAgentVersion": "2.144.0",
-   "instanceNameFormat": "Version .NET Core Assemblies",
+   "instanceNameFormat": "Version .NET Assemblies (Core/5/6 and later)",
   "execution": {
      "Node10": {
        "target": "ApplyVersionToAssemblies.js",
