@@ -406,6 +406,9 @@ export async function enrichPullRequest(
         try {
             for (let prIndex = 0; prIndex < pullRequests.length; prIndex++) {
                 const prDetails = pullRequests[prIndex];
+                // issue1512 the API call that gets the batch of PRs does not return the whole description, so we need to get each one individually
+                const pr = await gitApi.getPullRequestById(prDetails.pullRequestId);
+                prDetails.description = pr.description;
                 // get any missing labels for all the known PRs we are interested in as getPullRequestById does not populate labels, so get those as well
                 if (!prDetails.labels || prDetails.labels.length === 0 ) {
                     agentApi.logDebug(`Checking for tags for ${prDetails.pullRequestId}`);
