@@ -70,7 +70,7 @@ stages:
           Contents: |
             readme.md
             vss-extension.json
-            V?\task.json
+            **\task\task.json
           TargetFolder: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
 
       - task: PublishPipelineArtifact@0
