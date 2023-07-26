@@ -1,0 +1,36 @@
+parameters:
+  - name: platform
+
+steps:
+  - checkout: VSTSBuildTaskValidation
+      clean: false
+      fetchDepth: 0
+      lfs: false
+
+  - task: WikiFolderUpdaterTask@2
+    inputs:
+      repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
+      targetFolder: '${{parameters.platform}}-folder'
+      replaceFile: True
+      sourceFolder: '$(Build.SourcesDirectory)/testdata'
+      Filter: '**/*.md'
+      message: 'Updated as a folder'
+      gitname: builduser
+      gitemail: 'build@demo'
+      useAgentToken: true
+      localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagentfolder'
+
+  - task: WikiFolderUpdaterTask@2
+    inputs:
+      repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
+      targetFolder: '${{parameters.platform}}-folder'
+      replaceFile: True
+      sourceFolder: '$(Build.SourcesDirectory)/testdata'
+      Filter: '**/*.md'
+      message: 'Updated as a folder'
+      gitname: builduser
+      gitemail: 'build@demo'
+      useAgentToken: true
+      localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagentfolder'
+
+

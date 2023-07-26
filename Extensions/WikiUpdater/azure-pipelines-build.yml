@@ -118,7 +118,7 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIUpdater)'
       pool:
-        vmImage: latest-windows
+        vmImage: windows-latest
       strategy:
         runOnce:
           deploy:
@@ -131,7 +131,7 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIUpdater)'
       pool:
-        vmImage: latest-linux
+        vmImage: ubuntu-latest
       strategy:
         runOnce:
           deploy:
@@ -144,7 +144,7 @@ stages:
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIUpdater)'
       pool:
-        vmImage: latest-macos
+        vmImage: macOS-latest 
       strategy:
         runOnce:
           deploy:
@@ -153,47 +153,44 @@ stages:
               parameters:
                 platform: windows
 
-    - deployment: Private_Test_Multi_File
+    - deployment: Private_Test_Multi_File_Windows
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIUpdater)'
       pool:
-        #vmImage: '$(vmImage)'
-        name: default
+          vmImage: windows-latest 
       strategy:
         runOnce:
           deploy:
             steps:
+            - template: .\multi-file-test-steps.yml
+              parameters:
+                platform: windows
 
-            - checkout: VSTSBuildTaskValidation
-              clean: false
-              fetchDepth: 0
-              lfs: false
+    - deployment: Private_Test_Multi_File_Linux
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (WIKIUpdater)'
+      pool:
+          vmImage: ubuntu-latest
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: .\multi-file-test-steps.yml
+              parameters:
+                platform: linux
 
-            - task: WikiFolderUpdaterTask@2
-              inputs:
-                repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
-                targetFolder: 'folder'
-                replaceFile: True
-                sourceFolder: '$(Build.SourcesDirectory)/testdata'
-                Filter: '**/*.md'
-                message: 'Updated as a folder'
-                gitname: builduser
-                gitemail: 'build@demo'
-                useAgentToken: true
-                localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagentfolder'
-
-            - task: WikiFolderUpdaterTask@2
-              inputs:
-                repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
-                targetFolder: 'folder'
-                replaceFile: True
-                sourceFolder: '$(Build.SourcesDirectory)/testdata'
-                Filter: '**/*.md'
-                message: 'Updated as a folder'
-                gitname: builduser
-                gitemail: 'build@demo'
-                useAgentToken: true
-                localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagentfolder'
+    - deployment: Private_Test_Multi_File_Windows_Mac
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (WIKIUpdater)'
+      pool:
+          vmImage: macOs-latest 
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: .\multi-file-test-steps.yml
+              parameters:
+                platform: Mac
 
   - stage: Documentation
     dependsOn: Test
