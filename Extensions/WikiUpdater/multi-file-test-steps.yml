@@ -3,9 +3,9 @@ parameters:
 
 steps:
   - checkout: VSTSBuildTaskValidation
-      clean: false
-      fetchDepth: 0
-      lfs: false
+    clean: false
+    fetchDepth: 0
+    lfs: false
 
   - task: WikiFolderUpdaterTask@2
     inputs:
