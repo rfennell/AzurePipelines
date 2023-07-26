@@ -116,7 +116,8 @@ export async function UpdateGitWikiFolder(
     injectExtraHeader,
     sslBackend,
     branch,
-    maxRetries) {
+    maxRetries,
+    mode) {
     const git = simpleGit();
 
     let remote = "";
@@ -232,8 +233,16 @@ export async function UpdateGitWikiFolder(
                     if (index < maxRetries) {
                         logInfo(`Push failed, probably due to target being updated completed, will retry up to ${maxRetries} times`);
                         sleep(1000);
-                        logInfo(`Pull to get updates from other users`);
-                        await git.pull();
+                        switch (mode) {
+                            case "Rebase":
+                                logInfo(`Rebasing to get updates from other users`);
+                                await git.rebase();
+                                break;
+                            default: // Pull
+                                logInfo(`Pull to get updates from other users`);
+                                await git.pull();
+                                break;
+                        }
                     } else {
                         logInfo(`Reached the retry limit`);
                         logError(err);

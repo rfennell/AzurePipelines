@@ -192,6 +192,19 @@
       "required": false,
       "helpMarkDown": "The number of times to retry if a push fails. After a failed push a pull is run prior to the next attempt",
       "groupName": "advanced"
+    },
+    {
+      "name": "mode",
+      "type": "pickList",
+      "label": "Git refresh mode",
+      "defaultValue": "Pull",
+      "required": true,
+      "options": {
+        "Pull": "Pull",
+        "Rebase": "Rebase"
+      },
+      "helpMarkDown": "The Git command used to refresh the cloned repo if the push fails and a retry occurs.",
+      "groupName": "advanced"
     }
   ],
   "instanceNameFormat": "Git based WIKI Folder Updater",

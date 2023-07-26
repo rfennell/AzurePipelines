@@ -280,6 +280,19 @@
       "required": false,
       "helpMarkDown": "If true will replace the existing [[_TOC_]] entry in an updated and pre-pended WIKI page with a new one at the top of the revised file (Default: False)",
       "groupName": "advanced"
+    },
+      {
+      "name": "mode",
+      "type": "pickList",
+      "label": "Git refresh mode",
+      "defaultValue": "Pull",
+      "required": true,
+      "options": {
+        "Pull": "Pull",
+        "Rebase": "Rebase"
+      },
+      "helpMarkDown": "The Git command used to refresh the cloned repo if the push fails and a retry occurs.",
+      "groupName": "advanced"
     }
 
 
