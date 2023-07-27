@@ -173,7 +173,7 @@ export async function UpdateGitWikiFolder(
         // do git pull just in case the clone was slow and there have been updates since
         // this is to try to reduce concurrency issues
         await git.pull();
-        logInfo(`Pull in case of post clone updates from other users`);
+        logInfo(`Git Pull, prior to local commits, in case of post clone updates to the repo from other users`);
 
         // make sure the slashes are in the correct format
         sourceFolder = sourceFolder.replace(/\\/g, "/");
@@ -232,6 +232,7 @@ export async function UpdateGitWikiFolder(
                 } catch (err) {
                     if (index < maxRetries) {
                         logInfo(`Push failed, probably due to target being updated completed, will retry up to ${maxRetries} times`);
+                        logInfo(err);
                         sleep(1000);
                         switch (mode) {
                             case "Rebase":

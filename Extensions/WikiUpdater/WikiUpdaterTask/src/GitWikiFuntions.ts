@@ -190,7 +190,7 @@ export async function UpdateGitWikiFile(
         // do git pull just in case the clone was slow and there have been updates since
         // this is to try to reduce concurrency issues
         await git.pull();
-        logInfo(`Pull in case of post clone updates from other users`);
+        logInfo(`Git Pull, prior to local commits, in case of post clone updates to the repo from other users`);
 
         // we need to change any encoded
         var workingFile = GetWorkingFile(filename, logInfo);
@@ -316,6 +316,7 @@ export async function UpdateGitWikiFile(
                 } catch (err) {
                     if (index < maxRetries) {
                         logInfo(`Push failed, probably due to target being updated completed, will retry up to ${maxRetries} times`);
+                        logInfo(err);
                         sleep(1000);
                         switch (mode) {
                             case "Rebase":
