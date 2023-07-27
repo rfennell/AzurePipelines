@@ -200,9 +200,9 @@ stages:
 
   - stage: Documentation
     dependsOn: 
-      Test_Windows
-      Test_Linux
-      Test_Mac
+      - Test_Windows
+      - Test_Linux
+      - Test_Mac
     pool:
       vmImage: '$(vmImage)'
     variables:
