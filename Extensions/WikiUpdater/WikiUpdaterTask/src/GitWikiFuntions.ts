@@ -315,7 +315,7 @@ export async function UpdateGitWikiFile(
                     break;
                 } catch (err) {
                     if (index < maxRetries) {
-                        logInfo(`Push failed, probably due to target being updated completed, will retry up to ${maxRetries} times`);
+                        logInfo(`Push failed, will retry up to ${maxRetries} times`);
                         logInfo(err);
                         sleep(1000);
                         switch (mode) {

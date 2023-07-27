@@ -111,7 +111,7 @@ stages:
                  extensionTag: '$(privateExtentionsTag)'
                  extensionVisibility: private
 
-  - stage: Test
+  - stage: Test_Windows
     dependsOn: Private
     jobs:
     - deployment: Private_Test_Single_File_Windows
@@ -119,32 +119,6 @@ stages:
       environment: 'Azure DevOps Marketplace (WIKIUpdater)'
       pool:
         vmImage: windows-latest
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-            - template: .\single-file-test-steps.yml
-              parameters:
-                platform: windows
-
-    - deployment: Private_Test_Single_File_Linux
-      timeoutInMinutes: 0
-      environment: 'Azure DevOps Marketplace (WIKIUpdater)'
-      pool:
-        vmImage: ubuntu-latest
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-            - template: .\single-file-test-steps.yml
-              parameters:
-                platform: linux
-
-    - deployment: Private_Test_Single_File_Mac
-      timeoutInMinutes: 0
-      environment: 'Azure DevOps Marketplace (WIKIUpdater)'
-      pool:
-        vmImage: macOS-latest 
       strategy:
         runOnce:
           deploy:
@@ -166,6 +140,22 @@ stages:
               parameters:
                 platform: windows
 
+  - stage: Test_Linux
+    dependsOn: Private
+    jobs:
+    - deployment: Private_Test_Single_File_Linux
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (WIKIUpdater)'
+      pool:
+        vmImage: ubuntu-latest
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: .\single-file-test-steps.yml
+              parameters:
+                platform: linux
+
     - deployment: Private_Test_Multi_File_Linux
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIUpdater)'
@@ -178,6 +168,22 @@ stages:
             - template: .\multi-file-test-steps.yml
               parameters:
                 platform: linux
+
+  - stage: Test_Mac
+    dependsOn: Private
+    jobs:
+    - deployment: Private_Test_Single_File_Mac
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (WIKIUpdater)'
+      pool:
+        vmImage: macOS-latest 
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: .\single-file-test-steps.yml
+              parameters:
+                platform: windows
 
     - deployment: Private_Test_Multi_File_Windows_Mac
       timeoutInMinutes: 0
@@ -193,7 +199,10 @@ stages:
                 platform: Mac
 
   - stage: Documentation
-    dependsOn: Test
+    dependsOn: 
+      Test_Windows
+      Test_Linux
+      Test_Mac
     pool:
       vmImage: '$(vmImage)'
     variables:
