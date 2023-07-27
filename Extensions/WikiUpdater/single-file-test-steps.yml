@@ -41,6 +41,7 @@ steps:
       message: 'Update from Release - $(Release.ReleaseName)'
       gitname: builduser
       gitemail: 'build@demo'
+      mode: Rebase
       user: rfennell
       password: '$(githubPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
