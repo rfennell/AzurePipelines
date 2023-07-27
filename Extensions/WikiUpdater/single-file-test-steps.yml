@@ -42,6 +42,8 @@ steps:
       gitname: builduser
       gitemail: 'build@demo'
       mode: Rebase
+      branch: main
+ 
       user: rfennell
       password: '$(githubPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
@@ -59,6 +61,9 @@ steps:
       gitname: builduser
       gitemail: 'build@demo'
       mode: Rebase
+      branch: main
+ 
+
       user: rfennell
       password: '$(githubPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
@@ -78,6 +83,7 @@ steps:
       gitemail: 'build@demo'
       message: 'Update from Release - $(Release.ReleaseName)'
       mode: Rebase
+      branch: main
       user: rfennell
       password: '$(githubPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
@@ -97,6 +103,7 @@ steps:
       gitname: builduser
       gitemail: 'build@demo'
       mode: Rebase
+      branch: main
       user: rfennell
       password: '$(githubPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
@@ -116,6 +123,7 @@ steps:
       gitemail: 'build@demo'
       message: 'Update from Release - $(Release.ReleaseName)'
       mode: Rebase
+      branch: main
       user: rfennell
       password: '$(githubPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\githubrepo'

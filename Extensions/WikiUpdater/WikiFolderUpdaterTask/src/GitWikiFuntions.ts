@@ -231,13 +231,17 @@ export async function UpdateGitWikiFolder(
                     break;
                 } catch (err) {
                     if (index < maxRetries) {
-                        logInfo(`Push failed, will retry up to ${maxRetries} times`);
+                        logInfo(`Push failed, will retry up to ${maxRetries} times after updating the local repo with the latest changes from the server`);
                         logInfo(err);
                         sleep(1000);
                         switch (mode) {
                             case "Rebase":
-                                logInfo(`Pulling with --rebase option to get updates from other users`);
-                                await git.pull("--rebase");
+                                logInfo(`Pulling with --rebase=true option to get updates from other users`);
+                                if (!branch) {
+                                    logError(`Rebase requested, but no branch passed in as a parameter`);
+                                    return;
+                                }
+                                await git.pull("origin", branch , { "--rebase": "true" });
                                 break;
                             default: // Pull
                                 logInfo(`Pull to get updates from other users`);
