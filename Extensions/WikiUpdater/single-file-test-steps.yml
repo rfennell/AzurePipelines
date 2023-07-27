@@ -41,7 +41,7 @@ steps:
       message: 'Update from Release - $(Release.ReleaseName)'
       gitname: builduser
       gitemail: 'build@demo'
-      mode: Rebase
+      RetryMode: Rebase
       branch: master
       user: rfennell
       password: '$(githubPAT)'
@@ -59,7 +59,7 @@ steps:
         message: 'Append from Release - $(Release.ReleaseName)'
       gitname: builduser
       gitemail: 'build@demo'
-      mode: Rebase
+      RetryMode: Rebase
       branch: master
       user: rfennell
       password: '$(githubPAT)'
@@ -79,7 +79,7 @@ steps:
       gitname: builduser
       gitemail: 'build@demo'
       message: 'Update from Release - $(Release.ReleaseName)'
-      mode: Rebase
+      RetryMode: Rebase
       branch: master
       user: rfennell
       password: '$(githubPAT)'
@@ -99,7 +99,7 @@ steps:
         message: 'Update from Release - $(Release.ReleaseName)'
       gitname: builduser
       gitemail: 'build@demo'
-      mode: Rebase
+      RetryMode: Rebase
       branch: master
       user: rfennell
       password: '$(githubPAT)'
@@ -119,7 +119,7 @@ steps:
       gitname: builduser
       gitemail: 'build@demo'
       message: 'Update from Release - $(Release.ReleaseName)'
-      mode: Rebase
+      RetryMode: Rebase
       branch: master
       user: rfennell
       password: '$(githubPAT)'

@@ -41,7 +41,7 @@ var prependEntryToOrderFile = tl.getBoolInput("prependEntryToOrderFile");
 var updateOrderFile = tl.getBoolInput("updateOrderFile");
 var orderFilePath = tl.getInput("orderFilePath");
 var injecttoc = tl.getBoolInput("injecttoc");
-var mode = tl.getInput("mode");
+var mode = tl.getInput("RetryMode");
 
 // make sure the retries is a number
 

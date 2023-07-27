@@ -282,7 +282,7 @@
       "groupName": "advanced"
     },
       {
-      "name": "mode",
+      "name": "RetryMode",
       "type": "pickList",
       "label": "Git refresh mode",
       "defaultValue": "Pull",

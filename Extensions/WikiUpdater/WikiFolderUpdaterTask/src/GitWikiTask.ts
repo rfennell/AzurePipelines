@@ -32,7 +32,7 @@ var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
 var sslBackend = tl.getInput("sslBackend");
 var retriesInput = tl.getInput("retries");
-var mode = tl.getInput("mode");
+var mode = tl.getInput("RetryMode");
 
 var retries = 5;
 try {
