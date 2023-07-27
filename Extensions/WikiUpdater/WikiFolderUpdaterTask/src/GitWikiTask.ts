@@ -5,13 +5,13 @@ import {
     UpdateGitWikiFolder,
     GetTrimmedUrl,
     GetProtocol
-    } from "./GitWikiFuntions";
+} from "./GitWikiFuntions";
 
 import {
     logInfo,
     logError,
     getSystemAccessToken
-    }  from "./agentSpecific";
+} from "./agentSpecific";
 
 var repo = tl.getInput("repo");
 var targetFolder = tl.getInput("targetFolder");
@@ -32,6 +32,7 @@ var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
 var sslBackend = tl.getInput("sslBackend");
 var retriesInput = tl.getInput("retries");
+var mode = tl.getInput("mode");
 
 var retries = 5;
 try {
@@ -59,6 +60,7 @@ console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
 console.log(`Variable: SslBackend [${sslBackend}]`);
 console.log(`Variable: Retries [${retries}]`);
+console.log(`Variable: Mode [${mode}]`);
 
 if (useAgentToken === true) {
     console.log(`Using OAUTH Agent Token, overriding username and password`);
@@ -69,4 +71,26 @@ if (useAgentToken === true) {
 var protocol = GetProtocol(repo, logInfo);
 repo = GetTrimmedUrl(repo, logInfo);
 
-UpdateGitWikiFolder(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message, sourceFolder, filter, logInfo, logError, replaceFile, appendToFile, tagRepo, tag, injectExtraHeader, sslBackend, branch, retries);
+UpdateGitWikiFolder(
+    protocol,
+    repo,
+    localpath,
+    user,
+    password,
+    gitname,
+    gitemail,
+    targetFolder,
+    message,
+    sourceFolder,
+    filter,
+    logInfo,
+    logError,
+    replaceFile,
+    appendToFile,
+    tagRepo,
+    tag,
+    injectExtraHeader,
+    sslBackend,
+    branch,
+    retries,
+    mode);

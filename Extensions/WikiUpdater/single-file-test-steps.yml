@@ -1,0 +1,234 @@
+parameters:
+  - name: platform
+
+steps:
+  - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@4
+    displayName: 'Generate Release Notes based on Release Comparision API'
+    inputs:
+      outputfile: '$(System.DefaultWorkingDirectory)\inline.md'
+      outputVariableName: OutputText
+      templateLocation: InLine
+      inlinetemplate: |
+          **Build Number**: {{buildDetails.id}}
+          **Build Trigger PR Number**: {{lookup buildDetails.triggerInfo 'pr.number'}}
+
+          # Global list of WI ({{workItems.length}})
+          {{#forEach workItems}}
+          {{#if isFirst}}## Associated Work Items (only shown if  WI) {{/if}}
+          *  **{{this.id}}**  {{lookup this.fields 'System.Title'}}
+            - **WIT** {{lookup this.fields 'System.WorkItemType'}}
+            - **Tags** {{lookup this.fields 'System.Tags'}}
+          {{/forEach}}
+
+          # Global list of CS ({{commits.length}})
+          {{#forEach commits}}
+          {{#if isFirst}}### Associated commits  (only shown if CS) {{/if}}
+          * ** ID{{this.id}}**
+            -  **Message:** {{this.message}}
+            -  **Commited by:** {{this.author.displayName}}
+          {{/forEach}}
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+    displayName: 'Git based WIKI Updater - GitHub'
+    inputs:
+      repo: github.com/rfennell/demorepo.wiki
+      filename: ${{parameters.platform}}-PageFromWikiUpdater.md
+      contents: |
+        Header
+        ---
+        $(OutputText)
+        ---
+        Footer
+      message: 'Update from Release - $(Release.ReleaseName)'
+      gitname: builduser
+      gitemail: 'build@demo'
+      mode: Rebase
+      branch: master
+      user: rfennell
+      password: '$(githubPAT)'
+      localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+    displayName: 'Git based WIKI Updater - GitHub append'
+    inputs:
+      repo: github.com/rfennell/demorepo.wiki
+      filename: ${{parameters.platform}}-PageFromWikiUpdater.md
+      replaceFile: false
+      message: 'Update from Release - $(Release.ReleaseName)'
+      contents: |
+        ---
+        This is more test that has been added to the end of the file
+        message: 'Append from Release - $(Release.ReleaseName)'
+      gitname: builduser
+      gitemail: 'build@demo'
+      mode: Rebase
+      branch: master
+      user: rfennell
+      password: '$(githubPAT)'
+      localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+    displayName: 'Git based WIKI Updater - GitHub prepend '
+    inputs:
+      repo: github.com/rfennell/demorepo.wiki
+      filename: ${{parameters.platform}}-PageFromWikiUpdater.md
+      replaceFile: false
+      appendToFile: false
+      injecttoc: true
+      contents: |
+        ---
+        This is more test that has been added to the end of the file
+        message: 'Append from Release - $(Release.ReleaseName)'
+      gitname: builduser
+      gitemail: 'build@demo'
+      message: 'Update from Release - $(Release.ReleaseName)'
+      mode: Rebase
+      branch: master
+      user: rfennell
+      password: '$(githubPAT)'
+      localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+    displayName: 'Git based WIKI Updater - GitHub folder'
+    inputs:
+      repo: github.com/rfennell/demorepo.wiki
+      filename: TestFolder/${{parameters.platform}}-PageFromWikiUpdater.md
+      message: 'Update from Release - $(Release.ReleaseName)'
+      contents: |
+        Header
+        ---
+        $(OutputText)
+        ---
+        Footer
+        message: 'Update from Release - $(Release.ReleaseName)'
+      gitname: builduser
+      gitemail: 'build@demo'
+      mode: Rebase
+      branch: master
+      user: rfennell
+      password: '$(githubPAT)'
+      localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+    displayName: 'Git based WIKI Updater - GitHub folder with spaces'
+    inputs:
+      repo: github.com/rfennell/demorepo.wiki
+      filename: TestFolder/${{parameters.platform}}-Page From Wiki Updater and Spaces.md
+      contents: |
+        Header
+        ---
+        $(OutputText)
+        ---
+        Footer
+        message: 'Update from Release - $(Release.ReleaseName)'
+      gitname: builduser
+      gitemail: 'build@demo'
+      message: 'Update from Release - $(Release.ReleaseName)'
+      mode: Rebase
+      branch: master
+      user: rfennell
+      password: '$(githubPAT)'
+      localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
+      fixSpaces: true
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+    displayName: 'Git based WIKI Updater - Azure DevOps with Creds update .order file'
+    inputs:
+      repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+      filename: ${{parameters.platform}}-TestPageWithCreds-$(build.buildid).md
+      contents: |
+        Header
+        ---
+        $(OutputText)
+        ---
+        Footer
+      message: 'Update from Release - $(Release.ReleaseName) with Creds'
+      gitname: builduser
+      gitemail: 'build@demo'
+      user: richardfennell
+      password: '$(AzureDevOpsPAT)'
+      localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
+      updateOrderFile: true
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+    displayName: 'Git based WIKI Updater - Azure DevOps with Creds update TestFolder/.order file'
+    inputs:
+      repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+      filename: TestFolder/${{parameters.platform}}-TestPageWithCreds-prepend.md
+      contents: |
+        Header
+        ---
+        $(OutputText)
+        ---
+        Footer
+      message: 'Update from Release - $(Release.ReleaseName) with Creds (prepend)'
+      gitname: builduser
+      gitemail: 'build@demo'
+      user: richardfennell
+      password: '$(AzureDevOpsPAT)'
+      localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
+      updateOrderFile: true
+      replacefile: false
+      appendToFile: false
+      injecttoc: true
+      orderFilePath: "TestFolder"
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+    displayName: 'Git based WIKI Updater - Azure DevOps in branch'
+    inputs:
+      repo: 'dev.azure.com/richardfennell/Git%20project/_git/WikiRepo'
+      filename: ${{parameters.platform}}-TestPageOnBranch.md
+      contents: |
+        Header on Branch
+        ---
+        $(OutputText)
+        ---
+        Footer
+      message: 'Update from Release - $(Release.ReleaseName) with Creds'
+      gitname: builduser
+      gitemail: 'build@demo'
+      user: richardfennell
+      password: '$(AzureDevOpsPAT)'
+      localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
+      branch: b1
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+    displayName: 'Git based WIKI Updater - Azure DevOps into Folder'
+    inputs:
+      repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
+      filename: subfolder/${{parameters.platform}}-TestPageWithCredsInFolder.md
+      contents: |
+        Header
+        ---
+        $(OutputText)
+        ---
+        Footer
+      message: 'Update from Release - $(Release.ReleaseName) with Creds'
+      gitname: builduser
+      gitemail: 'build@demo'
+      user: richardfennell
+      password: '$(AzureDevOpsPAT)'
+      localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+    displayName: 'Git based WIKI Updater - Azure DevOps as Agent'
+    inputs:
+      repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
+      filename: ${{parameters.platform}}-TestPageForWikiUpdater.md
+      contents: |
+        Header
+        ---
+        $(OutputText)
+        ---
+        Footer
+      message: 'Update from Release - $(Release.ReleaseName) as Agent'
+      gitname: builduser
+      gitemail: 'build@demo'
+      useAgentToken: true
+      localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagent'
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+    displayName: 'Git based WIKI Updater - Azure DevOps as Agent with full url'
+    inputs:
+      repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
+      filename: ${{parameters.platform}}-TestPageForWikiUpdaterTrimed.md
+      contents: |
+        Header
+        ---
+        $(OutputText)
+        ---
+        Footer
+      message: 'Update from Release - $(Release.ReleaseName) as Agent'
+      gitname: builduser
+      gitemail: 'build@demo'
+      useAgentToken: true
+      localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagent'
