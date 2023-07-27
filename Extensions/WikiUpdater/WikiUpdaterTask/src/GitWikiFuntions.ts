@@ -121,7 +121,8 @@ export async function UpdateGitWikiFile(
     updateOrderFile,
     prependEntryToOrderFile,
     orderFilePath,
-    injecttoc) {
+    injecttoc,
+    mode) {
     const git = simpleGit();
 
     let remote = "";
@@ -189,7 +190,7 @@ export async function UpdateGitWikiFile(
         // do git pull just in case the clone was slow and there have been updates since
         // this is to try to reduce concurrency issues
         await git.pull();
-        logInfo(`Pull in case of post clone updates from other users`);
+        logInfo(`Git Pull, prior to local commits, in case of post clone updates to the repo from other users`);
 
         // we need to change any encoded
         var workingFile = GetWorkingFile(filename, logInfo);
@@ -314,10 +315,23 @@ export async function UpdateGitWikiFile(
                     break;
                 } catch (err) {
                     if (index < maxRetries) {
-                        logInfo(`Push failed, probably due to target being updated completed, will retry up to ${maxRetries} times`);
+                        logInfo(`Push failed, will retry up to ${maxRetries} times after updating the local repo with the latest changes from the server`);
+                        logInfo(err);
                         sleep(1000);
-                        logInfo(`Pull to get updates from other users`);
-                        await git.pull();
+                        switch (mode) {
+                            case "Rebase":
+                                logInfo(`Pulling with --rebase=true option to get updates from other users`);
+                                if (!branch) {
+                                    logError(`Rebase requested, but no branch passed in as a parameter`);
+                                    return;
+                                }
+                                await git.pull("origin", branch , { "--rebase": "true" });
+                                break;
+                            default: // Pull
+                                logInfo(`Pull to get updates from other users`);
+                                await git.pull();
+                                break;
+                        }
                     } else {
                         logInfo(`Reached the retry limit`);
                         logError(err);

@@ -41,6 +41,7 @@ var prependEntryToOrderFile = tl.getBoolInput("prependEntryToOrderFile");
 var updateOrderFile = tl.getBoolInput("updateOrderFile");
 var orderFilePath = tl.getInput("orderFilePath");
 var injecttoc = tl.getBoolInput("injecttoc");
+var mode = tl.getInput("RetryMode");
 
 // make sure the retries is a number
 
@@ -79,6 +80,7 @@ console.log(`Variable: updateOrderFile [${updateOrderFile}]`);
 console.log(`Variable: prependEntryToOrderFile [${prependEntryToOrderFile}]`);
 console.log(`Variable: orderFilePath [${orderFilePath}]`);
 console.log(`Variable: injecttoc [${injecttoc}]`);
+console.log(`Variable: mode [${mode}]`);
 
 if (useAgentToken === true) {
     console.log(`Using OAUTH Agent Token, overriding username and password`);
@@ -136,5 +138,6 @@ if (haveData) {
         updateOrderFile,
         prependEntryToOrderFile,
         orderFilePath,
-        injecttoc);
+        injecttoc,
+        mode);
 }

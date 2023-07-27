@@ -32,5 +32,6 @@ const sslBackend = null;
 const branch = "";
 const protocol = "https";
 const retries = "5";
+const mode = "Pull";
 
-UpdateGitWikiFolder(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message,  sourceFolder, filter, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, sslBackend, branch, retries);
+UpdateGitWikiFolder(protocol, repo, localpath, user, password, gitname, gitemail, targetFolder, message,  sourceFolder, filter, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, sslBackend, branch, retries, mode);
