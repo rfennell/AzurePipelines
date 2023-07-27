@@ -236,8 +236,8 @@ export async function UpdateGitWikiFolder(
                         sleep(1000);
                         switch (mode) {
                             case "Rebase":
-                                logInfo(`Rebasing to get updates from other users`);
-                                await git.rebase();
+                                logInfo(`Pulling with --rebase option to get updates from other users`);
+                                await git.pull("--rebase");
                                 break;
                             default: // Pull
                                 logInfo(`Pull to get updates from other users`);
