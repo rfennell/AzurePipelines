@@ -299,7 +299,7 @@ export async function getMostRecentSuccessfulDeployment(
             if (successfulDeployments && successfulDeployments.length > 0) {
                 agentApi.logInfo (`Found ${successfulDeployments.length} releases to consider`);
                 successfulDeployments.forEach(deployment => {
-                    agentApi.logDebug (`Found DeploymentId ${deployment.id} with ReleaseID ${deployment.release.id} with the Status ${deployment.deploymentStatus}`);
+                    agentApi.logDebug (`Found DeploymentId ${deployment.id} with ReleaseID ${deployment.release.id} with the Deployment Status ${deployment.deploymentStatus}`);
                 });
 
                 if (overrideBuildReleaseId && !isNaN(parseInt(overrideBuildReleaseId))) {
