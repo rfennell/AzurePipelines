@@ -46,6 +46,9 @@
     },
     "license": {
       "path": "license.md"
+    },
+    "privacy": {
+      "path": "privacy.md"
     }
   },
   "screenshots": [

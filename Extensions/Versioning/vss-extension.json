@@ -60,6 +60,9 @@
     },
     "license": {
       "path": "license.md"
+    },
+    "privacy": {
+      "path": "privacy.md"
     }
   },
   "files": [
