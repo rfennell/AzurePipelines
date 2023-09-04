@@ -33,6 +33,10 @@
     },
     "support": {
       "uri": "https://github.com/rfennell/AzurePipelines/issues"
+    },
+    
+    "privacypolicy": {
+      "uri": "https://github.com/rfennell/AzurePipelines/blob/add-privacy-statement/Extensions/YamlGenerator/privacy.md"
     }
   },
   "screenshots": [

@@ -38,6 +38,10 @@
     },
     "support": {
       "uri": "https://github.com/rfennell/vNextBuild/issues"
+    },
+    
+    "privacypolicy": {
+      "uri": "https://github.com/rfennell/AzurePipelines/blob/add-privacy-statement/Extensions/XplatGenerateReleaseNotes/privacy.md"
     }
   },
   "screenshots": [

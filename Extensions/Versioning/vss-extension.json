@@ -63,6 +63,10 @@
     },
     "privacy": {
       "path": "privacy.md"
+    },
+    
+    "privacypolicy": {
+      "uri": "https://github.com/rfennell/AzurePipelines/blob/add-privacy-statement/Extensions/Versioning/privacy.md"
     }
   },
   "files": [
