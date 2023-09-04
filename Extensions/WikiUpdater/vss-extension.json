@@ -33,6 +33,10 @@
     },
     "support": {
       "uri": "https://github.com/rfennell/AzurePipelines/issues"
+    },
+    
+    "privacypolicy": {
+      "uri": "https://github.com/rfennell/AzurePipelines/blob/add-privacy-statement/Extensions/WikiUpdater/privacy.md"
     }
   },
   "screenshots": [
@@ -46,6 +50,9 @@
     },
     "license": {
       "path": "license.md"
+    },
+    "privacy": {
+      "path": "privacy.md"
     }
   },
   "files": [

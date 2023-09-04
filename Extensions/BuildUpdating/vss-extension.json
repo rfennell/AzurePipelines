@@ -38,6 +38,9 @@
     },
     "support": {
       "uri": "https://github.com/rfennell/vNextBuild/issues"
+    },
+    "privacypolicy": {
+      "uri": "https://github.com/rfennell/AzurePipelines/blob/add-privacy-statement/Extensions/BuildUpdating/privacy.md"
     }
   },
   "content": {
@@ -46,6 +49,9 @@
     },
     "license": {
       "path": "license.md"
+    },
+    "privacy": {
+      "path": "privacy.md"
     }
   },
   "screenshots": [
