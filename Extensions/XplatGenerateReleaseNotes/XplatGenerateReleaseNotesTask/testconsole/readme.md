@@ -108,7 +108,7 @@ You can debug the task using Visual Studio Code. To do this have a `launch.json`
                 "--githubpat", "<pat>",
                 "--bitbucketuser", "<user>",
                 "--bitbucketsecret", "<secret>",
-                "--payloadFile", "<file>]
+                "--payloadFile", "<file>"]
         }
     ]
 }
