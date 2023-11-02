@@ -1,12 +1,12 @@
 {
-    "version": "0.2.0",
+    "version": "0.3.0",
     "configurations":
     [
         {
             "name": "Generate Release Notes Console Tester",
-            "program": "${workspaceFolder}/Extensions/XplatGenerateReleaseNotes/v3/testconsole/GenerateReleaseNotesConsoleTester.js",
+            "program": "${workspaceFolder}/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask/testconsole/GenerateReleaseNotesConsoleTester.js",
             "request": "launch",
-            "cwd": "${workspaceRoot}/Extensions/XplatGenerateReleaseNotes/v3/testconsole",
+            "cwd": "${workspaceFolder}/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask/testconsole",
             "type": "node",
             "args": [ 
                 "--filename", "build-settings.json", 
