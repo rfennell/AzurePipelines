@@ -13,7 +13,9 @@
                 "--pat", "<pat>",
                 "--githubpat", "<pat>",
                 "--bitbucketuser", "<user>",
-                "--bitbucketsecret", "<secret>"]
+                "--bitbucketsecret", "<secret>",
+                "--payloadFile", "<file>"
+            ]
         },
     
         {
