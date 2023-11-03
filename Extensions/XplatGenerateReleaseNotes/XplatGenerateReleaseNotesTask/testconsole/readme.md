@@ -91,24 +91,32 @@ To dump this JSON data, set the following values in the configuration file
 ### Visual Studio Code
 You can debug the task using Visual Studio Code. To do this have a `launch.json` file with the following configuration
 
-```
+```json
 {
-    "version": "0.2.0",
+    "version": "0.3.0",
     "configurations":
     [
         {
             "name": "Generate Release Notes Console Tester",
-            "program": "${workspaceFolder}/Extensions/XplatGenerateReleaseNotes/v3/testconsole/GenerateReleaseNotesConsoleTester.js",
+            "program": "${workspaceFolder}/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask/testconsole/GenerateReleaseNotesConsoleTester.js",
             "request": "launch",
-            "cwd": "${workspaceRoot}/Extensions/XplatGenerateReleaseNotes/v3/testconsole",
+            "cwd": "${workspaceFolder}/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask/testconsole",
             "type": "node",
-            "args": [
-                "--filename", "build-settings.json",
+            "args": [ 
+                "--filename", "build-settings.json", 
                 "--pat", "<pat>",
                 "--githubpat", "<pat>",
                 "--bitbucketuser", "<user>",
                 "--bitbucketsecret", "<secret>",
-                "--payloadFile", "<file>"]
+                "--payloadFile", "<file>"
+            ]
+        },
+    
+        {
+            "name": "PowerShell - current file",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${file}"
         }
     ]
 }

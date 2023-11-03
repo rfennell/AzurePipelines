@@ -10,7 +10,8 @@
           "src/",
           "test/",
           "testconsole/"
-        ]
+        ],
+        "sourceRoot": "../"
     },
     "exclude": [
         "node_modules"
