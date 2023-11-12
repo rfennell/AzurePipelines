@@ -9,8 +9,7 @@
 		"vscode": {
 			"extensions": [
 				"github.vscode-pull-request-github",
-				"github.copilot",
-				"coenraads.bracket-pair-colorizer-2"
+				"github.copilot"
 			]
 		}
 	}
