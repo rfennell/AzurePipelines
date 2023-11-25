@@ -125,6 +125,12 @@ export async function UpdateGitWikiFile(
     mode) {
     const git = simpleGit();
 
+    // show error if content is null
+    if (!contents) {
+        logError(`The new content is null, so cannot be used to update the wiki`);
+        return;
+    }
+
     let remote = "";
     let logremote = ""; // used to make sure we hide the password in logs
     var extraHeaders = [];  // Add handling for #613
