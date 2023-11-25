@@ -95,6 +95,7 @@ var haveData = true;
 var contents; // we late declare as it might be buffer or string
 if (dataIsFile === true) {
     if (fs.existsSync(sourceFile)) {
+        logInfo(`Reading file ${sourceFile}`);
         if (fixLineFeeds) {
             contents = fs.readFileSync(sourceFile, "utf8");
         } else {
@@ -106,6 +107,7 @@ if (dataIsFile === true) {
     }
 } else {
     // we do this late copy so that we can use the same property for different encodings with a type clash
+    logInfo(`Using contents string directly input`);
     contents = contentsInput;
 }
 

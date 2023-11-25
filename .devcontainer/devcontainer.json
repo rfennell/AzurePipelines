@@ -1,0 +1,24 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+{
+	"name": "Node.js & TypeScript",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"github.vscode-pull-request-github",
+				"github.copilot"
+			]
+		}
+	},
+	// Commands to be run after the container is created.
+	"postCreateCommand": [
+		"echo 'Add PWSH'",
+        "wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb",
+        "sudo dpkg -i packages-microsoft-prod.deb",
+        "sudo apt-get update",
+        "sudo apt-get install -y powershell"
+    ]
+}
