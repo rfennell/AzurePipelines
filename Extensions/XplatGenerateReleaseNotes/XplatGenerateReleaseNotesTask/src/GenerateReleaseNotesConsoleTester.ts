@@ -43,52 +43,52 @@ async function run(): Promise<number> {
           let jsonData = fs.readFileSync(filename);
           let settings = JSON.parse(jsonData.toString());
 
-          let tpcUri = settings.TeamFoundationCollectionUri;
-          let teamProject = settings.TeamProject;
-          var templateLocation = settings.templateLocation;
-          var templateFile = settings.templatefile;
-          var inlineTemplate = settings.inlinetemplate;
-          var outputFile = settings.outputfile;
-          var outputVariableName = settings.outputVariableName;
-          var showOnlyPrimary = getBoolean(settings.showOnlyPrimary);
-          var replaceFile = getBoolean(settings.replaceFile);
-          var appendToFile = getBoolean(settings.appendToFile);
-          var getParentsAndChildren = getBoolean(settings.getParentsAndChildren);
-          var getAllParents = getBoolean(settings.getAllParents);
-          var searchCrossProjectForPRs = getBoolean(settings.searchCrossProjectForPRs);
+          let tpcUri: string = settings.TeamFoundationCollectionUri;
+          let teamProject: string = settings.TeamProject;
+          var templateLocation: string = settings.templateLocation || "File";
+          var templateFile: string = settings.templatefile || "";
+          var inlineTemplate: string = settings.inlinetemplate || "";
+          var outputFile: string = settings.outputfile || "";
+          var outputVariableName: string = settings.outputVariableName || "";
+          var showOnlyPrimary: boolean = getBoolean(settings.showOnlyPrimary, false);
+          var replaceFile: boolean = getBoolean(settings.replaceFile, true);
+          var appendToFile: boolean = getBoolean(settings.appendToFile, true);
+          var getParentsAndChildren: boolean = getBoolean(settings.getParentsAndChildren, false);
+          var getAllParents: boolean = getBoolean(settings.getAllParents, false);
+          var searchCrossProjectForPRs: boolean = getBoolean(settings.searchCrossProjectForPRs, false);
 
-          var stopOnRedeploy = settings.stopOnRedeploy;
-          var sortWi = getBoolean(settings.SortWi);
-          var sortCS = getBoolean(settings.SortCS);
-          var customHandlebarsExtensionCodeAsFile = settings.customHandlebarsExtensionCodeAsFile;
-          var customHandlebarsExtensionCode = settings.customHandlebarsExtensionCode;
-          var customHandlebarsExtensionFile = settings.customHandlebarsExtensionFile;
-          var customHandlebarsExtensionFolder = settings.customHandlebarsExtensionFolder;
-          var buildId = settings.buildId;
-          var releaseId = settings.releaseId;
-          var releaseDefinitionId = settings.releaseDefinitionId;
-          var overrideActiveBuildReleaseId = settings.overrideActiveBuildReleaseId;
-          var overrideStageName = settings.overrideStageName;
-          var environmentName = settings.environmentName;
-          var Fix349 = settings.Fix349;  // this has to be string not a bool
-          var dumpPayloadToConsole = getBoolean(settings.dumpPayloadToConsole);
-          var dumpPayloadToFile = getBoolean(settings.dumpPayloadToFile);
-          var dumpPayloadFileName = settings.dumpPayloadFileName;
-          var checkStage = getBoolean(settings.checkStage);
-          var tags = settings.tags;
-          var overrideBuildReleaseId = settings.overrideBuildReleaseId;
-          var getIndirectPullRequests = getBoolean(settings.getIndirectPullRequests);
+          var stopOnRedeploy: boolean = getBoolean(settings.stopOnRedeploy, false);
+          var sortWi: boolean = getBoolean(settings.SortWi, false);
+          var sortCS: boolean = getBoolean(settings.SortCS, false);
+          var customHandlebarsExtensionCodeAsFile: string = settings.customHandlebarsExtensionCodeAsFile || "";
+          var customHandlebarsExtensionCode: string = settings.customHandlebarsExtensionCode || "";
+          var customHandlebarsExtensionFile: string = settings.customHandlebarsExtensionFile || "";
+          var customHandlebarsExtensionFolder: string = settings.customHandlebarsExtensionFolder || "";
+          var buildId: number = settings.buildId;  // we don't parse here as is done in main function
+          var releaseId: number = settings.releaseId; // we don't parse here as is done in main function
+          var releaseDefinitionId: number = settings.releaseDefinitionId; // we don't parse here as is done in main function
+          var overrideActiveBuildReleaseId: string = settings.overrideActiveBuildReleaseId || "";
+          var overrideStageName: string = settings.overrideStageName || "_default";  // simulates the default behaviour of the task
+          var environmentName: string = settings.environmentName || "";
+          var Fix349: string = settings.Fix349 || "true";  // this has to be string not a bool
+          var dumpPayloadToConsole: boolean = getBoolean(settings.dumpPayloadToConsole, false);
+          var dumpPayloadToFile: boolean = getBoolean(settings.dumpPayloadToFile, false);
+          var dumpPayloadFileName: string = settings.dumpPayloadFileName || "payload.json";
+          var checkStage: boolean = getBoolean(settings.checkStage, false);
+          var tags: string = settings.tags || "";
+          var overrideBuildReleaseId: string = settings.overrideBuildReleaseId;
+          var getIndirectPullRequests: boolean = getBoolean(settings.getIndirectPullRequests, false);
 
-          var maxRetries = parseInt(settings.maxRetries);
-          var pauseTime = parseInt(settings.pauseTime); // no longer used
-          var stopOnError = getBoolean(settings.stopOnError);
-          var considerPartiallySuccessfulReleases = getBoolean(settings.considerPartiallySuccessfulReleases);
-          var checkForManuallyLinkedWI = getBoolean(settings.checkForManuallyLinkedWI);
-          var wiqlWhereClause = settings.wiqlWhereClause;
-          var getPRDetails = getBoolean(settings.getPRDetails);
-          var getTestedBy = getBoolean(settings.getTestedBy);
-          var wiqlFromTarget = settings.wiqlFromTarget;
-          var wiqlSharedQueryName = settings.wiqlSharedQueryName;
+          var maxRetries: number = parseInt(settings.maxRetries || "20");
+          var pauseTime: number = parseInt(settings.pauseTime || "5000"); // no longer used
+          var stopOnError: boolean = getBoolean(settings.stopOnError, false);
+          var considerPartiallySuccessfulReleases: boolean = getBoolean(settings.considerPartiallySuccessfulReleases, false);
+          var checkForManuallyLinkedWI: boolean = getBoolean(settings.checkForManuallyLinkedWI, false);
+          var wiqlWhereClause: string = settings.wiqlWhereClause || "";
+          var getPRDetails: boolean = getBoolean(settings.getPRDetails, true);
+          var getTestedBy: boolean = getBoolean(settings.getTestedBy, true);
+          var wiqlFromTarget: string = settings.wiqlFromTarget || "WorkItems";
+          var wiqlSharedQueryName: string = settings.wiqlSharedQueryName || "";
 
           if (payloadFile && payloadFile.length > 0 && fs.existsSync(payloadFile)) {
             console.log(`Running the tester against a local payload JSON file`);
@@ -197,17 +197,31 @@ async function run(): Promise<number> {
   return promise;
 }
 
-function getBoolean(value) {
-  switch (value) {
-    case true:
-    case "true":
-    case 1:
-    case "1":
-    case "on":
-    case "yes":
-      return true;
-    default:
-      return false;
+function getBoolean(value, defaultValue): boolean {
+  if (value === undefined || value === null) {
+    return defaultValue;
+  } else {
+    switch (value) {
+      case true:
+      case "true":
+      case "True":
+      case "TRUE":
+      case "1":
+      case "on":
+      case "yes":
+        return true;
+      case false:
+      case "false":
+      case "False":
+      case "FALSE":
+      case 0:
+      case "0":
+      case "off":
+      case "no":
+        return false;
+      default:
+        return defaultValue;
+    }
   }
 }
 
