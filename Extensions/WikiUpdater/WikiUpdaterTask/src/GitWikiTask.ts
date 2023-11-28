@@ -99,7 +99,8 @@ if (dataIsFile === true) {
         if (fixLineFeeds) {
             contents = fs.readFileSync(sourceFile, "utf8");
         } else {
-            contents = fs.readFileSync(sourceFile);
+            // we read as a buffer and convert to string as we don't know the encoding
+            contents = fs.readFileSync(sourceFile).toString();
         }
     } else {
         logError(`Cannot find the file ${sourceFile}`);
