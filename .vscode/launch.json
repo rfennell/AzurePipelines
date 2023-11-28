@@ -8,6 +8,7 @@
             "request": "launch",
             "cwd": "${workspaceFolder}/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask/testconsole",
             "type": "node",
+            "env": { "System_StageName": "__default" },
             "args": [ 
                 "--filename", "build-settings.json", 
                 "--pat", "<pat>",
