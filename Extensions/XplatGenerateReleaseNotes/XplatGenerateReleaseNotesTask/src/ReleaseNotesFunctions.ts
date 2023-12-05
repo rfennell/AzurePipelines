@@ -91,6 +91,10 @@ import { stringify } from "querystring";
 import { Exception } from "handlebars";
 import { IdentityDisplayFormat } from "azure-devops-node-api/interfaces/WorkInterfaces";
 
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
+});
+
 let agentApi = new AgentSpecificApi();
 
 export function getDeploymentCount(environments: ReleaseEnvironment[], environmentName: string): number {
