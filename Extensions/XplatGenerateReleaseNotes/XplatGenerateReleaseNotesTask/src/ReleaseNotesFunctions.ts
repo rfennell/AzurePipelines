@@ -968,7 +968,7 @@ export function processTemplate(
         handlebars.registerHelper("lookup_a_work_item", function (array, url) {
             var urlParts = url.split("/");
             var wiId = parseInt(urlParts[urlParts.length - 1]);
-            return array.find(element => element.id === wiId);
+            return array.find(element => element?.id === wiId);
         });
 
         // add our helper to find test configuration
