@@ -62,7 +62,7 @@
       "label": "Single file to export",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "Name of the single file to be exported, default is empty i.e. whole repo is exported e.g. myfile.md"
+      "helpMarkDown": "Single file to export. Can be set as either a relative path to a file in the `localPath` or `RootExportPath` folder e.g. page.md or as fully specified path. If not set the whole WIKI is exported based on the structure details the `.order` file in the root of the repo"
     },
     {
       "name": "useAgentToken",
@@ -105,7 +105,7 @@
       "label": "Local folder",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "The path to the root of the cloned the repo if exporting the whole repo, a folder within the repo to export part of the repo or finally the folder containing a single file to export. For this final option the filename must be specified below"
+      "helpMarkDown": "If not set, this defaults to the path of the root of the cloned the repo. It can be set to a folder within the cloned repo export only part of the repo. If only a single file is required the a filename can be specified using the singleFile parameter"
     },
     {
       "name": "outputFile",

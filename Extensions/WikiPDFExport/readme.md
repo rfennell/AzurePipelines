@@ -7,7 +7,7 @@ When run, the task will download the current release (or optionally a pre-releas
    - Optionally clone a Git based WIKI repo that is hosted on Azure DevOps or GitHub into a local folder for exporting
    - Or if you already have the folder structure on the agent then this feature can be skipped
 2. The task will then export either
-   - the whole WIKI structure as a PDF (based on the .order file is present in the root)
+   - the whole WIKI structure as a PDF (based on the .order file which must be present in the repo root)
    - a single named file
 
 ## How the AzureDevOps.WikiPDFExport tool is obtained
@@ -60,8 +60,8 @@ steps:
 
 ## Parameters
 ### AzureDevOps.WikiPDFExport Specific
-- SingleFile - Optional single file to export in the localPath folder e.g. page.md
-- RootExportPath - The path to the root of the cloned the repo if exporting the whole repo, a folder within the repo to export part of the repo or finally the folder containing a single file to export. For this final option the filename must be specified below
+- SingleFile - Single file to export. Can be set as either a relative path to a file in the `localPath` or `RootExportPath` folder e.g. page.md or as fully specified path. If not set the whole WIKI is exported based on the structure details the `.order` file in the root of the repo.
+- RootExportPath - Optional: If not set, this defaults to the path of the root of the cloned the repo. It can be set to a folder within the cloned repo export only part of the repo. If only a single file is required the a filename can be specified using the `singleFile`` parameter
 - ExtraParameters - Any optional extra as defined at [WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/) you wish to pass to the command line tool - noting that this task automatically manages the -p, -s, -c and -v parameters
 - usePreRelease - If set to true pre-release version of the [AzureDevOps.WikiPDFExport tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport) tool will be used
 - overrideExePath - An optional path to a previously download copy of the [AzureDevOps.WikiPDFExport tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport). If not set the task will download the current release of this tool
