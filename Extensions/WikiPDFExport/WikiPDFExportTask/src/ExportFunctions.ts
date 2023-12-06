@@ -72,20 +72,28 @@ export async function ExportPDF(
                 logError(`Cannot find wiki folder ${wikiRootPath}`);
                 return;
             } else {
+                logInfo(`Using ${wikiRootPath} as the root path to export`);
                 args += ` -p "${wikiRootPath}"`;
             }
         }
 
         if (singleFile.length > 0) {
-            if (!fs.existsSync(`${singleFile}`)) {
+            // first check for a fully specified path
+            if (fs.existsSync(`${singleFile}`)) {
+                logInfo(`Found file using the fully qualified path of ${singleFile}`);
+                args += ` -s "${singleFile}"`;
+            } else if (fs.existsSync(`${path.join(wikiRootPath, singleFile)}`)) {
+                logInfo(`Found file using the expanded relative path of ${path.join(wikiRootPath, singleFile)}`);
+                args += ` -s "${singleFile}"`; // we don't to add the wikiRootPath as it is already included in the -p parameter
+            } else {
                 logError(`Cannot find the requested file ${singleFile} to export`);
                 return;
-            } else {
-                args += ` -s "${singleFile}"`;
             }
         } else {
-            if (!fs.existsSync(`${wikiRootPath}/.order`)) {
-                logInfo(`No filename specified and cannot find the .order file in the root of the wiki, the exported PDF will therefore be empty`);
+            if (!fs.existsSync(`${path.join(wikiRootPath, ".order")}`)) {
+                logWarning(`No filename specified and cannot find the .order file in the root of the wiki, the exported PDF will therefore be empty. Consider setting the underlying AzureDevOps.WikiPDFExport tools property '--include-unlisted-pages' using the 'ExtraParameters' parameter`);
+            } else {
+                logInfo(`Using the .order file in the root of the wiki to determine the order of the pages to export`);
             }
         }
 
