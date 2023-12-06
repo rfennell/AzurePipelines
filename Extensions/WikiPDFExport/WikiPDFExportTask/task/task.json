@@ -62,7 +62,7 @@
       "label": "Single file to export",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "Single file to export. Can be set as either a relative path to a file in the `localPath` or `RootExportPath` folder e.g. page.md or as fully specified path. If not set the whole WIKI is exported based on the structure details the `.order` file in the root of the repo",
+      "helpMarkDown": "Single file to export. Can be set as either a relative path to a file in the `localPath` or `RootExportPath` folder e.g. page.md or as fully specified path. If not set the whole WIKI is exported based on the structure details the `.order` file in the root of the repo"
     },
     {
       "name": "useAgentToken",
