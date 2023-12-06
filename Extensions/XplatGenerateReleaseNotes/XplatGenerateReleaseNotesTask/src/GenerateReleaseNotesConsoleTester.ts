@@ -14,7 +14,7 @@ async function run(): Promise<number> {
       var gitHubPat = argv["githubpat"];
       var bitbucketUser = argv["bitbucketuser"];
       var bitbucketSecret = argv["bitbucketsecret"];
-      var payloadFile = argv["payloadfile"];
+      var payloadFile = argv["payloadFile"];
 
       var showUsage = false;
       if (!filename || filename.length === 0) {

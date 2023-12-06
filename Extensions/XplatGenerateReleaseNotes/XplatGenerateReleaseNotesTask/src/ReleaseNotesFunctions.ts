@@ -91,6 +91,10 @@ import { stringify } from "querystring";
 import { Exception } from "handlebars";
 import { IdentityDisplayFormat } from "azure-devops-node-api/interfaces/WorkInterfaces";
 
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
+});
+
 let agentApi = new AgentSpecificApi();
 
 export function getDeploymentCount(environments: ReleaseEnvironment[], environmentName: string): number {
@@ -968,7 +972,7 @@ export function processTemplate(
         handlebars.registerHelper("lookup_a_work_item", function (array, url) {
             var urlParts = url.split("/");
             var wiId = parseInt(urlParts[urlParts.length - 1]);
-            return array.find(element => element.id === wiId);
+            return array.find(element => element?.id === wiId);
         });
 
         // add our helper to find test configuration
