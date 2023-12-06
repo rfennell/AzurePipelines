@@ -80,7 +80,7 @@ export async function ExportPDF(
         if (singleFile.length > 0) {
             // first check for a fully specified path
             if (fs.existsSync(`${singleFile}`)) {
-                logInfo(`Found file using the fully qualified path of ${singleFile}`);
+                logInfo(`Found file the file ${singleFile} relative to the current working directory`);
                 args += ` -s "${singleFile}"`;
             } else if (fs.existsSync(`${path.join(wikiRootPath, singleFile)}`)) {
                 logInfo(`Found file using the expanded relative path of ${path.join(wikiRootPath, singleFile)}`);

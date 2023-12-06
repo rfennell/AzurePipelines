@@ -50,6 +50,15 @@ steps:
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFile.pdf'
     downloadPath: '${{parameters.localpath}}'
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
+  displayName: 'Export Single File'
+  inputs:
+    cloneRepo: false
+    usePreRelease: false
+    localpath: '$(System.DefaultWorkingDirectory)'
+    singleFile: 'inline.md'
+    outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFile.pdf'
+    downloadPath: '${{parameters.localpath}}'
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
   displayName: 'Export Public GitHub WIKI'
   condition: succeededOrFailed()
   inputs:
@@ -79,6 +88,18 @@ steps:
     localpath: '$(System.DefaultWorkingDirectory)/repopartial'
     rootExportPath: '$(System.DefaultWorkingDirectory)/repopartial/folder'
     downloadPath: '${{parameters.localpath}}'
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
+  displayName: 'Export single part of the Azure DevOps WIKI'
+  condition: succeededOrFailed()
+  inputs:
+    cloneRepo: true
+    repo: 'https://dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
+    useAgentToken: true
+    outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-AzrepoFilterSingle.pdf'
+    localpath: '$(System.DefaultWorkingDirectory)/repopartial1'
+    rootExportPath: '$(System.DefaultWorkingDirectory)/repopartial1/folder'
+    downloadPath: '${{parameters.localpath}}'
+    singlefile: 'test1.md'
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
   displayName: 'Export Azure DevOps WIKI without downloading tool'
   condition: and(succeededOrFailed(), eq(variables['AGENT.OS'], 'Windows_NT'))
