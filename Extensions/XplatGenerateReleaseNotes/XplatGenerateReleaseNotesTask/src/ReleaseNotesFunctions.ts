@@ -802,7 +802,7 @@ export async function getAllDirectRelatedWorkitems (
                 (relation.attributes.name === "Parent")) {
                 var urlParts = relation.url.split("/");
                 var id = parseInt(urlParts[urlParts.length - 1]);
-                if (!relatedWorkItems.find(element => element.hasOwnProperty("id") && element.id === id)) {
+                if (!relatedWorkItems.find(element => element && element.hasOwnProperty("id") && element.id === id)) {
                     agentApi.logInfo(`Add ${relation.attributes.name} WI ${id}`);
                     relatedWorkItems.push(await (workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null)));
                 } else {
