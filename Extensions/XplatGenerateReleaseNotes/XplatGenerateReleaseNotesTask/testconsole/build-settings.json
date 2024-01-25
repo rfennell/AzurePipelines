@@ -11,6 +11,8 @@
     "dumpPayloadToConsole": "false",
     "dumpPayloadToFile": "true",
     "dumpPayloadFileName": "payload.json",
+    "repositoryId": "",
+    "prTargetRefName": "",
 
     "templateLocation": "File",
     "inlinetemplate": "",

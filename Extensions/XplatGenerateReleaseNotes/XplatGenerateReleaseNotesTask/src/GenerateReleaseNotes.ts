@@ -12,6 +12,8 @@ async function run(): Promise<number>  {
 
             let tpcUri = tl.getVariable("System.TeamFoundationCollectionUri");
             let teamProject = tl.getVariable("System.TeamProject");
+            let repositoryId = tl.getInput("repositoryId");
+            let prTargetRefName = tl.getInput("prTargetRefName");
             var templateLocation = tl.getInput("templateLocation", true);
             var templateFile = tl.getInput("templatefile");
             var inlineTemplate = tl.getInput("inlinetemplate");
@@ -59,6 +61,8 @@ async function run(): Promise<number>  {
                 overridePat,
                 tpcUri,
                 teamProject,
+                repositoryId,
+                prTargetRefName,
                 parseInt(tl.getVariable("Build.BuildId")),
                 parseInt(tl.getVariable("Release.ReleaseId")),
                 parseInt(tl.getVariable("Release.DefinitionId")),
