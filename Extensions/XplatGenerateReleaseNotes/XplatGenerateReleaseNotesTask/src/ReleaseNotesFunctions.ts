@@ -228,7 +228,9 @@ export async function restoreAzurePipelineArtifactsBuildInfo(artifactsInRelease:
 
 export async function getPullRequests(
     gitApi: GitApi,
-    projectName: string
+    projectName: string,
+    repositoryId?: string,
+    targetRefName?: string
     ): Promise<GitPullRequest[]> {
     return new Promise<GitPullRequest[]>(async (resolve, reject) => {
         let prList: GitPullRequest[] = [];
@@ -236,12 +238,12 @@ export async function getPullRequests(
             var filter: GitPullRequestSearchCriteria = {
                 creatorId: "",
                 includeLinks: true,
-                repositoryId: "",
+                repositoryId: repositoryId ?? "",
                 reviewerId: "",
                 sourceRefName: "",
                 sourceRepositoryId: "",
                 status: PullRequestStatus.Completed,
-                targetRefName: ""
+                targetRefName: targetRefName ?? ""
             };
             var batchSize: number = 1000; // 1000 seems to be the API max
             var skip: number = 0;
@@ -1296,6 +1298,8 @@ export async function generateReleaseNotes(
     checkForManuallyLinkedWI: boolean,
     wiqlWhereClause: string,
     getPRDetails: boolean,
+    getPRDetailsRepositoryId: string,
+    getPRDetailsRefName: string,
     getTestedBy: boolean,
     wiqlFromTarget: string,
     wiqlSharedQueryName: string,
@@ -2043,10 +2047,24 @@ export async function generateReleaseNotes(
             }
 
             if (getPRDetails) {
+                var searchRepositoryId = "";
+                if (getPRDetailsRepositoryId) {
+                    agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs for repository ${getPRDetailsRepositoryId}`);
+                    searchRepositoryId = getPRDetailsRepositoryId;
+                } else {
+                    agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs for all repositories`);
+                }
+                var searchRefName = "";
+                if (getPRDetailsRefName) {
+                    agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs for branch ${getPRDetailsRefName}`);
+                    searchRefName = getPRDetailsRefName;
+                } else {
+                    agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs for all refs`);
+                }
                 try {
                     agentApi.logInfo(`Getting associated PRs`);
 
-                    var allPullRequests: GitPullRequest[] = await getPullRequests(gitApi, prProjectFilter);
+                    var allPullRequests: GitPullRequest[] = await getPullRequests(gitApi, prProjectFilter, searchRepositoryId, searchRefName);
                     if (allPullRequests && (allPullRequests.length > 0)) {
                         agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps PRs in the repo`);
                         globalCommits.forEach(commit => {

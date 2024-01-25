@@ -48,6 +48,8 @@ async function run(): Promise<number>  {
             var checkForManuallyLinkedWI = tl.getBoolInput("checkForManuallyLinkedWI");
             var wiqlWhereClause = tl.getInput("wiqlWhereClause");
             var getPRDetails = tl.getBoolInput("getPRDetails");
+            let getPRDetailsRepositoryId = tl.getInput("getPRDetailsRepositoryId");
+            let getPRDetailsRefName = tl.getInput("getPRDetailsRefName");
             var getTestedBy = tl.getBoolInput("getTestedBy");
             var wiqlFromTarget = tl.getInput("wiqlFromTarget");
             var wiqlSharedQueryName = tl.getInput("wiqlSharedQueryName");
@@ -100,6 +102,8 @@ async function run(): Promise<number>  {
                 checkForManuallyLinkedWI,
                 wiqlWhereClause,
                 getPRDetails,
+                getPRDetailsRepositoryId,
+                getPRDetailsRefName,
                 getTestedBy,
                 wiqlFromTarget,
                 wiqlSharedQueryName

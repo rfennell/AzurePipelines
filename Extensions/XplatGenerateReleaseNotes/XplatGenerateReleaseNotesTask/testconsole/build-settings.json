@@ -40,6 +40,8 @@
 
     "wiqlWhereClause": "",
     "getPRDetails": "true",
+    "getPRDetailsRepositoryId": "",
+    "getPRDetailsRefName": "",
     "getTestedBy": "true",
 
     "maxRetries": "3",
