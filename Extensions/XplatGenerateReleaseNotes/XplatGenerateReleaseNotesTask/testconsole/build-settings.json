@@ -12,7 +12,6 @@
     "dumpPayloadToFile": "true",
     "dumpPayloadFileName": "payload.json",
 
-
     "templateLocation": "File",
     "inlinetemplate": "",
     "outputVariableName": "no available in this tool",

@@ -45,7 +45,6 @@ async function run(): Promise<number> {
 
           let tpcUri: string = settings.TeamFoundationCollectionUri;
           let teamProject: string = settings.TeamProject;
-
           var templateLocation: string = settings.templateLocation || "File";
           var templateFile: string = settings.templatefile || "";
           var inlineTemplate: string = settings.inlinetemplate || "";
@@ -139,7 +138,6 @@ async function run(): Promise<number> {
               pat,
               tpcUri,
               teamProject,
-
               buildId,
               releaseId,
               releaseDefinitionId,

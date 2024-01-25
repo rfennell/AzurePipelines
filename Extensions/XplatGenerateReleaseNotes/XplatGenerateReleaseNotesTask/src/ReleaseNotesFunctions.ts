@@ -1257,7 +1257,6 @@ export async function generateReleaseNotes(
     pat: string,
     tpcUri: string,
     teamProject: string,
-
     buildId: number,
     releaseId: number,
     releaseDefinitionId: number,
@@ -2045,8 +2044,7 @@ export async function generateReleaseNotes(
             } else {
                 agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs in the Team Project ${teamProject}`);
                 prProjectFilter = teamProject;
-            }
-            
+            } 
 
             if (getPRDetails) {
                 var searchRepositoryId = "";
