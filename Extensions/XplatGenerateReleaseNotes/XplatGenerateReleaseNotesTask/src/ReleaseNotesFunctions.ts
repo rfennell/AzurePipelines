@@ -238,7 +238,7 @@ export async function getPullRequests(
             var filter: GitPullRequestSearchCriteria = {
                 creatorId: "",
                 includeLinks: true,
-                repositoryId: repositoryId ?? "", // 4bbba5b8-f7f2-48b8-94e2-2b4d139cabc3
+                repositoryId: repositoryId ?? "",
                 reviewerId: "",
                 sourceRefName: "",
                 sourceRepositoryId: "",
