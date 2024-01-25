@@ -405,8 +405,27 @@
       "required": false,
       "helpMarkDown": "If true all PRs in the project, or organisation, will be scanned for associations. There is an option to disable this feature as this scan is slow and not always required (Default true)",
       "groupName":"advanced"
-    }
-    ,
+    },
+    {
+      "name": "getPRDetailsRepositoryId",
+      "type": "string",
+      "label": "Filter PRs by repository ID",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "If defined, helps improving performance during Get PR details step by filtering only the PRs of specific project",
+      "groupName":"advanced",
+      "visibleRule":"getPRDetailsRepositoryId = ''"
+    },
+    {
+      "name": "getPRDetailsRefName",
+      "type": "string",
+      "label": "Filter PRs for a given ref name",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "If defined, helps improving performance during Get PR details step by filtering only the PRs merged into specified branch",
+      "groupName":"advanced",
+      "visibleRule":"getPRDetailsRefName = 'refs/heads/master'"
+    },
     {
       "name": "getTestedBy",
       "type": "boolean",

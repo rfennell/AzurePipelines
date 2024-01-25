@@ -45,8 +45,7 @@ async function run(): Promise<number> {
 
           let tpcUri: string = settings.TeamFoundationCollectionUri;
           let teamProject: string = settings.TeamProject;
-          let repositoryId: string = settings.repositoryId;
-          let prTargetRefName: string = settings.prTargetRefName;
+
           var templateLocation: string = settings.templateLocation || "File";
           var templateFile: string = settings.templatefile || "";
           var inlineTemplate: string = settings.inlinetemplate || "";
@@ -88,6 +87,8 @@ async function run(): Promise<number> {
           var checkForManuallyLinkedWI: boolean = getBoolean(settings.checkForManuallyLinkedWI, false);
           var wiqlWhereClause: string = settings.wiqlWhereClause || "";
           var getPRDetails: boolean = getBoolean(settings.getPRDetails, true);
+          let getPRDetailsRepositoryId: string = settings.getPRDetailsRepositoryId;
+          let getPRDetailsRefName: string = settings.getPRDetailsRefName;
           var getTestedBy: boolean = getBoolean(settings.getTestedBy, true);
           var wiqlFromTarget: string = settings.wiqlFromTarget || "WorkItems";
           var wiqlSharedQueryName: string = settings.wiqlSharedQueryName || "";
@@ -138,8 +139,7 @@ async function run(): Promise<number> {
               pat,
               tpcUri,
               teamProject,
-              repositoryId,
-              prTargetRefName,
+
               buildId,
               releaseId,
               releaseDefinitionId,
@@ -181,6 +181,8 @@ async function run(): Promise<number> {
               checkForManuallyLinkedWI,
               wiqlWhereClause,
               getPRDetails,
+              getPRDetailsRepositoryId,
+              getPRDetailsRefName,
               getTestedBy,
               wiqlFromTarget,
               wiqlSharedQueryName);

@@ -12,8 +12,6 @@ async function run(): Promise<number>  {
 
             let tpcUri = tl.getVariable("System.TeamFoundationCollectionUri");
             let teamProject = tl.getVariable("System.TeamProject");
-            let repositoryId = tl.getInput("repositoryId");
-            let prTargetRefName = tl.getInput("prTargetRefName");
             var templateLocation = tl.getInput("templateLocation", true);
             var templateFile = tl.getInput("templatefile");
             var inlineTemplate = tl.getInput("inlinetemplate");
@@ -50,6 +48,8 @@ async function run(): Promise<number>  {
             var checkForManuallyLinkedWI = tl.getBoolInput("checkForManuallyLinkedWI");
             var wiqlWhereClause = tl.getInput("wiqlWhereClause");
             var getPRDetails = tl.getBoolInput("getPRDetails");
+            let getPRDetailsRepositoryId = tl.getInput("getPRDetailsRepositoryId");
+            let getPRDetailsRefName = tl.getInput("getPRDetailsRefName");
             var getTestedBy = tl.getBoolInput("getTestedBy");
             var wiqlFromTarget = tl.getInput("wiqlFromTarget");
             var wiqlSharedQueryName = tl.getInput("wiqlSharedQueryName");
@@ -61,8 +61,6 @@ async function run(): Promise<number>  {
                 overridePat,
                 tpcUri,
                 teamProject,
-                repositoryId,
-                prTargetRefName,
                 parseInt(tl.getVariable("Build.BuildId")),
                 parseInt(tl.getVariable("Release.ReleaseId")),
                 parseInt(tl.getVariable("Release.DefinitionId")),
@@ -104,6 +102,8 @@ async function run(): Promise<number>  {
                 checkForManuallyLinkedWI,
                 wiqlWhereClause,
                 getPRDetails,
+                getPRDetailsRepositoryId,
+                getPRDetailsRefName,
                 getTestedBy,
                 wiqlFromTarget,
                 wiqlSharedQueryName

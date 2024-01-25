@@ -11,8 +11,7 @@
     "dumpPayloadToConsole": "false",
     "dumpPayloadToFile": "true",
     "dumpPayloadFileName": "payload.json",
-    "repositoryId": "",
-    "prTargetRefName": "",
+
 
     "templateLocation": "File",
     "inlinetemplate": "",
@@ -42,6 +41,8 @@
 
     "wiqlWhereClause": "",
     "getPRDetails": "true",
+    "getPRDetailsRepositoryId": "",
+    "getPRDetailsRefName": "",
     "getTestedBy": "true",
 
     "maxRetries": "3",
