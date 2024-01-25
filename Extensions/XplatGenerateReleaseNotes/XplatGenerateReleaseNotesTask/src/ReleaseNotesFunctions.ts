@@ -2044,7 +2044,7 @@ export async function generateReleaseNotes(
             } else {
                 agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs in the Team Project ${teamProject}`);
                 prProjectFilter = teamProject;
-            } 
+            }
 
             if (getPRDetails) {
                 var searchRepositoryId = "";
@@ -2052,14 +2052,14 @@ export async function generateReleaseNotes(
                     agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs for repository ${getPRDetailsRepositoryId}`);
                     searchRepositoryId = getPRDetailsRepositoryId;
                 } else {
-                    agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs in the Organisation for all repositories`);
+                    agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs for all repositories`);
                 }
                 var searchRefName = "";
                 if (getPRDetailsRefName) {
                     agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs for branch ${getPRDetailsRefName}`);
                     searchRefName = getPRDetailsRefName;
                 } else {
-                    agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs in the Organisation`);
+                    agentApi.logInfo(`Getting all completed Azure DevOps Git Repo PRs for all refs`);
                 }
                 try {
                     agentApi.logInfo(`Getting associated PRs`);
