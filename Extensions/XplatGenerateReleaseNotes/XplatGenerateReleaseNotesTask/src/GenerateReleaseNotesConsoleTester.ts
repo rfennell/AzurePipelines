@@ -86,6 +86,8 @@ async function run(): Promise<number> {
           var checkForManuallyLinkedWI: boolean = getBoolean(settings.checkForManuallyLinkedWI, false);
           var wiqlWhereClause: string = settings.wiqlWhereClause || "";
           var getPRDetails: boolean = getBoolean(settings.getPRDetails, true);
+          let getPRDetailsRepositoryId: string = settings.getPRDetailsRepositoryId;
+          let getPRDetailsRefName: string = settings.getPRDetailsRefName;
           var getTestedBy: boolean = getBoolean(settings.getTestedBy, true);
           var wiqlFromTarget: string = settings.wiqlFromTarget || "WorkItems";
           var wiqlSharedQueryName: string = settings.wiqlSharedQueryName || "";
@@ -177,6 +179,8 @@ async function run(): Promise<number> {
               checkForManuallyLinkedWI,
               wiqlWhereClause,
               getPRDetails,
+              getPRDetailsRepositoryId,
+              getPRDetailsRefName,
               getTestedBy,
               wiqlFromTarget,
               wiqlSharedQueryName);
