@@ -404,11 +404,11 @@ The task takes the following parameters
 | outputVariableName | Name of the variable that release notes contents will be copied into for use in other tasks. As an output variable equates to an environment variable, so there is a limit on the maximum size. For larger release notes it is best to save the file locally as opposed to using an output variable. Note that if generating multiple document then this output variable is set to the value of the first document generated|
 | getPRDetails | If true all PRs in the project, or organisation, will be scanned for associations. There is an option to disable this feature as this scan is slow and not always required, but `getPRDetailsRepositoryId` and `getPRDetailsRefName` can be used to constrain search space.  (Default true)  |
 | getPRDetailsRepositoryId | Helps improving performance during Get PR details step by filtering only the PRs of specific Azure DevOps Git repo (Default to not set i.e. search all repos) |
-| getPRDetailsRefName | Helps improving performance during Get PR details step by filtering only the PRs merged into specified branch (Default to not set i.e. search all branches)|
+| getPRDetailsRefName | Helps improving performance during Get PR details step by filtering only the PRs merged into specified branch e.g. refs/heads/main (Default to not set i.e. search all branches)|
 | getTestedBy | If true any Test Case WIs linked to associated WIs by a `Tested By` relation will be added to the `testedByWorkItems` array (Default true) |
 # Output location
 
-When using this task within a build then it is sensible to [publish the release notes files as a build artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/publish-build-artifacts?view=azure-devops).
+When using this task within a build then it is sensible to [publish the release notes files as a build artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/publish-build-artifacts?view=azure-devops). 
 
 However, within a release there are no such artifacts location. Hence, it is recommended that a task such as the [WIKI Updater](https://marketplace.visualstudio.com/items?itemName=richardfennellBM.BM-VSTS-WIKIUpdater-Tasks) is used to upload the resultant file to a WIKI. Though there are other options such as store the file on a UNC share, in an Azure DevOps Artifact or sent as an email.
 

@@ -422,7 +422,7 @@
       "label": "Filter PRs for a given ref name",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "Helps improving performance during Get PR details step by filtering only the PRs merged into specified branch (Default to not set i.e. search all branches)",
+      "helpMarkDown": "Helps improving performance during Get PR details step by filtering only the PRs merged into specified branch e.g. refs/heads/main (Default to not set i.e. search all branches)",
       "groupName":"advanced",
       "visibleRule":"getPRDetailsRefName = 'refs/heads/main'"
     },
