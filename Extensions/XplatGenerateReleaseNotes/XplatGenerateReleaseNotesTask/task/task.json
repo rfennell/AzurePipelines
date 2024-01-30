@@ -412,7 +412,7 @@
       "label": "Filter PRs by repository ID",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "If defined, helps improving performance during Get PR details step by filtering only the PRs of specific project",
+      "helpMarkDown": "Helps improving performance during Get PR details step by filtering only the PRs of specific Azure DevOps Git repo (Default to not set i.e. search all repos)",
       "groupName":"advanced",
       "visibleRule":"getPRDetailsRepositoryId = ''"
     },
@@ -422,9 +422,9 @@
       "label": "Filter PRs for a given ref name",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "If defined, helps improving performance during Get PR details step by filtering only the PRs merged into specified branch",
+      "helpMarkDown": "Helps improving performance during Get PR details step by filtering only the PRs merged into specified branch (Default to not set i.e. search all branches)",
       "groupName":"advanced",
-      "visibleRule":"getPRDetailsRefName = 'refs/heads/master'"
+      "visibleRule":"getPRDetailsRefName = 'refs/heads/main'"
     },
     {
       "name": "getTestedBy",
