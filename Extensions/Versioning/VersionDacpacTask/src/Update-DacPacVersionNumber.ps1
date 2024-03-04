@@ -154,7 +154,15 @@ function Update-DacpacVerion {
     $LoadOptions = New-Object Microsoft.SqlServer.Dac.Model.ModelLoadOptions($null)
     $LoadOptions.LoadAsScriptBackedModel = $true
     $LoadOptions.ModelStorageType = $StorageType
-    $TSQLModel = [Microsoft.SqlServer.Dac.Model.TSqlModel]::LoadFromDacpac($Path, $LoadOptions)
+
+	try {
+		write-host "Loading DacPac"
+        $TSQLModel = [Microsoft.SqlServer.Dac.Model.TSqlModel]::LoadFromDacpac($Path, $LoadOptions)
+	} catch {
+        # See https://github.com/rfennell/AzurePipelines/issues/1592
+		Write-Warning "Loading DacPac failed, retrying (fixed for .NET 4.8 bindings issue)"
+        $TSQLModel = [Microsoft.SqlServer.Dac.Model.TSqlModel]::LoadFromDacpac($Path, $LoadOptions)
+	}
 
     #sets up details to update in dacpac
     $DacpacOptions = New-Object Microsoft.SqlServer.Dac.PackageMetadata($null)
@@ -166,7 +174,7 @@ function Update-DacpacVerion {
         Write-Verbose "Attempting to update $($DacPacObject.Name) with version number $VersionNumber" -Verbose
         #Updates the DacPack with specified details
         [Microsoft.SqlServer.Dac.DacPackageExtensions]::UpdateModel($DacPacObject, $TSQLModel, $DacpacOptions)
-        Write-Verbose "Succeeded in updating $($DacPacObject.Name) with version number $VersionNumber" -Verbose
+        Write-host "Succeeded in updating $($DacPacObject.Name) with version number $VersionNumber" -Verbose
     }
     catch {
         Write-Warning "Failed to update DacPac $($DacPacObject.Name), due to error:"
