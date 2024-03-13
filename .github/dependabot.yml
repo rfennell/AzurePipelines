@@ -1,86 +1,66 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
 version: 2
 updates:
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/ArtifactDescription/ArtifactDescriptionTask" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/ArtifactDescription/ArtifactDescriptionTask" 
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/BuildUpdating/BuildRetensionTask" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/BuildUpdating/BuildRetensionTask" 
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/BuildUpdating/BuildVariableTask" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/BuildUpdating/BuildVariableTask" 
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/BuildUpdating/GetBuildDefinitionVariableValueTask" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/BuildUpdating/GetBuildDefinitionVariableValueTask" 
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/FileUtilities/XmlFileUpdateTaskk" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/FileUtilities/XmlFileUpdateTaskk" 
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/Versioning/VersionAndroidManifest" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/Versioning/VersionAndroidManifest" 
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/Versioning/VersionAngularFileTask" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/Versioning/VersionAngularFileTask" 
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/Versioning/VersionDotNetCoreAssembliesTask" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/Versioning/VersionDotNetCoreAssembliesTask" 
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/Versioning/VersionIOSPlistManifest" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/Versioning/VersionIOSPlistManifest" 
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/Versioning/VersionJSONFileTask" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/Versioning/VersionJSONFileTask" 
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/WikiPDFExport/WikiPDFExportTask" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/WikiPDFExport/WikiPDFExportTask" 
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/WikiUpdater/WikiFolderUpdaterTask" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/WikiUpdater/WikiFolderUpdaterTask" 
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/WikiUpdater/WikiUpdaterTask" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/WikiUpdater/WikiUpdaterTask" 
     schedule:
       interval: "weekly"
-
- - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask" # Location of package manifests
+ - package-ecosystem: "npm" 
+    directory: "/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask" 
     schedule:
       interval: "weekly"
-
- - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/YamlGenerator/YamlGeneratorTask" # Location of package manifests
+ - package-ecosystem: "npm" 
+    directory: "/Extensions/YamlGenerator/YamlGeneratorTask" 
     schedule:
       interval: "weekly"
-
- - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/Extensions/Tools/GetAPIJsonPayloads" # Location of package manifests
+ - package-ecosystem: "npm" 
+    directory: "/Extensions/Tools/GetAPIJsonPayloads" 
     schedule:
       interval: "weekly"
