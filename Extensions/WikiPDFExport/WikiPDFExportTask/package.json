@@ -24,7 +24,7 @@
   "devDependencies": {
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.1",
-    "@types/node": "^18.11.14",
+    "@types/node": "^20.11.27",
     "chai": "^4.3.7",
     "fs-extra": "^11.1.0",
     "mocha": "^10.2.0",
