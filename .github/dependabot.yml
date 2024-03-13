@@ -52,15 +52,15 @@ updates:
     directory: "/Extensions/WikiUpdater/WikiUpdaterTask" 
     schedule:
       interval: "weekly"
- - package-ecosystem: "npm" 
+  - package-ecosystem: "npm" 
     directory: "/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask" 
     schedule:
       interval: "weekly"
- - package-ecosystem: "npm" 
+  - package-ecosystem: "npm" 
     directory: "/Extensions/YamlGenerator/YamlGeneratorTask" 
     schedule:
       interval: "weekly"
- - package-ecosystem: "npm" 
+  - package-ecosystem: "npm" 
     directory: "/Extensions/Tools/GetAPIJsonPayloads" 
     schedule:
       interval: "weekly"
