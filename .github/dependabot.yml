@@ -6,6 +6,81 @@
 version: 2
 updates:
   - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/" # Location of package manifests
+    directory: "/Extensions/ArtifactDescription/ArtifactDescriptionTask" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/BuildUpdating/BuildRetensionTask" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/BuildUpdating/BuildVariableTask" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/BuildUpdating/GetBuildDefinitionVariableValueTask" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/FileUtilities/XmlFileUpdateTaskk" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/Versioning/VersionAndroidManifest" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/Versioning/VersionAngularFileTask" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/Versioning/VersionDotNetCoreAssembliesTask" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/Versioning/VersionIOSPlistManifest" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/Versioning/VersionJSONFileTask" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/WikiPDFExport/WikiPDFExportTask" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/WikiUpdater/WikiFolderUpdaterTask" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/WikiUpdater/WikiUpdaterTask" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+ - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+ - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/YamlGenerator/YamlGeneratorTask" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
+ - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Extensions/Tools/GetAPIJsonPayloads" # Location of package manifests
     schedule:
       interval: "weekly"
