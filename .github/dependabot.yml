@@ -70,17 +70,17 @@ updates:
     schedule:
       interval: "weekly"
 
- - package-ecosystem: "npm" # See documentation for possible values
+  - package-ecosystem: "npm" # See documentation for possible values
     directory: "/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask" # Location of package manifests
     schedule:
       interval: "weekly"
 
- - package-ecosystem: "npm" # See documentation for possible values
+  - package-ecosystem: "npm" # See documentation for possible values
     directory: "/Extensions/YamlGenerator/YamlGeneratorTask" # Location of package manifests
     schedule:
       interval: "weekly"
 
- - package-ecosystem: "npm" # See documentation for possible values
+  - package-ecosystem: "npm" # See documentation for possible values
     directory: "/Extensions/Tools/GetAPIJsonPayloads" # Location of package manifests
     schedule:
       interval: "weekly"
