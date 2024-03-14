@@ -64,3 +64,7 @@ updates:
     directory: "/Extensions/Tools/GetAPIJsonPayloads" 
     schedule:
       interval: "weekly"
+  - package-ecosystem: "npm" 
+    directory: "/Extensions/Sarif2JUnitConverter/Sarif2JUnitConverterTask" 
+    schedule:
+      interval: "weekly"

@@ -1,0 +1,76 @@
+{
+ "manifestVersion": 1,
+ "id": "BM-VSTS-Sarif2JUnitConverter",
+ "version": "1.0.0",
+ "name": "Sarif to JUnit Converter",
+ "publisher": "richardfennellBM",
+  "description": "A task that Sarif JSON files to JUnit XML",
+  "CustomerQnASupport": {
+    "enableqna":"true",
+    "url": "https://github.com/rfennell/AzurePipelines/issues"
+  }, 
+  "categories": [
+    "Azure Pipelines"
+  ],
+  "targets": [
+         {
+             "id": "Microsoft.VisualStudio.Services"
+         }
+     ],
+  "tags": [
+    "SARIF",
+    "JUnit"
+  ],   
+  "branding": {
+        "color": "#f97923",
+        "theme": "dark"
+  },
+  "icons": {
+      "default": "images/logo.png"
+  },
+   "links": {
+    "getstarted": {
+      "uri": "https://github.com/rfennell/AzurePipelines/wiki/BM-VSTS-Sarif2JUnitConverter"
+    },
+    "support": {
+      "uri": "https://github.com/rfennell/AzurePipelines/issues"
+    },
+    
+    "privacypolicy": {
+      "uri": "https://github.com/rfennell/AzurePipelines/blob/add-privacy-statement/Extensions/Sarrif2JUnitConverte/privacy.md"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot1.png"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    },
+    "privacy": {
+      "path": "privacy.md"
+    }
+  },
+  "files": [
+    {
+      "path": "Sarif2JUnitConverterTask"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "Sarif2JUnitConverterTask",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "Sarif2JUnitConverterTask"
+      }
+    }
+  ]
+}

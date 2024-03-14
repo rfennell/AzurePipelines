@@ -1,0 +1,188 @@
+name: $(Major).$(Minor).$(rev:r)  # build numbering format
+
+trigger: 
+  branches:
+    include: [ main ] # branch names which will trigger a build
+  paths:
+    include: [ /Extensions/Sarif2JUnitConverter ] # file paths which must match to trigger a build, cannot be a variable
+
+pr: # will trigger on PR
+  branches:
+    include: [ main ] # branch names which will trigger a build
+  paths:
+    include: [ /Extensions/Sarif2JUnitConverter ] # file paths which must match to trigger a build, cannot be a variable
+
+variables:
+  # declared in the pipeline UI
+  #  major
+  #  minor
+  - group:  'Sarif2JUnitConverter Extension'
+    # this group includes the following variables  
+    #  ExtensionRoot - working folder
+    #  PublisherID  - Marketplace publisher
+    #  ExtensionID - Marketplace extension id
+    #  vmImage - name of Azure DevOps pool to use
+    #  artifactLocationName -  folder the artifact to push is stored in
+    #  privateExtentionsTag - tag to show if private (else blank)
+    #  taskID - Marketplace ID of task
+    #  wikiFilename - name of generated docs files
+    #  githubPAT - for testing
+    #  AzureDevOpsPAT - for testing
+stages:
+  - stage: Build
+    jobs:
+    - job: Build
+      pool: 
+        vmImage: '$(vmImage)'
+        demands: npm
+      steps:
+      # version all the task in the extension
+      - task: qetza.replacetokens.replacetokens-task.replacetokens@6
+        displayName: 'Setting the version for tasks in extension'
+        inputs:
+          rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
+          targetFiles: '**\\task.json'
+      
+      # for each Node based task we must transpile it
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)'
+          taskName: 'Sarif2JUnitConverterTask'
+
+      - task: TfxInstaller@3
+        displayName: 'Install Tfx Tool'
+        inputs:
+          version: 'v0.8.x'
+
+      - task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@3
+        displayName: 'Package and Publish Extension as a PROD Package '
+        inputs:
+          rootFolder: '$(ExtensionRoot)'
+          outputPath: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
+          publisherId: '$(PublisherID)'
+          extensionId: '$(ExtensionID)'
+          extensionVersion: '$(Build.BuildNumber)'
+          updateTasksVersion: true
+          extensionVisibility: public
+
+      - task: CopyFiles@2
+        displayName: 'Copy Docs'
+        inputs:
+          SourceFolder: $(ExtensionRoot)
+          Contents: |
+            readme.md
+            vss-extension.json
+            **\task\task.json
+          TargetFolder: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
+
+      - task: PublishPipelineArtifact@0
+        inputs:
+          artifactName: 'vsix'
+          targetPath: '$(Build.ArtifactStagingDirectory)\\$(artifactLocationName)'
+
+  - stage: Private
+    jobs:
+    - deployment: Private_Deployment
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Private)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            # we don't need to DownloadPipelineArtifact as this is done automatically
+            - template: ..\..\YAMLTemplates\publish-extension.yml
+              parameters:
+                 vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                 extensionTag: '$(privateExtentionsTag)' 
+                 extensionVisibility: private    
+
+  - stage: Test
+    dependsOn: Private 
+    pool:
+      vmImage: '$(vmImage)'
+    jobs:
+    - deployment: Test
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Sarif2JUnitConverter)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:   
+            steps:
+            - powershell: |
+                write-host "Placeholder"
+              displayName: 'Write JSON file'
+            - task: richardfennellBM.BM-VSTS-Sarif2JUnitConverter-DEV.Sarif2JUnitConverterTask.Sarif2JUnitConverterTask@1
+              displayName: 'Convert Sarif file to JUnit'
+              enabled: false
+              inputs:
+                sarifFile: $(Build.SourcesDirectory))/bicep.sarif
+                junitFile: $(Build.SourcesDirectory))/out.junit
+               
+  - stage: Documentation
+    dependsOn: Test 
+    pool:
+      vmImage: '$(vmImage)'
+    variables:
+    - group: 'WIKI Updater'
+    # provides the variable
+    #   gitemail - used in the Git Config
+    #   gitName - used in the Git Config
+    #   githubpat - used to authenticate to repo
+    #   user - used to authenticate to repo
+    #   repo - url of repo (without HTTPS://)
+    jobs:
+    - deployment: Documentation
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Documentation)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:   
+            steps:
+              - template: ..\..\YAMLTemplates\generate-wiki-docs.yml
+                parameters:
+                  workingDirectory: '$(Agent.BuildDirectory)/$(artifactLocationName)'
+                  wikiFilename: '$(wikiFilename)'
+                  repo: '$(repo)'
+                  gitname: '$(GitName)'
+                  gitemail: '$(GitEmail)'
+                  UserName: '$(UserName)'
+                  GitHubPat: '$(GitHubPat)'
+
+  - stage: Public
+    dependsOn: Documentation
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+    - deployment: Public_Deployment
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Public)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              # we don't need to DownloadPipelineArtifact as this is done automatically
+              - template: ..\..\YAMLTemplates\publish-extension.yml
+                parameters:
+                   vsixPath: '$(Agent.BuildDirectory)\\$(artifactLocationName)\\$(PublisherID).$(ExtensionID)-$(Build.BuildNumber).vsix'  
+                   extensionTag: '' 
+                   extensionVisibility: public    
+
+    - job: Post_Publish
+      dependsOn: Public_Deployment
+      variables:
+      - group: socialMedia
+      pool:
+        vmImage: '$(vmImage)'
+      steps:
+        - template: ..\..\YAMLTemplates\post-publish.yml
+          parameters:
+            buildNumber: $(Build.BuildNumber)
+            extensionName: $(Build.DefinitionName)
+            socialmediaLogicAppURL: $(socialmediaLogicAppURL)
