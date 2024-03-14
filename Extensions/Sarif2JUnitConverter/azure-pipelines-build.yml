@@ -133,7 +133,7 @@ stages:
     jobs:
     - deployment: Documentation
       timeoutInMinutes: 0
-      environment: 'Azure DevOps Marketplace (Sarif2JUnitConverter)'
+      environment: 'Azure DevOps Marketplace (Documentation)'
       pool:
         vmImage: '$(vmImage)'
       strategy:
