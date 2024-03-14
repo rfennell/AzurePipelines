@@ -26,7 +26,7 @@ describe("Sarif2JUnitConverter", () => {
 
         // Assert that the XML data is valid
         expect(fs.readFileSync(sarifFilePath, "utf8")).to.equal(fs.readFileSync(bicepFilePath, "utf8"));
-  
+
     });
 
 });

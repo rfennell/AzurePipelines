@@ -52,7 +52,6 @@ export async function convertSarifToXml(sarifFilePath: string, xmlFilePath: stri
     fs.writeFileSync(xmlFilePath, xmlString);
 }
 
-
 var sarifFile = tl.getInput("sarifFile");
 var junitFile = tl.getInput("junitFile");
 logInfo(`Variable: sarifFile [${sarifFile}]`);
