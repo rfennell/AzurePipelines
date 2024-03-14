@@ -22,7 +22,7 @@ steps:
   inputs:
     command: 'custom'
     workingDir: '${{parameters.extensionRoot}}\\${{parameters.taskName}}'
-    customCommand: 'run test-no-logger'
+    customCommand: 'run test'
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results for ${{parameters.taskName}}'
