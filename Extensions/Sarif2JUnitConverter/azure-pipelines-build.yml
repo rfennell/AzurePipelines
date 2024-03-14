@@ -117,8 +117,8 @@ stages:
             - task: richardfennellBM.BM-VSTS-Sarif2JUnitConverter-DEV.Sarif2JUnitConverterTask.Sarif2JUnitConverterTask@1
               displayName: 'Convert Sarif file to JUnit'
               inputs:
-                sarifFile: $(Build.SourcesDirectory))/Extensions/Sarif2JUnitConverter/Sarif2JUnitConverterTask/test/bicep.sarif
-                junitFile: $(Build.SourcesDirectory))/out.junit
+                sarifFile: $(Build.SourcesDirectory)/Extensions/Sarif2JUnitConverter/Sarif2JUnitConverterTask/test/bicep.sarif
+                junitFile: $(Build.SourcesDirectory)/out.junit
                
   - stage: Documentation
     dependsOn: Test 
