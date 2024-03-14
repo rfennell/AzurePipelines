@@ -1,17 +1,7 @@
 ﻿import * as fs from "fs";
 import * as xmlbuilder from "xmlbuilder";
-import tl = require("azure-pipelines-task-lib/task");
 
-export function logInfo(msg) {
-    console.log(msg);
-}
-
-export function logError(msg: string) {
-    tl.error(msg);
-    tl.setResult(tl.TaskResult.Failed, msg);
-}
-
-export async function convertSarifToXml(sarifFilePath: string, xmlFilePath: string) {
+export async function convertSarifToXml(sarifFilePath: string, xmlFilePath: string, logError, logInfo) {
 
     if (!fs.existsSync(sarifFilePath)) {
         logError(`SARIF file not found: ${sarifFilePath}`);

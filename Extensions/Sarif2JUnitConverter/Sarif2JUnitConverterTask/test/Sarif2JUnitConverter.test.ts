@@ -1,7 +1,17 @@
 import { expect } from "chai";
 import { convertSarifToXml } from "../src/Sarif2JUnitConverterFunctions";
 import * as fs from "fs";
-import tl = require("azure-pipelines-task-lib/task");
+
+var lastLogMessage = "";
+var lastErrorMessage = "";
+
+function logInfo(msg) {
+    lastLogMessage = msg;
+}
+
+function logError(msg: string) {
+    lastErrorMessage = msg;
+}
 
 describe("Sarif2JUnitConverter", () => {
     const xmlFilePath = "test/out.xml";
@@ -17,7 +27,7 @@ describe("Sarif2JUnitConverter", () => {
         // Arrange
 
         // Act
-        convertSarifToXml("test/bicep.sarif", xmlFilePath);
+        convertSarifToXml("test/bicep.sarif", xmlFilePath, logError, logInfo);
 
         // Assert
         expect(fs.existsSync(xmlFilePath)).to.be.true;
@@ -31,17 +41,19 @@ describe("Sarif2JUnitConverter", () => {
 
     it("should not generate anything with missing SARIF file", () => {
         // Call the function with a non-existent SARIF file
-        convertSarifToXml("test/nonexistent.sarif", xmlFilePath);
+        convertSarifToXml("test/nonexistent.sarif", xmlFilePath, logError, logInfo);
 
         // Assert that the XML file is not created
         expect(fs.existsSync(xmlFilePath)).to.be.false;
+        expect(lastErrorMessage).to.equal("SARIF file not found: test/nonexistent.sarif");
     });
 
     it("should no generate anythingg for malformed SARIF file", () => {
         // Call the function with a non-existent SARIF file
-        convertSarifToXml("test/bad-bicep.sarif", xmlFilePath);
+        convertSarifToXml("test/bad-bicep.sarif", xmlFilePath, logError, logInfo);
 
         // Assert that the XML file is not created
         expect(fs.existsSync(xmlFilePath)).to.be.false;
+        expect(lastErrorMessage).to.equal("Failed to parse SARIF file: test/bad-bicep.sarif");
     });
 });
