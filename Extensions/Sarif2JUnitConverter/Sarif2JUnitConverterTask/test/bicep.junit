@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites tests="4" failures="4" errors="0" skipped="0">
+  <testsuite name="My suite" tests="4" failures="4" errors="0" skipped="0">
+    <testcase name="BCP104">
+      <failure message="Ln 53 The referenced module has errors. //D:/a/1/s/Bicep/Shared/Main-Shared.AzureDeploy.bicep" />
+    </testcase>
+    <testcase name="BCP104">
+      <failure message="Ln 77 The referenced module has errors. //D:/a/1/s/Bicep/Shared/Main-Shared.AzureDeploy.bicep" />
+    </testcase>
+    <testcase name="no-hardcoded-location">
+      <failure message="Ln 39 A resource location should not use a hard-coded string or variable value. Please use a parameter value, an expression, or the string 'global'. Found: 'uksouth' [https://aka.ms/bicep/linter/no-hardcoded-location] //D:/a/1/s/Bicep/Shared/Modules/KeyVault.azuredeploy.bicep" />
+    </testcase>
+    <testcase name="no-hardcoded-location">
+      <failure message="Ln 49 A resource location should not use a hard-coded string or variable value. Please use a parameter value, an expression, or the string 'global'. Found: 'uksouth' [https://aka.ms/bicep/linter/no-hardcoded-location] //D:/a/1/s/Bicep/Shared/Modules/ApplicationInsights.azuredeploy.bicep" />
+    </testcase>
+  </testsuite>
+</testsuites>
