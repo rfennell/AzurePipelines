@@ -98,8 +98,35 @@ stages:
                  extensionTag: '$(privateExtentionsTag)' 
                  extensionVisibility: private    
 
-  - stage: Documentation
+  - stage: Test
     dependsOn: Private 
+    pool:
+      vmImage: '$(vmImage)'
+    variables:
+    # provides the variable
+    #   gitemail - used in the Git Config
+    #   gitName - used in the Git Config
+    #   githubpat - used to authenticate to repo
+    #   user - used to authenticate to repo
+    #   repo - url of repo (without HTTPS://)
+    jobs:
+    - deployment: Test
+      timeoutInMinutes: 0
+      environment: 'Azure DevOps Marketplace (Sarif2JUnitConverter)'
+      pool:
+        vmImage: '$(vmImage)'
+      strategy:
+        runOnce:
+          deploy:   
+            steps:
+            - task: richardfennellBM.BM-VSTS-Sarif2JUnitConverter-DEV.Sarif2JUnitConverterTask.Sarif2JUnitConverterTask@1
+              displayName: 'Convert Sarif file to JUnit'
+              inputs:
+                sarifFile: Extensions\Sarif2JUnitConverter\Sarif2JUnitConverterTask\test\bicep.sarif
+                junitFile: Extensions\Sarif2JUnitConverter\Sarif2JUnitConverterTask\test\out.junit
+
+  - stage: Documentation
+    dependsOn: Test 
     pool:
       vmImage: '$(vmImage)'
     variables:
