@@ -102,13 +102,6 @@ stages:
     dependsOn: Private 
     pool:
       vmImage: '$(vmImage)'
-    variables:
-    # provides the variable
-    #   gitemail - used in the Git Config
-    #   gitName - used in the Git Config
-    #   githubpat - used to authenticate to repo
-    #   user - used to authenticate to repo
-    #   repo - url of repo (without HTTPS://)
     jobs:
     - deployment: Test
       timeoutInMinutes: 0
