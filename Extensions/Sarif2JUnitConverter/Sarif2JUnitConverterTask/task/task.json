@@ -22,7 +22,7 @@
       "name": "sarifFile",
       "type": "string",
       "label": "Source Sarif File",
-      "defaultValue": "in.sarif",
+      "defaultValue": "",
       "required": true,
       "helpMarkDown": "The source file to convert"
     },
@@ -30,7 +30,7 @@
       "name": "junitFile",
       "type": "string",
       "label": "Output JUnit File",
-      "defaultValue": "out.junit",
+      "defaultValue": "",
       "required": true,
       "helpMarkDown": "The output converted file."
     }

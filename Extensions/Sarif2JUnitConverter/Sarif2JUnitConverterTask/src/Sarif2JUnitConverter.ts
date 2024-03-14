@@ -1,4 +1,4 @@
-﻿import {convertSarifToXml, logError, logInfo} from "./Sarif2JUnitConverterFunctions";
+﻿import {logError, logInfo, convertSarifToXml} from "./Sarif2JUnitConverterFunctions";
 import tl = require("azure-pipelines-task-lib/task");
 
 var sarifFile = tl.getInput("sarifFile");
