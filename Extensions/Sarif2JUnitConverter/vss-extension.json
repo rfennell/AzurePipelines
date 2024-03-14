@@ -1,10 +1,10 @@
 {
  "manifestVersion": 1,
- "id": "BM-VSTS-YAMLGenerator",
+ "id": "BM-VSTS-Sarif2JUnitConverter",
  "version": "1.0.0",
- "name": "YAML Documentation Generator",
+ "name": "Sarif to JUnit Converter",
  "publisher": "richardfennellBM",
-  "description": "A task that generates YAML documentation for an Azure DevOps Extension.",
+  "description": "A task that Sarif JSON files to JUnit XML",
   "CustomerQnASupport": {
     "enableqna":"true",
     "url": "https://github.com/rfennell/AzurePipelines/issues"
@@ -18,7 +18,8 @@
          }
      ],
   "tags": [
-    "YAML"
+    "SARIF",
+    "JUnit"
   ],   
   "branding": {
         "color": "#f97923",
@@ -29,14 +30,14 @@
   },
    "links": {
     "getstarted": {
-      "uri": "https://github.com/rfennell/AzurePipelines/wiki/BM-VSTS-YAMLGenerator"
+      "uri": "https://github.com/rfennell/AzurePipelines/wiki/BM-VSTS-Sarif2JUnitConverter"
     },
     "support": {
       "uri": "https://github.com/rfennell/AzurePipelines/issues"
     },
     
     "privacypolicy": {
-      "uri": "https://github.com/rfennell/AzurePipelines/blob/add-privacy-statement/Extensions/YamlGenerator/privacy.md"
+      "uri": "https://github.com/rfennell/AzurePipelines/blob/add-privacy-statement/Extensions/Sarrif2JUnitConverte/privacy.md"
     }
   },
   "screenshots": [
@@ -57,18 +58,18 @@
   },
   "files": [
     {
-      "path": "YamlGeneratorTask"
+      "path": "Sarif2JUnitConverterTask"
     }
   ],
   "contributions": [
     {
-      "id": "YamlGeneratorTask",
+      "id": "Sarif2JUnitConverterTask",
       "type": "ms.vss-distributed-task.task",
       "targets": [
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "YamlGeneratorTask"
+        "name": "Sarif2JUnitConverterTask"
       }
     }
   ]
