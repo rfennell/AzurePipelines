@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { convertSarifToXml } from "../src/Sarif2JUnitConverter";
+import { convertSarifToXml } from "../src/Sarif2JUnitConverterFunctions";
 import * as fs from "fs";
 
 describe("Sarif2JUnitConverter", () => {
