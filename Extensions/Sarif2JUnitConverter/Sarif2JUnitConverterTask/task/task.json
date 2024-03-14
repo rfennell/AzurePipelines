@@ -3,7 +3,7 @@
   "name": "Sarif2JUnitConverterTask",
   "friendlyName": "Convert Sarif file to JUnit",
   "description": "Convert Sarif file to JUnit",
-  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BM-VSTS-YAMLGenerator/)",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/BM-VSTS-Sarif2JUnitConverter/)",
   "category": "Utility",
   "visibility": [
     "Build",
