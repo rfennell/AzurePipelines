@@ -44,7 +44,7 @@ stages:
         demands: npm
       steps:
       # version all the task in the extension
-      - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+      - task: qetza.replacetokens.replacetokens-task.replacetokens@6
         displayName: 'Setting the version for tasks in extension'
         inputs:
           rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'

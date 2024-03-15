@@ -1,20 +1,9 @@
 import simpleGit, { SimpleGit, CleanOptions } from "simple-git";
 import * as fs from "fs";
-import * as rimraf from "rimraf";
+import {rimrafSync} from "rimraf";
 import * as path from "path";
 import * as process from "process";
 import { logWarning } from "./agentSpecific";
-
-// A wrapper to make sure that directory delete is handled in sync
-function rimrafPromise (localpath)  {
-    return new Promise((resolve, reject) => {
-        rimraf(localpath, () => {
-            resolve(0);
-        }, (error) => {
-            reject(error);
-        });
-    });
-}
 
 function mkDirByPathSync(targetDir, { isRelativeToScript = false } = {}) {
     const sep = path.sep;
@@ -130,7 +119,7 @@ export async function CloneWikiRepo(
 
     try {
         if (fs.existsSync(localpath)) {
-            await rimrafPromise(localpath);
+            rimrafSync(localpath);
         }
         logInfo(`Cleaned ${localpath}`);
 
