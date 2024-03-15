@@ -6,7 +6,7 @@
     "package": "npm prune -production && npm run copy",
     "copy": "ncp ./node_modules ./task/node_modules && ncp ./dist/src ./task",
     "copytestconsole": "ncp ./dist/src ./testconsole",
-    "clean": "rimraf ./dist/src && rimraf ./dist/test && rimraf ./task/*.js && rimraf ./task/*.js.map && rimraf ./task/node_modules",
+    "clean": "rimraf --glob ./dist/src && rimraf --glob ./dist/test && rimraf --glob ./task/*.js && rimraf --glob ./task/*.js.map && rimraf --glob ./task/node_modules",
     "transpile": "tsc -p ./",
     "test": "npm run transpile && mocha  ./dist/test/*.test.js --reporter mocha-junit-reporter --reporter-options mochaFile=./test-output/test-results.xml ",
     "test-no-logger": "npm run transpile && mocha ./dist/test/*.test.js "
