@@ -29,7 +29,7 @@
     "mocha": "^9.2.2",
     "mocha-junit-reporter": "^2.0.2",
     "rimraf": "^5.0.5",
-    "ts-loader": "^9.4.2",
+    "ts-loader": "^9.5.1",
     "ts-node": "^3.3.0",
     "tslint": "^5.11.0",
     "typescript": "^4.2.3"
