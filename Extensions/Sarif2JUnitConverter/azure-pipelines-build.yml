@@ -112,15 +112,13 @@ stages:
         runOnce:
           deploy:   
             steps:
-            - powershell: |
-                write-host "Placeholder"
+            - checkout: self
               displayName: 'Write JSON file'
             - task: richardfennellBM.BM-VSTS-Sarif2JUnitConverter-DEV.Sarif2JUnitConverterTask.Sarif2JUnitConverterTask@1
               displayName: 'Convert Sarif file to JUnit'
-              enabled: false
               inputs:
-                sarifFile: $(Build.SourcesDirectory))/bicep.sarif
-                junitFile: $(Build.SourcesDirectory))/out.junit
+                sarifFile: $(Build.SourcesDirectory)/Extensions/Sarif2JUnitConverter/Sarif2JUnitConverterTask/test/bicep.sarif
+                junitFile: $(Build.SourcesDirectory)/out.junit
                
   - stage: Documentation
     dependsOn: Test 

@@ -2,10 +2,19 @@ import { expect } from "chai";
 import { convertSarifToXml } from "../src/Sarif2JUnitConverterFunctions";
 import * as fs from "fs";
 
+var lastLogMessage = "";
+var lastErrorMessage = "";
+
+function logInfo(msg) {
+    lastLogMessage = msg;
+}
+
+function logError(msg: string) {
+    lastErrorMessage = msg;
+}
+
 describe("Sarif2JUnitConverter", () => {
-    const sarifFilePath = "test/bicep.sarif";
     const xmlFilePath = "test/out.xml";
-    const bicepFilePath = "test/bicep.sarif";
 
     afterEach(() => {
         // Clean up the generated XML file after each test
@@ -14,19 +23,37 @@ describe("Sarif2JUnitConverter", () => {
         }
     });
 
-    it("should convert SARIF to XML", () => {
-        // Call the function to convert SARIF to XML
-        convertSarifToXml(sarifFilePath, xmlFilePath);
+    it("should convert valid SARIF to XML", () => {
+        // Arrange
 
-        // Assert that the XML file is created
+        // Act
+        convertSarifToXml("test/bicep.sarif", xmlFilePath, logError, logInfo);
+
+        // Assert
         expect(fs.existsSync(xmlFilePath)).to.be.true;
+        const actual = fs.readFileSync(xmlFilePath, "utf8").replace(/\r\n/g, "\n");
+        const expected = fs.readFileSync("test/bicep.junit", "utf8").replace(/\r\n/g, "\n");
 
-        // Read the XML file
-        const xmlData = fs.readFileSync(xmlFilePath, "utf8");
-
-        // Assert that the XML data is valid
-        expect(fs.readFileSync(sarifFilePath, "utf8")).to.equal(fs.readFileSync(bicepFilePath, "utf8"));
+        expect(actual.length).to.equal(expected.length);
+        expect(actual).to.equal(expected);
 
     });
 
+    it("should not generate anything with missing SARIF file", () => {
+        // Call the function with a non-existent SARIF file
+        convertSarifToXml("test/nonexistent.sarif", xmlFilePath, logError, logInfo);
+
+        // Assert that the XML file is not created
+        expect(fs.existsSync(xmlFilePath)).to.be.false;
+        expect(lastErrorMessage).to.equal("SARIF file not found: test/nonexistent.sarif");
+    });
+
+    it("should no generate anythingg for malformed SARIF file", () => {
+        // Call the function with a non-existent SARIF file
+        convertSarifToXml("test/bad-bicep.sarif", xmlFilePath, logError, logInfo);
+
+        // Assert that the XML file is not created
+        expect(fs.existsSync(xmlFilePath)).to.be.false;
+        expect(lastErrorMessage).to.equal("Failed to parse SARIF file: test/bad-bicep.sarif");
+    });
 });

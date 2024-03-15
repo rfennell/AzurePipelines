@@ -1,53 +1,62 @@
 ﻿import * as fs from "fs";
 import * as xmlbuilder from "xmlbuilder";
-import tl = require("azure-pipelines-task-lib/task");
 
-export function logInfo(msg) {
-    console.log(msg);
-}
-
-export function logError (msg: string) {
-    tl.error(msg);
-    tl.setResult(tl.TaskResult.Failed, msg);
-}
-
-export async function convertSarifToXml(sarifFilePath: string, xmlFilePath: string) {
+export async function convertSarifToXml(sarifFilePath: string, xmlFilePath: string, logError, logInfo) {
 
     if (!fs.existsSync(sarifFilePath)) {
-       logError(`SARIF file not found: ${sarifFilePath}`);
+        logError(`SARIF file not found: ${sarifFilePath}`);
+        return;
     }
 
     logInfo(`Read the SARIF file from  ${sarifFilePath})`);
-    const sarifData = fs.readFileSync(sarifFilePath, "utf8");
+    const sarifData = JSON.parse(fs.readFileSync(sarifFilePath, "utf8"));
 
-    // Parse the SARIF JSON
-    const sarifJson = JSON.parse(sarifData);
+    try {
+        let xml = xmlbuilder.create("testsuites", { encoding: "utf-8" });
 
-    // Create an XML root
-    const xmlRoot = xmlbuilder.create("root");
+        var totalTests = 0;
+        var totalFailures = 0;
+        var totalErrors = 0;
+        var totalSkipped = 0;
 
-    // Convert the SARIF JSON to XML
-    for (const run of sarifJson.runs) {
-        const runElement = xmlRoot.ele("run");
-        const toolElement = runElement.ele("tool");
-        toolElement.ele("driver", { "name": run.tool.driver.name });
+        // Transform the SARIF data into the JUnit format
+        sarifData.runs.forEach((run) => {
+            let testsuite = xml.ele("testsuite", { name: run.tool.driver.name });
+            var tests = 0;
+            var failures = 0;
+            var errors = 0;
+            var skipped = 0;
 
-        for (const result of run.results) {
-            const resultElement = runElement.ele("result", { "ruleId": result.ruleId, "level": result.level });
-            resultElement.ele("message", { "text": result.message.text });
+            run.results.forEach((result) => {
+                let testcase = testsuite.ele("testcase", { name: result.ruleId });
+                tests++;
 
-            for (const location of result.locations) {
-                const locationElement = resultElement.ele("location");
-                const physicalLocationElement = locationElement.ele("physicalLocation");
-                physicalLocationElement.ele("artifactLocation", { "uri": location.physicalLocation.artifactLocation.uri });
-                physicalLocationElement.ele("region", { "startLine": location.physicalLocation.region.startLine, "charOffset": location.physicalLocation.region.charOffset });
-            }
-        }
+                if (result.level === "error") {
+                    failures++;
+                    testcase.ele("failure", { message: `Ln ${result.locations[0].physicalLocation.region.startLine} ${result.message.text} ${result.locations[0].physicalLocation.artifactLocation.uri.replace("file:/", "")}` });
+                }
+            });
+
+            testsuite.att("tests", tests);
+            testsuite.att("failures", failures);
+            testsuite.att("errors", errors);
+            testsuite.att("skipped", skipped);
+
+            totalTests += tests;
+            totalFailures += failures;
+            totalErrors += errors;
+            totalSkipped += skipped;
+
+        });
+
+        xml.att("tests", totalTests);
+        xml.att("failures", totalFailures);
+        xml.att("errors", totalErrors);
+        xml.att("skipped", totalSkipped);
+
+        logInfo(`Write the XML string to a file ${xmlFilePath})`);
+        fs.writeFileSync(xmlFilePath, xml.end({ pretty: true }), "utf8");
+    } catch (err) {
+        logError(`Failed to parse SARIF file: ${sarifFilePath}`);
     }
-
-    // Convert the XML to a string
-    const xmlString = xmlRoot.end({ pretty: true });
-
-    logInfo(`Write the XML string to a file ${xmlFilePath})`);
-    fs.writeFileSync(xmlFilePath, xmlString);
 }
