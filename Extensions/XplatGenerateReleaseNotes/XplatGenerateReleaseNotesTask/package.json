@@ -16,7 +16,7 @@
   "dependencies": {
     "@types/q": "^1.5.5",
     "@types/xmldom": "^0.1.31",
-    "azure-devops-node-api": "^11.2.0",
+    "azure-devops-node-api": "^12.5.0",
     "azure-pipelines-task-lib": "^4.1.0",
     "fs": "^0.0.1-security",
     "handlebars": "^4.7.7",
