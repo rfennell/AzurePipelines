@@ -86,7 +86,6 @@ import { IBuildApi, BuildApi } from "azure-devops-node-api/BuildApi";
 import * as vstsInterfaces from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 import { Console, time } from "console";
 import { InstalledExtensionQuery } from "azure-devops-node-api/interfaces/ExtensionManagementInterfaces";
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "constants";
 import { stringify } from "querystring";
 import { Exception } from "handlebars";
 import { IdentityDisplayFormat } from "azure-devops-node-api/interfaces/WorkInterfaces";
