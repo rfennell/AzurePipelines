@@ -21,7 +21,7 @@
     "request": "^2.88.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.7",
+    "@types/chai": "^4.3.12",
     "@types/mocha": "^2.2.48",
     "@types/node": "^17.0.13",
     "chai": "^4.2.0",
