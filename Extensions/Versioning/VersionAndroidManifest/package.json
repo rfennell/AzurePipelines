@@ -13,7 +13,7 @@
   },
   "main": "VersionAndroidManifest.js",
   "dependencies": {
-    "azure-pipelines-task-lib": "^4.10.0",
+    "azure-pipelines-task-lib": "^4.10.1",
     "Buffer": "^0.0.0",
     "fs": "^0.0.1-security",
     "fs-copy-file-sync": "^1.1.1",
