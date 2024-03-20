@@ -33,7 +33,8 @@ stages:
     jobs:
     - job: Build
       pool: 
-        vmImage: '$(vmImage)'
+        # vmImage: '$(vmImage)'
+        name: default
         demands: npm
       steps:
       # version all the task in the extension
