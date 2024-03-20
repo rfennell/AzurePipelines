@@ -1,6 +1,4 @@
-import { expect } from "chai";
-// if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
-import "mocha";
+import "jest";
 
 import { findFiles,
   ProcessFile,
@@ -12,7 +10,7 @@ import * as fse from "fs-extra";
 import * as  copyFileSync from "fs-copy-file-sync";
 
 describe("Test the update ARM file processing", () => {
-    before(function() {
+    beforeEach(function() {
       // make a copy we can overright with breaking test data
       copyFileSync("test/testdata/ARMtemplate.json.initial", "test/testdata/ARMtemplate.json");
     });
@@ -24,10 +22,10 @@ describe("Test the update ARM file processing", () => {
       var editedfilecontent = fs.readFileSync(file);
       var expectedfilecontent = fs.readFileSync(`${file}.expected`);
 
-      expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
+      expect(editedfilecontent.toString()).toBe(expectedfilecontent.toString());
     });
 
-    after(function() {
+    afterEach(function() {
       // remove the file if created
       fse.removeSync("test/testdata/*.json");
     });
@@ -35,7 +33,7 @@ describe("Test the update ARM file processing", () => {
 );
 
 describe("Test the add tag ARM file processing", () => {
-  before(function() {
+  beforeEach(function() {
     // make a copy we can overright with breaking test data
     copyFileSync("test/testdata/ARMtemplate.json.noversion.initial", "test/testdata/ARMtemplate.json");
   });
@@ -47,10 +45,10 @@ describe("Test the add tag ARM file processing", () => {
     var editedfilecontent = fs.readFileSync(file);
     var expectedfilecontent = fs.readFileSync(`${file}.noversion.expected`);
 
-    expect(editedfilecontent.toString()).equals(expectedfilecontent.toString());
+    expect(editedfilecontent.toString()).toBe(expectedfilecontent.toString());
   });
 
-  after(function() {
+  afterEach(function() {
     // remove the file if created
     fse.removeSync("test/testdata/*.json");
   });
