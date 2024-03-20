@@ -166,8 +166,12 @@ stages:
             - task: dmitryserbin.release-orchestrator.release-orchestrator.releaseorchestrator@2
               displayName: 'Release Orchestrator'
               inputs:
-                TargetProject: '670b3a60-2021-47ab-a88b-d76ebd888a2f'
-                TargetDefinition: 43
+                endpointType: 'integrated'
+                projectName: 'GitHub'
+                definitionName: 'Validate-BuildUpdateExtension'
+                releaseStrategy: 'create'
+                approvalRetry: 60
+                updateInterval: 5
 
   - stage: Documentation
     dependsOn: 
