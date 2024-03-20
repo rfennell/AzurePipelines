@@ -2,7 +2,6 @@
     "compilerOptions": {
         "target": "ES6",
         "module": "commonjs",
-         "watch": false,
          "outDir": "../VersionAndroidManifest/",
          "moduleResolution": "node",
          "rootDirs": [
