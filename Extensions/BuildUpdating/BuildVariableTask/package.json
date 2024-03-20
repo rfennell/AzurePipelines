@@ -8,7 +8,7 @@
     "clean": "rimraf --glob ./dist/src && rimraf --glob ./dist/test && rimraf --glob ./task/*.js && rimraf --glob ./task/*.js.map && rimraf --glob ./task/node_modules",
     "transpile": "tsc -p ./",
     "lint": "tslint -c tslint.json src/*.ts test/*.ts",
-    "test": "npm run transpile && jest"
+    "test": "npm run transpile && jest --config jest.config.js"
   },
   "main": "test.js",
   "dependencies": {
