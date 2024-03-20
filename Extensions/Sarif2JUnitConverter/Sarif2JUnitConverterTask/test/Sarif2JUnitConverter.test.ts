@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import "jest";
 import { convertSarifToXml } from "../src/Sarif2JUnitConverterFunctions";
 import * as fs from "fs";
 
@@ -30,12 +30,12 @@ describe("Sarif2JUnitConverter", () => {
         convertSarifToXml("test/bicep.sarif", xmlFilePath, logError, logInfo);
 
         // Assert
-        expect(fs.existsSync(xmlFilePath)).to.be.true;
+        expect(fs.existsSync(xmlFilePath)).toBeTruthy;
         const actual = fs.readFileSync(xmlFilePath, "utf8").replace(/\r\n/g, "\n");
         const expected = fs.readFileSync("test/bicep.junit", "utf8").replace(/\r\n/g, "\n");
 
-        expect(actual.length).to.equal(expected.length);
-        expect(actual).to.equal(expected);
+        expect(actual.length).toBe(expected.length);
+        expect(actual).toBe(expected);
 
     });
 
@@ -44,8 +44,8 @@ describe("Sarif2JUnitConverter", () => {
         convertSarifToXml("test/nonexistent.sarif", xmlFilePath, logError, logInfo);
 
         // Assert that the XML file is not created
-        expect(fs.existsSync(xmlFilePath)).to.be.false;
-        expect(lastErrorMessage).to.equal("SARIF file not found: test/nonexistent.sarif");
+        expect(fs.existsSync(xmlFilePath)).toBeFalsy;
+        expect(lastErrorMessage).toBe("SARIF file not found: test/nonexistent.sarif");
     });
 
     it("should no generate anythingg for malformed SARIF file", () => {
@@ -53,7 +53,7 @@ describe("Sarif2JUnitConverter", () => {
         convertSarifToXml("test/bad-bicep.sarif", xmlFilePath, logError, logInfo);
 
         // Assert that the XML file is not created
-        expect(fs.existsSync(xmlFilePath)).to.be.false;
-        expect(lastErrorMessage).to.equal("Failed to parse SARIF file: test/bad-bicep.sarif");
+        expect(fs.existsSync(xmlFilePath)).toBeFalsy;
+        expect(lastErrorMessage).toBe("Failed to parse SARIF file: test/bad-bicep.sarif");
     });
 });
