@@ -163,7 +163,7 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: dmitryserbin.release-orchestrator.release-orchestrator.releaseorchestrator@1
+            - task: dmitryserbin.release-orchestrator.release-orchestrator.releaseorchestrator@2
               displayName: 'Release Orchestrator'
               inputs:
                 TargetProject: '670b3a60-2021-47ab-a88b-d76ebd888a2f'
