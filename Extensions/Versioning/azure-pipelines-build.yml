@@ -50,7 +50,7 @@ stages:
           run32Bit: false
         continueOnError: true
 
-      - task: PublishTestResults@1
+      - task: PublishTestResults@2
         displayName: 'Publish Test Results $(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
         inputs:
           testRunner: NUnit
@@ -64,7 +64,7 @@ stages:
           resultsFile: '$(Build.SourcesDirectory)\Test-VersionPowerShellTaskPester.XML'
           run32Bit: false
 
-      - task: PublishTestResults@1
+      - task: PublishTestResults@2
         displayName: 'Publish Test Results $(Build.SourcesDirectory)\Test-VersionPowerShellTaskPester.XML'
         inputs:
           testRunner: NUnit
