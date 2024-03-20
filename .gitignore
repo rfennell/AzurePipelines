@@ -222,3 +222,5 @@ Extensions/StyleCop/test/TestData/StyleCopSample/results.xml
 
 Tools/**/*.js
 Tools/**/*.js.map
+
+!jest.config.js
