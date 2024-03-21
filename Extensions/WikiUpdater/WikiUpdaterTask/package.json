@@ -8,7 +8,7 @@
     "clean": "rimraf --glob ./dist/src && rimraf --glob ./dist/test && rimraf --glob ./task/*.js && rimraf --glob ./task/*.js.map && rimraf --glob ./task/node_modules",
     "transpile": "tsc -p ./",
     "lint": "tslint -c tslint.json src/*.ts test/*.ts",
-    "test": "npm run transpile && pwd && jest --config jest.config.js"
+    "test": "npm run transpile && jest --config jest.config.js"
   },
   "main": "test.js",
   "dependencies": {
@@ -17,7 +17,7 @@
     "fs-extra": "^11.2.0",
     "ncp": "^2.0.0",
     "process": "^0.11.10",
-    "rimraf": "^5.0.5",
+    "rimraf": "^3.0.2",
     "simple-git": "^3.22.0"
   },
   "devDependencies": {
