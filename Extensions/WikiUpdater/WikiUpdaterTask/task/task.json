@@ -299,11 +299,7 @@
   ],
   "instanceNameFormat": "Git based WIKI File Updater",
   "execution": {
-    "Node10": {
-      "target": "GitWikiTask.js",
-      "argumentFormat": ""
-    },
-    "Node16": {
+      "Node16": {
       "target": "GitWikiTask.js",
       "argumentFormat": ""
     }
