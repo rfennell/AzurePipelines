@@ -1,6 +1,6 @@
 import simpleGit, { SimpleGit, CleanOptions } from "simple-git";
 import * as fs from "fs";
-import {rimraf} from "rimraf";
+import * as rimraf from "rimraf";
 import * as path from "path";
 import * as process from "process";
 import { logDebug, logWarning } from "./agentSpecific";
