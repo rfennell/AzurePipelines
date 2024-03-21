@@ -27,7 +27,7 @@ steps:
             -  **Message:** {{this.message}}
             -  **Commited by:** {{this.author.displayName}}
           {{/forEach}}
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater - GitHub'
     inputs:
       repo: github.com/rfennell/demorepo.wiki
@@ -46,7 +46,7 @@ steps:
       user: rfennell
       password: '$(githubPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater - GitHub append'
     inputs:
       repo: github.com/rfennell/demorepo.wiki
@@ -64,7 +64,7 @@ steps:
       user: rfennell
       password: '$(githubPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater - GitHub prepend '
     inputs:
       repo: github.com/rfennell/demorepo.wiki
@@ -84,7 +84,7 @@ steps:
       user: rfennell
       password: '$(githubPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater - GitHub folder'
     inputs:
       repo: github.com/rfennell/demorepo.wiki
@@ -104,7 +104,7 @@ steps:
       user: rfennell
       password: '$(githubPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater - GitHub folder with spaces'
     inputs:
       repo: github.com/rfennell/demorepo.wiki
@@ -125,7 +125,7 @@ steps:
       password: '$(githubPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
       fixSpaces: true
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater - Azure DevOps with Creds update .order file'
     inputs:
       repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
@@ -143,7 +143,7 @@ steps:
       password: '$(AzureDevOpsPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
       updateOrderFile: true
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater - Azure DevOps with Creds update TestFolder/.order file'
     inputs:
       repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
@@ -165,7 +165,7 @@ steps:
       appendToFile: false
       injecttoc: true
       orderFilePath: "TestFolder"
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater - Azure DevOps in branch'
     inputs:
       repo: 'dev.azure.com/richardfennell/Git%20project/_git/WikiRepo'
@@ -183,7 +183,7 @@ steps:
       password: '$(AzureDevOpsPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
       branch: b1
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater - Azure DevOps into Folder'
     inputs:
       repo: 'dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki'
@@ -200,7 +200,7 @@ steps:
       user: richardfennell
       password: '$(AzureDevOpsPAT)'
       localpath: '$(System.DefaultWorkingDirectory)\azurerepowithcreds'
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater - Azure DevOps as Agent'
     inputs:
       repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
@@ -216,7 +216,7 @@ steps:
       gitemail: 'build@demo'
       useAgentToken: true
       localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagent'
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater - Azure DevOps as Agent with full url'
     inputs:
       repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
