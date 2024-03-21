@@ -7,7 +7,7 @@ steps:
     fetchDepth: 0
     lfs: false
 
-  - task: WikiFolderUpdaterTask@2
+  - task: WikiFolderUpdaterTask@3
     inputs:
       repo: 'dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
       targetFolder: '${{parameters.platform}}-folder'
@@ -20,7 +20,7 @@ steps:
       useAgentToken: true
       localpath: '$(System.DefaultWorkingDirectory)\azurerepoasagentfolder'
 
-  - task: WikiFolderUpdaterTask@2
+  - task: WikiFolderUpdaterTask@3
     inputs:
       repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
       targetFolder: '${{parameters.platform}}-folder'
