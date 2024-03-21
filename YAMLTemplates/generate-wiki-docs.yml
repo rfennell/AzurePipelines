@@ -23,7 +23,7 @@ steps:
     filePrefix: '${{parameters.wikiFilename}}'    
     copyReadme: true
 
-- task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
+- task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
   displayName: 'Git based WIKI Updater - Readme'
   inputs:
     repo: '${{parameters.repo}}'
@@ -36,7 +36,7 @@ steps:
     user: '${{parameters.UserName}}'
     password: '${{parameters.GitHubPat}}'
 
-- task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
+- task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
   displayName: 'Git based WIKI Updater - YAML '
   inputs:
     repo: '${{parameters.repo}}'
