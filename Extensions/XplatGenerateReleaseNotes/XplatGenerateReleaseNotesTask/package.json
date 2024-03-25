@@ -14,7 +14,7 @@
   "description": "XPlatGenerateReleaseNotesTask",
   "main": "GenerateReleaseNotes.js",
   "dependencies": {
-    "@types/q": "^1.5.5",
+    "@types/q": "^1.5.8",
     "@types/xmldom": "^0.1.34",
     "azure-devops-node-api": "^12.5.0",
     "azure-pipelines-task-lib": "^4.1.0",
