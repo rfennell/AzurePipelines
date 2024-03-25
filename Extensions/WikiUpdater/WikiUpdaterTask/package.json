@@ -12,7 +12,7 @@
   },
   "main": "test.js",
   "dependencies": {
-    "azure-pipelines-task-lib": "^4.10.0",
+    "azure-pipelines-task-lib": "^4.10.1",
     "fs": "0.0.1-security",
     "fs-extra": "^11.2.0",
     "ncp": "^2.0.0",
