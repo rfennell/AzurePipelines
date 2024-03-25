@@ -22,7 +22,7 @@
   },
   "devDependencies": {
   
-    "@types/node": "^20.11.28",
+    "@types/node": "^20.11.30",
     "fs-extra": "^11.2.0",
     "rimraf": "^5.0.5",
     "ts-loader": "^9.5.1",
