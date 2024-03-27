@@ -45,10 +45,16 @@ stages:
       steps:
       # version all the task in the extension
       - task: qetza.replacetokens.replacetokens-task.replacetokens@6
-        displayName: 'Setting the version for tasks in extension'
+        displayName: 'Setting the version for tasks in extension WikiUpdaterTask'
         inputs:
           rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
-          targetFiles: '**\\task.json'
+          targetFiles: 'WikiUpdaterTask\\**\\task.json'
+
+      - task: qetza.replacetokens.replacetokens-task.replacetokens@6
+        displayName: 'Setting the version for tasks in extension WikiFolderUpdaterTaskV3'
+        inputs:
+          rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
+          targetFiles: 'WikiFolderUpdaterTask\\WikiFolderUpdaterTaskV3\\**\\task.json'
 
       # for each Node based task we must transpile it
       - template: ..\..\YAMLTemplates\build-node-task.yml
@@ -59,8 +65,13 @@ stages:
       # for each Node based task we must transpile it
       - template: ..\..\YAMLTemplates\build-node-task.yml
         parameters:
-          extensionRoot: '$(ExtensionRoot)'
-          taskName: 'WikiFolderUpdaterTask'
+          extensionRoot: '$(ExtensionRoot)\WikiFolderUpdaterTask'
+          taskName: 'WikiFolderUpdaterTaskV2'
+
+      - template: ..\..\YAMLTemplates\build-node-task.yml
+        parameters:
+          extensionRoot: '$(ExtensionRoot)\WikiFolderUpdaterTask'
+          taskName: 'WikiFolderUpdaterTaskV3'
 
       - task: TfxInstaller@3
         displayName: 'Install Tfx Tool'
