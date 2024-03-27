@@ -16,55 +16,55 @@ updates:
     directory: "/Extensions/BuildUpdating/GetBuildDefinitionVariableValueTask" 
     schedule:
       interval: "weekly"
-  - package-ecosystem: "npm" 
-    directory: "/Extensions/FileUtilities/XmlFileUpdateTaskk" 
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm" 
-    directory: "/Extensions/Versioning/VersionAndroidManifest" 
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm" 
-    directory: "/Extensions/Versioning/VersionAngularFileTask" 
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm" 
-    directory: "/Extensions/Versioning/VersionDotNetCoreAssembliesTask" 
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm" 
-    directory: "/Extensions/Versioning/VersionIOSPlistManifest" 
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm" 
-    directory: "/Extensions/Versioning/VersionJSONFileTask" 
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm" 
-    directory: "/Extensions/WikiPDFExport/WikiPDFExportTask" 
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm" 
-    directory: "/Extensions/WikiUpdater/WikiFolderUpdaterTask" 
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm" 
-    directory: "/Extensions/WikiUpdater/WikiUpdaterTask" 
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm" 
-    directory: "/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask" 
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm" 
-    directory: "/Extensions/YamlGenerator/YamlGeneratorTask" 
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm" 
-    directory: "/Extensions/Tools/GetAPIJsonPayloads" 
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm" 
-    directory: "/Extensions/Sarif2JUnitConverter/Sarif2JUnitConverterTask" 
-    schedule:
-      interval: "weekly"
+#  - package-ecosystem: "npm" 
+#    directory: "/Extensions/FileUtilities/XmlFileUpdateTaskk" 
+#    schedule:
+#      interval: "weekly"
+#  - package-ecosystem: "npm" 
+#    directory: "/Extensions/Versioning/VersionAndroidManifest" 
+#    schedule:
+#      interval: "weekly"
+#  - package-ecosystem: "npm" 
+#    directory: "/Extensions/Versioning/VersionAngularFileTask" 
+#    schedule:
+#      interval: "weekly"
+#  - package-ecosystem: "npm" 
+#    directory: "/Extensions/Versioning/VersionDotNetCoreAssembliesTask" 
+#    schedule:
+#      interval: "weekly"
+#  - package-ecosystem: "npm" 
+#    directory: "/Extensions/Versioning/VersionIOSPlistManifest" 
+#    schedule:
+#      interval: "weekly"
+#  - package-ecosystem: "npm" 
+#    directory: "/Extensions/Versioning/VersionJSONFileTask" 
+#    schedule:
+#      interval: "weekly"
+#  - package-ecosystem: "npm" 
+#    directory: "/Extensions/WikiPDFExport/WikiPDFExportTask" 
+#    schedule:
+#      interval: "weekly"
+#  - package-ecosystem: "npm" 
+#    directory: "/Extensions/WikiUpdater/WikiFolderUpdaterTask" 
+#    schedule:
+#      interval: "weekly"
+#  - package-ecosystem: "npm" 
+#    directory: "/Extensions/WikiUpdater/WikiUpdaterTask" 
+#    schedule:
+#      interval: "weekly"
+#  - package-ecosystem: "npm" 
+#    directory: "/Extensions/XplatGenerateReleaseNotes/XplatGenerateReleaseNotesTask" 
+#    schedule:
+#      interval: "weekly"
+#  - package-ecosystem: "npm" 
+#    directory: "/Extensions/YamlGenerator/YamlGeneratorTask" 
+#    schedule:
+#      interval: "weekly"
+#  - package-ecosystem: "npm" 
+#    directory: "/Extensions/Tools/GetAPIJsonPayloads" 
+#    schedule:
+#      interval: "weekly"
+#  - package-ecosystem: "npm" 
+#    directory: "/Extensions/Sarif2JUnitConverter/Sarif2JUnitConverterTask" 
+#    schedule:
+#      interval: "weekly"
