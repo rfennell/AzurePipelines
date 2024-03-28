@@ -10,7 +10,11 @@
     "Release"
   ],
   "author": "Richard Fennell",
-  "version": "#{Build.BuildNumber}#",
+  "version": {
+    "Major": "#{Major}#",
+    "Minor": "#{Minor}#",
+    "Patch": "#{Rev}#"
+  },
   "demands": [],
   "minimumAgentVersion": "2.144.0",
   "groups": [
