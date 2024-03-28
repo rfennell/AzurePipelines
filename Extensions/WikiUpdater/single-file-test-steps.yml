@@ -27,25 +27,6 @@ steps:
             -  **Message:** {{this.message}}
             -  **Commited by:** {{this.author.displayName}}
           {{/forEach}}
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
-    displayName: 'Git based WIKI Updater - GitHub'
-    inputs:
-      repo: github.com/rfennell/demorepo.wiki
-      filename: ${{parameters.platform}}-PageFromWikiUpdater.md
-      contents: |
-        Header
-        ---
-        $(OutputText)
-        ---
-        Footer
-      message: 'Update from Release - $(Release.ReleaseName)'
-      gitname: builduser
-      gitemail: 'build@demo'
-      RetryMode: Rebase
-      branch: master
-      user: rfennell
-      password: '$(githubPAT)'
-      localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
 
   - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@2
     displayName: 'Git based WIKI Updater - GitHub append'
@@ -58,6 +39,27 @@ steps:
         ---
         This is more test that has been added to the end of the file
         message: 'Append from Release - $(Release.ReleaseName)'
+      gitname: builduser
+      gitemail: 'build@demo'
+      RetryMode: Rebase
+      branch: master
+      user: rfennell
+      password: '$(githubPAT)'
+      localpath: '$(System.DefaultWorkingDirectory)\githubrepo'
+
+
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
+    displayName: 'Git based WIKI Updater - GitHub'
+    inputs:
+      repo: github.com/rfennell/demorepo.wiki
+      filename: ${{parameters.platform}}-PageFromWikiUpdater.md
+      contents: |
+        Header
+        ---
+        $(OutputText)
+        ---
+        Footer
+      message: 'Update from Release - $(Release.ReleaseName)'
       gitname: builduser
       gitemail: 'build@demo'
       RetryMode: Rebase
