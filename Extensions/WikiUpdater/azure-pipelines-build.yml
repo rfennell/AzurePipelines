@@ -50,6 +50,14 @@ stages:
           rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
           targetFiles: 'WikiUpdaterTask\\**\\task.json'
 
+      # we have inject the version to the V3 package in a special way
+      # the stand way (using TFX) fails when multi versions in the same package
+      - powershell: |
+          $rev = $(build.buildnumber).Split('.')
+          Write-Host "Setting 'Rev' Variable to $rev"
+          Write-Output ("##vso[task.setvariable variable=rev;]$rev")
+        displayName: 'Extract patch from build number'
+        
       - task: qetza.replacetokens.replacetokens-task.replacetokens@6
         displayName: 'Setting the version for tasks in extension WikiFolderUpdaterTaskV3'
         inputs:
