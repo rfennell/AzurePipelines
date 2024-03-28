@@ -1,0 +1,266 @@
+{
+  "id": "e59c5ae6-3afd-479d-bc40-81cd6c541840",
+  "name": "WikiUpdaterTask",
+  "friendlyName": "Git based WIKI Single File Updater from Black Marble",
+  "description": "A tools to update or create a file in a WIKI based in a Git repo ",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-Updater-Task/)",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "Richard Fennell",
+  "version": {
+    "Major": 2,
+    "Minor": 14,
+    "Patch": 1
+  },
+  "demands": [],
+  "minimumAgentVersion": "1.82.0",
+  "groups": [
+    {
+      "name": "authentication",
+      "displayName": "Authentication",
+      "isExpanded": true
+    },
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "repo",
+      "type": "string",
+      "label": "Repo",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The repo URL to clone e.g dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. See documentation for more details https://github.com/rfennell/AzurePipelines/wiki/WIKI-Updater-Tasks"
+    },
+    {
+      "name": "branch",
+      "type": "string",
+      "label": "Checkout Branch",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The name of the pre-existing branch to checkout prior to committing the change, defaults to empty, so no checkout is done and commits are done to the default 'master' branch"
+    },
+    {
+      "name": "filename",
+      "type": "string",
+      "label": "Name of the file/page",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The name of the file (page) that will be updated or created, must end in .md else it will not appear on the WIKI e.g. page.md"
+    },
+    {
+      "name": "replaceFile",
+      "type": "boolean",
+      "label": "Replace the file in the WIKI",
+      "defaultValue": "True",
+      "required": true,
+      "helpMarkDown": "Replace the file in the WIKI"
+    },
+    {
+      "name": "appendToFile",
+      "type": "boolean",
+      "label": "Append to end of file in the WIKI",
+      "defaultValue": "True",
+      "required": true,
+      "helpMarkDown": "Append to end of file in the WIKI if not replacing file",
+      "visibleRule":"replaceFile = False"
+    },
+    {
+      "name": "dataIsFile",
+      "type": "boolean",
+      "label": "Data is a file",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true will upload a file, if false the upload is the content provided"
+    },
+    {
+      "name": "contents",
+      "type": "multiLine",
+      "label": "Contents",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "If DataIsFile is false, this text to save in the file, can be the output from another task passed as pipeline variable",
+      "visibleRule": "dataIsFile = False"
+    },
+    {
+      "name": "sourceFile",
+      "type": "string",
+      "label": "Source File",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "If DataIsFile is true, this is the filename to upload, will be renamed to the value of the 'filename' parameter",
+      "visibleRule": "dataIsFile = True"
+    },
+    {
+      "name": "message",
+      "type": "string",
+      "label": "Commit Message",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The commit message"
+    },
+    {
+      "name": "tagRepo",
+      "type": "boolean",
+      "label": "Tag the commit",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true a tag will be commited to the repo"
+    },
+    {
+      "name": "tag",
+      "type": "string",
+      "label": "Tag",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Tag text to commit to repo",
+      "visibleRule": "tagRepo = True"
+    },
+    {
+      "name": "gitname",
+      "type": "string",
+      "label": "Git Name",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The Git attributes name"
+    },
+    {
+      "name": "gitemail",
+      "type": "string",
+      "label": "Git Email",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The Git attributes email"
+    },
+    {
+      "name": "useAgentToken",
+      "type": "boolean",
+      "label": "Run with Build Agent Credentials",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true use the built in agent OAUTH token. OAUTH script access must be enabled for the agent",
+      "groupName": "authentication"
+    },
+    {
+      "name": "user",
+      "type": "string",
+      "label": "Username",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The username for authentication",
+      "groupName": "authentication",
+      "visibleRule": "useAgentToken = False"
+    },
+    {
+      "name": "password",
+      "type": "string",
+      "label": "Password/PAT",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The password/PAT for authentication (recommended stored as secret variable)",
+      "groupName": "authentication",
+      "visibleRule": "useAgentToken = False"
+    },
+    {
+      "name": "localpath",
+      "type": "string",
+      "label": "The local folder to clone into",
+      "defaultValue": "$(System.DefaultWorkingDirectory)\\repo",
+      "required": true,
+      "helpMarkDown": "Path to clone into",
+      "groupName": "advanced"
+    },
+    {
+      "name": "injectExtraHeader",
+      "type": "boolean",
+      "label": "Inject credentials via Headers",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If set to true, credentials are passed as a header value. If false, the default, they are passed in te URL. To address #613 which is seen on some on-prem instances",
+      "groupName": "advanced"
+    },
+    {
+      "name": "retries",
+      "type": "string",
+      "label": "Retries",
+      "defaultValue": "5",
+      "required": false,
+      "helpMarkDown": "The number of times to retry if a push fails. After a failed push a pull is run prior to the next attempt, default of 5",
+      "groupName": "advanced"
+    },
+    {
+      "name": "trimLeadingSpecialChar",
+      "type": "boolean",
+      "label": "Trim Leading Special Character",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "The appending or prepending files prior to uploading a leading special character gets added to the file. Setting this flag to true removes this first character.",
+      "groupName": "advanced"
+    },
+    {
+      "name": "fixLineFeeds",
+      "type": "boolean",
+      "label": "Fix Line Feeds",
+      "defaultValue": "True",
+      "required": false,
+      "helpMarkDown": "If set to true, `n are swapped to \\r\\n as this is required for most WIKIs. If false no replacement is made, this should be used for non-text based files e.g. images or PDFs. Only used when replacing the target file",
+      "groupName": "advanced"
+    }
+    ,
+    {
+      "name": "fixSpaces",
+      "type": "boolean",
+      "label": "Fix spaces in filename",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If set to true, and space in the target filename are replaced by -",
+      "groupName": "advanced"
+    }
+    ,
+    {
+      "name": "insertLinefeed",
+      "type": "boolean",
+      "label": "Insert Linefeed",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If set to true, when appending or prepending content a newline is inserted between the old and new content",
+      "groupName": "advanced"
+    }
+    ,
+    {
+      "name": "updateOrderFile",
+      "type": "boolean",
+      "label": "Update .order file",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If set to true, an new line for the uploaded file will be appending, or prepending, in the Azure DevOps WIKI .order file in the root of the repo. If the file does not exist it will be created",
+      "groupName": "advanced"
+    }
+    ,
+    {
+      "name": "prependEntryToOrderFile",
+      "type": "boolean",
+      "label": "Prepend .order file entry",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If updateOrderFile is set to true, this parameter control whether the new entry is appended (when this is set to false) or prepending (when this is set to true)",
+      "groupName": "advanced"
+    }
+
+
+        
+  ],
+  "instanceNameFormat": "Git based WIKI File Updater",
+  "execution": {
+    "Node": {
+      "target": "GitWikiTask.js",
+      "argumentFormat": ""
+    }
+  }
+}
