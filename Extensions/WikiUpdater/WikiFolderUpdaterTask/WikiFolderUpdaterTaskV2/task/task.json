@@ -1,0 +1,221 @@
+{
+  "id": "2f22eed4-2ef7-407e-98d8-3b20ca0a5352",
+  "name": "WikiFolderUpdaterTask",
+  "friendlyName": "Git based WIKI Folder Updater from Black Marble",
+  "description": "A tools to update or create a set of files in a folder in WIKI based in a Git repo ",
+  "helpMarkDown": "Version: 2.14.1. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-Updater-Task/)",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "Richard Fennell",
+  "version": {
+    "Major": 2,
+    "Minor": 14,
+    "Patch": 1
+  },
+  "demands": [],
+  "minimumAgentVersion": "2.144.0",
+  "groups": [
+    {
+      "name": "authentication",
+      "displayName": "Authentication",
+      "isExpanded": true
+    },
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "repo",
+      "type": "string",
+      "label": "Repo",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The repo URL to clone e.g dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. See documentation for more details https://github.com/rfennell/AzurePipelines/wiki/WIKI-Updater-Tasks"
+    },
+    {
+      "name": "branch",
+      "type": "string",
+      "label": "Checkout Branch",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The name of the pre-existing branch to checkout prior to committing the change, defaults to empty, so no checkout is done and commits are done to the default 'master' branch"
+    },
+    {
+      "name": "targetFolder",
+      "type": "string",
+      "label": "Name of the folder to save files into",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The name of the folder that the files will be uploaded to"
+    },
+    {
+      "name": "replaceFile",
+      "type": "boolean",
+      "label": "Replace the file in the WIKI",
+      "defaultValue": "True",
+      "required": true,
+      "helpMarkDown": "Replace the file in the WIKI"
+    },
+    {
+      "name": "appendToFile",
+      "type": "boolean",
+      "label": "Append to end of file in the WIKI",
+      "defaultValue": "True",
+      "required": true,
+      "helpMarkDown": "Append to end of file in the WIKI if not replacing file",
+      "visibleRule":"replaceFile = False"
+    },
+    {
+      "name": "sourceFolder",
+      "type": "string",
+      "label": "Source Folder",
+      "defaultValue": "$(build.sourcesdirectory)",
+      "required": true,
+      "helpMarkDown": "The source folder to copy from $(build.sourcesdirectory) "
+    },
+    {
+      "name": "Filter",
+      "type": "string",
+      "label": "File Filter",
+      "defaultValue": "**/*.md",
+      "required": true,
+      "helpMarkDown": "A wildcard expression for the files to upload e.g. **/*.md"
+    },
+      {
+      "name": "message",
+      "type": "string",
+      "label": "Commit Message",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The commit message"
+    },
+    {
+      "name": "tagRepo",
+      "type": "boolean",
+      "label": "Tag the commit",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true a tag will be committed to the repo"
+    },
+    {
+      "name": "tag",
+      "type": "string",
+      "label": "Tag",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Tag text to commit to repo",
+      "visibleRule": "tagRepo = True"
+    },
+    {
+      "name": "gitname",
+      "type": "string",
+      "label": "Git Name",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The Git attributes name"
+    },
+    {
+      "name": "gitemail",
+      "type": "string",
+      "label": "Git Email",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The Git attributes email"
+    },
+    {
+      "name": "useAgentToken",
+      "type": "boolean",
+      "label": "Run with Build Agent Credentials",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true use the built in agent OAUTH token. OAUTH script access must be enabled for the agent",
+      "groupName": "authentication"
+    },
+    {
+      "name": "user",
+      "type": "string",
+      "label": "Username",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The username for authentication",
+      "groupName": "authentication",
+      "visibleRule": "useAgentToken = False"
+    },
+    {
+      "name": "password",
+      "type": "string",
+      "label": "Password/PAT",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The password/PAT for authentication (recommended stored as secret variable)",
+      "groupName": "authentication",
+      "visibleRule": "useAgentToken = False"
+    },
+    {
+      "name": "localpath",
+      "type": "string",
+      "label": "The local folder to clone into",
+      "defaultValue": "$(System.DefaultWorkingDirectory)\\repo",
+      "required": true,
+      "helpMarkDown": "Path to clone into",
+      "groupName": "advanced"
+    },
+    {
+      "name": "injectExtraHeader",
+      "type": "boolean",
+      "label": "Inject credentials via Headers",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If set to true, credentials are passed as a header value. If false, the default, they are passed in te URL. To address #613 which is seen on some on-prem instances",
+      "groupName": "advanced"
+    },
+    {
+      "name": "sslBackend",
+      "type": "string",
+      "label": "Set http.sslbackend option",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Set the http.sslbackend header option (InjectExtraHeader must be set true)",
+      "groupName": "advanced"
+    },
+    {
+      "name": "retries",
+      "type": "string",
+      "label": "Retries",
+      "defaultValue": "5",
+      "required": false,
+      "helpMarkDown": "The number of times to retry if a push fails. After a failed push a pull is run prior to the next attempt",
+      "groupName": "advanced"
+    },
+    {
+      "name": "RetryMode",
+      "type": "pickList",
+      "label": "Git refresh mode",
+      "defaultValue": "Pull",
+      "required": true,
+      "options": {
+        "Pull": "Pull",
+        "Rebase": "Rebase"
+      },
+      "helpMarkDown": "The Git command used to refresh the cloned repo if the push fails and a retry occurs.",
+      "groupName": "advanced"
+    }
+  ],
+  "instanceNameFormat": "Git based WIKI Folder Updater",
+  "execution": {
+    "Node10": {
+      "target": "GitWikiTask.js",
+      "argumentFormat": ""
+    },
+    "Node16": {
+      "target": "GitWikiTask.js",
+      "argumentFormat": ""
+    }
+  }
+}

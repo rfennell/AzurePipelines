@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "id": "BM-VSTS-WikiUpdater-Tasks",
-  "version": "1.1.0",
+  "version": "3.19.0",
   "name": "WIKI Updater Tasks",
   "publisher": "richardfennellBM",
   "description": "Set of tasks update Git based WIKIs.",
@@ -57,10 +57,12 @@
   },
   "files": [
     {
-      "path": "WikiUpdaterTask"
+      "path": "WikiUpdaterTask/dist",
+      "packagePath": "/WikiUpdaterTask"
     },
     {
-      "path": "WikiFolderUpdaterTask"
+      "path": "WikiFolderUpdaterTask/dist",
+      "packagePath": "/WikiFolderUpdaterTask"
     }
   ],
   "contributions": [
