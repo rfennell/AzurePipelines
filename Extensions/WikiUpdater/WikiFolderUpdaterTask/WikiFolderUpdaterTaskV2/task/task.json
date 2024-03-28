@@ -3,7 +3,7 @@
   "name": "WikiFolderUpdaterTask",
   "friendlyName": "Git based WIKI Folder Updater from Black Marble",
   "description": "A tools to update or create a set of files in a folder in WIKI based in a Git repo ",
-  "helpMarkDown": "Version: 2.14.1. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-Updater-Task/)",
+  "helpMarkDown": "Version: 2.14.2. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-Updater-Task/)",
   "category": "Utility",
   "visibility": [
     "Build",
@@ -13,7 +13,7 @@
   "version": {
     "Major": 2,
     "Minor": 14,
-    "Patch": 1
+    "Patch": 2
   },
   "demands": [],
   "minimumAgentVersion": "2.144.0",
