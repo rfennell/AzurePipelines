@@ -57,7 +57,8 @@
   },
   "files": [
     {
-      "path": "WikiPDFExportTask"
+      "path": "WikiPDFExportTask/dist",
+      "packagePath": "/WikiPDFExportTask"
     }
   ],
   "contributions": [
