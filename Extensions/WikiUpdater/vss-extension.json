@@ -57,11 +57,12 @@
   },
   "files": [
     {
-      "path": "WikiUpdaterTask"
+      "path": "WikiUpdaterTask/dist",
+      "packagePath": "/WikiUpdaterTask"
     },
     {
       "path": "WikiFolderUpdaterTask/dist",
-      "packagePath": "/task"
+      "packagePath": "/WikiFolderUpdaterTask"
     }
   ],
   "contributions": [
@@ -82,7 +83,7 @@
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "task"
+        "name": "WikiFolderUpdaterTask"
       }
     }
   ]
