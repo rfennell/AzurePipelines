@@ -1,0 +1,170 @@
+{
+  "id": "48d40d27-32e1-460e-8ea6-0dfb48abdd6f",
+  "name": "WikiPdfExportTask",
+  "friendlyName": "A wrapper for the AzureDevOps.WikiPDFExport",
+  "description": "A wrapper for the [AzureDevOps.WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport)",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-PdfExport-Task/)",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "Richard Fennell",
+  "version": {
+    "Major": "#{Major}#",
+    "Minor": "#{Minor}#",
+    "Patch": "#{Rev}#"
+  },
+  "demands": [],
+  "minimumAgentVersion": "2.144.0",
+  "groups": [
+    {
+      "name": "authentication",
+      "displayName": "Authentication",
+      "isExpanded": true
+    },
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "cloneRepo",
+      "type": "boolean",
+      "label": "Clone Repo",
+      "defaultValue": "True",
+      "required": false,
+      "helpMarkDown": "If set to true the specified repo will be cloned to the localfolder. If false then the localfolder must specify an existing folder that already contains a file structure"
+    },
+    {
+      "name": "repo",
+      "type": "string",
+      "label": "Repo",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The repo URL to clone e.g dev.azure.com/richardfennell/Git%20project/_git/Git-project.wiki. See documentation for more details https://github.com/rfennell/AzurePipelines/wiki/WIKI-Updater-Tasks",
+      "visibleRule": "cloneRepo = True"
+    },
+    {
+      "name": "branch",
+      "type": "string",
+      "label": "Checkout Branch",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The name of the pre-existing branch to checkout prior exporting a repo, if left blank the default branch will be used",
+      "visibleRule": "cloneRepo = True"
+    },
+    {
+      "name": "singleFile",
+      "type": "string",
+      "label": "Single file to export",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Single file to export. Can be set as either a relative path to a file in the `localPath` or `RootExportPath` folder e.g. page.md or as fully specified path. If not set the whole WIKI is exported based on the structure details the `.order` file in the root of the repo"
+    },
+    {
+      "name": "useAgentToken",
+      "type": "boolean",
+      "label": "Run with Build Agent Credentials",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true use the built in agent OAUTH token. OAUTH script access must be enabled for the agent",
+      "groupName": "authentication"
+    },
+    {
+      "name": "user",
+      "type": "string",
+      "label": "Username",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The username for authentication",
+      "groupName": "authentication"
+    },
+    {
+      "name": "password",
+      "type": "string",
+      "label": "Password/PAT",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The password/PAT for authentication (recommended stored as secret variable)",
+      "groupName": "authentication"
+    },
+    {
+      "name": "localpath",
+      "type": "string",
+      "label": "Local folder",
+      "defaultValue": "$(System.DefaultWorkingDirectory)\\repo",
+      "required": true,
+      "helpMarkDown": "The path to clone the repo into"
+    },
+    {
+      "name": "rootExportPath",
+      "type": "string",
+      "label": "Local folder",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "If not set, this defaults to the path of the root of the cloned the repo. It can be set to a folder within the cloned repo export only part of the repo. If only a single file is required the a filename can be specified using the singleFile parameter"
+    },
+    {
+      "name": "outputFile",
+      "type": "string",
+      "label": "Output file",
+      "defaultValue": "$(System.DefaultWorkingDirectory)\\output.pdf",
+      "required": true,
+      "helpMarkDown": "The output PDF file"
+    },
+    {
+      "name": "ExtraParameters",
+      "type": "string",
+      "label": "WIKIPDFExport Parameters",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Optional any extra WikiPDFExport you wish to pass to the command line tool"
+    },
+    {
+      "name": "injectExtraHeader",
+      "type": "boolean",
+      "label": "Inject credentials via Headers",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If set to true, credentials are passed as a header value. If false, the default, they are passed in te URL. To address #613 which is seen on some on-prem instances",
+      "groupName": "advanced"
+    },
+    {
+      "name": "overrideExePath",
+      "type": "string",
+      "label": "Tool path override",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "An optional path to a previously download copy of the [AzureDevOps.WikiPDFExport tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport) EXE (Windows) or DLL (Linux/Windows). If not set the task will download the current release of this tool e.g 'c:\\myfolder\\azuredevops-export-wiki.exe'",
+      "groupName": "advanced"
+    },
+    {
+      "name": "downloadPath",
+      "type": "string",
+      "label": "The path the tool will be downloaded to",
+      "defaultValue": "$(Agent.TempDirectory)",
+      "required": false,
+      "helpMarkDown": "The path the tool will be downloaded to",
+      "groupName": "advanced"
+    },
+    {
+      "name": "usePreRelease",
+      "type": "boolean",
+      "label": "Use pre-release versions of the export tool",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If set to true pre-release version of the [AzureDevOps.WikiPDFExport tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport) tool will be used",
+      "groupName": "advanced"
+    }
+  ],
+  "instanceNameFormat": "WIKI PDF Exporter",
+  "execution": {
+    "Node16": {
+      "target": "WikiPDFExportTask.js",
+      "argumentFormat": ""
+    }
+  }
+}

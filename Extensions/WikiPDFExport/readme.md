@@ -29,7 +29,13 @@ So if you still wish to use the V1 version of this task, you must either
 - Allow the task to get the .NET6 based version of the tool but install .NET6 on the agent prior to running this task (see below)
 
 ### V2.x.x
-This version provides cost platform support using the new .NET6 based [version 4.0.0 of AzureDevOps.WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/releases/tag/4.0.3), and hence supports Windows, Linux and Mac usage.
+This version provides cost platform support using the new .NET6 based [version 4.0.0 of AzureDevOps.WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport/releases/tag/4.0.3), and hence supports Windows, Linux and Mac usage via the Azure DevOps Pipeline Agent 2.x (Node10) 
+
+### V3.x.x
+Add support for Azure DevOps Pipeline Agent 3.x (Node16) execution engine, shipping both Node10 an Node16 execution. 
+
+### V4.x.x
+Drops support for the Azure DevOps Pipeline Agent 2.x (Node10) execution engine.
 
 # Usage
 ## .NET 6
