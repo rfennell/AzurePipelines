@@ -56,8 +56,7 @@ stages:
         displayName: 'Setting the version for tasks in extension'
         inputs:
           rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
-          targetFiles: '**\\task.json'
-           targetFiles: 'WikiPDFExportTask\\WikiPDFExportTaskV3\\**\\task.json'
+          targetFiles: 'WikiPDFExportTask\\WikiPDFExportTaskV3\\**\\task.json'
 
       # for each Node based task we must transpile it
       - template: ..\..\YAMLTemplates\build-node-task.yml
