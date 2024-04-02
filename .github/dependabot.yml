@@ -4,18 +4,34 @@ updates:
     directory: "/Extensions/ArtifactDescription/ArtifactDescriptionTask" 
     schedule:
       interval: "weekly"
+    groups:
+      dev-dependencies:
+        patterns: 
+          - "*"
   - package-ecosystem: "npm" 
     directory: "/Extensions/BuildUpdating/BuildRetensionTask" 
     schedule:
       interval: "weekly"
+    groups:
+      dev-dependencies:
+        patterns: 
+          - "*"
   - package-ecosystem: "npm" 
     directory: "/Extensions/BuildUpdating/BuildVariableTask" 
     schedule:
       interval: "weekly"
+    groups:
+      dev-dependencies:
+        patterns: 
+          - "*"
   - package-ecosystem: "npm" 
     directory: "/Extensions/BuildUpdating/GetBuildDefinitionVariableValueTask" 
     schedule:
       interval: "weekly"
+    groups:
+      dev-dependencies:
+        patterns: 
+          - "*"
 #  - package-ecosystem: "npm" 
 #    directory: "/Extensions/FileUtilities/XmlFileUpdateTaskk" 
 #    schedule:
