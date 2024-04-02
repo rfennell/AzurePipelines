@@ -56,18 +56,18 @@ stages:
         displayName: 'Setting the version for tasks in extension'
         inputs:
           rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
-          targetFiles: 'WikiPDFExportTask\\WikiPDFExportTaskV3\\**\\task.json'
+          targetFiles: 'WikiPDFExportTask\\WikiPDFExportTaskV4\\**\\task.json'
 
       # for each Node based task we must transpile it
       - template: ..\..\YAMLTemplates\build-node-task.yml
         parameters:
           extensionRoot: '$(ExtensionRoot)\WikiPDFExportTask'
-          taskName: 'WikiPDFExportTaskV2'
+          taskName: 'WikiPDFExportTaskV3'
 
       - template: ..\..\YAMLTemplates\build-node-task.yml
         parameters:
           extensionRoot: '$(ExtensionRoot)\WikiPDFExportTask'
-          taskName: 'WikiPDFExportTaskV3'
+          taskName: 'WikiPDFExportTaskV4'
 
       - task: TfxInstaller@3
         displayName: 'Install Tfx Tool'

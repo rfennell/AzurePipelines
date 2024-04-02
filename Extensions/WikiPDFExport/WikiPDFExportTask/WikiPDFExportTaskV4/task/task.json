@@ -3,7 +3,7 @@
   "name": "WikiPdfExportTask",
   "friendlyName": "A wrapper for the AzureDevOps.WikiPDFExport",
   "description": "A wrapper for the [AzureDevOps.WikiPDFExport](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport)",
-  "helpMarkDown": "Version: 3.9.1. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-PdfExport-Task/)",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-PdfExport-Task/)",
   "category": "Utility",
   "visibility": [
     "Build",
@@ -11,9 +11,9 @@
   ],
   "author": "Richard Fennell",
   "version": {
-    "Major": 3,
-    "Minor": 9,
-    "Patch": 1
+    "Major": "#{Major}#",
+    "Minor": "#{Minor}#",
+    "Patch": "#{Rev}#"
   },
   "demands": [],
   "minimumAgentVersion": "2.144.0",
@@ -162,10 +162,6 @@
   ],
   "instanceNameFormat": "WIKI PDF Exporter",
   "execution": {
-    "Node10": {
-      "target": "WikiPDFExportTask.js",
-      "argumentFormat": ""
-    },
     "Node16": {
       "target": "WikiPDFExportTask.js",
       "argumentFormat": ""

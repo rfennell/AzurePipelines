@@ -40,6 +40,15 @@ steps:
         -  **Message:** {{this.message}}
         -  **Commited by:** {{this.author.displayName}}
       {{/forEach}}
+- task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
+  displayName: 'Export Single File'
+  inputs:
+    cloneRepo: false
+    usePreRelease: false
+    localpath: '$(System.DefaultWorkingDirectory)'
+    singleFile: 'inline.md'
+    outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFileV3.pdf'
+    downloadPath: '${{parameters.localpath}}'
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@4
   displayName: 'Export Single File'
   inputs:
