@@ -101,8 +101,8 @@ export async function UpdateGitWikiFolder(
     localpath,
     user,
     password,
-    name,
-    email,
+    gitName,
+    gitEmail,
     targetFolder,
     message,
     sourceFolder,
@@ -158,8 +158,9 @@ export async function UpdateGitWikiFolder(
         logInfo(`Cloned ${repo} to ${localpath}`);
 
         await git.cwd(localpath);
-        await git.addConfig("user.name", name);
-        await git.addConfig("user.email", email);
+        logInfo(`Setting GitConfig Name:${gitName} Email:${gitEmail}`);
+        await git.addConfig("user.name", gitName);
+        await git.addConfig("user.email", gitEmail);
         logInfo(`Set GIT values in ${localpath}`);
 
         // move to the working folder
