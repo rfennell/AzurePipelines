@@ -99,8 +99,8 @@ export async function UpdateGitWikiFile(
     localpath,
     user,
     password,
-    name,
-    email,
+    gitName,
+    gitEmail,
     filename,
     message,
     contents,
@@ -169,8 +169,9 @@ export async function UpdateGitWikiFile(
         logInfo(`Cloned ${repo} to ${localpath}`);
 
         await git.cwd(localpath);
-        await git.addConfig("user.name", name);
-        await git.addConfig("user.email", email);
+        logInfo(`Setting GitConfig Name:${gitName} Email:${gitEmail}`);
+        await git.addConfig("user.name", gitName);
+        await git.addConfig("user.email", gitEmail);
         logInfo(`Set GIT values in ${localpath}`);
 
         // issue 969 - remove spaces
