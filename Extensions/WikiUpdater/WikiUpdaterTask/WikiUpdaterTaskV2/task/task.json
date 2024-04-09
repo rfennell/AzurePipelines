@@ -3,7 +3,7 @@
   "name": "WikiUpdaterTask",
   "friendlyName": "Git based WIKI Single File Updater from Black Marble",
   "description": "A tools to update or create a file in a WIKI based in a Git repo ",
-  "helpMarkDown": "Version: 2.14.2. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-Updater-Task/)",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/Wiki-Updater-Task/)",
   "category": "Utility",
   "visibility": [
     "Build",
@@ -13,10 +13,10 @@
   "version": {
     "Major": 2,
     "Minor": 14,
-    "Patch": 3
+    "Patch": 4
   },
   "demands": [],
-  "minimumAgentVersion": "1.82.0",
+  "minimumAgentVersion": "2.144.0",
   "groups": [
     {
       "name": "authentication",
@@ -186,6 +186,15 @@
       "groupName": "advanced"
     },
     {
+      "name": "sslBackend",
+      "type": "string",
+      "label": "Set http.sslbackend option",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Set the http.sslbackend header option (InjectExtraHeader must be set true)",
+      "groupName": "advanced"
+    },
+    {
       "name": "retries",
       "type": "string",
       "label": "Retries",
@@ -244,6 +253,16 @@
     }
     ,
     {
+      "name": "orderFilePath",
+      "type": "string",
+      "label": "The path to .order file",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The path to the folder containing the .order file to update. If empty the .order file in the root of the WIKI will be used.",
+      "groupName": "advanced"
+    }
+    ,
+    {
       "name": "prependEntryToOrderFile",
       "type": "boolean",
       "label": "Prepend .order file entry",
@@ -252,15 +271,42 @@
       "helpMarkDown": "If updateOrderFile is set to true, this parameter control whether the new entry is appended (when this is set to false) or prepending (when this is set to true)",
       "groupName": "advanced"
     }
+    ,
+    {
+      "name": "injecttoc",
+      "type": "boolean",
+      "label": "Inject TOC",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "If true will replace the existing [[_TOC_]] entry in an updated and pre-pended WIKI page with a new one at the top of the revised file (Default: False)",
+      "groupName": "advanced"
+    },
+      {
+      "name": "RetryMode",
+      "type": "pickList",
+      "label": "Git refresh mode",
+      "defaultValue": "Pull",
+      "required": true,
+      "options": {
+        "Pull": "Pull",
+        "Rebase": "Rebase"
+      },
+      "helpMarkDown": "The Git command used to refresh the cloned repo if the push fails and a retry occurs.",
+      "groupName": "advanced"
+    }
 
 
-        
   ],
   "instanceNameFormat": "Git based WIKI File Updater",
   "execution": {
-    "Node": {
+    "Node10": {
+      "target": "GitWikiTask.js",
+      "argumentFormat": ""
+    },
+    "Node16": {
       "target": "GitWikiTask.js",
       "argumentFormat": ""
     }
+
   }
 }

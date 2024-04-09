@@ -31,6 +31,7 @@ var tagRepo = tl.getBoolInput("tagRepo");
 var tag = tl.getInput("tag");
 var branch = tl.getInput("branch");
 var injectExtraHeader = tl.getBoolInput("injectExtraHeader");
+var sslBackend = tl.getInput("sslBackend");
 var retriesInput = tl.getInput("retries");
 var trimLeadingSpecialChar = tl.getBoolInput("trimLeadingSpecialChar");
 var fixLineFeeds = tl.getBoolInput("fixLineFeeds");
@@ -38,6 +39,9 @@ var fixSpaces = tl.getBoolInput("fixSpaces");
 var insertLinefeed = tl.getBoolInput("insertLinefeed");
 var prependEntryToOrderFile = tl.getBoolInput("prependEntryToOrderFile");
 var updateOrderFile = tl.getBoolInput("updateOrderFile");
+var orderFilePath = tl.getInput("orderFilePath");
+var injecttoc = tl.getBoolInput("injecttoc");
+var mode = tl.getInput("RetryMode");
 
 // make sure the retries is a number
 
@@ -66,6 +70,7 @@ console.log(`Variable: Tag Repo [${tagRepo}]`);
 console.log(`Variable: Tag [${tag}]`);
 console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
+console.log(`Variable: SslBackend [${sslBackend}]`);
 console.log(`Variable: Retries [${retries}]`);
 console.log(`Variable: trimLeadingSpecialChar [${trimLeadingSpecialChar}]`);
 console.log(`Variable: fixLineFeeds [${fixLineFeeds}]`);
@@ -73,6 +78,9 @@ console.log(`Variable: fixSpaces [${fixSpaces}]`);
 console.log(`Variable: insertLinefeed [${insertLinefeed}]`);
 console.log(`Variable: updateOrderFile [${updateOrderFile}]`);
 console.log(`Variable: prependEntryToOrderFile [${prependEntryToOrderFile}]`);
+console.log(`Variable: orderFilePath [${orderFilePath}]`);
+console.log(`Variable: injecttoc [${injecttoc}]`);
+console.log(`Variable: mode [${mode}]`);
 
 if (useAgentToken === true) {
     console.log(`Using OAUTH Agent Token, overriding username and password`);
@@ -87,10 +95,12 @@ var haveData = true;
 var contents; // we late declare as it might be buffer or string
 if (dataIsFile === true) {
     if (fs.existsSync(sourceFile)) {
+        logInfo(`Reading file ${sourceFile}`);
         if (fixLineFeeds) {
             contents = fs.readFileSync(sourceFile, "utf8");
         } else {
-            contents = fs.readFileSync(sourceFile);
+            // we read as a buffer and convert to string as we don't know the encoding
+            contents = fs.readFileSync(sourceFile).toString();
         }
     } else {
         logError(`Cannot find the file ${sourceFile}`);
@@ -98,6 +108,7 @@ if (dataIsFile === true) {
     }
 } else {
     // we do this late copy so that we can use the same property for different encodings with a type clash
+    logInfo(`Using contents string directly input`);
     contents = contentsInput;
 }
 
@@ -120,6 +131,7 @@ if (haveData) {
         tagRepo,
         tag,
         injectExtraHeader,
+        sslBackend,
         branch,
         retries,
         trimLeadingSpecialChar,
@@ -127,5 +139,8 @@ if (haveData) {
         fixSpaces,
         insertLinefeed,
         updateOrderFile,
-        prependEntryToOrderFile);
+        prependEntryToOrderFile,
+        orderFilePath,
+        injecttoc,
+        mode);
 }

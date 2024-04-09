@@ -28,6 +28,7 @@ const tagRepo = false;
 const tag = "";
 const injectExtraHeaders = false;
 const branch = "";
+const sslBackend = null;
 const protocol = "https";
 const retries = 5;
 const trimLeadingSpecialChar = true;
@@ -36,5 +37,8 @@ const fixSpaces = true;
 const insertLinefeed = false;
 const updateOrderFile = false;
 const prependEntryToOrderFile = false;
+const orderFilePath = "";
+const injecttoc = false;
+const mode = "Pull";
 
-UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, branch, retries, trimLeadingSpecialChar, fixLineFeeds, fixSpaces, insertLinefeed, updateOrderFile, prependEntryToOrderFile);
+UpdateGitWikiFile(protocol, repo, localpath, user, password, gitname, gitemail, filename, message, contents, logInfo, logError, replaceFile, appendFile, tagRepo, tag, injectExtraHeaders, sslBackend, branch, retries, trimLeadingSpecialChar, fixLineFeeds, fixSpaces, insertLinefeed, updateOrderFile, prependEntryToOrderFile, orderFilePath, injecttoc, mode);
