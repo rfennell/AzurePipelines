@@ -1,17 +1,16 @@
-import * as simplegit from "simple-git/promise";
+import simpleGit, { SimpleGit, CleanOptions } from "simple-git";
 import * as fs from "fs";
 import * as rimraf from "rimraf";
 import * as path from "path";
 import * as process from "process";
-import { logWarning } from "./agentSpecific";
-import { BranchSummary } from "simple-git/typings/response";
+import { logDebug, logWarning } from "./agentSpecific";
 import { SSL_OP_CIPHER_SERVER_PREFERENCE, SSL_OP_LEGACY_SERVER_CONNECT } from "constants";
 
 // A wrapper to make sure that directory delete is handled in sync
-function rimrafPromise (localpath)  {
+function rimrafPromise(localpath) {
     return new Promise((resolve, reject) => {
         rimraf(localpath, () => {
-            resolve();
+            resolve(0);
         }, (error) => {
             reject(error);
         });
@@ -24,28 +23,28 @@ function mkDirByPathSync(targetDir, { isRelativeToScript = false } = {}) {
     const baseDir = isRelativeToScript ? __dirname : ".";
 
     return targetDir.split(sep).reduce((parentDir, childDir) => {
-      const curDir = path.resolve(baseDir, parentDir, childDir);
-      try {
-        fs.mkdirSync(curDir);
-      } catch (err) {
-        if (err.code === "EEXIST") { // curDir already exists!
-          return curDir;
+        const curDir = path.resolve(baseDir, parentDir, childDir);
+        try {
+            fs.mkdirSync(curDir);
+        } catch (err) {
+            if (err.code === "EEXIST") { // curDir already exists!
+                return curDir;
+            }
+
+            // To avoid `EISDIR` error on Mac and `EACCES`-->`ENOENT` and `EPERM` on Windows.
+            if (err.code === "ENOENT") { // Throw the original parentDir error on curDir `ENOENT` failure.
+                throw new Error(`EACCES: permission denied, mkdir '${parentDir}'`);
+            }
+
+            const caughtErr = ["EACCES", "EPERM", "EISDIR"].indexOf(err.code) > -1;
+            if (!caughtErr || caughtErr && curDir === path.resolve(targetDir)) {
+                throw err; // Throw if it's just the last created dir.
+            }
         }
 
-        // To avoid `EISDIR` error on Mac and `EACCES`-->`ENOENT` and `EPERM` on Windows.
-        if (err.code === "ENOENT") { // Throw the original parentDir error on curDir `ENOENT` failure.
-          throw new Error(`EACCES: permission denied, mkdir '${parentDir}'`);
-        }
-
-        const caughtErr = ["EACCES", "EPERM", "EISDIR"].indexOf(err.code) > -1;
-        if (!caughtErr || caughtErr && curDir === path.resolve(targetDir)) {
-          throw err; // Throw if it's just the last created dir.
-        }
-      }
-
-      return curDir;
+        return curDir;
     }, initDir);
-  }
+}
 
 export function GetWorkingFolder(localpath, filename, logInfo): any {
     var pathParts = path.parse(filename);
@@ -73,7 +72,7 @@ export function GetProtocol(url: string, logInfo): string {
     var protocol = "https";
     logInfo(`The provided repo URL is ${url}`);
     if (url.indexOf("://") !== -1) {
-        protocol = url.substr(0, url.indexOf("//") - 1 );
+        protocol = url.substr(0, url.indexOf("//") - 1);
     }
     logInfo(`The protocol is ${protocol}`);
     return protocol;
@@ -100,8 +99,8 @@ export async function UpdateGitWikiFile(
     localpath,
     user,
     password,
-    gitName,
-    gitEmail,
+    name,
+    email,
     filename,
     message,
     contents,
@@ -112,6 +111,7 @@ export async function UpdateGitWikiFile(
     tagRepo,
     tag,
     injectExtraHeader,
+    sslBackend,
     branch,
     maxRetries,
     trimLeadingSpecialChar,
@@ -119,8 +119,17 @@ export async function UpdateGitWikiFile(
     fixSpaces,
     insertLinefeed,
     updateOrderFile,
-    prependEntryToOrderFile) {
-    const git = simplegit();
+    prependEntryToOrderFile,
+    orderFilePath,
+    injecttoc,
+    mode) {
+    const git = simpleGit();
+
+    // show error if content is null
+    if (!contents) {
+        logError(`The new content is null, so cannot be used to update the wiki`);
+        return;
+    }
 
     let remote = "";
     let logremote = ""; // used to make sure we hide the password in logs
@@ -130,7 +139,11 @@ export async function UpdateGitWikiFile(
         remote = `${protocol}://${repo}`;
         logremote = remote;
         extraHeaders = [`-c http.extraheader=AUTHORIZATION: bearer ${password}`];
-        logInfo (`Injecting the authentication via the clone command using paramter -c http.extraheader='AUTHORIZATION: bearer ***'`);
+        if (sslBackend) {
+            extraHeaders.push(`-c http.sslbackend=${sslBackend}`);
+            logInfo(`Injecting http.sslbackend configuration using parameter -c http.sslbackend=${sslBackend}`);
+        }
+        logInfo(`Injecting the authentication via the clone command using paramter -c http.extraheader='AUTHORIZATION: bearer ***'`);
     } else {
         if (password === null) {
             remote = `${protocol}://${repo}`;
@@ -152,24 +165,23 @@ export async function UpdateGitWikiFile(
         }
         logInfo(`Cleaned ${localpath}`);
 
-        await git.silent(true).clone(remote, localpath, extraHeaders);
+        await git.clone(remote, localpath, extraHeaders);
         logInfo(`Cloned ${repo} to ${localpath}`);
 
         await git.cwd(localpath);
-        logInfo(`Setting GitConfig Name:${gitName} Email:${gitEmail}`);
-        await git.addConfig("user.name", gitName);
-        await git.addConfig("user.email", gitEmail);
+        await git.addConfig("user.name", name);
+        await git.addConfig("user.email", email);
         logInfo(`Set GIT values in ${localpath}`);
 
         // issue 969 - remove spaces
         if (fixSpaces) {
-           var name = GetWorkingFile(filename, logInfo);
-           if (name.includes(" ")) {
+            var name = GetWorkingFile(filename, logInfo);
+            if (name.includes(" ")) {
                 logInfo(`The target filename contains spaces which are not valid in WIKIs filename '${name}'`);
                 // we only update the filename portion, not the path. Need to use regex else only first instance changed
                 filename = filename.replace(name, name.replace(/\s/g, "-"));
                 logInfo(`Update filename '${filename}'`);
-           }
+            }
         }
 
         // move to the working folder
@@ -184,7 +196,7 @@ export async function UpdateGitWikiFile(
         // do git pull just in case the clone was slow and there have been updates since
         // this is to try to reduce concurrency issues
         await git.pull();
-        logInfo(`Pull in case of post clone updates from other users`);
+        logInfo(`Git Pull, prior to local commits, in case of post clone updates to the repo from other users`);
 
         // we need to change any encoded
         var workingFile = GetWorkingFile(filename, logInfo);
@@ -193,14 +205,14 @@ export async function UpdateGitWikiFile(
                 logInfo(`Created the '${workingFile}' in '${workingPath}' - fixing line-endings`);
                 fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
             } else {
-              logInfo(`Created the '${workingFile}' in '${workingPath}' - without fixing line-endings`);
-              fs.writeFileSync(workingFile, contents );
+                logInfo(`Created the '${workingFile}' in '${workingPath}' - without fixing line-endings`);
+                fs.writeFileSync(workingFile, contents);
             }
         } else {
             if (appendToFile) {
                 if (insertLinefeed) {
                     // fix for #988 trailing new lines are trimmed from inline content
-                    logInfo(`Injecting linefeed between existing and new content`);
+                    logDebug(`Injecting linefeed between existing and new content`);
                     fs.appendFileSync(workingFile, "\r\n");
                 }
                 // fix for #826 where special characters get added between the files being appended
@@ -211,12 +223,23 @@ export async function UpdateGitWikiFile(
                 if (fs.existsSync(workingFile)) {
                     oldContent = fs.readFileSync(workingFile, "utf8");
                 }
-                fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+                if (injecttoc) {
+                    logDebug(`Replacing old [[_TOC_]] with a new one at the top of the pre-pended content`);
+                    oldContent = oldContent.replace("[[_TOC_]]", "");  // we the single existing TOC ignoring the line feeds following
+                    fs.writeFileSync(workingFile, "[[_TOC_]]\r\n\r\n"); // we add a 2nd feed, as blank line is required after the TOC
+                    logDebug(`Appending new content after [[_TOC_]]`);
+                    fs.appendFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+                } else {
+                    logDebug(`Writing new content`);
+                    fs.writeFileSync(workingFile, contents.replace(/`n/g, "\r\n"));
+                }
+
                 if (insertLinefeed) {
                     // fix for #988 trailing new lines are trimmed from inline content
-                    logInfo(`Injecting linefeed between existing and new content`);
+                    logDebug(`Injecting linefeed between existing and new content`);
                     fs.appendFileSync(workingFile, "\r\n");
                 }
+                logDebug(`Appending old content`);
                 fs.appendFileSync(workingFile, FixedFormatOfNewContent(oldContent, trimLeadingSpecialChar));
                 logInfo(`Prepending to the ${workingFile} in ${workingPath}`);
             }
@@ -226,40 +249,61 @@ export async function UpdateGitWikiFile(
         logInfo(`Added ${filename} to repo ${localpath}`);
 
         if (updateOrderFile) {
+
             var orderFile = `${localpath}/.order`;
-            // we need the name without the extension
-            var entry = filename.replace(/.md/i, "");
+            if (orderFilePath && orderFilePath.length > 0) {
+                orderFile = `${localpath}/${orderFilePath}/.order`;
+            }
+
+            logInfo(`Using the file - ${orderFile}`);
+
+            // we need the name without the extension and the folder path
+            var entry = path.basename(filename.replace(/.md/i, ""));
 
             if (fs.existsSync(orderFile)) {
-                logInfo(`Updating the existing .order file`);
+                logInfo(`Attempting to updating the existing .order file`);
+                oldContent = fs.readFileSync(orderFile, "utf8");
             } else {
-                logInfo(`Creating a new .order file`);
+                logInfo(`Attempting to create a new .order file`);
+                oldContent = "";
             }
 
-            if (prependEntryToOrderFile) {
-                // prepending the entry
-                if (fs.existsSync(orderFile)) {
-                    oldContent = fs.readFileSync(orderFile, "utf8");
-                    // as we are pre-pending we alway need a line feed
-                    fs.writeFileSync(orderFile, `${entry}\r\n`);
-                    fs.appendFileSync(orderFile, oldContent);
-                }
-                logInfo(`Preppending entry to the .order file`);
+            // we edit the order file if the new entry is not already in the file
+            if (oldContent.includes(entry)) {
+                logInfo(`The entry '${entry}' already exists in the .order file, skipping update`);
             } else {
-                // appending the entry
-                if (fs.existsSync(orderFile)) {
-                    // check the content to make sure we have the required line feed
-                    oldContent = fs.readFileSync(orderFile, "utf8");
-                    if (!oldContent.endsWith("\r\n")) {
-                        fs.appendFileSync(orderFile, "\r\n");
+                if (prependEntryToOrderFile) {
+                    // prepending the entry
+                    if (fs.existsSync(orderFile)) {
+                        oldContent = fs.readFileSync(orderFile, "utf8");
+                        // as we are pre-pending we alway need a line feed
+                        fs.writeFileSync(orderFile, `${entry}\r\n`);
+                        fs.appendFileSync(orderFile, oldContent);
+                        logInfo(`Preppending entry to the .order file`);
+                    } else {
+                        fs.writeFileSync(orderFile, `${entry}`);
+                        logInfo(`Creating .order file as it does not exist`);
                     }
+                } else {
+                    // appending the entry
+                    if (fs.existsSync(orderFile)) {
+                        // check the content to make sure we have the required line feed
+                        oldContent = fs.readFileSync(orderFile, "utf8");
+                        if (!oldContent.endsWith("\r\n")) {
+                            fs.appendFileSync(orderFile, "\r\n");
+                        }
+                    }
+                    fs.appendFileSync(orderFile, entry);
+                    logInfo(`Appending entry to the .order file`);
                 }
-                fs.appendFileSync(orderFile, entry);
-                logInfo(`Appending entry to the .order file`);
-            }
 
-            await git.add(orderFile);
+                await git.add(orderFile);
+                logInfo(`Added .order file to repo ${localpath}`);
+
+            }
         }
+
+        logDebug(`Committing the changes with the message: ${message}`);
 
         var summary = await git.commit(message);
         if (summary.commit.length > 0) {
@@ -277,10 +321,23 @@ export async function UpdateGitWikiFile(
                     break;
                 } catch (err) {
                     if (index < maxRetries) {
-                        logInfo(`Push failed, probably due to target being updated completed, will retry up to ${maxRetries} times`);
+                        logInfo(`Push failed, will retry up to ${maxRetries} times after updating the local repo with the latest changes from the server`);
+                        logInfo(err);
                         sleep(1000);
-                        logInfo(`Pull to get updates from other users`);
-                        await git.pull();
+                        switch (mode) {
+                            case "Rebase":
+                                logInfo(`Pulling with --rebase=true option to get updates from other users`);
+                                if (!branch) {
+                                    logError(`Rebase requested, but no branch passed in as a parameter`);
+                                    return;
+                                }
+                                await git.pull("origin", branch , { "--rebase": "true" });
+                                break;
+                            default: // Pull
+                                logInfo(`Pull to get updates from other users`);
+                                await git.pull();
+                                break;
+                        }
                     } else {
                         logInfo(`Reached the retry limit`);
                         logError(err);
@@ -313,7 +370,7 @@ function FixedFormatOfNewContent(contents: string, trimLeadingSpecialChar: boole
     var fixedContents: string = contents.replace(/`n/g, "\r\n");
     // fix for #826 where special characters get added between the files being appended
     // 65279 is the Unicode Character 'ZERO WIDTH NO-BREAK SPACE'
-    if (trimLeadingSpecialChar && fixedContents.charCodeAt(0) ===  65279) {
+    if (trimLeadingSpecialChar && fixedContents.charCodeAt(0) === 65279) {
         fixedContents = fixedContents.substr(1);
     }
     return fixedContents;
@@ -321,6 +378,6 @@ function FixedFormatOfNewContent(contents: string, trimLeadingSpecialChar: boole
 
 function sleep(ms) {
     return new Promise((resolve) => {
-      setTimeout(resolve, ms);
+        setTimeout(resolve, ms);
     });
 }
