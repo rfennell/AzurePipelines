@@ -19,7 +19,7 @@
     "glob": "^10.3.10",
     "ncp": "^2.0.0",
     "process": "^0.11.10",
-    "rimraf": "^3.0.2",
+    "rimraf": "^5.0.5",
     "simple-git": "^3.16.0"
   },
   "devDependencies": {

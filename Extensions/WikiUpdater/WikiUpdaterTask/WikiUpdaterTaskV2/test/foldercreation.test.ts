@@ -4,8 +4,7 @@ import "mocha";
 import { GetWorkingFolder, GetWorkingFile } from "../src/GitWikiFuntions";
 import { logInfo } from "../src/agentSpecific";
 import { existsSync, fstat } from "fs";
-import { pathToFileURL } from "url";
-const del = require("del");
+import * as fse from "fs-extra";
 
 describe("Test on the target folder creation", () => {
     it("should be able to use a path", () => {
@@ -15,7 +14,7 @@ describe("Test on the target folder creation", () => {
     });
     after(function() {
       // remove the file if created
-      del.sync("testdata\\subfolder");
+      fse.removeSync("testdata\\subfolder");
     });
 
     it("should be use filename only", () => {

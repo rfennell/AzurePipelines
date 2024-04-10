@@ -6,17 +6,6 @@ import * as process from "process";
 import { logWarning } from "./agentSpecific";
 import * as glob from "glob";
 
-// A wrapper to make sure that directory delete is handled in sync
-function rimrafPromise(localpath) {
-    return new Promise((resolve, reject) => {
-        rimraf(localpath, () => {
-            resolve(0);
-        }, (error) => {
-            reject(error);
-        });
-    });
-}
-
 function mkDirByPathSync(targetDir, { isRelativeToScript = false } = {}) {
     const sep = path.sep;
     const initDir = path.isAbsolute(targetDir) ? sep : "";
@@ -150,7 +139,7 @@ export async function UpdateGitWikiFolder(
 
     try {
         if (fs.existsSync(localpath)) {
-            await rimrafPromise(localpath);
+            await rimraf.rimrafSync(localpath);
         }
         logInfo(`Cleaned ${localpath}`);
 
