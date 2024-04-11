@@ -119,7 +119,7 @@ stages:
         - task: richardfennellBM.BM-VSTS-DevTestLab-DEV.DevTestLabsStartVm.DevTestLabsStartVm@1
           displayName: 'Start a DevTest Labs VM'
           inputs:
-            ConnectedServiceName: 'RF MVP Visual Studio Enterprise (74b7c35f-1dd9-45d0-bf0c-4a8fbe3d9cb8)'
+            ConnectedServiceName: 'RF MVP Visual Studio Enterprise (74b7c35f-1dd9-45d0-bf0c-4a8fbe3d9cb8) Service Principal'
 
     - deployment: Private_Test
       timeoutInMinutes: 0
