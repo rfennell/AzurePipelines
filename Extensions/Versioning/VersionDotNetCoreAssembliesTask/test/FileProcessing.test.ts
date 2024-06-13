@@ -135,7 +135,7 @@ describe("Test the version extraction", () => {
 describe("Test the 483 file processing", () => {
   beforeEach(function() {
     // make a copy we can overwrite without breaking test data
-    copyFileSync("test/testdata/core483.csproj.initial", "test/testdata/core.csproj");
+    copyFileSync("test/testdata/core483/core483.csproj.initial", "test/testdata/core.csproj");
   });
 
   it("should be able to add a detail version field in a file", () => {
@@ -144,7 +144,7 @@ describe("Test the 483 file processing", () => {
     ProcessFile(file, "Version", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
-    var expectedfilecontent = fs.readFileSync(`test/testdata/core483.csproj.expected`);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/core483/core483.csproj.expected`);
 
     expect(editedfilecontent.toString()).toBe(expectedfilecontent.toString());
   });
@@ -159,7 +159,7 @@ describe("Test the 483 file processing", () => {
 describe("Test the 494 file processing for singe field", () => {
   beforeEach(function() {
     // make a copy we can overwrite without breaking test data
-    copyFileSync("test/testdata/core494.csproj.initial", "test/testdata/core.csproj");
+    copyFileSync("test/testdata/core494/core494.csproj.initial", "test/testdata/core.csproj");
   });
 
   it("should be able to edit AssemblyVersion field in a file", () => {
@@ -168,7 +168,7 @@ describe("Test the 494 file processing for singe field", () => {
     ProcessFile(file, "AssemblyVersion", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
-    var expectedfilecontent = fs.readFileSync(`test/testdata/core494.csproj.expected`);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/core494/core494.csproj.expected`);
 
     expect(editedfilecontent.toString()).toBe(expectedfilecontent.toString());
   });
@@ -183,7 +183,7 @@ describe("Test the 494 file processing for singe field", () => {
 describe("Test the 494 file processing for all fields", () => {
   beforeEach(function() {
     // make a copy we can overwrite without breaking test data
-    copyFileSync("test/testdata/core494.csproj.initial", "test/testdata/core.csproj");
+    copyFileSync("test/testdata/core494/core494.csproj.initial", "test/testdata/core.csproj");
   });
 
   it("should be able to edit all version field in a file", () => {
@@ -192,7 +192,7 @@ describe("Test the 494 file processing for all fields", () => {
     ProcessFile(file, "", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
-    var expectedfilecontent = fs.readFileSync(`test/testdata/core494.csproj.expected`);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/core494/core494.csproj.expected`);
 
     expect(editedfilecontent.toString()).toBe(expectedfilecontent.toString());
   });
@@ -207,7 +207,7 @@ describe("Test the 494 file processing for all fields", () => {
 describe("Test the 549 add missing propertygroup", () => {
   beforeEach(function() {
     // make a copy we can overwrite without breaking test data
-    copyFileSync("test/testdata/core549.csproj.initial", "test/testdata/core.csproj");
+    copyFileSync("test/testdata/core549/core549.csproj.initial", "test/testdata/core.csproj");
   });
 
   it("should be able to edit all version field in a file", () => {
@@ -216,7 +216,7 @@ describe("Test the 549 add missing propertygroup", () => {
     ProcessFile(file, "", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
-    var expectedfilecontent = fs.readFileSync(`test/testdata/core549.csproj.expected`);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/core549/core549.csproj.expected`);
 
     expect(editedfilecontent.toString()).toBe(expectedfilecontent.toString());
   });
@@ -231,7 +231,7 @@ describe("Test the 549 add missing propertygroup", () => {
 describe("Test the 551 add missing propertygroup", () => {
   beforeEach(function() {
     // make a copy we can overwrite without breaking test data
-    copyFileSync("test/testdata/core551.csproj.initial", "test/testdata/core.csproj");
+    copyFileSync("test/testdata/core551/core551.csproj.initial", "test/testdata/core.csproj");
   });
 
   it("should be able to edit all version field in a file", () => {
@@ -240,7 +240,7 @@ describe("Test the 551 add missing propertygroup", () => {
     ProcessFile(file, "", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
-    var expectedfilecontent = fs.readFileSync(`test/testdata/core551.csproj.expected`);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/core551/core551.csproj.expected`);
 
     expect(editedfilecontent.toString()).toBe(expectedfilecontent.toString());
   });
@@ -279,7 +279,7 @@ describe("Test the 346 directory.build.props", () => {
 describe("Test the 589 add missing propertygroup", () => {
   beforeEach(function() {
     // make a copy we can overwrite without breaking test data
-    copyFileSync("test/testdata/core589.csproj.initial", "test/testdata/core.csproj");
+    copyFileSync("test/testdata/core589/core589.csproj.initial", "test/testdata/core.csproj");
   });
 
   it("should be able to edit all version field in a file", () => {
@@ -288,7 +288,7 @@ describe("Test the 589 add missing propertygroup", () => {
     ProcessFile(file, "", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
-    var expectedfilecontent = fs.readFileSync(`test/testdata/core589.csproj.expected`);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/core589/core589.csproj.expected`);
 
     expect(editedfilecontent.toString()).toBe(expectedfilecontent.toString());
   });
@@ -303,7 +303,7 @@ describe("Test the 589 add missing propertygroup", () => {
 describe("Test the 589 add missing propertygroup", () => {
   beforeEach(function() {
     // make a copy we can overwrite without breaking test data
-    copyFileSync("test/testdata/core589.csproj.initial", "test/testdata/core.csproj");
+    copyFileSync("test/testdata/core589/core589.csproj.initial", "test/testdata/core.csproj");
   });
 
   it("should be able to edit version field in a file", () => {
@@ -312,7 +312,7 @@ describe("Test the 589 add missing propertygroup", () => {
     ProcessFile(file, "Version", "9.9.9.9", fieldArray, true);
 
     var editedfilecontent = fs.readFileSync(file);
-    var expectedfilecontent = fs.readFileSync(`test/testdata/core589.csproj.expected`);
+    var expectedfilecontent = fs.readFileSync(`test/testdata/core589/core589.csproj.expected`);
 
     expect(editedfilecontent.toString()).toBe(expectedfilecontent.toString());
   });
