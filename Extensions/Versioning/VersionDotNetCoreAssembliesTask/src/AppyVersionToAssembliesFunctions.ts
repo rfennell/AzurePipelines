@@ -1,8 +1,9 @@
 import fs = require("fs");
 import path = require("path");
 import tl = require("azure-pipelines-task-lib/task");
+import { Console } from "console";
 
-export function extractVersion(injectversion, versionRegex, versionNumber ) {
+export function extractVersion(injectversion, versionRegex, versionNumber) {
     var newVersion = versionNumber;
     if (injectversion === false) {
         console.log(`Extracting version number from build number`);
@@ -14,13 +15,13 @@ export function extractVersion(injectversion, versionRegex, versionNumber ) {
             process.exit(1);
         }
         switch (versionData.length) {
-        case 0:
+            case 0:
                 // this is trapped by the null check above
                 tl.error(`Could not find version number data in ${versionNumber} that matches ${versionRegex}.`);
                 process.exit(1);
-        case 1:
+            case 1:
                 break;
-        default:
+            default:
                 tl.warning(`Found more than instance of version data in ${versionNumber}  that matches ${versionRegex}.`);
                 tl.warning(`Will assume first instance is version.`);
                 break;
@@ -41,39 +42,57 @@ export function SplitArrayOfNames(names) {
 }
 
 // List all files in a directory in Node.js recursively in a synchronous fashion
-export function findFiles (dir, filename , filelist, sdknames: string[]) {
+export function findFiles(dir, filename, filelist, sdknames: string[], excludePaths?: string[]) {
     var path = path || require("path");
     var fs = fs || require("fs"),
         files = fs.readdirSync(dir);
     filelist = filelist || [];
-    files.forEach(function(file) {
+    files.forEach(function (file) {
         if (fs.statSync(path.join(dir, file)).isDirectory()) {
-            filelist = findFiles(path.join(dir, file), filename, filelist, sdknames);
+            filelist = findFiles(path.join(dir, file), filename, filelist, sdknames, excludePaths);
         }
         else {
             if (file.toLowerCase().endsWith(filename.toLowerCase())) {
-                var filecontent = fs.readFileSync(path.join(dir, file));
-                var matchingSDK = false;
-                if (file.toLowerCase().indexOf("directory.build.props") === -1 && sdknames.length > 0) {
-                    // need to use a for loop to allow break, not the most elegent solution
-                    for (let i = 0; i < sdknames.length; i++) {
-                        if (filecontent.toString().toLowerCase().indexOf(`<project sdk=\"${sdknames[i].toLowerCase()}`) !== -1) {
-                            console.log(`Matched the file '${file}' using the SDK name '${sdknames[i]}'`);
-                            matchingSDK = true;
+
+                var pathNotExcluded = true;
+
+                if (excludePaths && excludePaths.length > 0) {
+                    for (let i = 0; i < excludePaths.length; i++) {
+                        console.log(`Checking if file ${path.join(dir, file)} contains ${excludePaths[i]}`);
+                        if (path.join(dir, file).toLowerCase().includes(excludePaths[i].toLowerCase())) {
+                            console.log(`Skipping file ${path.join(dir, file)} as it is in an excluded path`);
+                            pathNotExcluded = false;
                             break;
                         }
                     }
-                    if (matchingSDK) {
-                        console.log(`Adding file ${file} as is a .NETCore Project`);
+
+                }
+
+                if (pathNotExcluded) {
+
+                    var filecontent = fs.readFileSync(path.join(dir, file));
+                    var matchingSDK = false;
+                    if (file.toLowerCase().indexOf("directory.build.props") === -1 && sdknames.length > 0) {
+                        // need to use a for loop to allow break, not the most elegent solution
+                        for (let i = 0; i < sdknames.length; i++) {
+                            if (filecontent.toString().toLowerCase().indexOf(`<project sdk=\"${sdknames[i].toLowerCase()}`) !== -1) {
+                                console.log(`Matched the file '${file}' using the SDK name '${sdknames[i]}'`);
+                                matchingSDK = true;
+                                break;
+                            }
+                        }
+                        if (matchingSDK) {
+                            console.log(`Adding file ${file} as is a .NETCore Project`);
+                            filelist.push(path.join(dir, file));
+                        } else {
+                            console.log(`Skipping file ${file} as is not a .NETCore Project`);
+                        }
+                    } else if (file.toLowerCase().indexOf("directory.build.props") !== -1) {
+                        console.log(`Adding file ${file} as is a directory.build.props file`);
                         filelist.push(path.join(dir, file));
                     } else {
-                        console.log(`Skipping file ${file} as is not a .NETCore Project`);
+                        console.log(`${file} considered but not added either because has is not .NETCore project file or a directory.build.props file`);
                     }
-                } else if (file.toLowerCase().indexOf("directory.build.props") !== -1) {
-                    console.log(`Adding file ${file} as is a directory.build.props file`);
-                    filelist.push(path.join(dir, file));
-                } else {
-                    console.log(`${file} considered but not added either because has is not .NETCore project file or a directory.build.props file`);
                 }
             }
         }
@@ -81,20 +100,20 @@ export function findFiles (dir, filename , filelist, sdknames: string[]) {
     return filelist;
 }
 
-export function stringToBoolean (value: string) {
+export function stringToBoolean(value: string) {
     switch (value.toLowerCase().trim()) {
         case "true": case "yes": case "1": return true;
         case "false": case "no": case "0": case null: return false;
         default: return Boolean(value);
     }
-  }
+}
 
 function UpdateSingleField(file, field, newVersion) {
     var filecontent = fs.readFileSync(file);
     let content: string = filecontent.toString();
     fs.chmodSync(file, "600");
 
-    console.log (`Getting just the PropertyGroup that contains the single version fields`);
+    console.log(`Getting just the PropertyGroup that contains the single version fields`);
     var propertyGroupMatches = content.match(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi);
 
     if (propertyGroupMatches === null) {
@@ -121,24 +140,24 @@ function UpdateSingleField(file, field, newVersion) {
         var tmpField = `<${field}>`;
         var newPropertyGroupText = "";
         if (propertyGroupText.toString().toLowerCase().indexOf(tmpField.toLowerCase()) === -1) {
-            console.log (`The ${tmpField} version is not present in the file so adding it`);
+            console.log(`The ${tmpField} version is not present in the file so adding it`);
             // add the field, trying to avoid having to load library to parse xml
             // Check for TargetFramework when only using a single framework
             var regexp = new RegExp("</TargetFramework>", "gi");
             tmpField = tmpField.replace("<", "").replace(">", "");
             if (regexp.exec(propertyGroupText.toString())) {
-                console.log (`The ${file} file only targets 1 framework`);
+                console.log(`The ${file} file only targets 1 framework`);
                 var newVersionField = `</TargetFramework><${tmpField}>${newVersion}<\/${tmpField}>`;
                 newPropertyGroupText = propertyGroupText.replace(`</TargetFramework>`, newVersionField);
                 fs.writeFileSync(file, filecontent.toString().replace(propertyGroupText, newPropertyGroupText));
             } else {
-                console.log (`Cannot find a <TargetFramework> block, so just adding the version field at the end of the first <PropertyGroup>`);
+                console.log(`Cannot find a <TargetFramework> block, so just adding the version field at the end of the first <PropertyGroup>`);
                 var forcedInsertPropertyGroupText = `<${field}>${newVersion}<\/${field}></PropertyGroup>`;
                 newPropertyGroupText = propertyGroupText.replace(`</PropertyGroup>`, forcedInsertPropertyGroupText);
                 fs.writeFileSync(file, filecontent.toString().replace(propertyGroupText, newPropertyGroupText));
             }
         } else {
-            console.log (`Updating only the ${field} version`);
+            console.log(`Updating only the ${field} version`);
 
             const fieldRegex = `(<${field}>)(.*)(<\/${field}>)`;
             var fieldRegexp = new RegExp(fieldRegex, "gi");
@@ -172,7 +191,7 @@ export function ProcessFile(file, field, newVersion, versionFields: string[], ad
         var propertyGroupText = "<PropertyGroup></PropertyGroup>";
 
         // We only need to consider the following fields in the main PropertyGroup block
-        console.log (`Getting just the PropertyGroup that contains the version fields`);
+        console.log(`Getting just the PropertyGroup that contains the version fields`);
         var matches = content.match(/<PropertyGroup>([\s\S]*?)<\/PropertyGroup>/gmi);
 
         if (matches === null) {
@@ -189,7 +208,7 @@ export function ProcessFile(file, field, newVersion, versionFields: string[], ad
                     if (regexp.test(group)) {
                         propertyGroupText = group;
                     }
-                 });
+                });
             });
             if (propertyGroupText === "") {
                 propertyGroupText = matches[0];
@@ -227,8 +246,8 @@ export function ProcessFile(file, field, newVersion, versionFields: string[], ad
         }
     }
     if (isVersionApplied) {
-        console.log (`${file} - version applied`);
+        console.log(`${file} - version applied`);
     } else {
-        console.log (`${file} - version not applied`);
+        console.log(`${file} - version not applied`);
     }
 }

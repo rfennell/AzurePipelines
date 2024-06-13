@@ -43,4 +43,27 @@ describe("Test the find file processing", () => {
       expect(files.length).toBe(1);
     });
 
+    it("should be able to find only .netcore project files with empty exclude as array", () => {
+      var files = findFiles(`test/testdata`, ".csproj.initial", files, ["Microsoft.NET.Sdk"], []);
+      expect(files.length).toBe(9);
+    });
+
+    it("should be able to find only .netcore project files with empty exclude as string", () => {
+      var input = "";
+      var files = findFiles(`test/testdata`, ".csproj.initial", files, ["Microsoft.NET.Sdk"], SplitArrayOfNames(input));
+      expect(files.length).toBe(9);
+    });
+
+    it("should be able to find only .netcore project files excluding paths as array", () => {
+      var files = findFiles(`test/testdata`, ".csproj.initial", files, ["Microsoft.NET.Sdk"], ["Core549", "Core551"]);
+      expect(files.length).toBe(7);
+    });
+
+    it("should be able to find only .netcore project files excluding paths as string", () => {
+      var input = "Core549, Core551, CoreDummy";
+      var files = findFiles(`test/testdata`, ".csproj.initial", files, ["Microsoft.NET.Sdk"], SplitArrayOfNames(input));
+      expect(files.length).toBe(7);
+    }); 
+
+
 });

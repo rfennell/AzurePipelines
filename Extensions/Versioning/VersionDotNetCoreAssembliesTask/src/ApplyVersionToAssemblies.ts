@@ -17,6 +17,7 @@ var filenamePattern = tl.getInput("FilenamePattern");
 var addDefault = tl.getInput("AddDefault");
 var injectversion = tl.getBoolInput("Injectversion");
 var sdknames = tl.getInput("SDKNames");
+var excludePaths = tl.getInput("ExcludePaths");
 var versionFields = tl.getInput("versionFields");
 
 console.log (`Source Directory:  ${path}`);
@@ -28,6 +29,8 @@ console.log (`Add default field (all if empty): ${addDefault}`);
 console.log (`Output: Version Number Parameter Name: ${outputversion}`);
 console.log (`Inject Version: ${injectversion}`);
 console.log (`SDK names: ${sdknames}`);
+console.log (`ExcludePaths: ${excludePaths}`);
+
 console.log (`Version Fields Names: ${versionFields}`);
 
 // Make sure path to source code directory is available
@@ -42,8 +45,9 @@ console.log (`Extracted Version: ${newVersion}`);
 
 // Apply the version to the assembly property files
 var sdkArray = SplitArrayOfNames(sdknames);
+var excludeArray = SplitArrayOfNames(excludePaths);
 var fieldArray = SplitArrayOfNames(versionFields);
-var files = findFiles(`${path}`, filenamePattern, files, sdkArray);
+var files = findFiles(`${path}`, filenamePattern, files, sdkArray, excludeArray);
 
 if (files.length > 0) {
 

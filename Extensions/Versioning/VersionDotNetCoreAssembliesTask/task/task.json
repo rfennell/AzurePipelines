@@ -81,6 +81,15 @@
       "helpMarkDown": "A comma separated list of SDK namespaces to use to match .csproj file. Ignored if filename pattern is directory.build.props",
       "groupName":"advanced"
     },
+    {
+      "name": "ExcludePaths",
+      "type": "string",
+      "label": "Exclude Paths",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "A comma separated list of paths to exclude when matching .csproj file or directory.build.props files e.g. MyProject1, MyProject2",
+      "groupName":"advanced"
+    },
      {
       "name": "Field",
       "type": "string",
