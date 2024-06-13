@@ -63,7 +63,6 @@ describe("Test the find file processing", () => {
       var input = "Core549, Core551, CoreDummy";
       var files = findFiles(`test/testdata`, ".csproj.initial", files, ["Microsoft.NET.Sdk"], SplitArrayOfNames(input));
       expect(files.length).toBe(7);
-    }); 
-
+    });
 
 });
