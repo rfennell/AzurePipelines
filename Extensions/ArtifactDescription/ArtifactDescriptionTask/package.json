@@ -19,7 +19,7 @@
     "rimraf": "^5.0.7"
   },
   "devDependencies": {
-    "@types/node": "^20.14.0",
+    "@types/node": "^20.14.2",
     "del": "^7.1.0",
     "ts-node": "^10.9.2",
     "tslint": "^6.1.3",
