@@ -210,8 +210,11 @@ export async function restoreAzurePipelineArtifactsBuildInfo(artifactsInRelease:
                 const [packageId, packageVersion] = [artifactInRelease.buildDefinitionId, artifactInRelease.buildNumber];
                 const artifactPackageInfo = await packagingApi.getPackage(projectId, feedId, packageId, true);
                 const packageVersionId = (artifactPackageInfo.versions.find((version) => version.normalizedVersion === packageVersion) || {id: ""}).id;
-                const artifactBuildInfo = (await packagingApi.getPackageVersionProvenance(projectId, feedId, packageId, packageVersionId));
-
+                const artifactBuildInfo = await packagingApi.getPackageVersionProvenance(projectId, feedId, packageId, packageVersionId);
+                if (!artifactBuildInfo.provenance.data["Build.BuildId"]) {
+                agentApi.logInfo(`No build ID found for Azure Artifact [${artifactInRelease.artifactAlias}]. Skipping this artifact.`);
+                continue; // Guard clause for missing build ID
+                }
                 Object.assign(artifactInRelease, {
                     artifactType: "Build",
                     buildId: artifactBuildInfo.provenance.data["Build.BuildId"],
