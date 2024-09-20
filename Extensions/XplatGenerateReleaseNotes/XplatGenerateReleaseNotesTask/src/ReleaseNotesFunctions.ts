@@ -986,7 +986,7 @@ export function processTemplate(
 
         // add our helper to find PR
         handlebars.registerHelper("lookup_a_pullrequest", function (array, url) {
-            var urlParts = url.split("%2F");
+            var urlParts = url.toLowerCase().split("%2f"); // issue #1980 fix
             var prId = parseInt(urlParts[urlParts.length - 1]);
             return array.find(element => element.pullRequestId === prId);
         });
