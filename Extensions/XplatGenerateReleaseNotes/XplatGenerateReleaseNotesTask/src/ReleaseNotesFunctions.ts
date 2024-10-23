@@ -800,17 +800,19 @@ export async function getAllDirectRelatedWorkitems (
         var wi  = workItems[wiIndex];
 
         agentApi.logInfo(`Looking for parents and children of WI [${wi.id}]`);
-        for (let relIndex = 0; relIndex <  wi.relations.length; relIndex++) {
-            var relation  =  wi.relations[relIndex];
-            if ((relation.attributes.name === "Child") ||
-                (relation.attributes.name === "Parent")) {
-                var urlParts = relation.url.split("/");
-                var id = parseInt(urlParts[urlParts.length - 1]);
-                if (!relatedWorkItems.find(element => element.hasOwnProperty("id") && element.id === id)) {
-                    agentApi.logInfo(`Add ${relation.attributes.name} WI ${id}`);
-                    relatedWorkItems.push(await (workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null)));
-                } else {
-                    agentApi.logInfo(`Skipping ${id} as already in the relations list`);
+        if (wi.relations) {
+            for (let relIndex = 0; relIndex <  wi.relations.length; relIndex++) {
+                var relation  =  wi.relations[relIndex];
+                if ((relation.attributes.name === "Child") ||
+                    (relation.attributes.name === "Parent")) {
+                    var urlParts = relation.url.split("/");
+                    var id = parseInt(urlParts[urlParts.length - 1]);
+                    if (!relatedWorkItems.find(element => element.hasOwnProperty("id") && element.id === id)) {
+                        agentApi.logInfo(`Add ${relation.attributes.name} WI ${id}`);
+                        relatedWorkItems.push(await (workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null)));
+                    } else {
+                        agentApi.logInfo(`Skipping ${id} as already in the relations list`);
+                    }
                 }
             }
         }
