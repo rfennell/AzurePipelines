@@ -673,6 +673,7 @@ export async function getConsumedArtifactsForBuild(
 ): Promise<[]> {
     return new Promise<[]>(async (resolve, reject) => {
         let consumedArtifacts: [] = [];
+        var result;
         try {
             var payload = {
                 "contributionIds": [
@@ -694,13 +695,22 @@ export async function getConsumedArtifactsForBuild(
                     }
                 }
             };
+
+            tl.debug(`Request payload: ${JSON.stringify(payload)}`);
+
+            var teamProjectEncoded = encodeURIComponent(teamProject);
+            var url = `${tpcUri}/_apis/Contribution/HierarchyQuery/project/${teamProjectEncoded}?api-version=5.1-preview`;
+            tl.debug(`Request URL: ${url}`);
             let response = await restClient.create(
-                `${tpcUri}/_apis/Contribution/HierarchyQuery/project/${teamProject}?api-version=5.1-preview`,
+                url,
                 payload);
-            var result = response.result;
+            tl.debug(`Request response: ${JSON.stringify(response)}`);
+            result = response.result;
+            tl.debug(`Request response.result: ${JSON.stringify(result)}`);
             resolve(response.result["dataProviders"]["ms.vss-build-web.run-consumed-artifacts-data-provider"].consumedSources);
         } catch (err) {
             tl.warning(`Cannot get the details of the consumed artifacts ${err}`);
+            tl.warning(`API call result was ${JSON.stringify(result)}`);
             resolve([]);
         }
     });
