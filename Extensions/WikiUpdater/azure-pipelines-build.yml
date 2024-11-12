@@ -86,7 +86,7 @@ stages:
           extensionRoot: '$(ExtensionRoot)\WikiFolderUpdaterTask'
           taskName: 'WikiFolderUpdaterTaskV3'
 
-      - task: TfxInstaller@3
+      - task: TfxInstaller@4
         displayName: 'Install Tfx Tool'
         inputs:
           version: 'v0.8.x'

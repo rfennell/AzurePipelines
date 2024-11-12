@@ -69,7 +69,7 @@ stages:
           extensionRoot: '$(ExtensionRoot)\WikiPDFExportTask'
           taskName: 'WikiPDFExportTaskV4'
 
-      - task: TfxInstaller@3
+      - task: TfxInstaller@4
         displayName: 'Install Tfx Tool'
         inputs:
           version: 'v0.8.x'

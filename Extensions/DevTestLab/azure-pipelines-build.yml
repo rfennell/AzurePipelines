@@ -41,7 +41,7 @@ stages:
           rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
           targetFiles: '**\\task.json'
 
-      - task: TfxInstaller@3
+      - task: TfxInstaller@4
         displayName: 'Install Tfx Tool'
         inputs:
           version: 'v0.8.x'
