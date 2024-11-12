@@ -113,7 +113,7 @@ steps:
         {{/forEach}}
         {{/forEach}}
 
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater'
     inputs:
       repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
@@ -234,7 +234,7 @@ steps:
         {{/forEach}}
         {{/forEach}}
   
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater'
     inputs:
       repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
@@ -294,7 +294,7 @@ steps:
           -  **Message:** {{this.message}}
           -  **Commited by:** {{this.author.displayName}}
         {{/forEach}}
-  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@1
+  - task: richardfennellBM.BM-VSTS-WIKIUpdater-Tasks-DEV.WikiUpdaterTask.WikiUpdaterTask@3
     displayName: 'Git based WIKI Updater'
     inputs:
       repo: 'https://richardfennell@dev.azure.com/richardfennell/GitHub/_git/GitHub.wiki'
