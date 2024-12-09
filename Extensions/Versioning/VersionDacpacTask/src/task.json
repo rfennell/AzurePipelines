@@ -96,6 +96,15 @@
       "required": true,
       "helpMarkDown": "The actual version number extracted and used from the build number.",
       "groupName":"output"
+    },
+    {
+      "name": "SkipDacPac",
+      "type": "boolean",
+      "label": "Skip DACPAC files",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "Skip checking for DACPAC files, only consider .SQLPROJ files",
+      "groupName":"advanced"
     }
 
 
