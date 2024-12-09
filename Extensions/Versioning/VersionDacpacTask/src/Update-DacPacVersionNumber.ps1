@@ -211,6 +211,7 @@ $VersionRegex = Get-VstsInput -Name "VersionRegex"
 $outputversion = Get-VstsInput -Name "outputversion"
 $VSVersion = Get-VstsInput -Name "VSVersion"
 $SDKVersion = Get-VstsInput -Name "SDKVersion"
+$SkipDacPac = [System.Convert]::ToBoolean(Get-VstsInput -Name "SkipDacPac")
 
 
 # check if we are in test mode i.e.
@@ -246,7 +247,7 @@ $ToolPath = Get-Toolpath -ToolPath $ToolPath -VSVersion $VSVersion -SDKVersion $
 
 $DacPacFiles = Get-ChildItem -Path $Path -Include *.dacpac -Exclude master.dacpac, msdb.dacpac -Recurse
 
-if ($DacPacFiles.Count -gt 0) {
+if (($DacPacFiles.Count -gt 0) -and ($SkipDacPac -eq $false)) {
     Write-Verbose "Found $($DacPacFiles.Count) dacpacs. Beginning to apply updated version number $NewVersion." -Verbose
 
     Foreach ($DacPac in $DacPacFiles) {
@@ -254,7 +255,7 @@ if ($DacPacFiles.Count -gt 0) {
     }
 }
 else {
-    Write-Verbose "Found no dacpacs, checking for sqlproj files to version instead" -Verbose
+    Write-Verbose "Found no dacpacs or SkipDacPac parameter is set, checking for sqlproj files to version instead" -Verbose
     $SqlProjFiles = Get-ChildItem -Path $Path -Include *.sqlproj -Recurse
 
     if ($SqlProjFiles) {
