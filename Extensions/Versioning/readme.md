@@ -45,6 +45,7 @@ The DACPAC versioner also takes the following Advanced option
 * ToolPath: The path to the folder containing the files Microsoft.SqlServer.Dac.dll and Microsoft.SqlServer.Dac.Extensions.dll. This should be used if these files are not in the default location and hence cannot be found by the task. This value takes precedence over the automated means of finding the DLL
 * VSVersion: A filter for the Visual Studio version to scan for the SQL DAC SDK e.g 2017, 2015, 2022. if not set will scan for all versions and the newest used.
 * SDKVersion: A filter for the SQL DAC SDK e.g 130, 150. if not set will scan for all versions and the newest used.
+* SkipDacPac: Skip checking for DACPAC files, only consider .SQLPROJ files (default false)
 
 The VSIX versioner also takes the following parameters
 

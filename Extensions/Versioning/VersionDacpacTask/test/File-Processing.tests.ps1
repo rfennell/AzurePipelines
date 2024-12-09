@@ -9,6 +9,7 @@ Describe "Issue 603 - Encoding of SQLproj files" {
         Mock Get-VstsInput -ParameterFilter {$Name -eq "InjectVersion"} {return ""}
         Mock Get-VstsInput -ParameterFilter {$Name -eq "VersionRegex"} {return ""}
         Mock Get-VstsInput -ParameterFilter {$Name -eq "outputversion"} {return ""}
+        Mock Get-VstsInput -ParameterFilter {$Name -eq "SkipDacPac"} {return "true"}
         
         # Load the script under test
         import-module "$PSScriptRoot\..\src\Update-DacPacVersionNumber.ps1"
