@@ -27,6 +27,7 @@ $VersionNumber = Get-VstsInput -Name "VersionNumber"
 $InjectVersion = Get-VstsInput -Name "InjectVersion"
 $VersionRegex = Get-VstsInput -Name "VersionRegex"
 $outputversion = Get-VstsInput -Name "outputversion"
+$recurse = Get-VstsInput -Name "recurse"
 
 $VersionNumber,$Prerelease = $VersionNumber -split '-' -replace '"' -replace "'"
 # Get and validate the version data
@@ -71,10 +72,17 @@ Write-Verbose -Message "Loading Configuration module shipped with tasks"
 Import-Module "$PSScriptRoot\Configuration\1.5.0\Configuration.psd1" -force
 $Null = Get-Command -Module Configuration
 
-Write-Verbose -Message "Finding all the module psd1 files in the specified path"
-$ModuleFiles = Get-ChildItem -Path $Path -Filter *.psd1 -Recurse |
-    Select-String -Pattern 'RootModule' |
-    Select-Object -ExpandProperty Path -Unique
+if ([System.Convert]::ToBoolean($recurse)) {
+    Write-Verbose -Message "Finding all the module psd1 files in the specified path recursively"
+    $ModuleFiles = Get-ChildItem -Path $Path -Filter *.psd1 -Recurse |
+        Select-String -Pattern 'RootModule' |
+        Select-Object -ExpandProperty Path -Unique
+} else {
+    Write-Verbose -Message "Finding all the module psd1 files in the specified path only"
+    $ModuleFiles = Get-ChildItem -Path $Path -Filter *.psd1 |
+        Select-String -Pattern 'RootModule' |
+        Select-Object -ExpandProperty Path -Unique
+}
 
 Write-Verbose "Found $($ModuleFiles.Count) modules. Beginning to apply updated version number $VersionNumber."
 

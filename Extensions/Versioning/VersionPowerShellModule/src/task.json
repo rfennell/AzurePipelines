@@ -52,6 +52,15 @@
          "groupName":"advanced"
        },
        {
+         "name": "recurse",
+         "type": "boolean",
+         "label": "Recursive Search",
+         "defaultValue": "True",
+         "required": false,
+         "helpMarkDown": "Recurse when searching for PSD1 files",
+         "groupName":"advanced"
+       },
+       {
        "name": "VersionRegex",
        "type": "string",
        "label": "Regex Filter",
