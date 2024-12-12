@@ -48,6 +48,7 @@ stages:
           scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionDacpacTask\test'
           resultsFile: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
           run32Bit: false
+          preferredPesterVersion: '4.10.1'
         continueOnError: true
 
       - task: PublishTestResults@2
