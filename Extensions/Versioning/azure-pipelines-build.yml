@@ -42,12 +42,14 @@ stages:
           rootDirectory: '$(Build.SourcesDirectory)/$(ExtensionRoot)'
           targetFiles: '**\\task.json'
 
-      - task: Pester.PesterRunner.Pester-Task.Pester@10
+      - task: Pester.PesterRunner.Pester-Task.Pester@9
         displayName: 'DACPac Versioning Pester Test Runner'
         inputs:
           scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionDacpacTask\test'
           resultsFile: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
           run32Bit: false
+          PesterVersion: 'OtherVersion'
+          preferredPesterVersion: '4.10.1'
         continueOnError: true
 
       - task: PublishTestResults@2
@@ -57,12 +59,14 @@ stages:
           testResultsFiles: '$(Build.SourcesDirectory)\Test-VersionDacpacTaskPester.XML'
           testRunTitle: 'DACPac Pester Tests'
 
-      - task: Pester.PesterRunner.Pester-Task.Pester@10
+      - task: Pester.PesterRunner.Pester-Task.Pester@9
         displayName: 'PowerShellModule Versioning Tests'
         inputs:
           scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionPowerShellModule\test'
           resultsFile: '$(Build.SourcesDirectory)\Test-VersionPowerShellTaskPester.XML'
           run32Bit: false
+          PesterVersion: 'OtherVersion'
+          preferredPesterVersion: '4.10.1'
 
       - task: PublishTestResults@2
         displayName: 'Publish Test Results $(Build.SourcesDirectory)\Test-VersionPowerShellTaskPester.XML'
