@@ -64,6 +64,7 @@ stages:
           scriptFolder: '$(Build.SourcesDirectory)\$(ExtensionRoot)\VersionPowerShellModule\test'
           resultsFile: '$(Build.SourcesDirectory)\Test-VersionPowerShellTaskPester.XML'
           run32Bit: false
+          preferredPesterVersion: '4.10.1'
 
       - task: PublishTestResults@2
         displayName: 'Publish Test Results $(Build.SourcesDirectory)\Test-VersionPowerShellTaskPester.XML'
