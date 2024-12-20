@@ -240,29 +240,27 @@ else {
 }
 Write-Verbose "Version: $NewVersion"
 
-
-$ToolPath = Get-Toolpath -ToolPath $ToolPath -VSVersion $VSVersion -SDKVersion $SDKVersion
-
-
+Write-Host "Scanning for DACPAC files under $PATH." -Verbose
 $DacPacFiles = Get-ChildItem -Path $Path -Include *.dacpac -Exclude master.dacpac, msdb.dacpac -Recurse
 Write-Host "Found $($DacPacFiles.Count) DACPAC files." -Verbose
 
 if (($DacPacFiles.Count -gt 0) -and ([System.Convert]::ToBoolean($SkipDacPac) -eq $false)) {
+    Write-Host "Finding DACPAC Tools to process the $($DacPacFiles.Count) DACPAC files." -Verbose
+    $ToolPath = Get-Toolpath -ToolPath $ToolPath -VSVersion $VSVersion -SDKVersion $SDKVersion
+    
     Write-Host "Apply updated version number $NewVersion to each DACPAC file." -Verbose
-
     Foreach ($DacPac in $DacPacFiles) {
         Update-DacpacVerion -Path $DacPac.FullName -VersionNumber ([System.Version]::Parse($NewVersion)) -ToolPath $ToolPath
     }
 }
 else {
-    Write-Host "Found no DACPAC files, or SkipDacPac parameter is set. Checking for sqlproj files to version instead" -Verbose
+    Write-Host "Found no DACPAC files, or SkipDacPac parameter is set. Checking for .SQLPROJ files to version instead" -Verbose
     $SqlProjFiles = Get-ChildItem -Path $Path -Include *.sqlproj -Recurse
 
     if ($SqlProjFiles) {
         Write-Host "Found $($SqlProjFiles.Count) sqlproj files. Adding or updating DacVersion field." -Verbose
-
         foreach ($SqlProj in $SqlProjFiles) {
-            Write-Host "Updating $($SqlProj.Basename) SQL Proj file."
+            Write-Host "Updating $($SqlProj.Basename) .SQLProj file."
             Update-SqlProjVersion -Path $SqlProj.Fullname -VersionNumber ([System.Version]::Parse($NewVersion)) -RegexPattern $VersionRegex
         }
     }
