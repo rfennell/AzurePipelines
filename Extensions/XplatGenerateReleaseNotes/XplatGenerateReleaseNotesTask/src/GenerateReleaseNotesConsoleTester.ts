@@ -91,6 +91,7 @@ async function run(): Promise<number> {
           var getTestedBy: boolean = getBoolean(settings.getTestedBy, true);
           var wiqlFromTarget: string = settings.wiqlFromTarget || "WorkItems";
           var wiqlSharedQueryName: string = settings.wiqlSharedQueryName || "";
+          var matchPRsByMergeCommit: boolean = getBoolean(settings.matchPRsByMergeCommit, false);
 
           if (payloadFile && payloadFile.length > 0 && fs.existsSync(payloadFile)) {
             console.log(`Running the tester against a local payload JSON file`);
@@ -183,7 +184,8 @@ async function run(): Promise<number> {
               getPRDetailsRefName,
               getTestedBy,
               wiqlFromTarget,
-              wiqlSharedQueryName);
+              wiqlSharedQueryName,
+              matchPRsByMergeCommit);
           }
 
         } else {
