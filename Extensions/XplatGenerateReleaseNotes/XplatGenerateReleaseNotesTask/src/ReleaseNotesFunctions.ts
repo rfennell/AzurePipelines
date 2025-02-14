@@ -414,7 +414,7 @@ export async function enrichPullRequest(
         try {
             for (let prIndex = 0; prIndex < pullRequests.length; prIndex++) {
                 const prDetails = pullRequests[prIndex];
-                agentApi.logDebug(`Enriching PR ${prDetails.pullRequestId}`);
+                agentApi.logDebug(`Enriching PR ${prDetails.pullRequestId} for repository ${prDetails.repository.name}`);
                 // issue1512 the API call that gets the batch of PRs does not return the whole description, so we need to get each one individually
                 const pr = await gitApi.getPullRequestById(prDetails.pullRequestId);
                 prDetails.description = pr.description;
@@ -2098,7 +2098,7 @@ export async function generateReleaseNotes(
                                     allPullRequests.forEach(pr => {
                                         if (pr.lastMergeCommit) {
                                             if (pr.lastMergeCommit.commitId === commit.id) {
-                                                agentApi.logInfo(`- PR ${pr.pullRequestId} matches the commit ${commit.id}`);
+                                                agentApi.logInfo(`- PR ${pr.pullRequestId}  for repository ${pr.repository.name} matches the commit ${commit.id}`);
                                                 globalPullRequests.push(<EnrichedGitPullRequest>pr);
                                             }
                                         } else {
@@ -2111,7 +2111,7 @@ export async function generateReleaseNotes(
                                 }
                             });
                         } else {
-                            agentApi.logInfo(`Appempting to match PRs using commit associated with the PR, will scan ${allPullRequests.length} PRs`);
+                            agentApi.logInfo(`Attempting to match PRs using commit associated with the PR, will scan ${allPullRequests.length} PRs`);
                             agentApi.logInfo("WARNING: This can be very slow process as all PRs in scope have to individually checked");
                             // enrich the PRs with the details of the commits and work items
                             let enrichedPullRequests = allPullRequests.map(pr => ({
@@ -2126,7 +2126,7 @@ export async function generateReleaseNotes(
                                     agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
                                     enrichedPullRequests.forEach(pr => {
                                         if (pr.associatedCommits.find(c => c.commitId === commit.id)) {
-                                            agentApi.logInfo(`- PR ${pr.pullRequestId} matches the commit ${commit.id}`);
+                                            agentApi.logInfo(`- PR ${pr.pullRequestId} for repository ${pr.repository.name} matches the commit ${commit.id}`);
                                             globalPullRequests.push(<EnrichedGitPullRequest>pr);
                                         }
                                     });
