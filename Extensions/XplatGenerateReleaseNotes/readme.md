@@ -405,6 +405,7 @@ The task takes the following parameters
 | getPRDetails | If true all PRs in the project, or organisation, will be scanned for associations. There is an option to disable this feature as this scan is slow and not always required, but `getPRDetailsRepositoryId` and `getPRDetailsRefName` can be used to constrain search space.  (Default true)  |
 | getPRDetailsRepositoryId | Helps improving performance during Get PR details step by filtering only the PRs of specific Azure DevOps Git repo (Default to not set i.e. search all repos) |
 | getPRDetailsRefName | Helps improving performance during Get PR details step by filtering only the PRs merged into specified branch e.g. refs/heads/main (Default to not set i.e. search all branches)|
+| matchPRsByMergeCommit | If true, matches PRs using only Merge Commit IDs, if false matches PRs using any Commit IDs. WARNING: Setting this value to false can make the release notes generation very slow process as all PRs in scope have to individually checked (Default true)|
 | getTestedBy | If true any Test Case WIs linked to associated WIs by a `Tested By` relation will be added to the `testedByWorkItems` array (Default true) |
 # Output location
 

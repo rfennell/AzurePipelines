@@ -425,6 +425,15 @@
       "groupName":"advanced"
     },
     {
+      "name": "matchPRsByMergeCommit",
+      "type": "boolean",
+      "label": "Match PRs using Merge Commit IDs",
+      "defaultValue": "true",
+      "required": false,
+      "helpMarkDown": "If true, matches PRs using only Merge Commit IDs, if false matches PRs using any Commit IDs (Default true)",
+      "groupName":"advanced"
+    },
+    {
       "name": "getTestedBy",
       "type": "boolean",
       "label": "Find Tests associated to WI",

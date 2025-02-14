@@ -37,6 +37,7 @@
     "getIndirectPullRequests": "false",
     "considerPartiallySuccessfulReleases": "false",
     "checkForManuallyLinkedWI": "false",
+    "matchPRsByMergeCommit": "true",
 
     "wiqlWhereClause": "",
     "getPRDetails": "true",

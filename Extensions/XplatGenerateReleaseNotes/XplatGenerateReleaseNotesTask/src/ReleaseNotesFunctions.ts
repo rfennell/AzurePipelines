@@ -27,7 +27,7 @@ export class UnifiedArtifactDetails {
     relatedworkitems: WorkItem[];
     tests: TestCaseResult[];
     manualtests: EnrichedTestRun[];
-    constructor ( build: Build, commits: Change[], workitems: WorkItem[], tests: TestCaseResult[], manualtests: EnrichedTestRun[], relatedworkitems: WorkItem[]) {
+    constructor(build: Build, commits: Change[], workitems: WorkItem[], tests: TestCaseResult[], manualtests: EnrichedTestRun[], relatedworkitems: WorkItem[]) {
         this.build = build;
         if (commits) {
             this.commits = commits;
@@ -54,7 +54,7 @@ export class UnifiedArtifactDetails {
         } else {
             this.manualtests = [];
         }
-   }
+    }
 }
 
 import { ClientApiBase } from "azure-devops-node-api/ClientApiBases";
@@ -68,7 +68,7 @@ import { IAgentSpecificApi, AgentSpecificApi } from "./agentSpecific";
 import { IReleaseApi } from "azure-devops-node-api/ReleaseApi";
 import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 import * as webApi from "azure-devops-node-api/WebApi";
-import fs  = require("fs");
+import fs = require("fs");
 import { Build, Change, Timeline, TimelineRecord, BuildArtifact } from "azure-devops-node-api/interfaces/BuildInterfaces";
 import { IGitApi, GitApi } from "azure-devops-node-api/GitApi";
 import { ResourceRef } from "azure-devops-node-api/interfaces/common/VSSInterfaces";
@@ -91,7 +91,7 @@ import { Exception } from "handlebars";
 import { IdentityDisplayFormat } from "azure-devops-node-api/interfaces/WorkInterfaces";
 
 process.on("uncaughtException", (error) => {
-  console.error("Uncaught Exception:", error);
+    console.error("Uncaught Exception:", error);
 });
 
 let agentApi = new AgentSpecificApi();
@@ -156,8 +156,8 @@ export async function restoreAzurePipelineArtifactsBuildInfo(artifactsInRelease:
             agentApi.logInfo(`The artifact [${artifactInRelease.artifactAlias}] is an Azure Artifacts, expanding build details`);
             existAzurePipelineArtifacts = true;
             // FIXME #937: workaround for missing PackagingApi library. Should replace with `const packagingApi = await organisation.getPackagingApi();` when available
-            interface PackagingPackage { id: string; string; url: string; versions: {id: string; normalizedVersion: string}[]; }
-            interface PackagingVersionProvenance { TeamProjectId: string; provenance: {data: {"System.DefinitionId": string; "System.TeamProjectId": string; "Build.BuildId": string; "Build.BuildNumber": string}}; }
+            interface PackagingPackage { id: string; string; url: string; versions: { id: string; normalizedVersion: string }[]; }
+            interface PackagingVersionProvenance { TeamProjectId: string; provenance: { data: { "System.DefinitionId": string; "System.TeamProjectId": string; "Build.BuildId": string; "Build.BuildNumber": string } }; }
             interface IPackagingApi {
                 getPackage(project: string, feedId: string, packageId: string, includeAllVersions?: boolean): Promise<PackagingPackage>;
                 getPackageVersionProvenance(project: string, feedId: string, packageId: string, packageVersionId: string): Promise<PackagingVersionProvenance>;
@@ -167,8 +167,8 @@ export async function restoreAzurePipelineArtifactsBuildInfo(artifactsInRelease:
                 public static readonly RESOURCE_AREA_ID = "7ab4e64e-c4d8-4f50-ae73-5ef2e21642a5";
                 public async getPackage(project: string, feedId: string, packageId: string, includeAllVersions?: boolean): Promise<PackagingPackage> {
                     return new Promise<PackagingPackage>(async (resolve, reject) => {
-                        let routeValues: any = {project: project, feedId: feedId, packageId: packageId};
-                        let queryValues: any = {includeAllVersions: includeAllVersions};
+                        let routeValues: any = { project: project, feedId: feedId, packageId: packageId };
+                        let queryValues: any = { includeAllVersions: includeAllVersions };
                         try {
                             let verData: vsom.ClientVersioningData = await this.vsoClient.getVersioningData("6.1-preview.1", "Packaging", "7a20d846-c929-4acc-9ea2-0d5a7df1b197", routeValues, queryValues);
                             let res = await this.rest.get<PackagingPackage[]>(verData.requestUrl!, this.createRequestOptions("application/json", verData.apiVersion));
@@ -197,7 +197,7 @@ export async function restoreAzurePipelineArtifactsBuildInfo(artifactsInRelease:
                 }
             };
             // const packagingApi = await organisation.getPackagingApi();
-            const packagingApi = await(async (serverUrl?: string, handlers?: IRequestHandler[]): Promise<IPackagingApi> => {
+            const packagingApi = await (async (serverUrl?: string, handlers?: IRequestHandler[]): Promise<IPackagingApi> => {
                 const this_ = webApi as any;
                 serverUrl = await this_._getResourceAreaUrl(serverUrl || this_.serverUrl, PackagingApi.RESOURCE_AREA_ID);
                 handlers = handlers || [this_.authHandler];
@@ -209,11 +209,11 @@ export async function restoreAzurePipelineArtifactsBuildInfo(artifactsInRelease:
                 const [projectId, feedId] = [guids[1], guids[2]];
                 const [packageId, packageVersion] = [artifactInRelease.buildDefinitionId, artifactInRelease.buildNumber];
                 const artifactPackageInfo = await packagingApi.getPackage(projectId, feedId, packageId, true);
-                const packageVersionId = (artifactPackageInfo.versions.find((version) => version.normalizedVersion === packageVersion) || {id: ""}).id;
+                const packageVersionId = (artifactPackageInfo.versions.find((version) => version.normalizedVersion === packageVersion) || { id: "" }).id;
                 const artifactBuildInfo = await packagingApi.getPackageVersionProvenance(projectId, feedId, packageId, packageVersionId);
                 if (!artifactBuildInfo.provenance.data["Build.BuildId"]) {
-                agentApi.logInfo(`No build ID found for Azure Artifact [${artifactInRelease.artifactAlias}]. Skipping this artifact.`);
-                continue; // Guard clause for missing build ID
+                    agentApi.logInfo(`No build ID found for Azure Artifact [${artifactInRelease.artifactAlias}]. Skipping this artifact.`);
+                    continue; // Guard clause for missing build ID
                 }
                 Object.assign(artifactInRelease, {
                     artifactType: "Build",
@@ -233,7 +233,7 @@ export async function getPullRequests(
     projectName: string,
     repositoryId?: string,
     targetRefName?: string
-    ): Promise<GitPullRequest[]> {
+): Promise<GitPullRequest[]> {
     return new Promise<GitPullRequest[]>(async (resolve, reject) => {
         let prList: GitPullRequest[] = [];
         try {
@@ -251,7 +251,7 @@ export async function getPullRequests(
             var skip: number = 0;
             do {
                 agentApi.logDebug(`Get batch of PRs [${skip}] - [${skip + batchSize}]`);
-                var prListBatch = await (gitApi.getPullRequestsByProject( projectName, filter, 0 , skip, batchSize));
+                var prListBatch = await (gitApi.getPullRequestsByProject(projectName, filter, 0, skip, batchSize));
                 agentApi.logDebug(`Adding batch of ${prListBatch.length} PRs`);
                 prList.push(...prListBatch);
                 skip += batchSize;
@@ -275,14 +275,14 @@ export async function getMostRecentSuccessfulDeployment(
         let mostRecentDeployment: Deployment = null;
         try {
             // Gets the latest successful deployments - the api returns the deployments in the correct order
-            agentApi.logInfo (`Finding successful deployments`);
+            agentApi.logInfo(`Finding successful deployments`);
             var successfulDeployments = await releaseApi.getDeployments(teamProject, releaseDefinitionId, environmentId, null, null, null, DeploymentStatus.Succeeded, null, true, null, null, null, null).catch((reason) => {
                 reject(reason);
                 return;
             });
 
             if (considerPartiallySuccessfulReleases === true) {
-                agentApi.logInfo (`Finding partially successful deployments`);
+                agentApi.logInfo(`Finding partially successful deployments`);
                 var partialSuccessfulDeployments = await releaseApi.getDeployments(teamProject, releaseDefinitionId, environmentId, null, null, null, DeploymentStatus.PartiallySucceeded, null, true, null, null, null, null).catch((reason) => {
                     reject(reason);
                     return;
@@ -291,38 +291,38 @@ export async function getMostRecentSuccessfulDeployment(
                 // merge the arrays
                 if (successfulDeployments && successfulDeployments.length > 0) {
                     if (partialSuccessfulDeployments && partialSuccessfulDeployments.length > 0) {
-                        agentApi.logInfo (`Merging and sorting successful and partially successful deployments`);
+                        agentApi.logInfo(`Merging and sorting successful and partially successful deployments`);
                         successfulDeployments.push(...partialSuccessfulDeployments);
                         successfulDeployments.sort((a, b) => { if (a && b) { return b.id - a.id; } return 0; });
                     } else {
-                        agentApi.logInfo (`No partially successful deployments to consider only using successful deployments`);
+                        agentApi.logInfo(`No partially successful deployments to consider only using successful deployments`);
                     }
                 } else {
-                    agentApi.logInfo (`No successful deployments using partially successful deployments`);
+                    agentApi.logInfo(`No successful deployments using partially successful deployments`);
                     successfulDeployments = partialSuccessfulDeployments;
                 }
 
             }
 
             if (successfulDeployments && successfulDeployments.length > 0) {
-                agentApi.logInfo (`Found ${successfulDeployments.length} releases to consider`);
+                agentApi.logInfo(`Found ${successfulDeployments.length} releases to consider`);
                 successfulDeployments.forEach(deployment => {
-                    agentApi.logDebug (`Found DeploymentId ${deployment.id} with ReleaseID ${deployment.release.id} with the Deployment Status ${deployment.deploymentStatus}`);
+                    agentApi.logDebug(`Found DeploymentId ${deployment.id} with ReleaseID ${deployment.release.id} with the Deployment Status ${deployment.deploymentStatus}`);
                 });
 
                 if (overrideBuildReleaseId && !isNaN(parseInt(overrideBuildReleaseId))) {
-                    agentApi.logInfo (`Trying to find successful deployment with the override release ID of '${overrideBuildReleaseId}'`);
-                    mostRecentDeployment = successfulDeployments.find (element => element.release.id === parseInt(overrideBuildReleaseId));
+                    agentApi.logInfo(`Trying to find successful deployment with the override release ID of '${overrideBuildReleaseId}'`);
+                    mostRecentDeployment = successfulDeployments.find(element => element.release.id === parseInt(overrideBuildReleaseId));
                     if (mostRecentDeployment) {
-                        agentApi.logInfo (`Found matching override release ${mostRecentDeployment.release.name}`);
+                        agentApi.logInfo(`Found matching override release ${mostRecentDeployment.release.name}`);
                     } else {
-                        agentApi.logError (`Cannot find matching release`);
+                        agentApi.logError(`Cannot find matching release`);
                         reject(-1);
                         return;
                     }
                 } else {
                     mostRecentDeployment = successfulDeployments[0];
-                    agentApi.logInfo (`Finding the last successful release ${mostRecentDeployment.release.name}`);
+                    agentApi.logInfo(`Finding the last successful release ${mostRecentDeployment.release.name}`);
                 }
             } else {
                 // There have been no recent successful deployments
@@ -336,73 +336,73 @@ export async function getMostRecentSuccessfulDeployment(
 
 export async function expandTruncatedCommitMessages(restClient: WebApi, globalCommits: Change[], gitHubPat: string, bitbucketUser: string, bitbucketSecret: string): Promise<Change[]> {
     return new Promise<Change[]>(async (resolve, reject) => {
-            var expanded: number = 0;
-            agentApi.logInfo(`Expanding the truncated commit messages...`);
-            for (var change of globalCommits) {
-                if (change.messageTruncated) {
-                    try {
-                        agentApi.logDebug(`Expanding commit [${change.id}]`);
-                        let res: restm.IRestResponse<GitCommit>;
-                        if (change.location.startsWith("https://api.github.com/")) {
-                            agentApi.logDebug(`Need to expand details from GitHub`);
-                            // we build PAT auth object even if we have no token
-                            // this will still allow access to public repos
-                            // if we have a token it will allow access to private ones
-                            let auth = new PersonalAccessTokenCredentialHandler(gitHubPat);
+        var expanded: number = 0;
+        agentApi.logInfo(`Expanding the truncated commit messages...`);
+        for (var change of globalCommits) {
+            if (change.messageTruncated) {
+                try {
+                    agentApi.logDebug(`Expanding commit [${change.id}]`);
+                    let res: restm.IRestResponse<GitCommit>;
+                    if (change.location.startsWith("https://api.github.com/")) {
+                        agentApi.logDebug(`Need to expand details from GitHub`);
+                        // we build PAT auth object even if we have no token
+                        // this will still allow access to public repos
+                        // if we have a token it will allow access to private ones
+                        let auth = new PersonalAccessTokenCredentialHandler(gitHubPat);
 
-                            let rc = new restm.RestClient("rest-client", "", [auth], {});
-                            let gitHubRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
-                            if (gitHubRes.statusCode === 200) {
-                                change.message = gitHubRes.result.commit.message;
-                                change.messageTruncated = false;
-                                expanded++;
-                            } else {
-                                agentApi.logWarn(`Cannot access API ${gitHubRes.statusCode} accessing ${change.location}`);
-                                agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
-                            }
-                        } else if (change.location.startsWith("https://api.bitbucket.org/")) {
-                                agentApi.logDebug(`Need to expand details from BitBucket`);
-                                // we build PAT auth object even if we have no token
-                                // this will still allow access to public repos
-                                // if we have a token it will allow access to private ones
-                                let rc = new restm.RestClient("rest-client");
-                                if (bitbucketUser && bitbucketUser.length > 0 && bitbucketSecret && bitbucketSecret.length > 0 ) {
-                                    let auth = new BasicCredentialHandler(bitbucketUser, bitbucketSecret);
-                                    rc = new restm.RestClient("rest-client", "", [auth], {});
-                                } else {
-                                    agentApi.logInfo(`No Bitbucket user and app secret passed so cannot access private Bitbucket repos`);
-                                }
-
-                                let bitbucketRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
-                                if (bitbucketRes.statusCode === 200) {
-                                    change.message = bitbucketRes.result.message;
-                                    change.messageTruncated = false;
-                                    expanded++;
-                                } else {
-                                    agentApi.logWarn(`Cannot access API ${bitbucketRes.statusCode} accessing ${change.location}`);
-                                    agentApi.logWarn(`The most common reason for this failure is that the Bitbucket Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
-                                }
+                        let rc = new restm.RestClient("rest-client", "", [auth], {});
+                        let gitHubRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
+                        if (gitHubRes.statusCode === 200) {
+                            change.message = gitHubRes.result.commit.message;
+                            change.messageTruncated = false;
+                            expanded++;
                         } else {
-                            agentApi.logDebug(`Need to expand details from Azure DevOps`);
-                            // the REST client is already authorised with the agent token
-                            let vstsRes = await restClient.rest.get<GitCommit>(change.location);
-                            if (vstsRes.statusCode === 200) {
-                                change.message = vstsRes.result.comment;
-                                change.messageTruncated = false;
-                                expanded++;
-                            } else {
-                                agentApi.logWarn(`Cannot access API ${vstsRes.statusCode} accessing ${change.location}`);
-                                agentApi.logWarn(`The most common reason for this failure is that the account defined by the agent access token does not  have rights to read the required repo`);
-                            }
+                            agentApi.logWarn(`Cannot access API ${gitHubRes.statusCode} accessing ${change.location}`);
+                            agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
                         }
-                    } catch (err) {
-                        agentApi.logWarn(`Cannot expand message ${err}`);
-                        agentApi.logWarn(`Using ${change.location}`);
+                    } else if (change.location.startsWith("https://api.bitbucket.org/")) {
+                        agentApi.logDebug(`Need to expand details from BitBucket`);
+                        // we build PAT auth object even if we have no token
+                        // this will still allow access to public repos
+                        // if we have a token it will allow access to private ones
+                        let rc = new restm.RestClient("rest-client");
+                        if (bitbucketUser && bitbucketUser.length > 0 && bitbucketSecret && bitbucketSecret.length > 0) {
+                            let auth = new BasicCredentialHandler(bitbucketUser, bitbucketSecret);
+                            rc = new restm.RestClient("rest-client", "", [auth], {});
+                        } else {
+                            agentApi.logInfo(`No Bitbucket user and app secret passed so cannot access private Bitbucket repos`);
+                        }
+
+                        let bitbucketRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
+                        if (bitbucketRes.statusCode === 200) {
+                            change.message = bitbucketRes.result.message;
+                            change.messageTruncated = false;
+                            expanded++;
+                        } else {
+                            agentApi.logWarn(`Cannot access API ${bitbucketRes.statusCode} accessing ${change.location}`);
+                            agentApi.logWarn(`The most common reason for this failure is that the Bitbucket Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
+                        }
+                    } else {
+                        agentApi.logDebug(`Need to expand details from Azure DevOps`);
+                        // the REST client is already authorised with the agent token
+                        let vstsRes = await restClient.rest.get<GitCommit>(change.location);
+                        if (vstsRes.statusCode === 200) {
+                            change.message = vstsRes.result.comment;
+                            change.messageTruncated = false;
+                            expanded++;
+                        } else {
+                            agentApi.logWarn(`Cannot access API ${vstsRes.statusCode} accessing ${change.location}`);
+                            agentApi.logWarn(`The most common reason for this failure is that the account defined by the agent access token does not  have rights to read the required repo`);
+                        }
                     }
+                } catch (err) {
+                    agentApi.logWarn(`Cannot expand message ${err}`);
+                    agentApi.logWarn(`Using ${change.location}`);
                 }
             }
-            agentApi.logInfo(`Expanded truncated commit messages ${expanded}`);
-            resolve(globalCommits);
+        }
+        agentApi.logInfo(`Expanded truncated commit messages ${expanded}`);
+        resolve(globalCommits);
     });
 }
 
@@ -414,12 +414,13 @@ export async function enrichPullRequest(
         try {
             for (let prIndex = 0; prIndex < pullRequests.length; prIndex++) {
                 const prDetails = pullRequests[prIndex];
+                agentApi.logDebug(`Enriching PR ${prDetails.pullRequestId} for repository ${prDetails.repository.name}`);
                 // issue1512 the API call that gets the batch of PRs does not return the whole description, so we need to get each one individually
                 const pr = await gitApi.getPullRequestById(prDetails.pullRequestId);
                 prDetails.description = pr.description;
                 // get any missing labels for all the known PRs we are interested in as getPullRequestById does not populate labels, so get those as well
-                if (!prDetails.labels || prDetails.labels.length === 0 ) {
-                    agentApi.logDebug(`Checking for tags for ${prDetails.pullRequestId}`);
+                if (!prDetails.labels || prDetails.labels.length === 0) {
+                    agentApi.logDebug(`  Checking for tags`);
                     const prLabels = await (gitApi.getPullRequestLabels(prDetails.repository.id, prDetails.pullRequestId));
                     prDetails.labels = prLabels;
                 }
@@ -430,15 +431,15 @@ export async function enrichPullRequest(
                         id: parseInt(wi.id),
                         url: wi.url
                     };
-                }) ;
-                agentApi.logDebug(`Added ${prDetails.associatedWorkitems.length} work items for ${prDetails.pullRequestId}`);
+                });
+                agentApi.logDebug(`  Added ${prDetails.associatedWorkitems.length} work items`);
 
                 prDetails.associatedCommits = [];
                 var csRefs = await (gitApi.getPullRequestCommits(prDetails.repository.id, prDetails.pullRequestId));
                 for (let csIndex = 0; csIndex < csRefs.length; csIndex++) {
-                    prDetails.associatedCommits.push ( await (gitApi.getCommit(csRefs[csIndex].commitId, prDetails.repository.id)));
+                    prDetails.associatedCommits.push(await (gitApi.getCommit(csRefs[csIndex].commitId, prDetails.repository.id)));
                 }
-                agentApi.logDebug(`Added ${prDetails.associatedCommits.length} commits for ${prDetails.pullRequestId}, note this includes commits on the PR source branch not associated directly with the build`);
+                agentApi.logDebug(`  Added ${prDetails.associatedCommits.length} commits, note this includes commits on the PR source branch not associated directly with the build`);
 
             }
             resolve(pullRequests);
@@ -461,7 +462,7 @@ export async function enrichChangesWithFileDetails(
                 for (let index = 0; index < changes.length; index++) {
                     const change = changes[index];
                     try {
-                        agentApi.logInfo (`Enriched change ${change.id} of type ${change.type}`);
+                        agentApi.logInfo(`Enriched change ${change.id} of type ${change.type}`);
                         if (change.type === "TfsGit") {
                             // we need the repository ID for the API call
                             // the alternative is to take the basic location value and build a rest call from that
@@ -479,14 +480,14 @@ export async function enrichChangesWithFileDetails(
                                     }
                                 }
                                 let gitDetails = await gitApi.getChanges(change.id, repoId);
-                                agentApi.logInfo (`Enriched with details of ${gitDetails.changes.length} files`);
+                                agentApi.logInfo(`Enriched with details of ${gitDetails.changes.length} files`);
                                 extraDetail = gitDetails.changes;
-                            } catch (ex)  {
-                                agentApi.logInfo (`Cannot enriched ${ex}`);
+                            } catch (ex) {
+                                agentApi.logInfo(`Cannot enriched ${ex}`);
                             }
                         } else if (change.type === "TfsVersionControl") {
                             var tfvcDetail = await tfvcApi.getChangesetChanges(parseInt(change.id.substring(1)));
-                            agentApi.logInfo (`Enriched with details of ${tfvcDetail.length} files`);
+                            agentApi.logInfo(`Enriched with details of ${tfvcDetail.length} files`);
                             extraDetail = tfvcDetail;
                         } else if (change.type === "GitHub") {
                             let res: restm.IRestResponse<GitCommit>;
@@ -498,14 +499,14 @@ export async function enrichChangesWithFileDetails(
                             let gitHubRes: any = await rc.get(change.location); // we have to use type any as  there is a type mismatch
                             if (gitHubRes.statusCode === 200) {
                                 var gitHubFiles = gitHubRes.result.files;
-                                agentApi.logInfo (`Enriched with details of ${gitHubFiles.length} files`);
+                                agentApi.logInfo(`Enriched with details of ${gitHubFiles.length} files`);
                                 extraDetail = gitHubFiles;
                             } else {
                                 agentApi.logWarn(`Cannot access API ${gitHubRes.statusCode} accessing ${change.location}`);
                                 agentApi.logWarn(`The most common reason for this failure is that the GitHub Repo is private and a Personal Access Token giving read access needs to be passed as a parameter to this task`);
                             }
                         } else if (change.type === "Bitbucket") {
-                                agentApi.logWarn(`This task does not currently support getting file details associated to a commit on Bitbucket`);
+                            agentApi.logWarn(`This task does not currently support getting file details associated to a commit on Bitbucket`);
                         } else {
                             agentApi.logWarn(`Cannot preform enrichment as type ${change.type} is not supported for enrichment`);
                         }
@@ -515,7 +516,7 @@ export async function enrichChangesWithFileDetails(
                     }
                 }
             } else {
-               changes = [];
+                changes = [];
             }
             resolve(changes);
         } catch (err) {
@@ -526,7 +527,7 @@ export async function enrichChangesWithFileDetails(
 
 // Gets the credential handler.  Supports both PAT and OAuth tokens
 export function getCredentialHandler(pat: string, accessToken: string): IRequestHandler {
-    if ( !(!accessToken || accessToken.length === 0) || (!pat || pat.length === 0)) {
+    if (!(!accessToken || accessToken.length === 0) || (!pat || pat.length === 0)) {
         // no pat passed so we need the system token
         agentApi.logDebug("Getting System.AccessToken");
 
@@ -560,7 +561,7 @@ export async function getTestsForBuild(
         try {
             let buildTestResults = await (testAPI.getTestResultsByBuild(teamProject, buildId));
             tl.debug(`Found ${buildTestResults.length} automated test results associated with the build`);
-            if ( buildTestResults.length > 0 ) {
+            if (buildTestResults.length > 0) {
                 for (let index = 0; index < buildTestResults.length; index++) {
                     const test = buildTestResults[index];
                     if (testList.filter(e => e.testRun.id === `${test.runId}`).length === 0) {
@@ -574,7 +575,7 @@ export async function getTestsForBuild(
                             skip += batchSize;
                         } while (batchSize === runBatch.length);
                     } else {
-                       tl.debug(`Skipping adding tests for test run ${test.runId} as already added`);
+                        tl.debug(`Skipping adding tests for test run ${test.runId} as already added`);
                     }
                 }
                 tl.debug(`Test results expanded to unique ${testList.length} test results`);
@@ -621,7 +622,7 @@ export async function getManualTestsForBuild(
             } while (batchSize === runs.length);
             tl.debug(`Found ${buildTestRuns.length} manual test runs associated with the build`);
 
-            if ( buildTestRuns.length > 0 ) {
+            if (buildTestRuns.length > 0) {
                 for (let index = 0; index < buildTestRuns.length; index++) {
                     const testRun = <EnrichedTestRun>buildTestRuns[index];
                     testRun.TestResults = [];
@@ -629,8 +630,8 @@ export async function getManualTestsForBuild(
                     do {
                         agentApi.logDebug(`Get batch of tests [${resultSkip}] - [${resultSkip + batchSize}] for test run ${testRun.id}`);
                         // get the test steps
-                        var batch = await testAPI.getTestResults(teamProject, testRun.id, ResultDetails.Point, resultSkip, batchSize );
-                        testRun.TestResults.push (...batch);
+                        var batch = await testAPI.getTestResults(teamProject, testRun.id, ResultDetails.Point, resultSkip, batchSize);
+                        testRun.TestResults.push(...batch);
                         // get the list of unique configurations
                         var uniqueIDs = [...new Set(batch.map(item => item.configuration.id))];
                         uniqueIDs.forEach(id => {
@@ -716,7 +717,7 @@ export async function getConsumedArtifactsForBuild(
     });
 }
 
-export function addUniqueTestToArray (
+export function addUniqueTestToArray(
     masterArray: TestCaseResult[],
     newArray: TestCaseResult[]
 ) {
@@ -745,21 +746,21 @@ export async function getTestsForRelease(
         try {
             for (let envIndex = 0; envIndex < release.environments.length; envIndex++) {
                 const env = release.environments[envIndex];
-                    let envTestResults = await (testAPI.getTestResultDetailsForRelease(teamProject, release.id, env.id));
-                    if (envTestResults.resultsForGroup.length > 0) {
-                        for (let index = 0; index < envTestResults.resultsForGroup[0].results.length; index++) {
-                            const test =  envTestResults.resultsForGroup[0].results[index];
-                            if (testList.filter(e => e.testRun.id === `${test.testRun.id}`).length === 0) {
-                                tl.debug(`Adding tests for test run ${test.testRun.id}`);
-                                let run = await (testAPI.getTestResults(teamProject, parseInt(test.testRun.id)));
-                                testList.push(...run);
-                            } else {
-                                tl.debug(`Skipping adding tests for test run ${test.testRun.id} as already added`);
-                            }
+                let envTestResults = await (testAPI.getTestResultDetailsForRelease(teamProject, release.id, env.id));
+                if (envTestResults.resultsForGroup.length > 0) {
+                    for (let index = 0; index < envTestResults.resultsForGroup[0].results.length; index++) {
+                        const test = envTestResults.resultsForGroup[0].results[index];
+                        if (testList.filter(e => e.testRun.id === `${test.testRun.id}`).length === 0) {
+                            tl.debug(`Adding tests for test run ${test.testRun.id}`);
+                            let run = await (testAPI.getTestResults(teamProject, parseInt(test.testRun.id)));
+                            testList.push(...run);
+                        } else {
+                            tl.debug(`Skipping adding tests for test run ${test.testRun.id} as already added`);
                         }
-                    } else {
-                        tl.debug(`No tests associated with release ${release.id} environment ${env.name}`);
                     }
+                } else {
+                    tl.debug(`No tests associated with release ${release.id} environment ${env.name}`);
+                }
             }
             resolve(testList);
         } catch (err) {
@@ -769,50 +770,50 @@ export async function getTestsForRelease(
 }
 
 export function getTemplate(
-        templateLocation: string,
-        templateFile: string ,
-        inlinetemplate: string
-    ): Array<string> {
-        agentApi.logDebug(`Using template mode ${templateLocation}`);
-        var template;
-        const handlebarIndicator = "{{";
+    templateLocation: string,
+    templateFile: string,
+    inlinetemplate: string
+): Array<string> {
+    agentApi.logDebug(`Using template mode ${templateLocation}`);
+    var template;
+    const handlebarIndicator = "{{";
 
-        if (templateLocation === "File") {
-            if (fs.existsSync(templateFile)) {
-                agentApi.logInfo (`Loading template file ${templateFile}`);
-                template = fs.readFileSync(templateFile, "utf8").toString();
-            } else {
-                agentApi.logError (`Cannot find template file ${templateFile}`);
-                return template;
-            }
+    if (templateLocation === "File") {
+        if (fs.existsSync(templateFile)) {
+            agentApi.logInfo(`Loading template file ${templateFile}`);
+            template = fs.readFileSync(templateFile, "utf8").toString();
         } else {
-            agentApi.logInfo ("Using in-line template");
-            template = inlinetemplate;
+            agentApi.logError(`Cannot find template file ${templateFile}`);
+            return template;
         }
+    } else {
+        agentApi.logInfo("Using in-line template");
+        template = inlinetemplate;
+    }
 
-        // we now only handle handlebar templates
-        if (template.includes(handlebarIndicator)) {
-            agentApi.logDebug("Loading handlebar template");
-        }
-        else {
-            agentApi.logError("The template is not on handlebars format, load template has been skipped");
-            template = "";
-        }
-        return template;
+    // we now only handle handlebar templates
+    if (template.includes(handlebarIndicator)) {
+        agentApi.logDebug("Loading handlebar template");
+    }
+    else {
+        agentApi.logError("The template is not on handlebars format, load template has been skipped");
+        template = "";
+    }
+    return template;
 }
 
-export async function getAllDirectRelatedWorkitems (
+export async function getAllDirectRelatedWorkitems(
     workItemTrackingApi: IWorkItemTrackingApi,
     workItems: WorkItem[]
 ) {
     var relatedWorkItems = [...workItems]; // a clone
     for (let wiIndex = 0; wiIndex < workItems.length; wiIndex++) {
-        var wi  = workItems[wiIndex];
+        var wi = workItems[wiIndex];
 
         agentApi.logInfo(`Looking for parents and children of WI [${wi.id}]`);
         if (wi.relations) {
-            for (let relIndex = 0; relIndex <  wi.relations.length; relIndex++) {
-                var relation  =  wi.relations[relIndex];
+            for (let relIndex = 0; relIndex < wi.relations.length; relIndex++) {
+                var relation = wi.relations[relIndex];
                 if ((relation.attributes.name === "Child") ||
                     (relation.attributes.name === "Parent")) {
                     var urlParts = relation.url.split("/");
@@ -832,19 +833,19 @@ export async function getAllDirectRelatedWorkitems (
 
 }
 
-export async function getAllDirectRelatedTestCases (
+export async function getAllDirectRelatedTestCases(
     workItemTrackingApi: IWorkItemTrackingApi,
     workItems: WorkItem[]
 ) {
     var testedBy = [];
     for (let wiIndex = 0; wiIndex < workItems.length; wiIndex++) {
-        var wi  = workItems[wiIndex];
+        var wi = workItems[wiIndex];
 
         agentApi.logInfo(`Looking for Tests of WI [${wi.id}]`);
 
         if (wi.relations) {
-            for (let relIndex = 0; relIndex <  wi.relations.length; relIndex++) {
-                var relation  =  wi.relations[relIndex];
+            for (let relIndex = 0; relIndex < wi.relations.length; relIndex++) {
+                var relation = wi.relations[relIndex];
                 if (relation.attributes.name === "Tested By") {
                     var urlParts = relation.url.split("/");
                     var id = parseInt(urlParts[urlParts.length - 1]);
@@ -863,7 +864,7 @@ export async function getAllDirectRelatedTestCases (
 
 }
 
-export async function getAllParentWorkitems (
+export async function getAllParentWorkitems(
     workItemTrackingApi: IWorkItemTrackingApi,
     relatedWorkItems: WorkItem[]
 ) {
@@ -875,12 +876,12 @@ export async function getAllParentWorkitems (
         addedOnThisPass = 0;
         // look for all the parent
         for (let wiIndex = 0; wiIndex < allRelatedWorkItems.length; wiIndex++) {
-            var wi  = allRelatedWorkItems[wiIndex];
+            var wi = allRelatedWorkItems[wiIndex];
 
             agentApi.logInfo(`Looking for parents of WI [${wi.id}]`);
             if (wi.relations) {
-                for (let relIndex = 0; relIndex <  wi.relations.length; relIndex++) {
-                    var relation  =  wi.relations[relIndex];
+                for (let relIndex = 0; relIndex < wi.relations.length; relIndex++) {
+                    var relation = wi.relations[relIndex];
                     if (relation.attributes.name === "Parent") {
                         var urlParts = relation.url.split("/");
                         var id = parseInt(urlParts[urlParts.length - 1]);
@@ -888,7 +889,7 @@ export async function getAllParentWorkitems (
                             agentApi.logInfo(`Add ${relation.attributes.name} WI ${id}`);
                             allRelatedWorkItems.push(await (workItemTrackingApi.getWorkItem(id, null, null, WorkItemExpand.All, null)));
                             // if we add something add to the count
-                            addedOnThisPass ++;
+                            addedOnThisPass++;
                         } else {
                             agentApi.logInfo(`Skipping ${id} as already in the found parent list`);
                         }
@@ -903,7 +904,7 @@ export async function getAllParentWorkitems (
 
 }
 
-export async function getFullWorkItemDetails (
+export async function getFullWorkItemDetails(
     workItemTrackingApi: IWorkItemTrackingApi,
     workItemRefs: ResourceRef[]
 ) {
@@ -913,7 +914,7 @@ export async function getFullWorkItemDetails (
         agentApi.logInfo(`Get details of [${workItemIds.length}] WIs`);
         if (workItemIds && workItemIds.length > 0) {
             var indexStart = 0;
-            var indexEnd = (workItemIds.length > 200) ? 200 : workItemIds.length ;
+            var indexEnd = (workItemIds.length > 200) ? 200 : workItemIds.length;
             while ((indexEnd <= workItemIds.length) && (indexStart !== indexEnd)) {
                 var subList = workItemIds.slice(indexStart, indexEnd);
                 agentApi.logInfo(`Getting full details of WI batch from index: [${indexStart}] to [${indexEnd}]`);
@@ -955,7 +956,7 @@ export function processTemplate(
     queryWorkItems: WorkItem[],
     testedByWorkItems: WorkItem[],
     publishedArtifacts: BuildArtifact[]
-    ): string {
+): string {
 
     var output = "";
 
@@ -985,7 +986,7 @@ export function processTemplate(
         });
 
         // add a custom helper to expand json
-        handlebars.registerHelper("json", function(context) {
+        handlebars.registerHelper("json", function (context) {
             return JSON.stringify(context);
         });
 
@@ -1019,7 +1020,7 @@ export function processTemplate(
         });
 
         // make sure we have valid file name for the custom extension
-        if (! customHandlebarsExtensionFile || customHandlebarsExtensionFile.length === 0) {
+        if (!customHandlebarsExtensionFile || customHandlebarsExtensionFile.length === 0) {
             customHandlebarsExtensionFile = "customHandlebarsExtension.js";
         } else {
             if (!customHandlebarsExtensionFile.toLowerCase().endsWith(".js")) {
@@ -1062,7 +1063,7 @@ export function processTemplate(
         }
 
         agentApi.logDebug(`Attempting to load custom handlebars extension from ${filePath}}`);
-        if (fs.existsSync(filePath) ) {
+        if (fs.existsSync(filePath)) {
             var customModule = fs.readFileSync(filePath);
             if (customModule.toString().trim().length > 0) {
                 var tools = require(filePath);
@@ -1101,7 +1102,7 @@ export function processTemplate(
                 "testedByWorkItems": testedByWorkItems,
                 "publishedArtifacts": publishedArtifacts
             });
-            agentApi.logInfo( "Completed processing template");
+            agentApi.logInfo("Completed processing template");
 
         } catch (err) {
             if (stopOnError) {
@@ -1115,7 +1116,7 @@ export function processTemplate(
         if (stopOnError) {
             throw (`Cannot load template file [${template}] or it is empty`);
         } else {
-            agentApi.logError( `Cannot load template file [${template}] or it is empty`);
+            agentApi.logError(`Cannot load template file [${template}] or it is empty`);
             agentApi.logWarn(`As the parameter 'stopOnError' is set to false the above Handlebars processing error has been logged but the task not marked as failed. To fail the task when this occurs, change the parameter to true`);
         }
 
@@ -1154,9 +1155,9 @@ export async function getLastSuccessfulBuildByStage(
     tags: string[],
     overrideBuildReleaseId: string,
     considerPartiallySuccessfulReleases: boolean
-)  {
+) {
     if (!stageName || stageName.length === 0) {
-        agentApi.logInfo ("No stage name provided, cannot find last successful build by stage");
+        agentApi.logInfo("No stage name provided, cannot find last successful build by stage");
         return {
             id: 0,
             stage: null
@@ -1188,7 +1189,7 @@ export async function getLastSuccessfulBuildByStage(
         6 // startTimeDescending
     );
 
-    if (builds.length > 1 ) {
+    if (builds.length > 1) {
         agentApi.logInfo(`Found '${builds.length}' matching builds to consider`);
         if (considerPartiallySuccessfulReleases) {
             agentApi.logInfo(`Matching 'successful' or 'partially successful' builds`);
@@ -1209,8 +1210,8 @@ export async function getLastSuccessfulBuildByStage(
                     stage: record
                 };
             } else {
-               agentApi.logError(`There is no build matching the override ID of ${overrideBuildReleaseId}`);
-               return;
+                agentApi.logError(`There is no build matching the override ID of ${overrideBuildReleaseId}`);
+                return;
             }
         }
 
@@ -1220,7 +1221,7 @@ export async function getLastSuccessfulBuildByStage(
 
         for (let buildIndex = 0; buildIndex < builds.length; buildIndex++) {
             const build = builds[buildIndex];
-            agentApi.logInfo (`Comparing ${build.id} against ${buildId}`);
+            agentApi.logInfo(`Comparing ${build.id} against ${buildId}`);
             // force the cast to string as was getting a type mimatch
             if (build.id.toString() === buildId.toString()) {
                 agentApi.logInfo("Ignore compare against self");
@@ -1231,37 +1232,37 @@ export async function getLastSuccessfulBuildByStage(
                 if (tags.length === 0 ||
                     (tags.length > 0 && build.tags.sort().join(",") === tags.sort().join(",")) ||
                     (tags.find(t => t === "*") && tags.length > 0 && tags.filter((t) => t === "*" || build.tags.find((bt) => bt === t)).length === tags.length)) {
-                        agentApi.logInfo("Considering build");
-                        let timeline = await (buildApi.getBuildTimeline(teamProject, build.id));
-                        if (timeline && timeline.records) {
-                            for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
-                                const record  = timeline.records[timelineIndex];
-                                if (record.type === "Stage") {
-                                    if (record.name === stageName || record.identifier === stageName) {
-                                        agentApi.logInfo (`Found required stage ${record.name} in the state ${record.state.toString()} with the result ${record.result?.toString()} state for build ${build.id}`);
-                                        // checking enum values against
-                                        // https://docs.microsoft.com/en-us/dotnet/api/microsoft.teamfoundation.distributedtask.webapi.timelinerecordstate?view=azure-devops-dotnet
-                                        // https://docs.microsoft.com/en-us/dotnet/api/microsoft.teamfoundation.distributedtask.webapi.taskresult?view=azure-devops-dotnet
-                                        if ((record.state.toString() === "2" || record.state.toString() === "completed") && // completed
+                    agentApi.logInfo("Considering build");
+                    let timeline = await (buildApi.getBuildTimeline(teamProject, build.id));
+                    if (timeline && timeline.records) {
+                        for (let timelineIndex = 0; timelineIndex < timeline.records.length; timelineIndex++) {
+                            const record = timeline.records[timelineIndex];
+                            if (record.type === "Stage") {
+                                if (record.name === stageName || record.identifier === stageName) {
+                                    agentApi.logInfo(`Found required stage ${record.name} in the state ${record.state.toString()} with the result ${record.result?.toString()} state for build ${build.id}`);
+                                    // checking enum values against
+                                    // https://docs.microsoft.com/en-us/dotnet/api/microsoft.teamfoundation.distributedtask.webapi.timelinerecordstate?view=azure-devops-dotnet
+                                    // https://docs.microsoft.com/en-us/dotnet/api/microsoft.teamfoundation.distributedtask.webapi.taskresult?view=azure-devops-dotnet
+                                    if ((record.state.toString() === "2" || record.state.toString() === "completed") && // completed
                                         (
                                             (considerPartiallySuccessfulReleases === false && (record.result.toString() === "0" || record.result.toString().toLowerCase() === "succeeded")) ||
                                             (considerPartiallySuccessfulReleases === true && (record.result.toString() === "1" || record.result.toString().toLowerCase() === "succeededwithissues" || record.result.toString() === "0" || record.result.toString() === "succeeded"))
                                         )) {
-                                            agentApi.logInfo (`Using the build ${build.id}`);
-                                            return {
-                                                id: build.id,
-                                                stage: record
-                                            };
-                                        }
+                                        agentApi.logInfo(`Using the build ${build.id}`);
+                                        return {
+                                            id: build.id,
+                                            stage: record
+                                        };
                                     }
                                 }
                             }
+                        }
                     } else {
                         agentApi.logInfo("Skipping check as no timeline available for this build");
                     }
-                    } else {
-                        agentApi.logInfo(`Skipping build as does not have the correct tags`);
-                    }
+                } else {
+                    agentApi.logInfo(`Skipping build as does not have the correct tags`);
+                }
             }
         }
     }
@@ -1322,68 +1323,69 @@ export async function generateReleaseNotes(
     getTestedBy: boolean,
     wiqlFromTarget: string,
     wiqlSharedQueryName: string,
-    ): Promise<number> {
-        return new Promise<number>(async (resolve, reject) => {
+    matchPRsByMergeCommit: boolean,
+): Promise<number> {
+    return new Promise<number>(async (resolve, reject) => {
 
-            // check if we have multiple templates to process
-            var templateFiles = templateFile.split(",").map(function(item) {
-                return item.trim();
-              });
-            var outputFiles = outputFile.split(",").map(function(item) {
-                return item.trim();
-            });
+        // check if we have multiple templates to process
+        var templateFiles = templateFile.split(",").map(function (item) {
+            return item.trim();
+        });
+        var outputFiles = outputFile.split(",").map(function (item) {
+            return item.trim();
+        });
 
-            if (templateFiles.length !== outputFiles.length) {
-                reject("The number of template files and output files must be the same");
-                return;
-            }
+        if (templateFiles.length !== outputFiles.length) {
+            reject("The number of template files and output files must be the same");
+            return;
+        }
 
-            if (!gitHubPat) {
-                // a check to make sure we don't get a null
-                gitHubPat = "";
-            }
+        if (!gitHubPat) {
+            // a check to make sure we don't get a null
+            gitHubPat = "";
+        }
 
-            agentApi.logInfo(`Creating Azure DevOps API connections for ${tpcUri} with 'allowRetries' set to '${maxRetries > 0}' and 'maxRetries' count to '${maxRetries}'`);
-            const credentialHandler = getCredentialHandler(pat, oath);
-            const options = {
-                allowRetries: maxRetries > 0 ,
-                maxRetries: maxRetries,
-            } as vstsInterfaces.IRequestOptions;
-            const organisationWebApi = new webApi.WebApi(tpcUri, credentialHandler, options);
-            const releaseApi = await organisationWebApi.getReleaseApi();
-            const buildApi = await organisationWebApi.getBuildApi();
-            const gitApi = await organisationWebApi.getGitApi();
-            const testApi = await organisationWebApi.getTestApi();
-            const workItemTrackingApi = await organisationWebApi.getWorkItemTrackingApi();
-            const tfvcApi = await organisationWebApi.getTfvcApi();
+        agentApi.logInfo(`Creating Azure DevOps API connections for ${tpcUri} with 'allowRetries' set to '${maxRetries > 0}' and 'maxRetries' count to '${maxRetries}'`);
+        const credentialHandler = getCredentialHandler(pat, oath);
+        const options = {
+            allowRetries: maxRetries > 0,
+            maxRetries: maxRetries,
+        } as vstsInterfaces.IRequestOptions;
+        const organisationWebApi = new webApi.WebApi(tpcUri, credentialHandler, options);
+        const releaseApi = await organisationWebApi.getReleaseApi();
+        const buildApi = await organisationWebApi.getBuildApi();
+        const gitApi = await organisationWebApi.getGitApi();
+        const testApi = await organisationWebApi.getTestApi();
+        const workItemTrackingApi = await organisationWebApi.getWorkItemTrackingApi();
+        const tfvcApi = await organisationWebApi.getTfvcApi();
 
-            // the result containers
-            var globalCommits: Change[] = [];
-            var globalWorkItems: ResourceRef[] = [];
-            var globalPullRequests: EnrichedGitPullRequest[] = [];
-            var inDirectlyAssociatedPullRequests: EnrichedGitPullRequest[] = [];
-            var globalBuilds: UnifiedArtifactDetails[] = [];
-            var globalTests: TestCaseResult[] = [];
-            var releaseTests: TestCaseResult[] = [];
-            var relatedWorkItems: WorkItem[] = [];
-            var testedByWorkItems: WorkItem[] = [];
-            var fullWorkItems: WorkItem[] = [];
-            var queryWorkItems: WorkItem[] = [];
-            var globalManualTests: EnrichedTestRun[] = [];
-            var globalManualTestConfigurations: [] = [];
-            var globalConsumedArtifacts: any[] = [];
+        // the result containers
+        var globalCommits: Change[] = [];
+        var globalWorkItems: ResourceRef[] = [];
+        var globalPullRequests: EnrichedGitPullRequest[] = [];
+        var inDirectlyAssociatedPullRequests: EnrichedGitPullRequest[] = [];
+        var globalBuilds: UnifiedArtifactDetails[] = [];
+        var globalTests: TestCaseResult[] = [];
+        var releaseTests: TestCaseResult[] = [];
+        var relatedWorkItems: WorkItem[] = [];
+        var testedByWorkItems: WorkItem[] = [];
+        var fullWorkItems: WorkItem[] = [];
+        var queryWorkItems: WorkItem[] = [];
+        var globalManualTests: EnrichedTestRun[] = [];
+        var globalManualTestConfigurations: [] = [];
+        var globalConsumedArtifacts: any[] = [];
 
-            var mostRecentSuccessfulDeploymentName: string = "";
-            var mostRecentSuccessfulDeploymentRelease: Release;
-            var mostRecentSuccessfulBuild: Build;
+        var mostRecentSuccessfulDeploymentName: string = "";
+        var mostRecentSuccessfulDeploymentRelease: Release;
+        var mostRecentSuccessfulBuild: Build;
 
-            var currentRelease: Release;
-            var currentBuild: Build;
-            var currentStage: TimelineRecord;
-            var hasBeenTimeout = false;
-            var publishedArtifacts: BuildArtifact[] = [];
+        var currentRelease: Release;
+        var currentBuild: Build;
+        var currentStage: TimelineRecord;
+        var hasBeenTimeout = false;
+        var publishedArtifacts: BuildArtifact[] = [];
 
-            try {
+        try {
 
             if ((releaseId === undefined) || !releaseId) {
                 // A Classic Build or YAML Pipeline
@@ -1394,7 +1396,7 @@ export async function generateReleaseNotes(
                         resolve(-1);
                         return;
                     }
-                    agentApi.logInfo (`Using the override for the active build of ID '${overrideActiveBuildReleaseId}'`);
+                    agentApi.logInfo(`Using the override for the active build of ID '${overrideActiveBuildReleaseId}'`);
                     buildId = parseInt(overrideActiveBuildReleaseId);
                 }
 
@@ -1402,19 +1404,19 @@ export async function generateReleaseNotes(
                 currentBuild = await buildApi.getBuild(teamProject, buildId);
 
                 if (!currentBuild) {
-                    agentApi.logError (`Unable to locate the current build with id ${buildId} in the project ${teamProject}`);
-                    reject (-1);
+                    agentApi.logError(`Unable to locate the current build with id ${buildId} in the project ${teamProject}`);
+                    reject(-1);
                     return;
                 }
 
                 agentApi.logInfo("Getting artifacts published by the current build");
-                publishedArtifacts = await buildApi.getArtifacts(teamProject, buildId );
+                publishedArtifacts = await buildApi.getArtifacts(teamProject, buildId);
 
                 if (checkStage) {
                     var stageName = tl.getVariable("System.StageName");
                     var tagArray = [];
 
-                    if (tags && tags.length > 0 ) {
+                    if (tags && tags.length > 0) {
                         tagArray = tags.split(",");
                         agentApi.logInfo(`Only considering builds with the tag(s) '${tags}'`);
                     }
@@ -1424,16 +1426,16 @@ export async function generateReleaseNotes(
                     }
 
                     var lastGoodBuildId;
-                    if (overrideBuildReleaseId && overrideBuildReleaseId.length > 0 ) {
+                    if (overrideBuildReleaseId && overrideBuildReleaseId.length > 0) {
                         if (isNaN(parseInt(overrideBuildReleaseId, 10))) {
                             agentApi.logError(`The override build ID '${overrideBuildReleaseId}' is not a number `);
                             resolve(-1);
                             return;
                         }
-                        agentApi.logInfo (`Using the override for the last successful build of ID '${overrideBuildReleaseId}'`);
+                        agentApi.logInfo(`Using the override for the last successful build of ID '${overrideBuildReleaseId}'`);
                     }
 
-                    agentApi.logInfo (`Getting items associated the builds since the last successful build to the stage '${stageName}'`);
+                    agentApi.logInfo(`Getting items associated the builds since the last successful build to the stage '${stageName}'`);
                     var successfulStageDetails = await getLastSuccessfulBuildByStage(
                         buildApi,
                         teamProject,
@@ -1521,7 +1523,7 @@ export async function generateReleaseNotes(
                                             "projectId": (currentBuildArtifact as any).properties.projectId
                                         },
                                         "versionName": `${(lastGoodBuildArtifact as any).versionName} - ${(currentBuildArtifact as any).versionName}`,
-                                        "commits":	await enrichChangesWithFileDetails(
+                                        "commits": await enrichChangesWithFileDetails(
                                             gitApi,
                                             tfvcApi,
                                             await buildApi.getChangesBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId),
@@ -1550,7 +1552,7 @@ export async function generateReleaseNotes(
                                             "projectId": (currentBuildArtifact as any).properties.projectId
                                         },
                                         "versionName": (currentBuildArtifact as any).versionName,
-                                        "commits":	await enrichChangesWithFileDetails(
+                                        "commits": await enrichChangesWithFileDetails(
                                             gitApi,
                                             tfvcApi,
                                             await (buildApi.getBuildChanges((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId, "", 5000)),
@@ -1606,36 +1608,36 @@ export async function generateReleaseNotes(
                         );
 
                         agentApi.logDebug(`Found ${builds.length} builds of this definition`);
-                        if (builds.length > 2 ) {
-                          var firstBuild = builds[builds.length - 1 ];
-                          agentApi.logDebug(`Getting the details of the first build ${firstBuild.id}`);
-                          globalCommits = await buildApi.getBuildChanges(teamProject, firstBuild.id, "", 5000);
-                          globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, firstBuild.id, 5000);
+                        if (builds.length > 2) {
+                            var firstBuild = builds[builds.length - 1];
+                            agentApi.logDebug(`Getting the details of the first build ${firstBuild.id}`);
+                            globalCommits = await buildApi.getBuildChanges(teamProject, firstBuild.id, "", 5000);
+                            globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, firstBuild.id, 5000);
 
-                          agentApi.logDebug(`Getting the details of the changes between the first build ${firstBuild.id} and the current build ${currentBuild.id}`);
-                          // There is only a workaround for Git but not for TFVC :(
-                          if (firstBuild.repository.type === "TfsGit") {
-                            agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
-                            let currentBuild = await buildApi.getBuild(teamProject, buildId);
-                            let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisationWebApi, firstBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
-                            globalCommits.push (... commitInfo.commits);
-                            globalWorkItems.push (... commitInfo.workItems);
+                            agentApi.logDebug(`Getting the details of the changes between the first build ${firstBuild.id} and the current build ${currentBuild.id}`);
+                            // There is only a workaround for Git but not for TFVC :(
+                            if (firstBuild.repository.type === "TfsGit") {
+                                agentApi.logInfo("Using workaround for build API limitation (see issue #349)");
+                                let currentBuild = await buildApi.getBuild(teamProject, buildId);
+                                let commitInfo = await issue349.getCommitsAndWorkItemsForGitRepo(organisationWebApi, firstBuild.sourceVersion, currentBuild.sourceVersion, currentBuild.repository.id);
+                                globalCommits.push(...commitInfo.commits);
+                                globalWorkItems.push(...commitInfo.workItems);
+
+                            } else {
+                                // Fall back to original behavior
+                                globalCommits.push(... await buildApi.getChangesBetweenBuilds(teamProject, firstBuild.id, buildId));
+                                globalWorkItems.push(... await buildApi.getWorkItemsBetweenBuilds(teamProject, firstBuild.id, buildId));
+                            }
+
+                            if (checkForManuallyLinkedWI) {
+                                globalWorkItems = globalWorkItems.concat(await addMissingManuallyLinkedWI(buildApi, teamProject, firstBuild.definition.id, firstBuild.id, buildId));
+                            }
 
                         } else {
-                            // Fall back to original behavior
-                            globalCommits.push (... await buildApi.getChangesBetweenBuilds(teamProject, firstBuild.id, buildId));
-                            globalWorkItems.push (... await buildApi.getWorkItemsBetweenBuilds(teamProject, firstBuild.id, buildId));
-                        }
+                            agentApi.logInfo("There have been no past builds for this definition just getting details of the current build");
 
-                        if (checkForManuallyLinkedWI) {
-                            globalWorkItems = globalWorkItems.concat(await addMissingManuallyLinkedWI(buildApi, teamProject,  firstBuild.definition.id, firstBuild.id, buildId));
-                        }
-
-                        } else {
-                          agentApi.logInfo("There have been no past builds for this definition just getting details of the current build");
-
-                          globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
-                          globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000); // this includes the manual links check by default
+                            globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
+                            globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000); // this includes the manual links check by default
                         }
 
                         agentApi.logInfo("Get the artifacts consumed by the build");
@@ -1653,7 +1655,7 @@ export async function generateReleaseNotes(
 
                     }
                 } else {
-                    agentApi.logInfo (`Getting items associated with only the current build`);
+                    agentApi.logInfo(`Getting items associated with only the current build`);
                     globalCommits = await buildApi.getBuildChanges(teamProject, buildId, "", 5000);
                     globalWorkItems = await buildApi.getBuildWorkItemsRefs(teamProject, buildId, 5000);
 
@@ -1693,7 +1695,7 @@ export async function generateReleaseNotes(
                         resolve(-1);
                         return;
                     }
-                    agentApi.logInfo (`Using the override for the active release of ID '${overrideActiveBuildReleaseId}'`);
+                    agentApi.logInfo(`Using the override for the active release of ID '${overrideActiveBuildReleaseId}'`);
                     releaseId = parseInt(overrideActiveBuildReleaseId);
                 }
 
@@ -1706,7 +1708,7 @@ export async function generateReleaseNotes(
 
                 // check of redeploy
                 if (stopOnRedeploy === true) {
-                    if ( getDeploymentCount(currentRelease.environments, environmentName) > 1) {
+                    if (getDeploymentCount(currentRelease.environments, environmentName) > 1) {
                         agentApi.logWarn(`Skipping release note generation as this deploy is a re-deployment`);
                         resolve(-1);
                         return;
@@ -1721,13 +1723,13 @@ export async function generateReleaseNotes(
 
                 var environmentId = getReleaseDefinitionId(currentRelease.environments, environmentName);
 
-                if (overrideBuildReleaseId && overrideBuildReleaseId.length > 0 ) {
+                if (overrideBuildReleaseId && overrideBuildReleaseId.length > 0) {
                     if (isNaN(parseInt(overrideBuildReleaseId, 10))) {
                         agentApi.logError(`The override release ID '${overrideBuildReleaseId}' is not a number `);
                         resolve(-1);
                         return;
                     } else {
-                        agentApi.logInfo (`Using the override for the last successful release of ID '${overrideBuildReleaseId}'`);
+                        agentApi.logInfo(`Using the override for the last successful release of ID '${overrideBuildReleaseId}'`);
                     }
                 }
 
@@ -1792,22 +1794,22 @@ export async function generateReleaseNotes(
                                             // so now just force the top value to it's max of 5000
                                             // this has no effect when there are fewer than 5000 builds in the definition
                                             let builds = await buildApi.getBuilds(artifactInThisRelease.sourceId, [parseInt(artifactInThisRelease.buildDefinitionId)],
-                                            undefined,
-                                            undefined,
-                                            undefined,
-                                            undefined,
-                                            undefined,
-                                            undefined,
-                                            undefined,
-                                            undefined,
-                                            undefined,
-                                            undefined,
-                                            5000,
-                                            undefined,
-                                            undefined,
-                                            undefined,
-                                            6 // startTimeDescending
-                                        );
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                5000,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                6 // startTimeDescending
+                                            );
 
                                             commits = [];
                                             workitems = [];
@@ -1844,17 +1846,17 @@ export async function generateReleaseNotes(
                                                         workitems = commitInfo.workItems;
                                                     } else {
                                                         // Fall back to original behavior
-                                                        commits = await buildApi.getChangesBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
-                                                        workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                                        commits = await buildApi.getChangesBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId), parseInt(artifactInThisRelease.buildId), 5000);
+                                                        workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId), parseInt(artifactInThisRelease.buildId), 5000);
                                                     }
                                                 } else {
                                                     // Issue #349: These APIs are affected by the build API limitation and only return the latest 200 changes and work items associated to those changes
-                                                    commits = await buildApi.getChangesBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
-                                                    workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId), 5000);
+                                                    commits = await buildApi.getChangesBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId), parseInt(artifactInThisRelease.buildId), 5000);
+                                                    workitems = await buildApi.getWorkItemsBetweenBuilds(artifactInThisRelease.sourceId, parseInt(artifactInMostRecentRelease.buildId), parseInt(artifactInThisRelease.buildId), 5000);
                                                 }
 
                                                 if (checkForManuallyLinkedWI) {
-                                                    globalWorkItems = globalWorkItems.concat(await addMissingManuallyLinkedWI(buildApi, artifactInThisRelease.sourceId,  parseInt(artifactInThisRelease.buildDefinitionId), parseInt(artifactInMostRecentRelease.buildId),  parseInt(artifactInThisRelease.buildId)));
+                                                    globalWorkItems = globalWorkItems.concat(await addMissingManuallyLinkedWI(buildApi, artifactInThisRelease.sourceId, parseInt(artifactInThisRelease.buildDefinitionId), parseInt(artifactInMostRecentRelease.buildId), parseInt(artifactInThisRelease.buildId)));
                                                 }
 
                                             } catch (err) {
@@ -1952,7 +1954,7 @@ export async function generateReleaseNotes(
             // by default order as returned by API
             if (sortCS) {
                 agentApi.logInfo("Sorting CS by created date");
-                globalCommits = globalCommits.sort(function(a, b) {
+                globalCommits = globalCommits.sort(function (a, b) {
                     return a.timestamp < b.timestamp ? -1 : a.timestamp > b.timestamp ? 1 : 0;
                 });
             } else {
@@ -1986,45 +1988,45 @@ export async function generateReleaseNotes(
             agentApi.logInfo(`Checking for user defined WIQL query`);
             var wiqlQuery = await getWiqlQuery(workItemTrackingApi, teamProject, wiqlWhereClause, wiqlFromTarget, wiqlSharedQueryName);
 
-            if (wiqlQuery &&  wiqlQuery.length ) {
-               agentApi.logInfo(`Getting Work Items using WIQL query`);
-               agentApi.logDebug(wiqlQuery);
-               try {
-                var queryResponse = await workItemTrackingApi.queryByWiql(
-                    { query: wiqlQuery},
-                    undefined,
-                    undefined,
-                    5000);
+            if (wiqlQuery && wiqlQuery.length) {
+                agentApi.logInfo(`Getting Work Items using WIQL query`);
+                agentApi.logDebug(wiqlQuery);
+                try {
+                    var queryResponse = await workItemTrackingApi.queryByWiql(
+                        { query: wiqlQuery },
+                        undefined,
+                        undefined,
+                        5000);
                     // need to get the result into the same format as used to enrich other WI arrays
                     if (queryResponse) {
                         var wiRefArray: ResourceRef[];
                         if (wiqlQuery.toLowerCase().includes("from workitems") && queryResponse.workItems) {
-                            wiRefArray = queryResponse.workItems.map(wi => ({id: wi.id.toString(), url: undefined})) as ResourceRef[];
+                            wiRefArray = queryResponse.workItems.map(wi => ({ id: wi.id.toString(), url: undefined })) as ResourceRef[];
                         }
                         else if (wiqlQuery.toLowerCase().includes("from workitemlinks") && queryResponse.workItemRelations) {
-                             wiRefArray = queryResponse.workItemRelations.map(wi => ({id: wi.target?.id.toString(), url: undefined})) as ResourceRef[];
-                             removeDuplicates(wiRefArray);
+                            wiRefArray = queryResponse.workItemRelations.map(wi => ({ id: wi.target?.id.toString(), url: undefined })) as ResourceRef[];
+                            removeDuplicates(wiRefArray);
                         }
-                         // enrich the items
+                        // enrich the items
                         queryWorkItems = await getFullWorkItemDetails(workItemTrackingApi, wiRefArray);
                         agentApi.logInfo(`Found ${queryWorkItems.length} WI using WIQL`);
                     } else {
                         agentApi.logInfo(`Found no WI using WIQL`);
                     }
 
-               } catch (ex) {
-                   reject(ex);
-                   agentApi.logError(`Failed to run WIQL ${ex.message}`);
-                   resolve(-1);
-                   return;
-               }
+                } catch (ex) {
+                    reject(ex);
+                    agentApi.logError(`Failed to run WIQL ${ex.message}`);
+                    resolve(-1);
+                    return;
+                }
             }
 
             // by default order by ID, has the option to group by type
             if (sortWi) {
                 agentApi.logInfo("Sorting WI by type then id");
-                fullWorkItems = fullWorkItems.sort((a, b) => (a.fields["System.WorkItemType"] > b.fields["System.WorkItemType"]) ? 1 : (a.fields["System.WorkItemType"] === b.fields["System.WorkItemType"]) ? ((a.id > b.id) ? 1 : -1) : -1 );
-                queryWorkItems = queryWorkItems.sort((a, b) => (a.fields["System.WorkItemType"] > b.fields["System.WorkItemType"]) ? 1 : (a.fields["System.WorkItemType"] === b.fields["System.WorkItemType"]) ? ((a.id > b.id) ? 1 : -1) : -1 );
+                fullWorkItems = fullWorkItems.sort((a, b) => (a.fields["System.WorkItemType"] > b.fields["System.WorkItemType"]) ? 1 : (a.fields["System.WorkItemType"] === b.fields["System.WorkItemType"]) ? ((a.id > b.id) ? 1 : -1) : -1);
+                queryWorkItems = queryWorkItems.sort((a, b) => (a.fields["System.WorkItemType"] > b.fields["System.WorkItemType"]) ? 1 : (a.fields["System.WorkItemType"] === b.fields["System.WorkItemType"]) ? ((a.id > b.id) ? 1 : -1) : -1);
             } else {
                 agentApi.logInfo("Leaving WI in default order as returned by API");
             }
@@ -2035,7 +2037,7 @@ export async function generateReleaseNotes(
 
             // make sure we have an empty value if there is no PR
             // this is for backwards compat.
-            var prDetails = <GitPullRequest> {};
+            var prDetails = <GitPullRequest>{};
 
             try {
                 if (isNaN(buildId)) {  // only try this if we have numeric build ID, not a GUID see #694
@@ -2085,166 +2087,198 @@ export async function generateReleaseNotes(
 
                     var allPullRequests: GitPullRequest[] = await getPullRequests(gitApi, prProjectFilter, searchRepositoryId, searchRefName);
                     if (allPullRequests && (allPullRequests.length > 0)) {
-                        agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps PRs in the repo`);
-                        globalCommits.forEach(commit => {
-                            if (commit.type === "TfsGit") {
-                                agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
 
-                                allPullRequests.forEach(pr => {
-                                    if (pr.lastMergeCommit) {
-                                        if (pr.lastMergeCommit.commitId === commit.id) {
-                                            agentApi.logInfo(`- PR ${pr.pullRequestId} matches the commit ${commit.id}`);
+                        if (matchPRsByMergeCommit) {
+                            agentApi.logInfo("Appempting to match PRs using last Merge Commit ID");
+                            agentApi.logInfo(`Found ${allPullRequests.length} Azure DevOps PRs in the repo`);
+                            globalCommits.forEach(commit => {
+                                if (commit.type === "TfsGit") {
+                                    agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
+
+                                    allPullRequests.forEach(pr => {
+                                        if (pr.lastMergeCommit) {
+                                            if (pr.lastMergeCommit.commitId === commit.id) {
+                                                agentApi.logInfo(`- PR ${pr.pullRequestId}  for repository ${pr.repository.name} matches the commit ${commit.id}`);
+                                                globalPullRequests.push(<EnrichedGitPullRequest>pr);
+                                            }
+                                        } else {
+                                            agentApi.logInfo(`- PR ${pr.pullRequestId} does not have a lastMergeCommit`);
+                                        }
+                                    });
+
+                                } else {
+                                    agentApi.logDebug(`Cannot check for associated PR as the commit ${commit.id} is not in an Azure DevOps repo`);
+                                }
+                            });
+                        } else {
+                            agentApi.logInfo(`Attempting to match PRs using commit associated with the PR, will scan ${allPullRequests.length} PRs`);
+                            agentApi.logInfo("WARNING: This can be very slow process as all PRs in scope have to individually checked");
+                            // enrich the PRs with the details of the commits and work items
+                            let enrichedPullRequests = allPullRequests.map(pr => ({
+                                ...pr,
+                                associatedWorkitems: [],
+                                associatedCommits: []
+                            }));
+                            enrichedPullRequests = await enrichPullRequest(gitApi, enrichedPullRequests);
+                            // for each enrichedPullRequests compare the associaedcommits to see if any match the globalCommits
+                            globalCommits.forEach(commit => {
+                                if (commit.type === "TfsGit") {
+                                    agentApi.logInfo(`Checking for PRs associated with the commit ${commit.id}`);
+                                    enrichedPullRequests.forEach(pr => {
+                                        if (pr.associatedCommits.find(c => c.commitId === commit.id)) {
+                                            agentApi.logInfo(`- PR ${pr.pullRequestId} for repository ${pr.repository.name} matches the commit ${commit.id}`);
                                             globalPullRequests.push(<EnrichedGitPullRequest>pr);
                                         }
-                                    } else {
-                                        agentApi.logInfo(`- PR ${pr.pullRequestId} does not have a lastMergeCommit`);
-                                    }
-                                });
-
-                            } else {
-                                agentApi.logDebug(`Cannot check for associated PR as the commit ${commit.id} is not in an Azure DevOps repo`);
-                            }
-                        });
-                    } else {
-                        agentApi.logDebug(`No completed Azure DevOps PRs found`);
-                    }
-                } catch (error) {
-                    agentApi.logWarn(`Could not get details of any PR an error was seen: ${error}`);
+                                    });
+                                } else {
+                                    agentApi.logDebug(`Cannot check for associated PR as the commit ${commit.id} is not in an Azure DevOps repo`);
+                                }
+                            });
+                        }
+                } else {
+                    agentApi.logDebug(`No completed Azure DevOps PRs found`);
                 }
-            } else {
-                agentApi.logInfo(`Skipping getting associated PRs`);
+            } catch (error) {
+                agentApi.logWarn(`Could not get details of any PR an error was seen: ${error}`);
             }
+        } else {
+            agentApi.logInfo(`Skipping getting associated PRs`);
+        }
 
-            // remove duplicates
-            globalPullRequests = globalPullRequests.filter((thing, index, self) =>
-                index === self.findIndex((t) => (
+        // remove duplicates
+        globalPullRequests = globalPullRequests.filter((thing, index, self) =>
+            index === self.findIndex((t) => (
                 t.pullRequestId === thing.pullRequestId
-                ))
-            );
+            ))
+        );
 
-            agentApi.logInfo(`Enriching known Pull Requests`);
+        if (matchPRsByMergeCommit) {
+            // we only have to do this for matchPRsByMergeCommit=true as is false it was done sooner
+
+            agentApi.logInfo(`Enriching known Pull Requests matc by MergeCommitID`);
             globalPullRequests = await enrichPullRequest(gitApi, globalPullRequests);
+        }
 
-            if (getIndirectPullRequests === true ) {
-                agentApi.logInfo(`Checking the CS associated with the PRs to see if they are inturn associated PRs`);
-                if (allPullRequests && allPullRequests.length > 0 ) {
-                    for (let prIndex = 0; prIndex < globalPullRequests.length; prIndex++) {
-                        const pr = globalPullRequests[prIndex];
-                        for (let csIndex = 0; csIndex < pr.associatedCommits.length; csIndex++) {
-                            const cs =  pr.associatedCommits[csIndex];
-                            var foundPR = allPullRequests.find( e => e.lastMergeCommit && e.lastMergeCommit.commitId === cs.commitId);
-                            if (foundPR) {
+        if (getIndirectPullRequests === true) {
+            agentApi.logInfo(`Checking the CS associated with the PRs to see if they are inturn associated PRs`);
+            if (allPullRequests && allPullRequests.length > 0) {
+                for (let prIndex = 0; prIndex < globalPullRequests.length; prIndex++) {
+                    const pr = globalPullRequests[prIndex];
+                    for (let csIndex = 0; csIndex < pr.associatedCommits.length; csIndex++) {
+                        const cs = pr.associatedCommits[csIndex];
+                        var foundPR = allPullRequests.find(e => e.lastMergeCommit && e.lastMergeCommit.commitId === cs.commitId);
+                        if (foundPR) {
                             agentApi.logInfo(`Found the PR ${foundPR.pullRequestId} associated wth ${cs.commitId} added to the 'inDirectlyAssociatedPullRequests' array`);
                             inDirectlyAssociatedPullRequests.push(<EnrichedGitPullRequest>foundPR);
-                            }
                         }
                     }
                 }
-                // enrich the founds PRs
-                await enrichPullRequest(gitApi, inDirectlyAssociatedPullRequests);
             }
-
-        } catch (ex) {
-            agentApi.logInfo(`The most common runtime reason for the task to fail is due API ECONNRESET issues. To avoid this failing the pipeline these will be treated as warnings and an attempt to generate any release notes possible`);
-            agentApi.logWarn(ex);
-            hasBeenTimeout = true;
+            // enrich the founds PRs
+            await enrichPullRequest(gitApi, inDirectlyAssociatedPullRequests);
         }
 
-        try {
-            agentApi.logInfo(`Total Builds: [${globalBuilds.length}]`);
-            agentApi.logInfo(`Total Commits: [${globalCommits.length}]`);
-            agentApi.logInfo(`Total Workitems: [${globalWorkItems.length}]`);
-            agentApi.logInfo(`Total Related Workitems (Parent/Children): [${relatedWorkItems.length}]`);
-            agentApi.logInfo(`Total Release Tests: [${releaseTests.length}]`);
-            agentApi.logInfo(`Total Tests: [${globalTests.length}]`);
-            agentApi.logInfo(`Total Manual Test Runs: [${globalManualTests.length}]`);
-            agentApi.logInfo(`Total Manual Test Configurations: [${globalManualTestConfigurations.length}]`);
-            agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
-            agentApi.logInfo(`Total Indirect Pull Requests: [${inDirectlyAssociatedPullRequests.length}]`);
-            agentApi.logInfo(`Total Associated Test WI: [${testedByWorkItems.length}]`);
-            agentApi.logInfo(`Total Published Artifacts: [${publishedArtifacts.length}]`);
-            agentApi.logInfo(`Total Consumed Artifacts: [${globalConsumedArtifacts.length}]`);
-            agentApi.logInfo(`Total WIQL Workitems: [${queryWorkItems.length}]`);
+    } catch (ex) {
+        agentApi.logInfo(`The most common runtime reason for the task to fail is due API ECONNRESET issues. To avoid this failing the pipeline these will be treated as warnings and an attempt to generate any release notes possible`);
+        agentApi.logWarn(ex);
+        hasBeenTimeout = true;
+    }
 
-            dumpJsonPayload(
-                dumpPayloadToConsole,
-                dumpPayloadToFile,
-                dumpPayloadFileName,
-                {
-                    workItems: fullWorkItems,
-                    commits: globalCommits,
-                    pullRequests: globalPullRequests,
-                    tests: globalTests,
-                    builds: globalBuilds,
-                    relatedWorkItems: relatedWorkItems,
-                    releaseDetails: currentRelease,
-                    compareReleaseDetails: mostRecentSuccessfulDeploymentRelease,
-                    releaseTests: releaseTests,
-                    buildDetails: currentBuild,
-                    compareBuildDetails: mostRecentSuccessfulBuild,
-                    currentStage: currentStage,
-                    inDirectlyAssociatedPullRequests: inDirectlyAssociatedPullRequests,
-                    manualTests: globalManualTests,
-                    manualTestConfigurations: globalManualTestConfigurations,
-                    consumedArtifacts: globalConsumedArtifacts,
-                    queryWorkItems: queryWorkItems,
-                    testedByWorkItems: testedByWorkItems,
-                    publishedArtifacts: publishedArtifacts
-                });
+    try {
+        agentApi.logInfo(`Total Builds: [${globalBuilds.length}]`);
+        agentApi.logInfo(`Total Commits: [${globalCommits.length}]`);
+        agentApi.logInfo(`Total Workitems: [${globalWorkItems.length}]`);
+        agentApi.logInfo(`Total Related Workitems (Parent/Children): [${relatedWorkItems.length}]`);
+        agentApi.logInfo(`Total Release Tests: [${releaseTests.length}]`);
+        agentApi.logInfo(`Total Tests: [${globalTests.length}]`);
+        agentApi.logInfo(`Total Manual Test Runs: [${globalManualTests.length}]`);
+        agentApi.logInfo(`Total Manual Test Configurations: [${globalManualTestConfigurations.length}]`);
+        agentApi.logInfo(`Total Pull Requests: [${globalPullRequests.length}]`);
+        agentApi.logInfo(`Total Indirect Pull Requests: [${inDirectlyAssociatedPullRequests.length}]`);
+        agentApi.logInfo(`Total Associated Test WI: [${testedByWorkItems.length}]`);
+        agentApi.logInfo(`Total Published Artifacts: [${publishedArtifacts.length}]`);
+        agentApi.logInfo(`Total Consumed Artifacts: [${globalConsumedArtifacts.length}]`);
+        agentApi.logInfo(`Total WIQL Workitems: [${queryWorkItems.length}]`);
 
-            agentApi.logInfo(`Generating the release notes, the are ${templateFiles.length} template(s) to process`);
-            for (let i = 0; i < templateFiles.length; i++) {
-                var template = getTemplate (templateLocation, templateFiles[i], inlineTemplate);
-                if ((template) && (template.length > 0)) {
-                    var outputString = processTemplate(
-                        template,
-                        fullWorkItems,
-                        globalCommits,
-                        currentBuild,
-                        currentRelease,
-                        mostRecentSuccessfulDeploymentRelease,
-                        customHandlebarsExtensionCodeAsFile,
-                        customHandlebarsExtensionCode,
-                        customHandlebarsExtensionFile,
-                        customHandlebarsExtensionFolder,
-                        globalPullRequests,
-                        globalBuilds,
-                        globalTests,
-                        releaseTests,
-                        relatedWorkItems,
-                        mostRecentSuccessfulBuild,
-                        currentStage,
-                        inDirectlyAssociatedPullRequests,
-                        globalManualTests,
-                        globalManualTestConfigurations,
-                        stopOnError,
-                        globalConsumedArtifacts,
-                        queryWorkItems,
-                        testedByWorkItems,
-                        publishedArtifacts);
+        dumpJsonPayload(
+            dumpPayloadToConsole,
+            dumpPayloadToFile,
+            dumpPayloadFileName,
+            {
+                workItems: fullWorkItems,
+                commits: globalCommits,
+                pullRequests: globalPullRequests,
+                tests: globalTests,
+                builds: globalBuilds,
+                relatedWorkItems: relatedWorkItems,
+                releaseDetails: currentRelease,
+                compareReleaseDetails: mostRecentSuccessfulDeploymentRelease,
+                releaseTests: releaseTests,
+                buildDetails: currentBuild,
+                compareBuildDetails: mostRecentSuccessfulBuild,
+                currentStage: currentStage,
+                inDirectlyAssociatedPullRequests: inDirectlyAssociatedPullRequests,
+                manualTests: globalManualTests,
+                manualTestConfigurations: globalManualTestConfigurations,
+                consumedArtifacts: globalConsumedArtifacts,
+                queryWorkItems: queryWorkItems,
+                testedByWorkItems: testedByWorkItems,
+                publishedArtifacts: publishedArtifacts
+            });
 
-                    writeFile(outputFiles[i], outputString, replaceFile, appendToFile);
+        agentApi.logInfo(`Generating the release notes, the are ${templateFiles.length} template(s) to process`);
+        for (let i = 0; i < templateFiles.length; i++) {
+            var template = getTemplate(templateLocation, templateFiles[i], inlineTemplate);
+            if ((template) && (template.length > 0)) {
+                var outputString = processTemplate(
+                    template,
+                    fullWorkItems,
+                    globalCommits,
+                    currentBuild,
+                    currentRelease,
+                    mostRecentSuccessfulDeploymentRelease,
+                    customHandlebarsExtensionCodeAsFile,
+                    customHandlebarsExtensionCode,
+                    customHandlebarsExtensionFile,
+                    customHandlebarsExtensionFolder,
+                    globalPullRequests,
+                    globalBuilds,
+                    globalTests,
+                    releaseTests,
+                    relatedWorkItems,
+                    mostRecentSuccessfulBuild,
+                    currentStage,
+                    inDirectlyAssociatedPullRequests,
+                    globalManualTests,
+                    globalManualTestConfigurations,
+                    stopOnError,
+                    globalConsumedArtifacts,
+                    queryWorkItems,
+                    testedByWorkItems,
+                    publishedArtifacts);
 
-                    if (i === 0) {
-                        agentApi.logInfo(`Output variable '${outputVariableName}' set to value of first generated release notes`);
-                        agentApi.writeVariable(outputVariableName, outputString.toString());
-                    }
+                writeFile(outputFiles[i], outputString, replaceFile, appendToFile);
 
-                    if (hasBeenTimeout) {
-                        // we want to return -1 so flagged as succeeded with issues
-                        resolve(-1);
-                    } else {
-                        resolve(0);
-                    }
-                } else {
-                    reject ("Missing template file");
+                if (i === 0) {
+                    agentApi.logInfo(`Output variable '${outputVariableName}' set to value of first generated release notes`);
+                    agentApi.writeVariable(outputVariableName, outputString.toString());
                 }
+
+                if (hasBeenTimeout) {
+                    // we want to return -1 so flagged as succeeded with issues
+                    resolve(-1);
+                } else {
+                    resolve(0);
+                }
+            } else {
+                reject("Missing template file");
             }
-        } catch (ex) {
-            agentApi.logError(ex);
-            reject (ex);
         }
-    });
+    } catch (ex) {
+        agentApi.logError(ex);
+        reject(ex);
+    }
+});
 }
 
 function dumpJsonPayload(dumpPayloadToConsole: boolean, dumpPayloadToFile: boolean, fileName: string, payload) {
@@ -2268,9 +2302,9 @@ function dumpJsonPayload(dumpPayloadToConsole: boolean, dumpPayloadToFile: boole
 
 function removeDuplicates(array: any[]): any[] {
     array = array.filter((thing, index, self) =>
-    index === self.findIndex((t) => (
-    t.id === thing.id
-    )));
+        index === self.findIndex((t) => (
+            t.id === thing.id
+        )));
     return array;
 }
 
@@ -2280,43 +2314,43 @@ async function enrichConsumedArtifacts(
     workItemTrackingApi,
     getAllParents): Promise<[]> {
     return new Promise<[]>(async (resolve, reject) => {
-    try {
-        for (let index = 0; index < consumedArtifacts.length; index++) {
-            const artifact = consumedArtifacts[index];
-            if (artifact["artifactCategory"] === "Pipeline") {
-                agentApi.logInfo(`Getting the commit and work item details of the '${artifact["artifactCategory"]}' artifact '${artifact["alias"]}' with the version name '${artifact["versionName"]}'`);
-                try {
-                    var artifactTeamProjectId = artifact["properties"]["projectId"];
-                    artifact["commits"] = await (buildApi.getBuildChanges(artifactTeamProjectId, artifact["versionId"], "", 5000));
-                    artifact["workitems"] = await getFullWorkItemDetails(workItemTrackingApi, await (buildApi.getBuildWorkItemsRefs(artifactTeamProjectId, artifact["versionId"], 5000)));
+        try {
+            for (let index = 0; index < consumedArtifacts.length; index++) {
+                const artifact = consumedArtifacts[index];
+                if (artifact["artifactCategory"] === "Pipeline") {
+                    agentApi.logInfo(`Getting the commit and work item details of the '${artifact["artifactCategory"]}' artifact '${artifact["alias"]}' with the version name '${artifact["versionName"]}'`);
+                    try {
+                        var artifactTeamProjectId = artifact["properties"]["projectId"];
+                        artifact["commits"] = await (buildApi.getBuildChanges(artifactTeamProjectId, artifact["versionId"], "", 5000));
+                        artifact["workitems"] = await getFullWorkItemDetails(workItemTrackingApi, await (buildApi.getBuildWorkItemsRefs(artifactTeamProjectId, artifact["versionId"], 5000)));
 
-                    if (getAllParents) {
-                        agentApi.logInfo("Getting all parents of artifact WorkItems");
-                        artifact["relatedworkitems"]  = await getAllParentWorkitems(workItemTrackingApi, artifact["workitems"]);
-                    }
-                    else {
-                        artifact["relatedworkitems"] = [];
-                    }
+                        if (getAllParents) {
+                            agentApi.logInfo("Getting all parents of artifact WorkItems");
+                            artifact["relatedworkitems"] = await getAllParentWorkitems(workItemTrackingApi, artifact["workitems"]);
+                        }
+                        else {
+                            artifact["relatedworkitems"] = [];
+                        }
 
-                } catch (err) {
-                    agentApi.logWarn(`Cannot retried commit or work item information ${err}`);
+                    } catch (err) {
+                        agentApi.logWarn(`Cannot retried commit or work item information ${err}`);
+                    }
+                } else {
+                    agentApi.logInfo(`Cannot get extra commit or work item details of the ${artifact["artifactCategory"]} artifact ${artifact["alias"]} ${artifact["versionName"]}`);
                 }
-            } else {
-                agentApi.logInfo(`Cannot get extra commit or work item details of the ${artifact["artifactCategory"]} artifact ${artifact["alias"]} ${artifact["versionName"]}`);
             }
+            resolve(consumedArtifacts);
+        } catch (err) {
+            reject(err);
         }
-        resolve(consumedArtifacts);
-    } catch (err) {
-        reject (err);
-    }
-});
+    });
 }
 
 // #1103 this function is a belt an braces means to get all the WI associated with a build
 // ones manually link to a build are not found with the wi between builds call
 // this block is only called when the extra flag is abled as it is expensive on the API
 // we return duplicates WI, but they will be filtered before being passed to the processor
-async function addMissingManuallyLinkedWI(buildApi: IBuildApi, TeamProjectId: any,  BuildDefId: number, FromBuild: number, ToBuild: number): Promise<ResourceRef[]> {
+async function addMissingManuallyLinkedWI(buildApi: IBuildApi, TeamProjectId: any, BuildDefId: number, FromBuild: number, ToBuild: number): Promise<ResourceRef[]> {
     return new Promise<ResourceRef[]>(async (resolve, reject) => {
         var workItems = [];
         try {
@@ -2335,14 +2369,14 @@ async function addMissingManuallyLinkedWI(buildApi: IBuildApi, TeamProjectId: an
             }
 
             agentApi.logDebug(`Adding ${workItems.length} found with potential manual links, these will be added to the global list and duplicates removed later`);
-            resolve (workItems);
-    } catch (err) {
-        reject (err);
-    }
-});
+            resolve(workItems);
+        } catch (err) {
+            reject(err);
+        }
+    });
 }
 
-async function getWiqlQuery(workItemTrackingApi: IWorkItemTrackingApi, teamProject: string , wiqlWhereClause: string, wiqlFromTarget: string, wiqlSharedQueryName: string): Promise<string> {
+async function getWiqlQuery(workItemTrackingApi: IWorkItemTrackingApi, teamProject: string, wiqlWhereClause: string, wiqlFromTarget: string, wiqlSharedQueryName: string): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
         try {
             if (wiqlSharedQueryName && wiqlSharedQueryName.length > 0) {
@@ -2396,9 +2430,9 @@ async function addGitHubLinkedWI(workItemTrackingApi: IWorkItemTrackingApi, glob
                 }
             }
             agentApi.logInfo(`Adding ${workItems.length} found using AB#123 links in GitHub comments`);
-            resolve (workItems);
+            resolve(workItems);
         } catch (err) {
-            reject (err);
+            reject(err);
         }
     });
 }
