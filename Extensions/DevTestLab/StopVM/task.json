@@ -2,9 +2,10 @@
   "id": "aedfa360-b2a1-4dae-9c0d-19d6e9571949",
   "name": "DevTestLabsStopVm",
   "friendlyName": "Stop a DevTest Labs VM",
-  "description": "Stop a DevTest Labs VM",
+  "description": "[Deprecated] Consider using the AzureCLI@2 task and the 'az lab vm' to stop a DevTest Labs VM",
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/DevTestLabs/)",
   "category": "Utility",
+  "deprecated": true,
   "visibility": [
                 "Build",
                 "Release"

@@ -104,10 +104,12 @@ stages:
             steps:
             - task: richardfennellBM.BM-VSTS-DevTestLab-DEV.DevTestLabsStartVm.DevTestLabsStartVm@1
               displayName: 'Start a DevTest Labs VM'
+              enabled: false
               inputs:
                 ConnectedServiceName: 'RF MVP Visual Studio Enterprise (74b7c35f-1dd9-45d0-bf0c-4a8fbe3d9cb8)'
             - task: richardfennellBM.BM-VSTS-DevTestLab-DEV.DevTestLabsStopVm.DevTestLabsStopVm@1
               displayName: 'Stop a DevTest Labs VM'
+              enabled: false
               inputs:
                 ConnectedServiceName: 'RF MVP Visual Studio Enterprise (74b7c35f-1dd9-45d0-bf0c-4a8fbe3d9cb8)'
 
