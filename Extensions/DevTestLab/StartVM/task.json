@@ -2,9 +2,10 @@
   "id": "24efa514-ea2e-4193-9a12-4598e317e8bf",
   "name": "DevTestLabsStartVm",
   "friendlyName": "Start a DevTest Labs VM",
-  "description": "Start a DevTest Labs VM",
-  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/DevTestLabs/)",
+  "description": "[Deprecated] Consider using the AzureCLI@2 task and the 'az lab vm' to start a DevTest Labs VM",
+  "helpMarkDown": "[Deprecated] Version: #{Build.BuildNumber}#. [More Information](https://github.com/rfennell/vNextBuild/wiki/DevTestLabs/)",
   "category": "Utility",
+  "deprecated": true,
   "visibility": [
                 "Build",
                 "Release"

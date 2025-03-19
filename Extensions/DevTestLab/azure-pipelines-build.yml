@@ -95,6 +95,7 @@ stages:
     jobs:
     - deployment: Private_Test
       timeoutInMinutes: 0
+      enabled: false
       environment: 'Azure DevOps Marketplace (DevTestLabs)'
       pool:
         vmImage: '$(vmImage)'
