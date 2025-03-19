@@ -1,3 +1,24 @@
+> # DEPRECATION NOTICE
+>
+> This extension was deprecated in March 2025 and is no longer maintained. This is because is relied Azure authentication methods that are no longer available.
+>
+> The recommended alternative is to use the AzureCLI@2 task as shown below:
+> ```yaml
+>- task: AzureCLI@2
+>   displayName: 'Start a DevTest Labs VM'
+>   inputs:
+>    azureSubscription: 'My Azure Service Connection'
+>    scriptType: pscore
+>    scriptLocation: inlineScript
+>    inlineScript: |
+>     $resourceGroup = "my-devlab-rg"
+>     $devTestLabName = "my-devlab"
+>     $vmName = "ubuntu-vm"
+>     $vmAction = "Start" # or Stop
+>     
+>     az lab vm $vmAction --lab-name  $devTestLabName --name $vmName  --resource-group $resourceGroup 
+>```
+
 # Background
 
 This extension contains tasks that act as a supplement to the ones contained in the [Microsoft provided Azure DevTest Lab Extension](https://marketplace.visualstudio.com/items?itemName=ms-azuredevtestlabs.tasks).
