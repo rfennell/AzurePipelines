@@ -1469,17 +1469,61 @@ export async function generateReleaseNotes(
                         }
 
                         // get the consumed artifacts for the current build
-                        var currentBuildArtifacts = await getConsumedArtifactsForBuild(
+                        var currentBuildArtifacts: any[] = await getConsumedArtifactsForBuild(
                             organisationWebApi.rest,
                             tpcUri,
                             teamProject,
                             buildId);
 
-                        var lastGoodBuildArtifacts = await getConsumedArtifactsForBuild(
+                        var lastGoodBuildArtifacts: any[] = await getConsumedArtifactsForBuild(
                             organisationWebApi.rest,
                             tpcUri,
                             teamProject,
                             lastGoodBuildId);
+
+                        // get the consumed artifacts of the consumed artifacts and keep only the newest and oldest
+                        for (let artifactIndex = 0; artifactIndex < currentBuildArtifacts.length; artifactIndex++) {
+                            const currentBuildArtifact = currentBuildArtifacts[artifactIndex];
+
+                            if (currentBuildArtifact["artifactCategory"] === "Pipeline") {
+
+                                var newCurrentBuildArtifacts: any[] = [];
+                                var newLastGoodBuildArtifacts: any[] = [];
+                                // need to find the matching artifact in the past release
+                                const lastGoodBuildArtifact = lastGoodBuildArtifacts.find(artifactInLastGoodBuild => artifactInLastGoodBuild.alias === currentBuildArtifact.alias);
+                                if (lastGoodBuildArtifact) {
+                                    newCurrentBuildArtifacts = await getConsumedArtifactsForBuild(organisationWebApi.rest, tpcUri, teamProject, currentBuildArtifact.versionId);
+                                    newLastGoodBuildArtifacts = await getConsumedArtifactsForBuild(organisationWebApi.rest, tpcUri, teamProject, lastGoodBuildArtifact.versionId);
+                                }
+
+                                for (let newArtifactIndex = 0; newArtifactIndex < newCurrentBuildArtifacts.length; newArtifactIndex++) {
+                                    let existingArtifact = currentBuildArtifacts.find(artifact => artifact.alias === newCurrentBuildArtifacts[newArtifactIndex].alias);
+
+                                    // In case of duplicate, only keep the newest versionId
+                                    if (existingArtifact) {
+                                        if (newCurrentBuildArtifacts[newArtifactIndex].versionId > existingArtifact.versionId) {
+                                            existingArtifact.versionId = newCurrentBuildArtifacts[newArtifactIndex].versionId;
+                                        }
+                                    }
+                                    else {
+                                        currentBuildArtifacts.push(newCurrentBuildArtifacts[newArtifactIndex]);
+                                    }
+                                }
+                                for (let newArtifactIndex = 0; newArtifactIndex < newLastGoodBuildArtifacts.length; newArtifactIndex++) {
+
+                                    // In case of duplicate, only keep the oldest versionId
+                                    let existingArtifact = lastGoodBuildArtifacts.find(artifact => artifact.alias === newLastGoodBuildArtifacts[newArtifactIndex].alias);
+                                    if (existingArtifact) {
+                                        if (newLastGoodBuildArtifacts[newArtifactIndex].versionId < existingArtifact.versionId) {
+                                            existingArtifact.versionId = newLastGoodBuildArtifacts[newArtifactIndex].versionId;
+                                        }
+                                    }
+                                    else {
+                                        lastGoodBuildArtifacts.push(newLastGoodBuildArtifacts[newArtifactIndex]);
+                                    }
+                                }
+                            }
+                        }
 
                         // we can't use the standard enrichConsumedArtifacts because we need to get the artifacts from the last good build
                         for (let artifactIndex = 0; artifactIndex < currentBuildArtifacts.length; artifactIndex++) {
