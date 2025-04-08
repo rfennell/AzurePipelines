@@ -433,6 +433,16 @@
       "helpMarkDown": "If true any Test Case WIs linked to associated WIs by a 'Tested By' relation will be added to the 'testedByWorkItems' array (Default true)",
       "groupName":"advanced"
     }
+    ,
+    {
+      "name": "recursivelyCheckConsumedArtifacts",
+      "type": "boolean",
+      "label": "Recursively Check Consumed Artifacts",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "If true the task will check all consumed artifacts for changes between the current and last successful build. This is a recursive check, so if the artifact is a pipeline then all the consumed artifacts of that pipeline are also checked. (Default false)",
+      "groupName":"advanced"
+    }
 
 
 
