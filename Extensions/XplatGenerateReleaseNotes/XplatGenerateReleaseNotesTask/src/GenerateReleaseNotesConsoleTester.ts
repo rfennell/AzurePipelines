@@ -91,6 +91,7 @@ async function run(): Promise<number> {
           var getTestedBy: boolean = getBoolean(settings.getTestedBy, true);
           var wiqlFromTarget: string = settings.wiqlFromTarget || "WorkItems";
           var wiqlSharedQueryName: string = settings.wiqlSharedQueryName || "";
+          var recursivelyCheckConsumedArtifact: boolean = getBoolean(settings.recursivelyCheckConsumedArtifacts, false);
 
           if (payloadFile && payloadFile.length > 0 && fs.existsSync(payloadFile)) {
             console.log(`Running the tester against a local payload JSON file`);
@@ -183,7 +184,8 @@ async function run(): Promise<number> {
               getPRDetailsRefName,
               getTestedBy,
               wiqlFromTarget,
-              wiqlSharedQueryName);
+              wiqlSharedQueryName,
+              recursivelyCheckConsumedArtifact);
           }
 
         } else {
