@@ -1,7 +1,7 @@
 {
     "TeamFoundationCollectionUri": "https://dev.azure.com/richardfennell",
     "TeamProject": "GitHub",
-    "buildId": "7954",
+    "buildId": "12506",
     "releaseDefinitionId": "",
     "releaseId": "",
     "environmentName":"Windows",
@@ -43,6 +43,8 @@
     "getPRDetailsRepositoryId": "",
     "getPRDetailsRefName": "",
     "getTestedBy": "true",
+
+    "recursivelyCheckConsumedArtifacts": "true",
 
     "maxRetries": "3",
     "pauseTime": "5000",

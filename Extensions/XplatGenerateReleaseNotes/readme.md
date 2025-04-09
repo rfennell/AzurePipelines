@@ -406,6 +406,7 @@ The task takes the following parameters
 | getPRDetailsRepositoryId | Helps improving performance during Get PR details step by filtering only the PRs of specific Azure DevOps Git repo (Default to not set i.e. search all repos) |
 | getPRDetailsRefName | Helps improving performance during Get PR details step by filtering only the PRs merged into specified branch e.g. refs/heads/main (Default to not set i.e. search all branches)|
 | getTestedBy | If true any Test Case WIs linked to associated WIs by a `Tested By` relation will be added to the `testedByWorkItems` array (Default true) |
+| recursivelyCheckConsumedArtifacts | If true the task will check all consumed artifacts for changes between the current and last successful build. This is a recursive check, so if the artifact is a pipeline then all the consumed artifacts of that pipeline are also checked. (Default false) |
 # Output location
 
 When using this task within a build then it is sensible to [publish the release notes files as a build artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/publish-build-artifacts?view=azure-devops). 
