@@ -105,6 +105,11 @@
       "target": "$(currentDirectory)/BuildVariableTask.js",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
+    },
+    "Node20_1": {
+      "target": "$(currentDirectory)/BuildVariableTask.js",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
     }
 
   }
