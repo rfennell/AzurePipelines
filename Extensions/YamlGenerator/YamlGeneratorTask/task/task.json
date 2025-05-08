@@ -69,6 +69,10 @@
     "Node16": {
       "target": "Generate-YAMLDocumentation.js",
       "argumentFormat": ""
+    },
+    "Node20_1": {
+      "target": "Generate-YAMLDocumentation.js",
+      "argumentFormat": ""
     }
   }
 }
