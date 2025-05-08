@@ -165,6 +165,10 @@
     "Node16": {
       "target": "WikiPDFExportTask.js",
       "argumentFormat": ""
+    },
+    "Node20_1": {
+      "target": "WikiPDFExportTask.js",
+      "argumentFormat": ""
     }
   }
 }
