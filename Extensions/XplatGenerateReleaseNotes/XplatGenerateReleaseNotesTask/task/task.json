@@ -456,6 +456,10 @@
     "Node16": {
       "target": "GenerateReleaseNotes.js",
       "argumentFormat": ""
+  },
+    "Node20_1": {
+      "target": "GenerateReleaseNotes.js",
+      "argumentFormat": ""
   }
   }
 }
