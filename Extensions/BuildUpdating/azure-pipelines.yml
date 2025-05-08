@@ -123,9 +123,9 @@ stages:
             scriptType: pscore
             scriptLocation: inlineScript
             inlineScript: |
-              $resourceGroup = $(resourceGroup)
-              $devTestLabName = $(devTestLabName)
-              $vmName = $(vmName)
+              $resourceGroup = "$(resourceGroup)"
+              $devTestLabName = "$(devTestLabName)"
+              $vmName = "$(vmName)"
               $vmAction = "Start" # or Stop
                  
               az lab vm $vmAction --lab-name  $devTestLabName --name $vmName  --resource-group $resourceGroup 
