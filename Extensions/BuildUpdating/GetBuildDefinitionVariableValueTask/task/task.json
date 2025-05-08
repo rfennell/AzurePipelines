@@ -78,6 +78,11 @@
       "target": "$(currentDirectory)/GetBuildVariableTask.js",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
+    },
+    "Node20_1": {
+      "target": "$(currentDirectory)/GetBuildVariableTask.js",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
     }
 
   }

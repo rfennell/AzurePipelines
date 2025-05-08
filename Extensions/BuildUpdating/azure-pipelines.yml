@@ -116,10 +116,19 @@ stages:
       pool:
         vmImage: '$(vmImage)'
       steps:
-        - task: richardfennellBM.BM-VSTS-DevTestLab-DEV.DevTestLabsStartVm.DevTestLabsStartVm@1
+        - task: AzureCLI@2
           displayName: 'Start a DevTest Labs VM'
           inputs:
-            ConnectedServiceName: 'RF MVP Visual Studio Enterprise (74b7c35f-1dd9-45d0-bf0c-4a8fbe3d9cb8) Service Principal'
+            azureSubscription:  'RF MVP Visual Studio Enterprise (74b7c35f-1dd9-45d0-bf0c-4a8fbe3d9cb8) Service Principal'
+            scriptType: pscore
+            scriptLocation: inlineScript
+            inlineScript: |
+              $resourceGroup = "$(resourceGroup)"
+              $devTestLabName = "$(devTestLabName)"
+              $vmName = "$(vmName)"
+              $vmAction = "Start" # or Stop
+                 
+              az lab vm $vmAction --lab-name  $devTestLabName --name $vmName  --resource-group $resourceGroup 
 
     - deployment: Private_Test
       timeoutInMinutes: 0
