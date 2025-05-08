@@ -302,6 +302,10 @@
       "Node16": {
       "target": "GitWikiTask.js",
       "argumentFormat": ""
+    },
+    "Node20_1": {
+      "target": "GitWikiTask.js",
+      "argumentFormat": ""
     }
 
   }
