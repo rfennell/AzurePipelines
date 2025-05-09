@@ -84,6 +84,11 @@
       "target": "$(currentDirectory)/BuildRetensionTask.js",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
+    },
+    "Node20_1": {
+      "target": "$(currentDirectory)/BuildRetensionTask.js",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
     }
 
   }
