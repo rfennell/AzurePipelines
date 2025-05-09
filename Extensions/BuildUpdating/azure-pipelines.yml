@@ -127,6 +127,7 @@ stages:
               $devTestLabName = "$(devTestLabName)"
               $vmName = "$(vmName)"
               $vmAction = "Start" # or Stop
+                 
               az lab vm $vmAction --lab-name  $devTestLabName --name $vmName  --resource-group $resourceGroup 
 
     - deployment: Private_Test
