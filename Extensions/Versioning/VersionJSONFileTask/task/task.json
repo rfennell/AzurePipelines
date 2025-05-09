@@ -121,6 +121,10 @@
      "Node16": {
       "target": "ApplyVersionToJSONFile.js",
       "argumentFormat": ""
-    }
+    },
+    "Node20_1": {
+     "target": "ApplyVersionToJSONFile.js",
+     "argumentFormat": ""
+   }
   }
 }
