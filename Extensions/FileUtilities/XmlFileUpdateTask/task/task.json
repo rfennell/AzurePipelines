@@ -71,6 +71,10 @@
      "Node16": {
       "target": "FileUpdate.js",
       "argumentFormat": ""
-    }
+    },
+    "Node20_1": {
+     "target": "FileUpdate.js",
+     "argumentFormat": ""
+   }
   }
 }
