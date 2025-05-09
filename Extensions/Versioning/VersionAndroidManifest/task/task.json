@@ -126,6 +126,10 @@
      "Node16": {
       "target": "ApplyVersionToManifest.js",
       "argumentFormat": ""
-    }
+    },
+    "Node20_1": {
+     "target": "ApplyVersionToManifest.js",
+     "argumentFormat": ""
+   }
   }
 }

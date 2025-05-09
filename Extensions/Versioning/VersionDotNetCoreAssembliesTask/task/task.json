@@ -141,6 +141,10 @@
      "Node16": {
       "target": "ApplyVersionToAssemblies.js",
       "argumentFormat": ""
-    }
+    },
+    "Node20_1": {
+     "target": "ApplyVersionToAssemblies.js",
+     "argumentFormat": ""
+   }
   }
 }
