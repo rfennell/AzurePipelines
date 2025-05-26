@@ -1561,6 +1561,15 @@ export async function generateReleaseNotes(
                                     else {
                                         artifactRelatedWorkItems = [];
                                     }
+                                    let commits = await enrichChangesWithFileDetails(
+                                            gitApi,
+                                            tfvcApi,
+                                            await buildApi.getChangesBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId),
+                                            gitHubPat);
+                                    let expandedCommits = await expandTruncatedCommitMessages(organisationWebApi, commits, gitHubPat, bitbucketUser, bitbucketSecret);
+                                    if (commits.length === expandedCommits.length) {
+                                        commits = expandedCommits;
+                                    }
                                     globalConsumedArtifacts.push({
                                         "artifactCategory": (currentBuildArtifact as any).artifactCategory,
                                         "artifactType": (currentBuildArtifact as any).artifactType,
@@ -1569,11 +1578,7 @@ export async function generateReleaseNotes(
                                             "projectId": (currentBuildArtifact as any).properties.projectId
                                         },
                                         "versionName": `${(lastGoodBuildArtifact as any).versionName} - ${(currentBuildArtifact as any).versionName}`,
-                                        "commits": await enrichChangesWithFileDetails(
-                                            gitApi,
-                                            tfvcApi,
-                                            await buildApi.getChangesBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId),
-                                            gitHubPat),
+                                        "commits": commits,
                                         "workitems": artifactWorkItems,
                                         "relatedWorkItems": artifactRelatedWorkItems,
                                     });
@@ -1589,7 +1594,15 @@ export async function generateReleaseNotes(
                                     else {
                                         artifactRelatedWorkItems = [];
                                     }
-
+                                    let commits = await enrichChangesWithFileDetails(
+                                            gitApi,
+                                            tfvcApi,
+                                            await (buildApi.getBuildChanges((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId, "", 5000)),
+                                            gitHubPat);
+                                    let expandedCommits = await expandTruncatedCommitMessages(organisationWebApi, commits, gitHubPat, bitbucketUser, bitbucketSecret);
+                                    if (commits.length === expandedCommits.length) {
+                                        commits = expandedCommits;
+                                    }
                                     globalConsumedArtifacts.push({
                                         "artifactCategory": (currentBuildArtifact as any).artifactCategory,
                                         "artifactType": (currentBuildArtifact as any).artifactType,
@@ -1598,11 +1611,7 @@ export async function generateReleaseNotes(
                                             "projectId": (currentBuildArtifact as any).properties.projectId
                                         },
                                         "versionName": (currentBuildArtifact as any).versionName,
-                                        "commits": await enrichChangesWithFileDetails(
-                                            gitApi,
-                                            tfvcApi,
-                                            await (buildApi.getBuildChanges((currentBuildArtifact as any).properties.projectId, (currentBuildArtifact as any).versionId, "", 5000)),
-                                            gitHubPat),
+                                        "commits": commits,
                                         "workitems": artifactWorkItems,
                                         "relatedWorkItems": artifactRelatedWorkItems,
                                     });
