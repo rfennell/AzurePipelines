@@ -1461,8 +1461,8 @@ export async function generateReleaseNotes(
                             globalWorkItems = commitInfo.workItems;
                         } else {
                             // Fall back to original behavior
-                            globalCommits = await buildApi.getChangesBetweenBuilds(teamProject, lastGoodBuildId, buildId);
-                            globalWorkItems = await buildApi.getWorkItemsBetweenBuilds(teamProject, lastGoodBuildId, buildId);
+                            globalCommits = await buildApi.getChangesBetweenBuilds(teamProject, lastGoodBuildId, buildId, 5000);
+                            globalWorkItems = await buildApi.getWorkItemsBetweenBuilds(teamProject, lastGoodBuildId, buildId, 5000);
                         }
 
                         if (checkForManuallyLinkedWI) {
@@ -1542,7 +1542,7 @@ export async function generateReleaseNotes(
                                 if (lastGoodBuildArtifact) {
                                     agentApi.logInfo(`Getting changes for the '${(currentBuildArtifact as any).artifactCategory}' artifact '${(currentBuildArtifact as any).alias}' between ${(lastGoodBuildArtifact as any).versionId} and ${(currentBuildArtifact as any).versionId}`);
 
-                                    var wi = await buildApi.getWorkItemsBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId);
+                                    var wi = await buildApi.getWorkItemsBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId, 5000);
 
                                     if (checkForManuallyLinkedWI) {
                                         wi = wi.concat(await addMissingManuallyLinkedWI(
@@ -1564,7 +1564,7 @@ export async function generateReleaseNotes(
                                     let commits = await enrichChangesWithFileDetails(
                                             gitApi,
                                             tfvcApi,
-                                            await buildApi.getChangesBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId),
+                                            await buildApi.getChangesBetweenBuilds((currentBuildArtifact as any).properties.projectId, (lastGoodBuildArtifact as any).versionId, (currentBuildArtifact as any).versionId, 5000),
                                             gitHubPat);
                                     let expandedCommits = await expandTruncatedCommitMessages(organisationWebApi, commits, gitHubPat, bitbucketUser, bitbucketSecret);
                                     if (commits.length === expandedCommits.length) {
@@ -1680,8 +1680,8 @@ export async function generateReleaseNotes(
 
                             } else {
                                 // Fall back to original behavior
-                                globalCommits.push(... await buildApi.getChangesBetweenBuilds(teamProject, firstBuild.id, buildId));
-                                globalWorkItems.push(... await buildApi.getWorkItemsBetweenBuilds(teamProject, firstBuild.id, buildId));
+                                globalCommits.push(... await buildApi.getChangesBetweenBuilds(teamProject, firstBuild.id, buildId, 5000));
+                                globalWorkItems.push(... await buildApi.getWorkItemsBetweenBuilds(teamProject, firstBuild.id, buildId, 5000));
                             }
 
                             if (checkForManuallyLinkedWI) {
