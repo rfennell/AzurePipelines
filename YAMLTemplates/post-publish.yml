@@ -20,7 +20,7 @@ steps:
     OutputText: 'OutputedText'
 
 - pwsh: |
-   $msg = "I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} http://bit.ly/VSTS-RF $(OutputedText) "
+   $msg = "I have just released Version ${{parameters.buildNumber}} of my Azure DevOps Pipeline ${{parameters.extensionName}} https://tinyurl.com/ADOEXT-RF $(OutputedText) "
 
    write-host "Posting message: $msg"
    $uri = "${{parameters.socialmediaLogicAppURL}}" 
