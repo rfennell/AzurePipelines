@@ -11,9 +11,9 @@ Extension | Public Deployment Status
 ----------|------------------
 Artifact PR Description | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/ArtifactDescription?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=79) 
 Build Utils | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/BuildUpdatingExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=70)
-DevTest Labs |  [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/DevtestLabsExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=63) 
 FileCopier Utils |[![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/FileCopyExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=69)  
 GenerateReleaseNotes (XPlat) |[![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/XplatGenerateReleaseNotes?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=85)
+Sarif to JUnit Convertor | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/VersioningExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=129) 
 Manifest Versioning | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/VersioningExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=65) 
 WIKI Updater | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/extensions/WikiUpdaterExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=64)
 WIKI PDF Exporter | [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/extensions/WikiPDFExportExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=92)
@@ -22,6 +22,7 @@ YAML Generator | [![Release Status](https://dev.azure.com/richardfennell/github/
 ## Not supported as deprecated
 Extension | Public Deployment Status
 ----------|------------------
+DevTest Labs |  [![Release Status](https://dev.azure.com/richardfennell/github/_apis/build/status/Extensions/DevtestLabsExtension?branchName=main&stageName=Documentation)](https://dev.azure.com/richardfennell/github/_build/latest?definitionId=63) 
 GenerateReleaseNotes (PowerShell) | [![Release Status - GenerateReleaseNotes Extension (PowerShell)](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/3/5)](https://richardfennell.visualstudio.com/GitHub/GitHub%20Team/_releases2?definitionId=3&view=mine&_a=releases)
 Pester | [![Release Status - Pester Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/8/14)](https://richardfennell.visualstudio.com/GitHub/GitHub%20Team/_releases2?definitionId=8&view=mine&_a=releases)  
 StyleCop  | [![Release Status - StyleCop Extension](https://richardfennell.vsrm.visualstudio.com/_apis/public/Release/badge/670b3a60-2021-47ab-a88b-d76ebd888a2f/7/12)](https://richardfennell.visualstudio.com/GitHub/GitHub%20Team/_releases2?definitionId=7&view=mine&_a=releases)
