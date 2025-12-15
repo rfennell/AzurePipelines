@@ -18,7 +18,6 @@
     "fs": "0.0.1-security",
     "fs-copy-file-sync": "^1.1.1",
     "ncp": "^2.0.0",
-    "request": "^2.88.2",
     "xpath": "0.0.32"
   },
   "devDependencies": {
