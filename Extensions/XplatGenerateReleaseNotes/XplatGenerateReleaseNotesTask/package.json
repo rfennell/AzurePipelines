@@ -23,7 +23,6 @@
     "handlebars-helpers": "^0.10.0",
     "minimist": "^1.2.7",
     "ncp": "^2.0.0",
-    "request": "^2.88.2",
     "typed-rest-client": "^1.8.11"
   },
   "devDependencies": {
