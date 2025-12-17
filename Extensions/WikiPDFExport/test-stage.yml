@@ -13,7 +13,7 @@ steps:
   displayName: 'Use .NET Core runtime'
   inputs:
     packageType: 'runtime'
-    version: '6.0.x'
+    version: '8.0.x'
     includePreviewVersions: false
 - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@4
   displayName: 'Generate Release Notes based on Release Comparision API'
