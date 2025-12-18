@@ -17,8 +17,7 @@
     "extend": "^3.0.2",
     "fs": "^0.0.1-security",
     "fs-copy-file-sync": "^1.1.1",
-    "ncp": "^2.0.0",
-    "request": "^2.80.0"
+    "ncp": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.30",
