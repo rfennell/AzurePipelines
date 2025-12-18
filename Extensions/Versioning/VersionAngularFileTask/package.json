@@ -12,12 +12,11 @@
   },
   "main": "VersionAngularFileTask.js",
   "dependencies": {
-    "azure-pipelines-task-lib": "^4.10.1",
+        "azure-pipelines-task-lib": "^4.10.1",
     "Buffer": "^0.0.0",
     "fs": "^0.0.1-security",
     "fs-copy-file-sync": "^1.1.1",
-    "ncp": "^2.0.0",
-    "request": "^2.88.0"
+    "ncp": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^17.0.13",
