@@ -27,6 +27,7 @@ var cloneRepo = tl.getBoolInput("cloneRepo");
 var overrideExePath = tl.getInput("overrideExePath");
 var workingFolder = tl.getInput("downloadPath");
 var rootExportPath = tl.getInput("rootExportPath");
+var desiredVersion = tl.getInput("desiredVersion");
 var usePreRelease = tl.getBoolInput("usePreRelease");
 
 // make sure that we support older configs where these two parameter were a single setting
@@ -46,15 +47,20 @@ console.log(`Variable: OutputFile [${outputFile}]`);
 console.log(`Variable: Branch [${branch}]`);
 console.log(`Variable: InjectExtraHeader [${injectExtraHeader}]`);
 console.log(`Variable: OverrideExePath [${overrideExePath}]`);
-console.log(`Variable: UsePreRelease [${usePreRelease}]`);
+console.log(`Variable: DesiredVersion [${desiredVersion}]`);
 console.log(`Variable: DownloadPath [${workingFolder}]`);
+console.log(`Variable: UsePreRelease [${usePreRelease}]`);
+
+if (usePreRelease === true) {
+    logWarning(`The usePreRelease option is no longer used, it has been replaced by desiredVersion.`);
+}
 
 var os = tl.getVariable("AGENT.OS");
 
 GetExePath(
     overrideExePath,
     workingFolder,
-    usePreRelease,
+    desiredVersion,
     os
 ).then((exePath) => {
     if (exePath.length > 0) {

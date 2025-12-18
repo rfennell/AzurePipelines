@@ -2,6 +2,7 @@ import * as process from "process";
 import { exec } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+import axios from "axios";
 import {
     CloneWikiRepo,
     GetTrimmedUrl,
@@ -16,35 +17,59 @@ import {
 import { filePathSupplied } from "azure-pipelines-task-lib";
 
 async function DownloadGitHubArtifact(
-    user,
+    owner,
     repo,
     folder,
-    usePreRelease,
+    desiredVersion,
     artifactName,
     logInfo,
     logError) {
 
-    var downloadRelease = require("download-github-release");
-    logInfo(`Starting download ${artifactName} to ${folder}`);
-    await downloadRelease(
-        user,
-        repo,
-        folder,
-        function filterRelease(release) {
-            // Filter out prereleases.
-            return release.prerelease === usePreRelease;
-        },
-        function filterAsset(asset) {
-            // Select assets that contain the string .
-            return (asset.name === artifactName);
-        },
-        false)
-    .then(function() {
-        logInfo("Download done");
-    })
-    .catch(function(err) {
-        logError(err.message);
+ try {
+    const apiUrl = desiredVersion
+      ? `https://api.github.com/repos/${owner}/${repo}/releases/tags/${desiredVersion}`
+      : `https://api.github.com/repos/${owner}/${repo}/releases/latest`;
+
+    logInfo(`Fetching release from: ${apiUrl}`);
+    // Get release info
+    const response = await axios.get(apiUrl, {
+      headers: {
+        "User-Agent": "github-release-downloader",
+      },
     });
+    const release = response.data;
+
+    // Locate the asset
+    const asset = release.assets.find((a) => a.name === artifactName);
+    if (!asset) {
+      logError(`Asset "${artifactName}" not found in release ${release.tag_name}.`);
+      return;
+    }
+
+    // Download the asset
+    const downloadResponse = await axios.get(asset.browser_download_url, {
+      responseType: "stream", // Required for downloading binary files
+    });
+
+    // Stream the asset to a file
+    if (!fs.existsSync(folder)) {
+      logInfo(`Creating folder: ${folder}`);
+      fs.mkdirSync(folder, { recursive: true });
+    }
+    const filePath = path.join(folder, artifactName);
+    const writer = fs.createWriteStream(filePath);
+    downloadResponse.data.pipe(writer);
+
+    writer.on("finish", () => {
+      logInfo(`Downloaded file at: ${filePath}`);
+    });
+
+    writer.on("error", (err) => {
+      logError("Error writing file:", err);
+    });
+  } catch (error) {
+    logError("Error downloading release:", error.response ? error.response.data : error.message);
+  }
 }
 
 export async function ExportPDF(
@@ -138,7 +163,7 @@ export async function ExportPDF(
 export async function GetExePath (
     overrideExePath,
     workingFolder,
-    usePreRelease,
+    desiredVersion,
     os: string
 ) {
     if (overrideExePath &&  overrideExePath.length > 0) {
@@ -161,7 +186,7 @@ export async function GetExePath (
             "MaxMelcher",
             "AzureDevOps.WikiPDFExport",
             workingFolder,
-            usePreRelease,
+            desiredVersion,
             artifactName,
             logInfo,
             logError);

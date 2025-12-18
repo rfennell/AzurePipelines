@@ -14,8 +14,8 @@
   },
   "main": "test.js",
   "dependencies": {
+    "axios": "^1.13.2",
     "azure-pipelines-task-lib": "^4.10.1",
-    "download-github-release": "^0.3.2",
     "fs": "0.0.1-security",
     "ncp": "^2.0.0",
     "process": "^0.11.10",

@@ -2,6 +2,12 @@ parameters:
 - name: localpath
   type: string
   default: $(Agent.TempDirectory) 
+- name: dotnetVersion
+  type: string
+  default: '8.0.x'
+- name: desiredVersion
+  type: string
+  default: ''
 
 steps:
 - checkout: VSTSBuildTaskValidation
@@ -13,7 +19,7 @@ steps:
   displayName: 'Use .NET Core runtime'
   inputs:
     packageType: 'runtime'
-    version: '6.0.x'
+    version: '${{parameters.dotnetVersion}}'
     includePreviewVersions: false
 - task: richardfennellBM.BM-VSTS-XplatGenerateReleaseNotes-DEV1.XplatGenerate-Release-Notes.XplatGenerateReleaseNotes@4
   displayName: 'Generate Release Notes based on Release Comparision API'
@@ -42,6 +48,7 @@ steps:
       {{/forEach}}
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@3
   displayName: 'Export Single File'
+  enabled: false
   inputs:
     cloneRepo: false
     usePreRelease: false
@@ -49,6 +56,8 @@ steps:
     singleFile: 'inline.md'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFileV3.pdf'
     downloadPath: '${{parameters.localpath}}'
+
+
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@4
   displayName: 'Export Single File'
   inputs:
@@ -58,6 +67,8 @@ steps:
     singleFile: 'inline.md'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFile.pdf'
     downloadPath: '${{parameters.localpath}}'
+    desiredVersion: '${{parameters.desiredVersion}}'
+
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@4
   displayName: 'Export Single File'
   inputs:
@@ -67,6 +78,8 @@ steps:
     singleFile: 'inline.md'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFile.pdf'
     downloadPath: '${{parameters.localpath}}'
+    desiredVersion: '${{parameters.desiredVersion}}'
+
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@4
   displayName: 'Export Public GitHub WIKI'
   condition: succeededOrFailed()
@@ -77,6 +90,8 @@ steps:
     localpath: '$(System.DefaultWorkingDirectory)/GitHubRepo'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-publicGitHub.pdf'
     downloadPath: '${{parameters.localpath}}'
+    desiredVersion: '${{parameters.desiredVersion}}'
+
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@4
   displayName: 'Export Azure DevOps WIKI'
   condition: succeededOrFailed()
@@ -86,6 +101,8 @@ steps:
     useAgentToken: true
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-Azrepo.pdf'
     downloadPath: '${{parameters.localpath}}'
+    desiredVersion: '${{parameters.desiredVersion}}'
+
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@4
   displayName: 'Export part of the Azure DevOps WIKI'
   condition: succeededOrFailed()
@@ -97,6 +114,8 @@ steps:
     localpath: '$(System.DefaultWorkingDirectory)/repopartial'
     rootExportPath: '$(System.DefaultWorkingDirectory)/repopartial/folder'
     downloadPath: '${{parameters.localpath}}'
+    desiredVersion: '${{parameters.desiredVersion}}'
+
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@4
   displayName: 'Export single part of the Azure DevOps WIKI'
   condition: succeededOrFailed()
@@ -109,6 +128,8 @@ steps:
     rootExportPath: '$(System.DefaultWorkingDirectory)/repopartial1/folder'
     downloadPath: '${{parameters.localpath}}'
     singlefile: 'test1.md'
+    desiredVersion: '${{parameters.desiredVersion}}'
+
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@4
   displayName: 'Export Azure DevOps WIKI without downloading tool'
   condition: and(succeededOrFailed(), eq(variables['AGENT.OS'], 'Windows_NT'))
@@ -119,6 +140,8 @@ steps:
     useAgentToken: true
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-Azrepo-nodownload.pdf'
     downloadPath: '${{parameters.localpath}}'
+    desiredVersion: '${{parameters.desiredVersion}}'
+
 - task: PublishPipelineArtifact@0
   condition: succeededOrFailed()
   inputs:
