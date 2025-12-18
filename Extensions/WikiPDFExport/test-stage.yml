@@ -56,7 +56,7 @@ steps:
     singleFile: 'inline.md'
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFileV3.pdf'
     downloadPath: '${{parameters.localpath}}'
-    desiredVersion: '${{parameters.desiredVersion}}'
+    usePreRelease: false
 
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@4
   displayName: 'Export Single File'
@@ -79,6 +79,7 @@ steps:
     outputFile: '$(Build.ArtifactStagingDirectory)/PDF/$(Agent.OS)-singleFile.pdf'
     downloadPath: '${{parameters.localpath}}'
     desiredVersion: '${{parameters.desiredVersion}}'
+    usePreRelease: false
 
 - task: richardfennellBM.BM-VSTS-WikiPDFExport-Tasks-DEV.WikiPDFExportTask.WikiPdfExportTask@4
   displayName: 'Export Public GitHub WIKI'
