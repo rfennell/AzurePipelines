@@ -151,12 +151,12 @@
       "groupName": "advanced"
     },
     {
-      "name": "usePreRelease",
-      "type": "boolean",
-      "label": "Use pre-release versions of the export tool",
-      "defaultValue": "False",
+      "name": "desiredVersion",
+      "type": "string",
+      "label": "Use specific versions of the export tool",
+      "defaultValue": "",
       "required": false,
-      "helpMarkDown": "If set to true pre-release version of the [AzureDevOps.WikiPDFExport tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport) tool will be used",
+      "helpMarkDown": "Set to a release tag, if not set latest will use version of the [AzureDevOps.WikiPDFExport tool](https://github.com/MaxMelcher/AzureDevOps.WikiPDFExport) tool will be used",
       "groupName": "advanced"
     }
   ],

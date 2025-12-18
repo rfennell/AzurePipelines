@@ -142,6 +142,9 @@ stages:
           deploy:
             steps:
             - template: test-stage.yml
+              parameters:
+                dotnetVersion: '6.0.x'
+                desiredVersion: '4.6.0'
     - deployment: Private_Tests_Mac
       timeoutInMinutes: 0
       environment: 'Azure DevOps Marketplace (WIKIPDFExport)'
