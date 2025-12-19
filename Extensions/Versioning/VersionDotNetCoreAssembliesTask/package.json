@@ -17,7 +17,6 @@
     "fs": "^0.0.1-security",
     "fs-copy-file-sync": "^1.1.1",
     "ncp": "^2.0.0",
-    "request": "^2.88.0",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {

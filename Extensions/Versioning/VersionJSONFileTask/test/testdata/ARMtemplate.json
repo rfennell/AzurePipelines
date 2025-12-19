@@ -3,5 +3,6 @@
     "parameters": {  },
     "variables": {  },
     "resources": [  ],
-    "outputs": {  }
+    "outputs": {  },
+"contentVersion": "1.2.3.4"
 }
