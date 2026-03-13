@@ -17,11 +17,11 @@
     "@types/q": "^1.5.5",
     "@types/xmldom": "^0.1.34",
     "azure-devops-node-api": "^12.5.0",
-    "azure-pipelines-task-lib": "^4.1.0",
+    "azure-pipelines-task-lib": "^5.2.8",
     "fs": "^0.0.1-security",
     "handlebars": "^4.7.7",
     "handlebars-helpers": "^0.10.0",
-    "minimist": "^1.2.7",
+    "minimist": "^1.2.8",
     "ncp": "^2.0.0",
     "typed-rest-client": "^1.8.11"
   },
