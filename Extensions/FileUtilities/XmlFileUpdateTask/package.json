@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@types/q": "^1.5.5",
-    "@xmldom/xmldom": "^0.8.6",
-    "azure-pipelines-task-lib": "^4.1.0",
+    "@xmldom/xmldom": "^0.8.12",
+    "azure-pipelines-task-lib": "^5.2.8",
     "buffer": "^6.0.3",
     "fs": "0.0.1-security",
     "fs-copy-file-sync": "^1.1.1",
