@@ -343,7 +343,7 @@ export async function expandTruncatedCommitMessages(restClient: WebApi, globalCo
                 try {
                     agentApi.logDebug(`Expanding commit [${change.id}]`);
                     let res: restm.IRestResponse<GitCommit>;
-                    if (change.location.startsWith("https://api.github.com/")) {
+                    if (change.type === "GitHub") {
                         agentApi.logDebug(`Need to expand details from GitHub`);
                         // we build PAT auth object even if we have no token
                         // this will still allow access to public repos
